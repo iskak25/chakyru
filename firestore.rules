@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdminUser() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountRole == 'admin';
+    }
+
+    function isBootstrapAdmin() {
+      return signedIn() && request.auth.token.email in [
+        'dastaniskak0302@gmail.com',
+        'iskak2512@gmail.com'
+      ];
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdminUser() || isBootstrapAdmin());
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && (
+          request.resource.data.accountRole == 'user'
+          || (isBootstrapAdmin() && request.resource.data.accountRole == 'admin')
+        );
+      allow update: if signedIn() && (
+        isAdminUser()
+        || isBootstrapAdmin()
+        || (
+          request.auth.uid == uid
+          && request.resource.data.accountRole == resource.data.accountRole
+          && request.resource.data.plan == resource.data.plan
+          && request.resource.data.get('templates', []) == resource.data.get('templates', [])
+        )
+      );
+    }
+
+    match /payments/{id} {
+      allow read: if signedIn() && request.auth.uid == resource.data.uid;
+      allow create, update, delete: if false;
+    }
+
+    match /catalog/payments {
+      allow read, write: if isAdminUser() || isBootstrapAdmin();
+    }
+
+    match /catalog/{docId} {
+      allow read: if true;
+      allow write: if isAdminUser() || isBootstrapAdmin();
+    }
+  }
+}

@@ -1,0 +1,73 @@
+import type { AccountRole, Invitation, User } from "./types";
+
+function parseAccountRole(value: unknown): AccountRole {
+  if (value === "admin" || value === "vip") return value;
+  return "user";
+}
+
+export function adminEmails() {
+  return (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export function isAdminEmail(email?: string) {
+  if (!email) return false;
+  return adminEmails().includes(email.trim().toLowerCase());
+}
+
+export function normalizeUser(raw: Partial<User> & { name: string }): User {
+  const auth = raw.auth === "google" ? "google" : "name";
+  return {
+    id:
+      raw.id ||
+      (auth === "google"
+        ? `google:${raw.email || raw.name}`
+        : `name:${raw.name.trim().toLowerCase()}`),
+    name: raw.name,
+    role: raw.role === "designer" ? "designer" : "host",
+    auth,
+    email: raw.email,
+    picture: raw.picture,
+    plan: raw.plan ?? "free",
+    accountRole: parseAccountRole(raw.accountRole),
+    templates: Array.isArray(raw.templates) ? raw.templates.filter((id): id is string => typeof id === "string") : [],
+  };
+}
+
+export function isAdmin(user: User | null) {
+  if (!user || user.auth !== "google") return false;
+  return user.accountRole === "admin" || isAdminEmail(user.email);
+}
+
+export function myInvitations(user: User | null, list: Invitation[]): Invitation[] {
+  if (!user) return [];
+  return list.filter((inv) => inv.id !== "demo" && inv.ownerId === user.id);
+}
+
+export function canEditTemplate(user: User | null, templateId?: string): boolean {
+  if (!user || user.auth !== "google") return false;
+  if (isAdmin(user) || user.accountRole === "vip") return true;
+  if (user.plan === "pro" || user.plan === "unlimited") return true;
+  if (!templateId) return (user.templates?.length ?? 0) > 0;
+  return (user.templates ?? []).includes(templateId);
+}
+
+export function canEditInvites(user: User | null, templateId?: string): boolean {
+  return canEditTemplate(user, templateId);
+}
+
+export function canCreateInvitation(user: User | null, _list?: Invitation[]): boolean {
+  return canEditTemplate(user);
+}
+
+export function canSubscribe(user: User | null): boolean {
+  return Boolean(user && user.auth === "google");
+}
+
+export function planLoginHref(plan: "standard" | "pro", templateId?: string) {
+  const q = new URLSearchParams({ plan, google: "1" });
+  if (templateId) q.set("from", templateId);
+  return `/login?${q.toString()}`;
+}
