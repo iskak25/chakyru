@@ -15,7 +15,7 @@ export function useInviteHistory(id: string) {
   const now = useRef<Invitation | null>(null);
   const past = useRef<Invitation[]>([]);
   const future = useRef<Invitation[]>([]);
-  const burst = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const burst = useRef<number | null>(null);
 
   const sync = useCallback((next: Invitation | null) => {
     now.current = next;

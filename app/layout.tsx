@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Archivo, Great_Vibes, Marck_Script, Playfair_Display } from "next/font/google";
+import { Great_Vibes, Manrope, Marck_Script, Playfair_Display } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
-const sans = Archivo({
+const sans = Manrope({
   variable: "--font-manrope",
   subsets: ["latin", "cyrillic"],
 });

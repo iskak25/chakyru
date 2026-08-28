@@ -62,7 +62,7 @@ export function AdminTemplates() {
   const draftRef = useRef<InvitationTemplate | null>(null);
   const past = useRef<InvitationTemplate[]>([]);
   const future = useRef<InvitationTemplate[]>([]);
-  const burst = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const burst = useRef<number | null>(null);
 
   listRef.current = list;
 

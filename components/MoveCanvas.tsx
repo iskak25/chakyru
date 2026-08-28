@@ -428,21 +428,22 @@ export function FreeMove({
 }) {
   const ctx = useContext(MoveCtx);
   if (!ctx) return <>{children}</>;
-  const box = ctx.get(id, defaults);
+  const move = ctx;
+  const box = move.get(id, defaults);
   if (box.hidden) return null;
-  const selected = ctx.selected === id;
+  const selected = move.selected === id;
   const locked = !!box.locked;
   const rot = box.r ?? 0;
   const nearTop = box.y < 8;
 
   function act(kind: "lock" | "delete" | "copy") {
-    const inv = ctx.invitation;
-    const patch = ctx.onChange;
+    const inv = move.invitation;
+    const patch = move.onChange;
     if (!inv || !patch) return;
     if (kind === "lock") patch(toggleLockId(inv, id, box));
     if (kind === "delete") {
       patch(deleteCanvasId(inv, id, box));
-      ctx.select(null);
+      move.select(null);
     }
     if (kind === "copy") patch(duplicateCanvasId(inv, id, box));
   }
@@ -450,20 +451,20 @@ export function FreeMove({
   return (
     <div
       data-box={id}
-      className={`absolute overflow-visible ${ctx.editable && ctx.dragging && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${className}`}
+      className={`absolute overflow-visible ${move.editable && move.dragging && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${className}`}
       style={{
         left: `${box.x}%`,
         top: `${box.y}%`,
         width: `${box.w}%`,
         height: `${box.h}%`,
         zIndex: selected ? 90 : box.z ?? defaults.z ?? 1,
-        cursor: ctx.editable && !locked ? (selected ? "move" : "pointer") : undefined,
+        cursor: move.editable && !locked ? (selected ? "move" : "pointer") : undefined,
       }}
       onPointerDown={(e) => {
         e.stopPropagation();
-        if (!ctx.editable) return;
-        ctx.select(id);
-        if (!locked) ctx.begin(e, id, defaults, { kind: "move" });
+        if (!move.editable) return;
+        move.select(id);
+        if (!locked) move.begin(e, id, defaults, { kind: "move" });
       }}
     >
       <div
@@ -471,7 +472,7 @@ export function FreeMove({
         style={{ transform: `rotate(${rot}deg)`, transformOrigin: "center center" }}
       >
         <div className="h-full w-full">{children}</div>
-        {ctx.editable && selected && !locked ? (
+        {move.editable && selected && !locked ? (
           <BoxHandles
             id={id}
             defaults={defaults}
@@ -479,7 +480,7 @@ export function FreeMove({
           />
         ) : null}
       </div>
-      {ctx.editable && selected ? (
+      {move.editable && selected ? (
         <BoxToolbar id={id} defaults={defaults} space="page" locked={locked} nearTop={nearTop} onAct={act} />
       ) : null}
     </div>

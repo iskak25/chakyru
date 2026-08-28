@@ -22,8 +22,8 @@ export function StockPhotos({
   onAdd: (src: string) => void;
   onCover: (src: string) => void;
 }) {
-  const [q, setQ] = useState(STOCK_CATEGORIES[0].q);
-  const [cat, setCat] = useState(STOCK_CATEGORIES[0].id);
+  const [q, setQ] = useState<string>(STOCK_CATEGORIES[0].q);
+  const [cat, setCat] = useState<string>(STOCK_CATEGORIES[0].id);
   const [typed, setTyped] = useState("");
   const [page, setPage] = useState(1);
   const [items, setItems] = useState<StockPhoto[]>([]);
