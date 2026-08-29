@@ -113,7 +113,10 @@ function LoginInner() {
             }
           />
           <p className="mt-2 text-center text-xs text-ink-soft">{t.login.googleHint}</p>
-          <p className="mt-3 text-center text-[12px] leading-5 text-rose">{t.login.googleChrome}</p>
+          {typeof window !== "undefined" &&
+          (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") ? (
+            <p className="mt-3 text-center text-[12px] leading-5 text-rose">{t.login.googleChrome}</p>
+          ) : null}
           <p className="mt-3 text-center text-[12px] leading-5 text-meta">
             {t.login.terms.split(t.login.termsLink)[0]}
             <Link href="/terms" className="underline">

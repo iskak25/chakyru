@@ -39,8 +39,7 @@ export function isFirebaseConfigured() {
     firebaseConfig.apiKey &&
       firebaseConfig.authDomain &&
       firebaseConfig.projectId &&
-      firebaseConfig.appId &&
-      GOOGLE_CLIENT_ID,
+      firebaseConfig.appId,
   );
 }
 
