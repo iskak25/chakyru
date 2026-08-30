@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fulfillPayment, getAdminSettings } from "@/lib/firebaseAdmin";
 import { verifyFinikWebhook, type FinikWebhook } from "@/lib/finik";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {

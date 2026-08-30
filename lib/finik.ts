@@ -100,9 +100,14 @@ function canonicalString(input: {
 
 function sign(payload: string, cfg?: FinikConfig) {
   const key = privateKeyPem(cfg);
+  if (!key.includes("BEGIN")) throw new Error("finik_private_key");
   const signer = createSign("RSA-SHA256");
   signer.update(payload, "utf8");
-  return signer.sign(key, "base64");
+  try {
+    return signer.sign(key, "base64");
+  } catch {
+    throw new Error("finik_private_key");
+  }
 }
 
 export function verifyFinikWebhook(input: {

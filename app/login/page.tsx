@@ -108,7 +108,9 @@ function LoginInner() {
               setError(
                 code === "config"
                   ? t.login.googleNeedConfig
-                  : `${t.login.googleFail}${code !== "unknown" ? ` (${code})` : ""}`,
+                  : code === "auth/unauthorized-domain"
+                    ? t.login.googleDomain
+                    : `${t.login.googleFail}${code !== "unknown" ? ` (${code})` : ""}`,
               )
             }
           />

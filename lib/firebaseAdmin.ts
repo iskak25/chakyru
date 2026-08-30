@@ -30,7 +30,11 @@ function adminApp() {
   if (!creds) return null;
   const existing = getApps()[0];
   if (existing) return existing;
-  return initializeApp({ credential: creds });
+  try {
+    return initializeApp({ credential: creds });
+  } catch {
+    return null;
+  }
 }
 
 export function adminReady() {

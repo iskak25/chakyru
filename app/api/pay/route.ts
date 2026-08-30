@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createFinikPayment, finikReady, isPaidPlan } from "@/lib/finik";
 import { fulfillPayment, getAdminSettings, savePayment, templatePriceSom, uidFromBearer } from "@/lib/firebaseAdmin";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 function originOf(req: NextRequest, siteUrl?: string) {
   const env = (siteUrl || process.env.NEXT_PUBLIC_SITE_URL)?.trim().replace(/\/$/, "");
@@ -13,35 +15,35 @@ function originOf(req: NextRequest, siteUrl?: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const uid = await uidFromBearer(req.headers.get("authorization"));
-  const settings = await getAdminSettings();
-  const cfg = {
-    apiKey: settings.finikApiKey,
-    accountId: settings.finikAccountId,
-    privateKey: settings.finikPrivateKey,
-    mcc: settings.finikMcc,
-    beta: settings.finikBeta,
-  };
-  if (!uid) {
-    return NextResponse.json({ error: "auth" }, { status: settings.finikApiKey ? 401 : 503 });
-  }
-  const body = (await req.json().catch(() => null)) as { plan?: string; templateId?: string } | null;
-  if (!body?.plan || !isPaidPlan(body.plan) || body.plan === "unlimited") {
-    return NextResponse.json({ error: "plan" }, { status: 400 });
-  }
-  const templateId = typeof body.templateId === "string" ? body.templateId.trim() : "";
-  let amount = 0;
-  if (body.plan === "pro") {
-    amount = settings.proPriceSom;
-  } else {
-    if (!templateId) return NextResponse.json({ error: "template" }, { status: 400 });
-    const price = await templatePriceSom(templateId);
-    if (price == null) return NextResponse.json({ error: "template" }, { status: 400 });
-    amount = price;
-  }
-  const paymentId = crypto.randomUUID();
-  const origin = originOf(req, settings.siteUrl);
   try {
+    const uid = await uidFromBearer(req.headers.get("authorization"));
+    const settings = await getAdminSettings();
+    const cfg = {
+      apiKey: settings.finikApiKey,
+      accountId: settings.finikAccountId,
+      privateKey: settings.finikPrivateKey,
+      mcc: settings.finikMcc,
+      beta: settings.finikBeta,
+    };
+    if (!uid) {
+      return NextResponse.json({ error: "auth" }, { status: settings.finikApiKey ? 401 : 503 });
+    }
+    const body = (await req.json().catch(() => null)) as { plan?: string; templateId?: string } | null;
+    if (!body?.plan || !isPaidPlan(body.plan) || body.plan === "unlimited") {
+      return NextResponse.json({ error: "plan" }, { status: 400 });
+    }
+    const templateId = typeof body.templateId === "string" ? body.templateId.trim() : "";
+    let amount = 0;
+    if (body.plan === "pro") {
+      amount = settings.proPriceSom;
+    } else {
+      if (!templateId) return NextResponse.json({ error: "template" }, { status: 400 });
+      const price = await templatePriceSom(templateId);
+      if (price == null) return NextResponse.json({ error: "template" }, { status: 400 });
+      amount = price;
+    }
+    const paymentId = crypto.randomUUID();
+    const origin = originOf(req, settings.siteUrl || "https://chakyru.vercel.app");
     await savePayment({
       paymentId,
       uid,
@@ -78,7 +80,7 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ paymentUrl: created.paymentUrl, paymentId });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "finik";
-    return NextResponse.json({ error: message.slice(0, 300) }, { status: 502 });
+    const message = err instanceof Error ? err.message : "pay";
+    return NextResponse.json({ error: message.slice(0, 300) }, { status: 500 });
   }
 }
