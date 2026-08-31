@@ -61,8 +61,14 @@ export function canEditTemplate(user: User | null, templateId?: string): boolean
   return (user.templates ?? []).includes(templateId);
 }
 
-export function canEditInvites(user: User | null, templateId?: string): boolean {
-  return canEditTemplate(user, templateId);
+export function canEditInvitation(
+  user: User | null,
+  inv?: { ownerId?: string; templateId?: string } | null,
+): boolean {
+  if (!user || user.auth !== "google" || !inv) return false;
+  if (canEditTemplate(user, inv.templateId)) return true;
+  if (inv.ownerId && inv.ownerId !== user.id) return false;
+  return true;
 }
 
 export function canCreateInvitation(user: User | null, _list?: Invitation[]): boolean {

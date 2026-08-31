@@ -14,8 +14,8 @@ import { useI18n } from "@/lib/locale";
 import { useInviteHistory } from "@/lib/useInviteHistory";
 import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
-import { canEditTemplate } from "@/lib/auth";
-import { paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
+import { canEditInvitation, canEditTemplate } from "@/lib/auth";
+import { restorePaidTemplate, paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
@@ -33,15 +33,29 @@ export default function EditorPage() {
   }, [ready, inv, router]);
 
   useEffect(() => {
+    if (!inv) return;
+    let cancelled = false;
     const sync = () => {
-      const templateId = inv?.templateId;
-      if (templateId && paidTemplateId() === templateId) unlockPaidTemplate(templateId);
-      setAllowed(canEditTemplate(getUser(), templateId));
+      const user = getUser();
+      if (user?.auth === "google" && inv.ownerId === user.id) {
+        unlockPaidTemplate(inv.templateId);
+      } else if (paidTemplateId() === inv.templateId) {
+        unlockPaidTemplate(inv.templateId);
+      }
+      setAllowed(canEditInvitation(getUser(), inv) || canEditTemplate(getUser(), inv.templateId));
     };
     sync();
+    void restorePaidTemplate(inv.templateId).then((ok) => {
+      if (cancelled) return;
+      if (ok) unlockPaidTemplate(inv.templateId);
+      sync();
+    });
     window.addEventListener("chakyru-sync", sync);
-    return () => window.removeEventListener("chakyru-sync", sync);
-  }, [inv?.templateId]);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("chakyru-sync", sync);
+    };
+  }, [inv]);
 
   const onSelect = useCallback((id: string | null) => setSelected(id), []);
 
