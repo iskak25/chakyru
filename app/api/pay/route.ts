@@ -18,8 +18,21 @@ function fail(err: unknown) {
   return NextResponse.json({ error: message.slice(0, 300) }, { status: 500 });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const pid = req.nextUrl.searchParams.get("pid")?.trim();
+    if (pid) {
+      const { uidFromBearer } = await import("@/lib/firebaseToken");
+      const uid = await uidFromBearer(req.headers.get("authorization"));
+      if (!uid) return NextResponse.json({ paid: false }, { status: 401 });
+      try {
+        const admin = await import("@/lib/firebaseAdmin");
+        const status = await admin.paymentStatusForUser(pid, uid);
+        return NextResponse.json(status);
+      } catch {
+        return NextResponse.json({ paid: false });
+      }
+    }
     return NextResponse.json({
       ok: true,
       hasSa: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),

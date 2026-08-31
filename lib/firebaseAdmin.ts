@@ -128,6 +128,13 @@ export async function savePayment(input: {
   }
 }
 
+function pickText(...values: unknown[]) {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
+
 export async function fulfillPayment(input: {
   paymentId: string;
   amount: number;
@@ -138,7 +145,9 @@ export async function fulfillPayment(input: {
   const app = adminApp();
   if (!app) return false;
   const db = getFirestore(app);
-  const ref = db.collection("payments").doc(input.paymentId);
+  const paymentId = pickText(input.paymentId);
+  if (!paymentId) return false;
+  const ref = db.collection("payments").doc(paymentId);
   const snap = await ref.get();
   const data = snap.exists
     ? (snap.data() as {
@@ -149,12 +158,20 @@ export async function fulfillPayment(input: {
         templateId?: string;
       })
     : {};
-  if (data.status === "succeeded") return true;
-  const uid = data.uid || input.uid;
-  const plan = data.plan || input.plan;
-  const templateId = data.templateId || input.templateId;
+  const uid = pickText(data.uid, input.uid);
+  const plan = pickText(data.plan, input.plan);
+  const templateId = pickText(data.templateId, input.templateId) || undefined;
   if (!uid || (plan !== "standard" && plan !== "pro" && plan !== "unlimited")) return false;
-  if (typeof data.amount === "number" && data.amount !== input.amount) return false;
+  const storedAmount = typeof data.amount === "number" ? data.amount : undefined;
+  if (
+    data.status !== "succeeded" &&
+    typeof storedAmount === "number" &&
+    Number.isFinite(input.amount) &&
+    input.amount > 0 &&
+    Math.abs(storedAmount - input.amount) >= 1
+  ) {
+    return false;
+  }
   const userRef = db.collection("users").doc(uid);
   const userSnap = await userRef.get();
   const currentPlan = userSnap.data()?.plan;
@@ -173,7 +190,7 @@ export async function fulfillPayment(input: {
     {
       uid,
       plan,
-      amount: input.amount,
+      amount: storedAmount ?? input.amount,
       templateId: templateId ?? null,
       status: "succeeded",
       paidAt: new Date().toISOString(),
@@ -181,4 +198,30 @@ export async function fulfillPayment(input: {
     { merge: true },
   );
   return true;
+}
+
+export async function paymentStatusForUser(paymentId: string, uid: string) {
+  const app = adminApp();
+  if (!app || !paymentId || !uid) return { paid: false as const };
+  const snap = await getFirestore(app).collection("payments").doc(paymentId).get();
+  if (!snap.exists) return { paid: false as const };
+  const data = snap.data() as {
+    uid?: string;
+    status?: string;
+    plan?: string;
+    templateId?: string;
+    amount?: number;
+  };
+  if (data.uid !== uid) return { paid: false as const };
+  if (data.status === "succeeded") {
+    await fulfillPayment({
+      paymentId,
+      amount: typeof data.amount === "number" ? data.amount : 0,
+      uid,
+      plan: data.plan,
+      templateId: data.templateId,
+    });
+    return { paid: true as const, plan: data.plan ?? null, templateId: data.templateId ?? null };
+  }
+  return { paid: false as const };
 }

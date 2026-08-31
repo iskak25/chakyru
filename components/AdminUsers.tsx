@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AccountRole } from "@/lib/types";
-import { setUserRole, watchUsers, type RemoteUser } from "@/lib/db";
+import type { AccountRole, PlanId } from "@/lib/types";
+import { setUserPlan, setUserRole, watchUsers, type RemoteUser } from "@/lib/db";
 import { useI18n } from "@/lib/locale";
 
 export function AdminUsers() {
@@ -16,6 +16,18 @@ export function AdminUsers() {
     if (!stop) setError(t.admin.needFirestore);
     return () => stop?.();
   }, [t.admin.needFirestore]);
+
+  async function changePlan(uid: string, plan: PlanId) {
+    setBusy(uid);
+    setError("");
+    try {
+      await setUserPlan(uid, plan);
+    } catch {
+      setError(t.admin.error);
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function changeRole(uid: string, accountRole: AccountRole) {
     setBusy(uid);
@@ -41,6 +53,7 @@ export function AdminUsers() {
               <tr>
                 <th className="px-4 py-3 font-medium">{t.admin.name}</th>
                 <th className="px-4 py-3 font-medium">{t.admin.email}</th>
+                <th className="px-4 py-3 font-medium">{t.admin.plan}</th>
                 <th className="px-4 py-3 font-medium">{t.admin.role}</th>
               </tr>
             </thead>
@@ -60,6 +73,18 @@ export function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-ink-soft">{user.email || "—"}</td>
+                  <td className="px-4 py-3">
+                    <select
+                      value={user.plan === "unlimited" ? "pro" : user.plan}
+                      disabled={busy === user.firebaseUid}
+                      onChange={(e) => void changePlan(user.firebaseUid, e.target.value as PlanId)}
+                      className="border border-ink/15 bg-transparent px-3 py-1.5 text-sm"
+                    >
+                      <option value="free">{t.dash.planFree}</option>
+                      <option value="standard">{t.plans.standard.name}</option>
+                      <option value="pro">{t.plans.pro.name}</option>
+                    </select>
+                  </td>
                   <td className="px-4 py-3">
                     <select
                       value={user.accountRole}

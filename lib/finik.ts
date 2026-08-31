@@ -139,6 +139,46 @@ export function verifyFinikWebhook(input: {
   return verifier.verify(key, input.signature, "base64");
 }
 
+function cleanHost(value: string) {
+  return value.split(",")[0].trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/:\d+$/, "");
+}
+
+export function verifyFinikCallback(input: {
+  method: string;
+  path: string;
+  hosts: string[];
+  timestamp: string;
+  signature: string;
+  body: unknown;
+  preferBeta: boolean;
+}) {
+  if (!input.signature || !input.timestamp) return false;
+  const hosts = [...new Set(input.hosts.map(cleanHost).filter(Boolean))];
+  const paths = [...new Set([input.path, input.path.replace(/\/$/, "") || "/"])];
+  const betas = input.preferBeta ? [true, false] : [false, true];
+  for (const host of hosts) {
+    for (const path of paths) {
+      for (const beta of betas) {
+        if (
+          verifyFinikWebhook({
+            method: input.method,
+            path,
+            host,
+            timestamp: input.timestamp,
+            signature: input.signature,
+            body: input.body,
+            extraHeaders: {},
+            beta,
+          })
+        ) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 export async function createFinikPayment(input: {
   plan: Exclude<PlanId, "free">;
   paymentId: string;
@@ -164,6 +204,7 @@ export async function createFinikPayment(input: {
       merchantCategoryCode: cfg.mcc.trim() || "5999",
       name_en: input.templateId ? `Chakyru ${input.templateId}` : `Chakyru ${input.plan}`,
       webhookUrl: input.webhookUrl,
+      paymentId: input.paymentId,
       plan: input.plan,
       uid: input.uid,
       templateId: input.templateId ?? "",

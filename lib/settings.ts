@@ -10,7 +10,7 @@ export const defaultSettings: SiteSettings = {
   finikAccountId: "",
   finikPrivateKey: "",
   finikMcc: "5999",
-  finikBeta: true,
+  finikBeta: false,
   siteUrl: "",
 };
 

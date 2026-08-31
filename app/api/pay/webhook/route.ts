@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyFinikWebhook, type FinikWebhook } from "@/lib/finik";
+import { verifyFinikCallback, type FinikWebhook } from "@/lib/finik";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+function fieldText(fields: Record<string, unknown>, ...keys: string[]) {
+  for (const key of keys) {
+    const value = fields[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return "";
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,20 +25,22 @@ export async function POST(req: NextRequest) {
     const settings = await admin.getAdminSettings();
     const signature = req.headers.get("signature") || "";
     const timestamp = req.headers.get("x-api-timestamp") || "";
-    const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "";
-    const extra: Record<string, string> = { Host: host };
-    req.headers.forEach((value, key) => {
-      if (key.toLowerCase().startsWith("x-api-")) extra[key] = value;
-    });
-    const ok = verifyFinikWebhook({
+    const forwarded = req.headers.get("x-forwarded-host") || "";
+    const host = req.headers.get("host") || "";
+    let siteHost = "";
+    try {
+      siteHost = settings.siteUrl ? new URL(settings.siteUrl).host : "";
+    } catch {
+      siteHost = "";
+    }
+    const ok = verifyFinikCallback({
       method: "POST",
       path: "/api/pay/webhook",
-      host,
+      hosts: [forwarded, host, siteHost, "chakyru.vercel.app"],
       timestamp,
       signature,
       body,
-      extraHeaders: extra,
-      beta: settings.finikBeta,
+      preferBeta: settings.finikBeta,
     });
     if (!ok) {
       return NextResponse.json({ error: "signature" }, { status: 401 });
@@ -39,7 +49,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
     const fields = body.fields ?? {};
-    const paymentId = String(body.transactionId || fields.paymentId || body.id || "");
+    const paymentId =
+      fieldText(fields, "paymentId", "PaymentId") ||
+      (typeof body.transactionId === "string" ? body.transactionId.trim() : "") ||
+      (typeof body.id === "string" ? body.id.trim() : "");
     const amount = Number(body.amount ?? fields.amount ?? 0);
     if (!paymentId) {
       return NextResponse.json({ error: "payment" }, { status: 400 });
@@ -47,9 +60,9 @@ export async function POST(req: NextRequest) {
     const done = await admin.fulfillPayment({
       paymentId,
       amount,
-      uid: typeof fields.uid === "string" ? fields.uid : undefined,
-      plan: typeof fields.plan === "string" ? fields.plan : undefined,
-      templateId: typeof fields.templateId === "string" ? fields.templateId : undefined,
+      uid: fieldText(fields, "uid") || undefined,
+      plan: fieldText(fields, "plan") || undefined,
+      templateId: fieldText(fields, "templateId") || undefined,
     });
     if (!done) {
       return NextResponse.json({ error: "fulfill" }, { status: 500 });

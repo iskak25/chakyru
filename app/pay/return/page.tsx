@@ -4,8 +4,14 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
 import { getUser } from "@/lib/store";
+
+function userHasAccess() {
+  const user = getUser();
+  return Boolean(user && (user.plan !== "free" || (user.templates?.length ?? 0) > 0 || user.accountRole === "vip"));
+}
 
 function ReturnInner() {
   const { t } = useI18n();
@@ -18,19 +24,40 @@ function ReturnInner() {
   useEffect(() => {
     const from = sessionStorage.getItem("chakyru-edit-template");
     if (from) setNextHref(`/create/new?template=${from}`);
-    const tick = () => {
-      const user = getUser();
-      if (user && (user.plan !== "free" || (user.templates?.length ?? 0) > 0)) setPaid(true);
+    let cancelled = false;
+    const mark = () => {
+      if (!cancelled && userHasAccess()) setPaid(true);
       setReady(true);
     };
-    tick();
-    window.addEventListener("chakyru-sync", tick);
-    const id = window.setInterval(tick, 1500);
+    async function checkServer() {
+      if (!pid) return;
+      try {
+        const auth = getFirebaseAuth();
+        await auth?.authStateReady();
+        const token = await auth?.currentUser?.getIdToken();
+        if (!token || cancelled) return;
+        const res = await fetch(`/api/pay?pid=${encodeURIComponent(pid)}`, {
+          headers: { authorization: `Bearer ${token}` },
+        });
+        const data = (await res.json().catch(() => null)) as { paid?: boolean } | null;
+        if (!cancelled && data?.paid) setPaid(true);
+      } catch {
+        /* wait for Firestore sync */
+      }
+    }
+    mark();
+    void checkServer();
+    window.addEventListener("chakyru-sync", mark);
+    const id = window.setInterval(() => {
+      mark();
+      void checkServer();
+    }, 1500);
     return () => {
-      window.removeEventListener("chakyru-sync", tick);
+      cancelled = true;
+      window.removeEventListener("chakyru-sync", mark);
       window.clearInterval(id);
     };
-  }, []);
+  }, [pid]);
 
   return (
     <div className="mx-auto max-w-lg px-5 py-20 text-center">

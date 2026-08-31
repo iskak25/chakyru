@@ -170,6 +170,16 @@ export async function setUserRole(uid: string, accountRole: AccountRole) {
   );
 }
 
+export async function setUserPlan(uid: string, plan: PlanId) {
+  const db = getFirebaseDb();
+  if (!db) throw new Error("firestore");
+  await setDoc(
+    doc(db, "users", uid),
+    { plan, updatedAt: new Date().toISOString() },
+    { merge: true },
+  );
+}
+
 export function watchCatalogTemplates(
   onItems: (items: InvitationTemplate[]) => void,
   onError?: (err: unknown) => void,
