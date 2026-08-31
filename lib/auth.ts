@@ -5,11 +5,14 @@ function parseAccountRole(value: unknown): AccountRole {
   return "user";
 }
 
+const BOOTSTRAP_ADMIN_EMAILS = ["dastaniskak0302@gmail.com", "iskak2512@gmail.com"];
+
 export function adminEmails() {
-  return (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+  const fromEnv = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
     .split(",")
     .map((item) => item.trim().toLowerCase())
     .filter(Boolean);
+  return [...new Set([...BOOTSTRAP_ADMIN_EMAILS, ...fromEnv])];
 }
 
 export function isAdminEmail(email?: string) {

@@ -12,20 +12,19 @@ service cloud.firestore {
     }
 
     function isBootstrapAdmin() {
-      return signedIn() && request.auth.token.email in [
-        'dastaniskak0302@gmail.com',
-        'iskak2512@gmail.com'
-      ];
+      return signedIn()
+        && request.auth.token.email is string
+        && request.auth.token.email.lower() in [
+          'dastaniskak0302@gmail.com',
+          'iskak2512@gmail.com'
+        ];
     }
 
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdminUser() || isBootstrapAdmin());
       allow create: if signedIn()
         && request.auth.uid == uid
-        && (
-          request.resource.data.accountRole == 'user'
-          || (isBootstrapAdmin() && request.resource.data.accountRole == 'admin')
-        );
+        && request.resource.data.accountRole == 'user';
       allow update: if signedIn() && (
         isAdminUser()
         || isBootstrapAdmin()

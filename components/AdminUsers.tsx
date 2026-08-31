@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { AccountRole, PlanId } from "@/lib/types";
-import { setUserPlan, setUserRole, watchUsers, type RemoteUser } from "@/lib/db";
+import { setUserPlan, setUserRole, syncCurrentGoogleUser, watchUsers, type RemoteUser } from "@/lib/db";
 import { useI18n } from "@/lib/locale";
 
 export function AdminUsers() {
@@ -12,6 +12,7 @@ export function AdminUsers() {
   const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
+    void syncCurrentGoogleUser().catch(() => null);
     const stop = watchUsers(setUsers, () => setError(t.admin.needFirestore));
     if (!stop) setError(t.admin.needFirestore);
     return () => stop?.();

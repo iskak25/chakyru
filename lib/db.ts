@@ -11,7 +11,7 @@ import {
   type Unsubscribe,
 } from "firebase/firestore";
 import { isAdminEmail } from "./auth";
-import { getFirebaseApp } from "./firebase";
+import { getFirebaseApp, getFirebaseAuth, profileFromFirebase } from "./firebase";
 import type { Lesson } from "./lessons";
 import type { AccountRole, InvitationTemplate, PlanId, SiteSettings } from "./types";
 import type { PublicPricing } from "./settings";
@@ -61,53 +61,86 @@ export async function upsertGoogleUser(input: {
   const db = getFirebaseDb();
   if (!db || !input.firebaseUid) return null;
   try {
-  const ref = doc(db, "users", input.firebaseUid);
-  const snap = await getDoc(ref);
-  const now = new Date().toISOString();
-  if (snap.exists()) {
-    const data = snap.data();
-    const next: RemoteUser = {
+    const ref = doc(db, "users", input.firebaseUid);
+    const snap = await getDoc(ref);
+    const now = new Date().toISOString();
+    const asAdmin = isAdminEmail(input.email);
+    if (snap.exists()) {
+      const data = snap.data();
+      const next: RemoteUser = {
+        id: input.id,
+        firebaseUid: input.firebaseUid,
+        name: input.name,
+        email: input.email,
+        picture: input.picture,
+        accountRole: asAdmin ? "admin" : parseRole(data.accountRole),
+        plan: parsePlan(data.plan) || input.plan || "free",
+        templates: parseTemplates(data.templates),
+        createdAt: typeof data.createdAt === "string" ? data.createdAt : now,
+      };
+      await setDoc(
+        ref,
+        {
+          id: next.id,
+          firebaseUid: next.firebaseUid,
+          name: next.name,
+          email: next.email,
+          picture: next.picture ?? null,
+          updatedAt: now,
+        },
+        { merge: true },
+      );
+      if (asAdmin && parseRole(data.accountRole) !== "admin") {
+        try {
+          await setDoc(ref, { accountRole: "admin", updatedAt: now }, { merge: true });
+          next.accountRole = "admin";
+        } catch {
+          /* bootstrap rule may deny; user row still exists */
+        }
+      }
+      return next;
+    }
+    const created: RemoteUser = {
       id: input.id,
       firebaseUid: input.firebaseUid,
       name: input.name,
       email: input.email,
       picture: input.picture,
-      accountRole: isAdminEmail(input.email) ? "admin" : parseRole(data.accountRole),
-      plan: parsePlan(data.plan) || input.plan || "free",
-      templates: parseTemplates(data.templates),
-      createdAt: typeof data.createdAt === "string" ? data.createdAt : now,
+      accountRole: "user",
+      plan: input.plan ?? "free",
+      templates: [],
+      createdAt: now,
     };
-    await setDoc(
-      ref,
-      {
-        id: next.id,
-        firebaseUid: next.firebaseUid,
-        name: next.name,
-        email: next.email,
-        picture: next.picture ?? null,
-        accountRole: next.accountRole,
-        updatedAt: now,
-      },
-      { merge: true },
-    );
-    return next;
-  }
-  const created: RemoteUser = {
-    id: input.id,
-    firebaseUid: input.firebaseUid,
-    name: input.name,
-    email: input.email,
-    picture: input.picture,
-    accountRole: isAdminEmail(input.email) ? "admin" : "user",
-    plan: input.plan ?? "free",
-    templates: [],
-    createdAt: now,
-  };
-  await setDoc(ref, { ...created, picture: created.picture ?? null, updatedAt: now });
-  return created;
+    await setDoc(ref, { ...created, picture: created.picture ?? null, updatedAt: now });
+    if (asAdmin) {
+      try {
+        await setDoc(ref, { accountRole: "admin", updatedAt: now }, { merge: true });
+        created.accountRole = "admin";
+      } catch {
+        /* listed as user until an admin upgrades the role */
+      }
+    }
+    return created;
   } catch {
     return null;
   }
+}
+
+export async function syncCurrentGoogleUser(): Promise<RemoteUser | null> {
+  const auth = getFirebaseAuth();
+  if (!auth) return null;
+  await auth.authStateReady();
+  const fb = auth.currentUser;
+  if (!fb) return null;
+  const profile = profileFromFirebase(fb);
+  if (!profile.email) return null;
+  return upsertGoogleUser({
+    firebaseUid: fb.uid,
+    id: profile.id,
+    name: profile.name,
+    email: profile.email,
+    picture: profile.picture,
+  });
 }
 
 export function watchMe(uid: string, onUser: (user: RemoteUser | null) => void): Unsubscribe | null {

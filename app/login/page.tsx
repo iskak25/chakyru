@@ -8,8 +8,8 @@ import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { Logo } from "@/components/Logo";
 import { useI18n } from "@/lib/locale";
 import { normalizeUser } from "@/lib/auth";
-import { upsertGoogleUser } from "@/lib/db";
-import { completeGoogleRedirect, getFirebaseAuth, signOutFirebase } from "@/lib/firebase";
+import { syncCurrentGoogleUser } from "@/lib/db";
+import { completeGoogleRedirect, signOutFirebase } from "@/lib/firebase";
 import { getUser, setUser, transferInvitations } from "@/lib/store";
 import type { PlanId } from "@/lib/types";
 
@@ -45,17 +45,10 @@ function LoginInner() {
       }
       setUser(user);
       if (auth === "google") {
-        const fb = getFirebaseAuth()?.currentUser;
-        if (fb && user.email) {
-          void upsertGoogleUser({
-            firebaseUid: fb.uid,
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            picture: user.picture,
-            plan: user.plan,
-          }).catch(() => {});
-        }
+        await Promise.race([
+          syncCurrentGoogleUser(),
+          new Promise((resolve) => window.setTimeout(resolve, 4000)),
+        ]).catch(() => null);
       }
       const dest = search.get("next") || extra.get("next") || "";
       const safeNext =
@@ -79,11 +72,17 @@ function LoginInner() {
     const existing = getUser();
     if (existing) {
       const next = search.get("next") || "";
-      if (next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login")) {
-        window.location.replace(next);
-        return;
-      }
-      window.location.replace("/");
+      const dest =
+        next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/";
+      void (async () => {
+        if (existing.auth === "google") {
+          await Promise.race([
+            syncCurrentGoogleUser(),
+            new Promise((resolve) => window.setTimeout(resolve, 4000)),
+          ]).catch(() => null);
+        }
+        window.location.replace(dest);
+      })();
       return;
     }
     const err = search.get("err");
