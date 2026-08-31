@@ -1,15 +1,28 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { canEditTemplate } from "@/lib/auth";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
-import { getUser, setPendingTemplate } from "@/lib/store";
+import { getUser, setPendingTemplate, setUser } from "@/lib/store";
 
 function editorHref(templateId: string) {
   return `/create/new?template=${encodeURIComponent(templateId)}&paid=1`;
+}
+
+function unlockLocal(templateId: string | null, plan: string | null) {
+  const user = getUser();
+  if (!user) return;
+  const templates = templateId
+    ? [...new Set([...(user.templates ?? []), templateId])]
+    : user.templates;
+  setUser({
+    ...user,
+    plan: plan === "pro" || user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard",
+    templates,
+  });
 }
 
 function ReturnInner() {
@@ -17,9 +30,11 @@ function ReturnInner() {
   const router = useRouter();
   const search = useSearchParams();
   const pid = search.get("pid");
+  const plan = search.get("plan") || "";
   const [templateId, setTemplateId] = useState(search.get("template") || "");
   const [ready, setReady] = useState(false);
   const [paid, setPaid] = useState(false);
+  const opening = useRef(false);
 
   useEffect(() => {
     const fromQuery = search.get("template") || "";
@@ -31,8 +46,7 @@ function ReturnInner() {
     }
     let cancelled = false;
     const mark = (id: string) => {
-      const user = getUser();
-      const unlocked = id ? canEditTemplate(user, id) : canEditTemplate(user);
+      const unlocked = id ? canEditTemplate(getUser(), id) : canEditTemplate(getUser());
       if (!cancelled && unlocked) setPaid(true);
       setReady(true);
     };
@@ -42,22 +56,35 @@ function ReturnInner() {
         const auth = getFirebaseAuth();
         await auth?.authStateReady();
         const token = await auth?.currentUser?.getIdToken();
-        if (!token || cancelled) return;
-        const res = await fetch(`/api/pay?pid=${encodeURIComponent(pid)}`, {
+        if (cancelled) return;
+        if (!token) {
+          const next = `${window.location.pathname}${window.location.search}`;
+          router.replace(`/login?google=1&next=${encodeURIComponent(next)}`);
+          return;
+        }
+        const q = new URLSearchParams({ pid });
+        const tpl = sessionStorage.getItem("chakyru-edit-template") || chosen;
+        if (tpl) q.set("template", tpl);
+        if (plan) q.set("plan", plan);
+        const res = await fetch(`/api/pay?${q}`, {
           headers: { authorization: `Bearer ${token}` },
         });
         const data = (await res.json().catch(() => null)) as {
           paid?: boolean;
           templateId?: string | null;
+          plan?: string | null;
         } | null;
         if (cancelled) return;
         if (data?.templateId) {
           setPendingTemplate(data.templateId);
           setTemplateId((prev) => prev || data.templateId || "");
         }
-        if (data?.paid) setPaid(true);
+        if (data?.paid) {
+          unlockLocal(data.templateId || tpl || null, data.plan || plan || null);
+          setPaid(true);
+        }
       } catch {
-        /* wait for Firestore sync */
+        /* retry */
       }
     }
     const onSync = () => mark(sessionStorage.getItem("chakyru-edit-template") || chosen);
@@ -67,18 +94,19 @@ function ReturnInner() {
     const id = window.setInterval(() => {
       onSync();
       void checkServer();
-    }, 1200);
+    }, 1000);
     return () => {
       cancelled = true;
       window.removeEventListener("chakyru-sync", onSync);
       window.clearInterval(id);
     };
-  }, [pid, search]);
+  }, [pid, plan, search, router]);
 
   useEffect(() => {
-    if (!paid) return;
+    if (!paid || opening.current) return;
+    opening.current = true;
     const target = templateId ? editorHref(templateId) : "/templates";
-    const timer = window.setTimeout(() => router.replace(target), 400);
+    const timer = window.setTimeout(() => router.replace(target), 250);
     return () => window.clearTimeout(timer);
   }, [paid, templateId, router]);
 

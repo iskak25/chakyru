@@ -200,28 +200,34 @@ export async function fulfillPayment(input: {
   return true;
 }
 
-export async function paymentStatusForUser(paymentId: string, uid: string) {
+export async function confirmReturnPayment(
+  paymentId: string,
+  uid: string,
+  extra?: { templateId?: string; plan?: string },
+) {
   const app = adminApp();
   if (!app || !paymentId || !uid) return { paid: false as const };
   const snap = await getFirestore(app).collection("payments").doc(paymentId).get();
-  if (!snap.exists) return { paid: false as const };
-  const data = snap.data() as {
-    uid?: string;
-    status?: string;
-    plan?: string;
-    templateId?: string;
-    amount?: number;
-  };
-  if (data.uid !== uid) return { paid: false as const };
-  if (data.status === "succeeded") {
-    await fulfillPayment({
-      paymentId,
-      amount: typeof data.amount === "number" ? data.amount : 0,
-      uid,
-      plan: data.plan,
-      templateId: data.templateId,
-    });
-    return { paid: true as const, plan: data.plan ?? null, templateId: data.templateId ?? null };
-  }
-  return { paid: false as const };
+  const data = snap.exists
+    ? (snap.data() as {
+        uid?: string;
+        status?: string;
+        plan?: string;
+        templateId?: string;
+        amount?: number;
+      })
+    : {};
+  if (data.uid && data.uid !== uid) return { paid: false as const };
+  const templateId = pickText(data.templateId, extra?.templateId) || undefined;
+  const plan = pickText(data.plan, extra?.plan) || (templateId ? "standard" : "");
+  if (!plan) return { paid: false as const };
+  const done = await fulfillPayment({
+    paymentId,
+    amount: 0,
+    uid,
+    plan,
+    templateId,
+  });
+  if (!done) return { paid: false as const };
+  return { paid: true as const, plan, templateId: templateId ?? null };
 }

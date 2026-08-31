@@ -27,7 +27,9 @@ export async function GET(req: NextRequest) {
       if (!uid) return NextResponse.json({ paid: false }, { status: 401 });
       try {
         const admin = await import("@/lib/firebaseAdmin");
-        const status = await admin.paymentStatusForUser(pid, uid);
+        const templateId = req.nextUrl.searchParams.get("template")?.trim() || undefined;
+        const plan = req.nextUrl.searchParams.get("plan")?.trim() || undefined;
+        const status = await admin.confirmReturnPayment(pid, uid, { templateId, plan });
         return NextResponse.json(status);
       } catch {
         return NextResponse.json({ paid: false });
@@ -120,7 +122,7 @@ export async function POST(req: NextRequest) {
       amount,
       templateId: body.plan === "standard" ? templateId : undefined,
       config: cfg,
-      redirectUrl: `${origin}/pay/return?pid=${paymentId}${templateId ? `&template=${encodeURIComponent(templateId)}` : ""}`,
+      redirectUrl: `${origin}/pay/return?pid=${paymentId}&plan=${encodeURIComponent(body.plan)}${templateId ? `&template=${encodeURIComponent(templateId)}` : ""}`,
       webhookUrl: `${origin}/api/pay/webhook`,
     });
     if (!created.paymentUrl) {
