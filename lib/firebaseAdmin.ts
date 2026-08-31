@@ -63,6 +63,27 @@ export function adminReady() {
   return Boolean(credentials());
 }
 
+export function getAdminDb() {
+  const app = adminApp();
+  return app ? getFirestore(app) : null;
+}
+
+export function serviceAccount() {
+  const json = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
+  if (!json) return null;
+  try {
+    const parsed = parseServiceAccount(json);
+    if (!parsed.client_email || !parsed.private_key) return null;
+    return {
+      projectId: parsed.project_id || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+      clientEmail: parsed.client_email,
+      privateKey: parsed.private_key.replace(/\\n/g, "\n"),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getAdminSettings(): Promise<SiteSettings> {
   const env = settingsFromEnv();
   const app = adminApp();

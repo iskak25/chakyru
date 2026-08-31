@@ -1,40 +1,75 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { AccountRole, PlanId } from "@/lib/types";
-import { setUserPlan, setUserRole, syncCurrentGoogleUser, watchUsers, type RemoteUser } from "@/lib/db";
+import type { RemoteUser } from "@/lib/db";
+import { firebaseIdToken } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
 
 export function AdminUsers() {
   const { t } = useI18n();
   const [users, setUsers] = useState<RemoteUser[]>([]);
   const [error, setError] = useState("");
+  const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
 
-  useEffect(() => {
-    void syncCurrentGoogleUser().catch(() => null);
-    const stop = watchUsers(setUsers, () => setError(t.admin.needFirestore));
-    if (!stop) setError(t.admin.needFirestore);
-    return () => stop?.();
-  }, [t.admin.needFirestore]);
-
-  async function changePlan(uid: string, plan: PlanId) {
-    setBusy(uid);
-    setError("");
+  const load = useCallback(async () => {
     try {
-      await setUserPlan(uid, plan);
+      const token = await firebaseIdToken();
+      if (!token) {
+        setError(t.admin.login);
+        setReady(true);
+        return;
+      }
+      await fetch("/api/me/sync", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => null);
+      const res = await fetch("/api/admin/users", {
+        headers: { Authorization: `Bearer ${token}`, "cache-control": "no-store" },
+      });
+      if (res.status === 401) {
+        setError(t.admin.login);
+        setReady(true);
+        return;
+      }
+      if (res.status === 403) {
+        setError(t.admin.denied);
+        setReady(true);
+        return;
+      }
+      if (!res.ok) {
+        setError(t.admin.needFirestore);
+        setReady(true);
+        return;
+      }
+      const data = (await res.json()) as { users?: RemoteUser[] };
+      setUsers(Array.isArray(data.users) ? data.users : []);
+      setError("");
+      setReady(true);
     } catch {
-      setError(t.admin.error);
-    } finally {
-      setBusy(null);
+      setError(t.admin.needFirestore);
+      setReady(true);
     }
-  }
+  }, [t.admin.denied, t.admin.login, t.admin.needFirestore]);
 
-  async function changeRole(uid: string, accountRole: AccountRole) {
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function patch(uid: string, body: { plan?: PlanId; accountRole?: AccountRole }) {
     setBusy(uid);
     setError("");
     try {
-      await setUserRole(uid, accountRole);
+      const token = await firebaseIdToken();
+      if (!token) throw new Error("auth");
+      const res = await fetch("/api/admin/users", {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ uid, ...body }),
+      });
+      if (!res.ok) throw new Error("save");
+      await load();
     } catch {
       setError(t.admin.error);
     } finally {
@@ -45,9 +80,9 @@ export function AdminUsers() {
   return (
     <div>
       {error ? <p className="mb-4 text-sm text-rose">{error}</p> : null}
-      {users.length === 0 && !error ? (
+      {!ready ? null : users.length === 0 && !error ? (
         <p className="text-sm text-ink-soft">{t.admin.emptyUsers}</p>
-      ) : (
+      ) : users.length === 0 ? null : (
         <div className="overflow-x-auto bg-cream-deep">
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead className="border-b border-ink/8 text-[11px] uppercase tracking-[0.16em] text-ink-soft">
@@ -78,7 +113,7 @@ export function AdminUsers() {
                     <select
                       value={user.plan === "unlimited" ? "pro" : user.plan}
                       disabled={busy === user.firebaseUid}
-                      onChange={(e) => void changePlan(user.firebaseUid, e.target.value as PlanId)}
+                      onChange={(e) => void patch(user.firebaseUid, { plan: e.target.value as PlanId })}
                       className="border border-ink/15 bg-transparent px-3 py-1.5 text-sm"
                     >
                       <option value="free">{t.dash.planFree}</option>
@@ -90,7 +125,7 @@ export function AdminUsers() {
                     <select
                       value={user.accountRole}
                       disabled={busy === user.firebaseUid}
-                      onChange={(e) => void changeRole(user.firebaseUid, e.target.value as AccountRole)}
+                      onChange={(e) => void patch(user.firebaseUid, { accountRole: e.target.value as AccountRole })}
                       className="border border-ink/15 bg-transparent px-3 py-1.5 text-sm"
                     >
                       <option value="user">{t.admin.roleUser}</option>

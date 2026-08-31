@@ -54,6 +54,15 @@ export function getFirebaseAuth(): Auth | null {
   return getAuth(app);
 }
 
+export async function firebaseIdToken(): Promise<string | null> {
+  const auth = getFirebaseAuth();
+  if (!auth) return null;
+  await auth.authStateReady();
+  const user = auth.currentUser;
+  if (!user) return null;
+  return user.getIdToken();
+}
+
 export function profileFromFirebase(user: FirebaseUser): GoogleProfile {
   return {
     id: `google:${user.uid}`,

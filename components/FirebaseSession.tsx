@@ -35,6 +35,12 @@ export function FirebaseSession() {
             plan: prev?.auth === "google" ? prev.plan : "free",
           });
           setUser(next);
+          void fbUser.getIdToken().then((token) =>
+            fetch("/api/me/sync", {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+            }).catch(() => null),
+          );
           void upsertGoogleUser({
             firebaseUid: fbUser.uid,
             id: profile.id,
