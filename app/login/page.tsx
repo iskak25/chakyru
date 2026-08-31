@@ -106,6 +106,13 @@ function LoginInner() {
           <p className="mt-3 text-center text-sm text-rose">{t.login.planNeedGoogle}</p>
         ) : null}
         {error ? <p className="mt-3 text-center text-sm text-rose">{error}</p> : null}
+        {error === t.login.googleDomain ? (
+          <p className="mt-2 text-center">
+            <a href="https://chakyru.vercel.app/login" className="text-sm underline underline-offset-4">
+              chakyru.vercel.app/login
+            </a>
+          </p>
+        ) : null}
 
         <div className="mt-10">
           <GoogleSignInButton
