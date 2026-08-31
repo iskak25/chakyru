@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createFinikPayment, finikReady, isPaidPlan } from "@/lib/finik";
-import { fulfillPayment, getAdminSettings, savePayment, templatePriceSom, uidFromBearer } from "@/lib/firebaseAdmin";
+import { adminReady, fulfillPayment, getAdminSettings, savePayment, templatePriceSom, uidFromBearer } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +12,20 @@ function originOf(req: NextRequest, siteUrl?: string) {
   const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "localhost:3000";
   const proto = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
   return `${proto}://${host}`;
+}
+
+export async function GET() {
+  const settings = await getAdminSettings();
+  return NextResponse.json({
+    admin: adminReady(),
+    finik: finikReady({
+      apiKey: settings.finikApiKey,
+      accountId: settings.finikAccountId,
+      privateKey: settings.finikPrivateKey,
+      mcc: settings.finikMcc,
+      beta: settings.finikBeta,
+    }),
+  });
 }
 
 export async function POST(req: NextRequest) {

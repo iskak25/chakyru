@@ -54,13 +54,18 @@ export function PlanBuyButton({
         },
         body: JSON.stringify({ plan, templateId }),
       });
-      const data = (await res.json().catch(() => null)) as { paymentUrl?: string; granted?: boolean } | null;
+      const data = (await res.json().catch(() => null)) as {
+        paymentUrl?: string;
+        granted?: boolean;
+        error?: string;
+      } | null;
       if (data?.granted) {
         router.push(templateId ? `/create/new?template=${templateId}` : "/dashboard");
         return;
       }
       if (!res.ok || !data?.paymentUrl) {
-        window.alert(res.status === 503 ? t.pay.notConfigured : t.pay.fail);
+        const hint = data?.error ? ` (${data.error})` : "";
+        window.alert((res.status === 503 ? t.pay.notConfigured : t.pay.fail) + hint);
         return;
       }
       window.location.href = data.paymentUrl;

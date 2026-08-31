@@ -5,15 +5,37 @@ import { mergeSettings, settingsFromEnv, type PublicPricing } from "./settings";
 import { templates as seedTemplates } from "./templates";
 import type { PlanId, SiteSettings } from "./types";
 
-function credentials() {
-  const json = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
-  if (!json) return null;
+function parseServiceAccount(raw: string) {
+  let json = raw.trim();
+  if (
+    (json.startsWith('"') && json.endsWith('"')) ||
+    (json.startsWith("'") && json.endsWith("'"))
+  ) {
+    json = json.slice(1, -1);
+  }
   try {
-    const parsed = JSON.parse(json) as {
+    return JSON.parse(json) as {
       project_id?: string;
       client_email?: string;
       private_key?: string;
     };
+  } catch {
+    const repaired = json.replace(/("private_key"\s*:\s*")([\s\S]*?)("\s*,)/, (_m, a: string, pem: string, c: string) => {
+      return `${a}${pem.replace(/\r?\n/g, "\\n")}${c}`;
+    });
+    return JSON.parse(repaired) as {
+      project_id?: string;
+      client_email?: string;
+      private_key?: string;
+    };
+  }
+}
+
+function credentials() {
+  const json = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
+  if (!json) return null;
+  try {
+    const parsed = parseServiceAccount(json);
     if (!parsed.client_email || !parsed.private_key) return null;
     return cert({
       projectId: parsed.project_id,
@@ -99,20 +121,24 @@ export async function savePayment(input: {
 }) {
   const app = adminApp();
   if (!app) return;
-  await getFirestore(app)
-    .collection("payments")
-    .doc(input.paymentId)
-    .set(
-      {
-        uid: input.uid,
-        plan: input.plan,
-        amount: input.amount,
-        templateId: input.templateId ?? null,
-        status: "pending",
-        createdAt: new Date().toISOString(),
-      },
-      { merge: true },
-    );
+  try {
+    await getFirestore(app)
+      .collection("payments")
+      .doc(input.paymentId)
+      .set(
+        {
+          uid: input.uid,
+          plan: input.plan,
+          amount: input.amount,
+          templateId: input.templateId ?? null,
+          status: "pending",
+          createdAt: new Date().toISOString(),
+        },
+        { merge: true },
+      );
+  } catch {
+    /* Finik can still open; webhook fulfill needs Admin later */
+  }
 }
 
 export async function fulfillPayment(input: {
