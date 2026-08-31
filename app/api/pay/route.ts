@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
       amount,
       templateId: body.plan === "standard" ? templateId : undefined,
       config: cfg,
-      redirectUrl: `${origin}/pay/return?pid=${paymentId}`,
+      redirectUrl: `${origin}/pay/return?pid=${paymentId}${templateId ? `&template=${encodeURIComponent(templateId)}` : ""}`,
       webhookUrl: `${origin}/api/pay/webhook`,
     });
     if (!created.paymentUrl) {

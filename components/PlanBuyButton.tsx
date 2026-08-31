@@ -59,8 +59,8 @@ export function PlanBuyButton({
         granted?: boolean;
         error?: string;
       } | null;
-      if (data?.granted) {
-        router.push(templateId ? `/create/new?template=${templateId}` : "/dashboard");
+        if (data?.granted) {
+        router.push(templateId ? `/create/new?template=${encodeURIComponent(templateId)}&paid=1` : "/templates");
         return;
       }
       if (!res.ok || !data?.paymentUrl) {
