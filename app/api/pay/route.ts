@@ -26,6 +26,7 @@ export async function GET() {
       hasFinikKey: Boolean(process.env.FINIK_API_KEY),
       hasAccount: Boolean(process.env.FINIK_ACCOUNT_ID),
       hasPem: Boolean(process.env.FINIK_PRIVATE_KEY?.includes("BEGIN")),
+      hasProjectId: Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
     });
   } catch (err) {
     return fail(err);
@@ -34,9 +35,16 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const admin = await import("@/lib/firebaseAdmin");
-    const uid = await admin.uidFromBearer(req.headers.get("authorization"));
-    const settings = await admin.getAdminSettings();
+    const { uidFromBearer } = await import("@/lib/firebaseToken");
+    const { settingsFromEnv } = await import("@/lib/settings");
+    const uid = await uidFromBearer(req.headers.get("authorization"));
+    let admin: typeof import("@/lib/firebaseAdmin") | null = null;
+    try {
+      admin = await import("@/lib/firebaseAdmin");
+    } catch {
+      admin = null;
+    }
+    const settings = admin ? await admin.getAdminSettings() : settingsFromEnv();
     const cfg = {
       apiKey: settings.finikApiKey,
       accountId: settings.finikAccountId,
@@ -57,13 +65,19 @@ export async function POST(req: NextRequest) {
       amount = settings.proPriceSom;
     } else {
       if (!templateId) return NextResponse.json({ error: "template" }, { status: 400 });
-      const price = await admin.templatePriceSom(templateId);
-      if (price == null) return NextResponse.json({ error: "template" }, { status: 400 });
-      amount = price;
+      const price = admin ? await admin.templatePriceSom(templateId) : null;
+      if (price == null) {
+        const { templates } = await import("@/lib/templates");
+        const seed = templates.find((item) => item.id === templateId)?.priceSom;
+        if (typeof seed !== "number") return NextResponse.json({ error: "template" }, { status: 400 });
+        amount = seed;
+      } else {
+        amount = price;
+      }
     }
     const paymentId = crypto.randomUUID();
     const origin = originOf(req, settings.siteUrl || "https://chakyru.vercel.app");
-    await admin.savePayment({
+    await admin?.savePayment({
       paymentId,
       uid,
       plan: body.plan,
@@ -71,13 +85,15 @@ export async function POST(req: NextRequest) {
       templateId: body.plan === "standard" ? templateId : undefined,
     });
     if (amount <= 0) {
-      const done = await admin.fulfillPayment({
-        paymentId,
-        amount: 0,
-        uid,
-        plan: body.plan,
-        templateId: body.plan === "standard" ? templateId : undefined,
-      });
+      const done = admin
+        ? await admin.fulfillPayment({
+            paymentId,
+            amount: 0,
+            uid,
+            plan: body.plan,
+            templateId: body.plan === "standard" ? templateId : undefined,
+          })
+        : false;
       if (!done) return NextResponse.json({ error: "fulfill" }, { status: 500 });
       return NextResponse.json({ granted: true, paymentId });
     }

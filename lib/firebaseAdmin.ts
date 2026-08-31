@@ -1,9 +1,9 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { mergeSettings, settingsFromEnv, type PublicPricing } from "./settings";
 import { templates as seedTemplates } from "./templates";
 import type { PlanId, SiteSettings } from "./types";
+export { uidFromBearer } from "./firebaseToken";
 
 function parseServiceAccount(raw: string) {
   let json = raw.trim();
@@ -61,19 +61,6 @@ function adminApp() {
 
 export function adminReady() {
   return Boolean(credentials());
-}
-
-export async function uidFromBearer(header: string | null) {
-  const token = header?.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  if (!token) return null;
-  const app = adminApp();
-  if (!app) return null;
-  try {
-    const decoded = await getAuth(app).verifyIdToken(token);
-    return decoded.uid;
-  } catch {
-    return null;
-  }
 }
 
 export async function getAdminSettings(): Promise<SiteSettings> {

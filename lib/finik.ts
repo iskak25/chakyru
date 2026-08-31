@@ -60,7 +60,10 @@ function baseUrl(cfg?: FinikConfig) {
 function privateKeyPem(cfg?: FinikConfig) {
   const raw = (cfg?.privateKey || process.env.FINIK_PRIVATE_KEY || "").trim();
   if (!raw) return "";
-  return raw.replace(/\\n/g, "\n");
+  return raw
+    .replace(/\\n/g, "\n")
+    .replace(/-----[\s]*BEGIN[\s]+([A-Z0-9 ]+?)[\s]*-----/g, (_m, name: string) => `-----BEGIN ${name.trim()}-----`)
+    .replace(/-----[\s]*END[\s]+([A-Z0-9 ]+?)[\s]*-----/g, (_m, name: string) => `-----END ${name.trim()}-----`);
 }
 
 function sortedJson(value: unknown): string {
