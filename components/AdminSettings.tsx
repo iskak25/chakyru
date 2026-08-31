@@ -46,33 +46,6 @@ export function AdminSettings() {
   return (
     <div className="mx-auto max-w-3xl space-y-10">
       <section>
-        <h2 className="font-serif text-2xl uppercase">{t.admin.prices}</h2>
-        <p className="mt-2 text-sm text-ink-soft">{t.admin.pricesHint}</p>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <label className="text-xs text-ink-soft">
-            {t.admin.proPriceSom}
-            <input
-              type="number"
-              min={0}
-              className={`${input} mt-1`}
-              value={draft.proPriceSom}
-              onChange={(e) => patch({ proPriceSom: Number(e.target.value) || 0 })}
-            />
-          </label>
-          <label className="text-xs text-ink-soft">
-            {t.admin.proPriceTenge}
-            <input
-              type="number"
-              min={0}
-              className={`${input} mt-1`}
-              value={draft.proPriceTenge}
-              onChange={(e) => patch({ proPriceTenge: Number(e.target.value) || 0 })}
-            />
-          </label>
-        </div>
-      </section>
-
-      <section>
         <h2 className="font-serif text-2xl uppercase">{t.admin.payments}</h2>
         <p className="mt-2 text-sm leading-7 text-ink-soft">{t.admin.finikHint}</p>
         <div className="mt-5 space-y-4">

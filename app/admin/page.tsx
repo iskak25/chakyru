@@ -2,8 +2,9 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { LayoutGrid, PlayCircle, Settings, Users } from "lucide-react";
+import { Banknote, LayoutGrid, PlayCircle, Settings, Users } from "lucide-react";
 import { AdminLessons } from "@/components/AdminLessons";
+import { AdminPrices } from "@/components/AdminPrices";
 import { AdminSettings } from "@/components/AdminSettings";
 import { AdminTemplates } from "@/components/AdminTemplates";
 import { AdminUsers } from "@/components/AdminUsers";
@@ -13,7 +14,7 @@ import { useI18n } from "@/lib/locale";
 import { getUser } from "@/lib/store";
 import type { User } from "@/lib/types";
 
-type Tab = "users" | "templates" | "lessons" | "settings";
+type Tab = "users" | "templates" | "lessons" | "prices" | "settings";
 
 export default function AdminPage() {
   const { t } = useI18n();
@@ -34,6 +35,7 @@ export default function AdminPage() {
     { id: "users", label: t.admin.users, icon: <Users size={20} strokeWidth={1.6} /> },
     { id: "templates", label: t.admin.templates, icon: <LayoutGrid size={20} strokeWidth={1.6} /> },
     { id: "lessons", label: t.admin.lessons, icon: <PlayCircle size={20} strokeWidth={1.6} /> },
+    { id: "prices", label: t.admin.prices, icon: <Banknote size={20} strokeWidth={1.6} /> },
     { id: "settings", label: t.admin.settings, icon: <Settings size={20} strokeWidth={1.6} /> },
   ];
   const current = tabs.find((item) => item.id === tab);
@@ -95,6 +97,7 @@ export default function AdminPage() {
               <p className="mt-1 mb-8 text-sm text-ink-soft">{t.admin.sub}</p>
               {tab === "users" ? <AdminUsers /> : null}
               {tab === "lessons" ? <AdminLessons /> : null}
+              {tab === "prices" ? <AdminPrices /> : null}
               {tab === "settings" ? <AdminSettings /> : null}
             </div>
           )}
