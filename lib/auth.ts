@@ -50,6 +50,13 @@ export function canEditTemplate(user: User | null, templateId?: string): boolean
   if (!user || user.auth !== "google") return false;
   if (isAdmin(user) || user.accountRole === "vip") return true;
   if (user.plan === "pro" || user.plan === "unlimited") return true;
+  if (typeof window !== "undefined" && templateId) {
+    try {
+      if (sessionStorage.getItem("chakyru-paid-template") === templateId) return true;
+    } catch {
+      /* ignore */
+    }
+  }
   if (!templateId) return (user.templates?.length ?? 0) > 0;
   return (user.templates ?? []).includes(templateId);
 }

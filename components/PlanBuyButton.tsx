@@ -56,10 +56,17 @@ export function PlanBuyButton({
       });
       const data = (await res.json().catch(() => null)) as {
         paymentUrl?: string;
+        paymentId?: string;
         granted?: boolean;
         error?: string;
       } | null;
-        if (data?.granted) {
+      const { rememberCheckout, markPaidTemplate, unlockPaidTemplate } = await import("@/lib/payAccess");
+      rememberCheckout({ paymentId: data?.paymentId, templateId, plan });
+      if (data?.granted) {
+        if (templateId) {
+          markPaidTemplate(templateId, data.paymentId);
+          unlockPaidTemplate(templateId, plan);
+        }
         router.push(templateId ? `/create/new?template=${encodeURIComponent(templateId)}&paid=1` : "/templates");
         return;
       }

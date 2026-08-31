@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { FormatInvite } from "@/components/FormatInvite";
@@ -8,6 +8,7 @@ import { PhoneFrame } from "@/components/InviteCard";
 import { SiteShell } from "@/components/SiteShell";
 import { canEditTemplate } from "@/lib/auth";
 import { useI18n } from "@/lib/locale";
+import { lastCheckout, paidTemplateId, restorePaidTemplate, unlockPaidTemplate } from "@/lib/payAccess";
 import { formatOf } from "@/lib/templates";
 import { getUser, previewInvitation, startInvitation } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
@@ -22,17 +23,42 @@ export default function TemplatePreviewPage() {
   const invitation = useMemo(() => (template ? previewInvitation(template.id) : null), [template]);
   const format = template ? formatOf(template.id) : "site3d";
   const [canEdit, setCanEdit] = useState(false);
+  const opening = useRef(false);
 
   useEffect(() => {
-    const sync = () => setCanEdit(canEditTemplate(getUser(), id));
+    const sync = () => {
+      if (paidTemplateId() === id || lastCheckout()?.templateId === id) unlockPaidTemplate(id);
+      setCanEdit(canEditTemplate(getUser(), id) || paidTemplateId() === id || lastCheckout()?.templateId === id);
+    };
     sync();
     window.addEventListener("chakyru-sync", sync);
     return () => window.removeEventListener("chakyru-sync", sync);
   }, [id]);
 
-  function onEdit() {
+  useEffect(() => {
+    if (!template || opening.current) return;
+    let cancelled = false;
+    void restorePaidTemplate(id).then((restored) => {
+      if (cancelled || opening.current) return;
+      const last = lastCheckout();
+      const paid = restored || paidTemplateId() === id || last?.templateId === id;
+      if (!paid) return;
+      opening.current = true;
+      unlockPaidTemplate(id, last?.plan);
+      const started = startInvitation(id, { force: true });
+      if ("invitation" in started) router.replace(`/create/${started.invitation.id}`);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, template, router]);
+
+  async function onEdit() {
     if (!template) return;
-    const started = startInvitation(template.id);
+    const restored = await restorePaidTemplate(id);
+    const paid = restored || canEdit || paidTemplateId() === id || lastCheckout()?.templateId === id;
+    if (paid) unlockPaidTemplate(id);
+    const started = startInvitation(template.id, { force: paid });
     if ("invitation" in started) router.push(`/create/${started.invitation.id}`);
     else router.push(started.href);
   }
@@ -57,7 +83,9 @@ export default function TemplatePreviewPage() {
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="font-serif text-4xl uppercase sm:text-5xl">{template.name[locale]}</h1>
-            <p className="mt-3 max-w-md text-sm leading-7 text-ink-soft">{t.templateView.paywall}</p>
+            <p className="mt-3 max-w-md text-sm leading-7 text-ink-soft">
+              {canEdit ? t.editor.tapHint : t.templateView.paywall}
+            </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link

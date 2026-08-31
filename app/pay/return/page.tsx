@@ -5,23 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
-import { getUser, setPendingTemplate, setUser } from "@/lib/store";
+import { markPaidTemplate, unlockPaidTemplate } from "@/lib/payAccess";
 
 function editorHref(templateId: string) {
   return `/create/new?template=${encodeURIComponent(templateId)}&paid=1`;
-}
-
-function unlockLocal(templateId: string | null, plan: string | null) {
-  const user = getUser();
-  if (!user) return;
-  const templates = templateId
-    ? [...new Set([...(user.templates ?? []), templateId])]
-    : user.templates;
-  setUser({
-    ...user,
-    plan: plan === "pro" || user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard",
-    templates,
-  });
 }
 
 function ReturnInner() {
@@ -34,10 +21,10 @@ function ReturnInner() {
     if (started.current) return;
     started.current = true;
     const pid = search.get("pid") || "";
-    const plan = search.get("plan") || "";
+    const plan = (search.get("plan") === "pro" ? "pro" : "standard") as "standard" | "pro";
     const template =
       search.get("template") || sessionStorage.getItem("chakyru-edit-template") || "";
-    if (template) setPendingTemplate(template);
+    if (template) markPaidTemplate(template, pid);
 
     let cancelled = false;
 
@@ -46,7 +33,7 @@ function ReturnInner() {
       const waitUntil = Date.now() + 8000;
       while (!cancelled && Date.now() < waitUntil) {
         await auth?.authStateReady();
-        if (auth?.currentUser || getUser()?.auth === "google") break;
+        if (auth?.currentUser) break;
         await new Promise((r) => window.setTimeout(r, 200));
       }
       if (cancelled) return;
@@ -58,7 +45,7 @@ function ReturnInner() {
         return;
       }
 
-      let grantedPlan = plan || "standard";
+      let grantedPlan = plan;
       let grantedTemplate = template;
       try {
         const res = await fetch("/api/pay/confirm", {
@@ -67,23 +54,26 @@ function ReturnInner() {
             "content-type": "application/json",
             authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ pid, templateId: template, plan: plan || undefined }),
+          body: JSON.stringify({ pid, templateId: template, plan }),
         });
         const data = (await res.json().catch(() => null)) as {
-          paid?: boolean;
           templateId?: string | null;
           plan?: string | null;
         } | null;
         if (data?.templateId) grantedTemplate = data.templateId;
-        if (data?.plan) grantedPlan = data.plan;
+        if (data?.plan === "pro") grantedPlan = "pro";
       } catch {
-        /* still open the editor — access is client-side */
+        /* open editor anyway */
       }
 
       if (cancelled) return;
-      if (grantedTemplate) setPendingTemplate(grantedTemplate);
-      unlockLocal(grantedTemplate || null, grantedPlan);
-      router.replace(grantedTemplate ? editorHref(grantedTemplate) : "/templates");
+      if (grantedTemplate) {
+        markPaidTemplate(grantedTemplate, pid);
+        unlockPaidTemplate(grantedTemplate, grantedPlan);
+        router.replace(editorHref(grantedTemplate));
+        return;
+      }
+      router.replace("/templates");
     }
 
     void openEditor();

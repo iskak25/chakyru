@@ -15,6 +15,7 @@ import { useInviteHistory } from "@/lib/useInviteHistory";
 import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditTemplate } from "@/lib/auth";
+import { paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
@@ -32,7 +33,11 @@ export default function EditorPage() {
   }, [ready, inv, router]);
 
   useEffect(() => {
-    const sync = () => setAllowed(canEditTemplate(getUser(), inv?.templateId));
+    const sync = () => {
+      const templateId = inv?.templateId;
+      if (templateId && paidTemplateId() === templateId) unlockPaidTemplate(templateId);
+      setAllowed(canEditTemplate(getUser(), templateId));
+    };
     sync();
     window.addEventListener("chakyru-sync", sync);
     return () => window.removeEventListener("chakyru-sync", sync);

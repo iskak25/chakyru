@@ -192,28 +192,51 @@ export function pricingHref(templateId: string) {
   return `/pricing?from=${encodeURIComponent(templateId)}`;
 }
 
+export function grantLocalTemplate(templateId: string, plan: PlanId = "standard") {
+  const user = getUser();
+  if (!user || user.auth !== "google" || !templateId) return null;
+  const templates = [...new Set([...(user.templates ?? []), templateId].filter(Boolean))];
+  const next = {
+    ...user,
+    plan: plan === "pro" || user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard",
+    templates,
+  };
+  setUser(next);
+  return next;
+}
+
 export function startInvitation(
   templateId: string,
+  opts?: { force?: boolean },
 ): { invitation: Invitation } | { href: string } {
+  if (opts?.force) grantLocalTemplate(templateId);
   const user = getUser();
   if (!user) return { href: createStartHref(templateId) };
   if (!canEditTemplate(user, templateId)) {
+    if (opts?.force && user.auth === "google") {
+      grantLocalTemplate(templateId);
+      try {
+        return { invitation: createInvitation(templateId, { force: true }) };
+      } catch {
+        return { href: pricingHref(templateId) };
+      }
+    }
     if (user.auth === "name") {
       return { href: `/login?google=1&next=${encodeURIComponent(`/create/new?template=${templateId}`)}` };
     }
     return { href: pricingHref(templateId) };
   }
   try {
-    return { invitation: createInvitation(templateId) };
+    return { invitation: createInvitation(templateId, { force: opts?.force }) };
   } catch {
     return { href: pricingHref(templateId) };
   }
 }
 
-export function createInvitation(templateId: string): Invitation {
+export function createInvitation(templateId: string, opts?: { force?: boolean }): Invitation {
   const user = getUser();
   const existing = readInvitations();
-  if (!user || !canCreateInvitation(user, existing)) {
+  if (!user || (!opts?.force && !canCreateInvitation(user, existing))) {
     throw new Error(user ? "limit" : "login");
   }
   const template = getTemplate(templateId);
