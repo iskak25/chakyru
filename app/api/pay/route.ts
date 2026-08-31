@@ -24,25 +24,31 @@ export async function GET(req: NextRequest) {
     if (pid) {
       const { uidFromBearer } = await import("@/lib/firebaseToken");
       const uid = await uidFromBearer(req.headers.get("authorization"));
-      if (!uid) return NextResponse.json({ paid: false }, { status: 401 });
+      if (!uid) {
+        return NextResponse.json({ paid: false, error: "auth" }, { status: 401, headers: { "cache-control": "no-store" } });
+      }
       try {
         const admin = await import("@/lib/firebaseAdmin");
         const templateId = req.nextUrl.searchParams.get("template")?.trim() || undefined;
         const plan = req.nextUrl.searchParams.get("plan")?.trim() || undefined;
         const status = await admin.confirmReturnPayment(pid, uid, { templateId, plan });
-        return NextResponse.json(status);
-      } catch {
-        return NextResponse.json({ paid: false });
+        return NextResponse.json(status, { headers: { "cache-control": "no-store" } });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "confirm";
+        return NextResponse.json({ paid: false, error: message.slice(0, 300) }, { status: 500, headers: { "cache-control": "no-store" } });
       }
     }
-    return NextResponse.json({
-      ok: true,
-      hasSa: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
-      hasFinikKey: Boolean(process.env.FINIK_API_KEY),
-      hasAccount: Boolean(process.env.FINIK_ACCOUNT_ID),
-      hasPem: Boolean(process.env.FINIK_PRIVATE_KEY?.includes("BEGIN")),
-      hasProjectId: Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
-    });
+    return NextResponse.json(
+      {
+        ok: true,
+        hasSa: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
+        hasFinikKey: Boolean(process.env.FINIK_API_KEY),
+        hasAccount: Boolean(process.env.FINIK_ACCOUNT_ID),
+        hasPem: Boolean(process.env.FINIK_PRIVATE_KEY?.includes("BEGIN")),
+        hasProjectId: Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
+      },
+      { headers: { "cache-control": "no-store" } },
+    );
   } catch (err) {
     return fail(err);
   }
@@ -97,7 +103,7 @@ export async function POST(req: NextRequest) {
       uid,
       plan: body.plan,
       amount,
-      templateId: body.plan === "standard" ? templateId : undefined,
+      templateId: templateId || undefined,
     });
     if (amount <= 0) {
       const done = admin
@@ -106,7 +112,7 @@ export async function POST(req: NextRequest) {
             amount: 0,
             uid,
             plan: body.plan,
-            templateId: body.plan === "standard" ? templateId : undefined,
+            templateId: templateId || undefined,
           })
         : false;
       if (!done) return NextResponse.json({ error: "fulfill" }, { status: 500 });
@@ -120,7 +126,7 @@ export async function POST(req: NextRequest) {
       paymentId,
       uid,
       amount,
-      templateId: body.plan === "standard" ? templateId : undefined,
+      templateId: templateId || undefined,
       config: cfg,
       redirectUrl: `${origin}/pay/return?pid=${paymentId}&plan=${encodeURIComponent(body.plan)}${templateId ? `&template=${encodeURIComponent(templateId)}` : ""}`,
       webhookUrl: `${origin}/api/pay/webhook`,

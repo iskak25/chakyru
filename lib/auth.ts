@@ -66,6 +66,26 @@ export function canSubscribe(user: User | null): boolean {
   return Boolean(user && user.auth === "google");
 }
 
+function planRank(plan?: string) {
+  if (plan === "pro" || plan === "unlimited") return 2;
+  if (plan === "standard") return 1;
+  return 0;
+}
+
+export function mergePaidAccess(
+  current: User,
+  remote: Partial<Pick<User, "plan" | "templates" | "accountRole">>,
+): User {
+  const plan = planRank(remote.plan) >= planRank(current.plan) ? remote.plan || current.plan : current.plan;
+  const templates = [...new Set([...(current.templates ?? []), ...(remote.templates ?? [])])];
+  return {
+    ...current,
+    accountRole: remote.accountRole || current.accountRole,
+    plan,
+    templates,
+  };
+}
+
 export function planLoginHref(plan: "standard" | "pro", templateId?: string) {
   const q = new URLSearchParams({ plan, google: "1" });
   if (templateId) q.set("from", templateId);

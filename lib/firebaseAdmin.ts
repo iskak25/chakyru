@@ -219,8 +219,8 @@ export async function confirmReturnPayment(
     : {};
   if (data.uid && data.uid !== uid) return { paid: false as const };
   const templateId = pickText(data.templateId, extra?.templateId) || undefined;
-  const plan = pickText(data.plan, extra?.plan) || (templateId ? "standard" : "");
-  if (!plan) return { paid: false as const };
+  const plan =
+    pickText(data.plan, extra?.plan) || (templateId ? "standard" : extra?.plan === "pro" ? "pro" : "standard");
   const done = await fulfillPayment({
     paymentId,
     amount: 0,

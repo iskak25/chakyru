@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { Logo } from "@/components/Logo";
 import { useI18n } from "@/lib/locale";
-import { normalizeUser } from "@/lib/auth";
+import { mergePaidAccess, normalizeUser } from "@/lib/auth";
 import { upsertGoogleUser } from "@/lib/db";
 import { completeGoogleRedirect, getFirebaseAuth, signOutFirebase } from "@/lib/firebase";
 import { getUser, setUser, transferInvitations } from "@/lib/store";
@@ -53,9 +53,10 @@ function LoginInner() {
               plan: user.plan,
             });
             if (remote) {
-              user.accountRole = remote.accountRole;
-              user.plan = remote.plan;
-              user.templates = remote.templates ?? [];
+              const merged = mergePaidAccess(user, remote);
+              user.accountRole = merged.accountRole;
+              user.plan = merged.plan;
+              user.templates = merged.templates;
             }
           } catch {
             /* Firestore may be off; local session still works */

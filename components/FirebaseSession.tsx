@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { upsertGoogleUser, watchMe } from "@/lib/db";
 import { getFirebaseAuth, profileFromFirebase } from "@/lib/firebase";
 import { clearUser, getUser, setUser, transferInvitations } from "@/lib/store";
-import { normalizeUser } from "@/lib/auth";
+import { normalizeUser, mergePaidAccess } from "@/lib/auth";
 
 export function FirebaseSession() {
   useEffect(() => {
@@ -48,7 +48,7 @@ export function FirebaseSession() {
               const current = getUser();
               if (!current || current.id !== remote.id) return;
               if (current.accountRole === remote.accountRole && current.plan === remote.plan && JSON.stringify(current.templates ?? []) === JSON.stringify(remote.templates ?? [])) return;
-              setUser({ ...current, accountRole: remote.accountRole, plan: remote.plan, templates: remote.templates ?? [] });
+              setUser(mergePaidAccess(current, remote));
             })
             .catch(() => {});
           const unwatch = watchMe(fbUser.uid, (remote) => {
@@ -56,7 +56,7 @@ export function FirebaseSession() {
             const current = getUser();
             if (!current || current.auth !== "google") return;
             if (current.accountRole === remote.accountRole && current.plan === remote.plan && JSON.stringify(current.templates ?? []) === JSON.stringify(remote.templates ?? [])) return;
-            setUser({ ...current, accountRole: remote.accountRole, plan: remote.plan, templates: remote.templates ?? [] });
+            setUser(mergePaidAccess(current, remote));
           });
           if (unwatch) stopWatch = unwatch;
         });
