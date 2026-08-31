@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createFinikPayment, finikReady, isPaidPlan } from "@/lib/finik";
-import { adminReady, fulfillPayment, getAdminSettings, savePayment, templatePriceSom, uidFromBearer } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,24 +13,30 @@ function originOf(req: NextRequest, siteUrl?: string) {
   return `${proto}://${host}`;
 }
 
+function fail(err: unknown) {
+  const message = err instanceof Error ? err.message : "pay";
+  return NextResponse.json({ error: message.slice(0, 300) }, { status: 500 });
+}
+
 export async function GET() {
-  const settings = await getAdminSettings();
-  return NextResponse.json({
-    admin: adminReady(),
-    finik: finikReady({
-      apiKey: settings.finikApiKey,
-      accountId: settings.finikAccountId,
-      privateKey: settings.finikPrivateKey,
-      mcc: settings.finikMcc,
-      beta: settings.finikBeta,
-    }),
-  });
+  try {
+    return NextResponse.json({
+      ok: true,
+      hasSa: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
+      hasFinikKey: Boolean(process.env.FINIK_API_KEY),
+      hasAccount: Boolean(process.env.FINIK_ACCOUNT_ID),
+      hasPem: Boolean(process.env.FINIK_PRIVATE_KEY?.includes("BEGIN")),
+    });
+  } catch (err) {
+    return fail(err);
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const uid = await uidFromBearer(req.headers.get("authorization"));
-    const settings = await getAdminSettings();
+    const admin = await import("@/lib/firebaseAdmin");
+    const uid = await admin.uidFromBearer(req.headers.get("authorization"));
+    const settings = await admin.getAdminSettings();
     const cfg = {
       apiKey: settings.finikApiKey,
       accountId: settings.finikAccountId,
@@ -52,13 +57,13 @@ export async function POST(req: NextRequest) {
       amount = settings.proPriceSom;
     } else {
       if (!templateId) return NextResponse.json({ error: "template" }, { status: 400 });
-      const price = await templatePriceSom(templateId);
+      const price = await admin.templatePriceSom(templateId);
       if (price == null) return NextResponse.json({ error: "template" }, { status: 400 });
       amount = price;
     }
     const paymentId = crypto.randomUUID();
     const origin = originOf(req, settings.siteUrl || "https://chakyru.vercel.app");
-    await savePayment({
+    await admin.savePayment({
       paymentId,
       uid,
       plan: body.plan,
@@ -66,7 +71,7 @@ export async function POST(req: NextRequest) {
       templateId: body.plan === "standard" ? templateId : undefined,
     });
     if (amount <= 0) {
-      const done = await fulfillPayment({
+      const done = await admin.fulfillPayment({
         paymentId,
         amount: 0,
         uid,
@@ -94,7 +99,6 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json({ paymentUrl: created.paymentUrl, paymentId });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "pay";
-    return NextResponse.json({ error: message.slice(0, 300) }, { status: 500 });
+    return fail(err);
   }
 }

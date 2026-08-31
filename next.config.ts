@@ -5,6 +5,7 @@ const firebaseAuthHost =
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@stagewise/toolbar"],
+  serverExternalPackages: ["firebase-admin"],
   async redirects() {
     return [{ source: "/designers", destination: "/", permanent: false }];
   },
