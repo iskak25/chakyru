@@ -44,7 +44,7 @@ export default function TemplatePreviewPage() {
       const paid = restored || paidTemplateId() === id || last?.templateId === id;
       if (!paid) return;
       opening.current = true;
-      unlockPaidTemplate(id, last?.plan);
+      unlockPaidTemplate(id, last?.plan === "pro" ? "pro" : "standard");
       const started = startInvitation(id, { force: true });
       if ("invitation" in started) router.replace(`/create/${started.invitation.id}`);
     });

@@ -196,13 +196,10 @@ export function grantLocalTemplate(templateId: string, plan: PlanId = "standard"
   const user = getUser();
   if (!user || user.auth !== "google" || !templateId) return null;
   const templates = [...new Set([...(user.templates ?? []), templateId].filter(Boolean))];
-  const next = {
-    ...user,
-    plan: plan === "pro" || user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard",
-    templates,
-  };
-  setUser(next);
-  return next;
+  const nextPlan: PlanId =
+    plan === "pro" || user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard";
+  setUser({ ...user, plan: nextPlan, templates });
+  return getUser();
 }
 
 export function startInvitation(
