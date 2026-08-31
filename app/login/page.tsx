@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { Logo } from "@/components/Logo";
 import { useI18n } from "@/lib/locale";
-import { mergePaidAccess, normalizeUser } from "@/lib/auth";
+import { normalizeUser } from "@/lib/auth";
 import { upsertGoogleUser } from "@/lib/db";
 import { completeGoogleRedirect, getFirebaseAuth, signOutFirebase } from "@/lib/firebase";
 import { getUser, setUser, transferInvitations } from "@/lib/store";
@@ -40,47 +40,52 @@ function LoginInner() {
         plan: prev?.plan ?? "free",
       });
       if (auth === "name") user.plan = "free";
-      if (auth === "google") {
-        const fb = getFirebaseAuth()?.currentUser;
-        if (fb && user.email) {
-          try {
-            const remote = await upsertGoogleUser({
-              firebaseUid: fb.uid,
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              picture: user.picture,
-              plan: user.plan,
-            });
-            if (remote) {
-              const merged = mergePaidAccess(user, remote);
-              user.accountRole = merged.accountRole;
-              user.plan = merged.plan;
-              user.templates = merged.templates;
-            }
-          } catch {
-            /* Firestore may be off; local session still works */
-          }
-        }
-      }
       if (auth === "google" && prev && prev.id !== user.id) {
         transferInvitations(prev.id, user.id);
       }
       setUser(user);
-      const dest = search.get("next") || extra.get("next");
-      if (dest && dest.startsWith("/") && !dest.startsWith("//")) window.location.replace(dest);
-      else if (planId && planId !== "free") {
+      if (auth === "google") {
+        const fb = getFirebaseAuth()?.currentUser;
+        if (fb && user.email) {
+          void upsertGoogleUser({
+            firebaseUid: fb.uid,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            picture: user.picture,
+            plan: user.plan,
+          }).catch(() => {});
+        }
+      }
+      const dest = search.get("next") || extra.get("next") || "";
+      const safeNext =
+        dest.startsWith("/") && !dest.startsWith("//") && !dest.startsWith("/login") ? dest : "";
+      if (safeNext) {
+        window.location.replace(safeNext);
+        return;
+      }
+      if (planId && planId !== "free") {
         const q = new URLSearchParams({ pay: planId });
         if (from) q.set("from", from);
         window.location.replace(`/pricing?${q.toString()}`);
+        return;
       }
-      else if (auth === "google") window.location.replace("/");
-      else window.location.replace("/dashboard");
+      window.location.replace("/");
     },
     [plan, role, router, search],
   );
 
   useEffect(() => {
+    const existing = getUser();
+    if (existing) {
+      const next = search.get("next") || "";
+      if (next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login")) {
+        window.location.replace(next);
+        return;
+      }
+      window.location.replace("/");
+      return;
+    }
     const err = search.get("err");
     if (err) setError(t.login.googleFail);
     void completeGoogleRedirect()
