@@ -6,6 +6,7 @@ import { setLivePricing, setLiveTemplates } from "@/lib/catalogStore";
 import { useI18n } from "@/lib/locale";
 import { defaultSettings, publicPricing } from "@/lib/settings";
 import { useCatalog } from "@/lib/useCatalog";
+import { mergeCatalogTemplates } from "@/lib/templates";
 import type { InvitationTemplate, SiteSettings } from "@/lib/types";
 
 const input = "w-full border border-ink/15 bg-transparent px-3 py-2 text-sm";
@@ -26,7 +27,7 @@ export function AdminPrices() {
   }, [t.admin.needFirestore]);
 
   useEffect(() => {
-    setRows(templates.map((item) => structuredClone(item)));
+    setRows(mergeCatalogTemplates(templates).map((item) => structuredClone(item)));
   }, [templates]);
 
   function setPro(field: "proPriceSom" | "proPriceTenge", value: number) {

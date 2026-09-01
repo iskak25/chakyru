@@ -24,7 +24,7 @@ function style(
   return { bg, panel, accent, text, muted, ornament: accent, ...extra };
 }
 
-export const templates: InvitationTemplate[] = [
+const seedTemplates: InvitationTemplate[] = [
   {
     id: "ak-shumkar",
     name: { ky: "Ак шумкар", ru: "Белый сокол" },
@@ -559,6 +559,54 @@ export const templates: InvitationTemplate[] = [
     ),
   },
 ];
+
+const FORMAT_PRICE = {
+  photo: { priceSom: 250, priceTenge: 500 },
+  videoMusic: { priceSom: 590, priceTenge: 1500 },
+  videoVoice: { priceSom: 590, priceTenge: 1500 },
+  site3d: { priceSom: 590, priceTenge: 1500 },
+} as const;
+
+const FREE_TEMPLATE_IDS = new Set(["klassika"]);
+
+function applyCatalogPrices(list: InvitationTemplate[]): InvitationTemplate[] {
+  return list.map((item) => {
+    if (FREE_TEMPLATE_IDS.has(item.id)) return { ...item, priceSom: 0, priceTenge: 0 };
+    return { ...item, ...FORMAT_PRICE[item.format] };
+  });
+}
+
+export function pickStoredPrice(live: number | undefined, seed: number) {
+  if (typeof live !== "number" || !Number.isFinite(live)) return seed;
+  if (seed === 0) return live;
+  if (live <= 11) return seed;
+  return live;
+}
+
+export const templates = applyCatalogPrices(seedTemplates);
+
+export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): InvitationTemplate[] {
+  if (!live?.length) return templates;
+  const seedById = new Map(templates.map((item) => [item.id, item]));
+  const merged = live.map((item) => {
+    const seed = seedById.get(item.id);
+    if (!seed) return item;
+    return {
+      ...seed,
+      ...item,
+      name: {
+        ky: item.name?.ky || seed.name.ky,
+        ru: item.name?.ru || seed.name.ru,
+      },
+      style: { ...seed.style, ...item.style },
+      format: item.format || seed.format,
+      priceSom: pickStoredPrice(item.priceSom, seed.priceSom),
+      priceTenge: pickStoredPrice(item.priceTenge, seed.priceTenge),
+    };
+  });
+  const seen = new Set(merged.map((item) => item.id));
+  return [...merged, ...templates.filter((item) => !seen.has(item.id))];
+}
 
 export function getTemplate(id: string) {
   const preview = peekPreview();

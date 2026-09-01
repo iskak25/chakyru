@@ -1,7 +1,7 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 import { mergeSettings, settingsFromEnv, type PublicPricing } from "./settings";
-import { templates as seedTemplates } from "./templates";
+import { templates as seedTemplates, pickStoredPrice } from "./templates";
 import type { PlanId, SiteSettings } from "./types";
 export { uidFromBearer } from "./firebaseToken";
 
@@ -112,7 +112,10 @@ export async function templatePriceSom(templateId: string): Promise<number | nul
       const snap = await getFirestore(app).collection("catalog").doc("templates").get();
       const items = snap.data()?.items as { id?: string; priceSom?: number }[] | undefined;
       const found = items?.find((item) => item.id === templateId);
-      if (found && typeof found.priceSom === "number") return found.priceSom;
+      const seed = seedTemplates.find((item) => item.id === templateId)?.priceSom;
+      if (found && typeof found.priceSom === "number") {
+        return pickStoredPrice(found.priceSom, seed ?? found.priceSom);
+      }
     } catch {
       /* fall through to seed */
     }

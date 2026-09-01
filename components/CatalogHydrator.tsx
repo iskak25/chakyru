@@ -5,22 +5,14 @@ import { readLocalLessons, readLocalSettings, readLocalTemplates, watchCatalogLe
 import { setLiveLessons, setLivePricing, setLiveTemplates } from "@/lib/catalogStore";
 import { lessons } from "@/lib/lessons";
 import { publicPricing } from "@/lib/settings";
-import { templates } from "@/lib/templates";
-import type { InvitationTemplate } from "@/lib/types";
-
-function mergeCatalog(live?: InvitationTemplate[] | null) {
-  if (!live?.length) return templates;
-  const ids = new Set(live.map((item) => item.id));
-  const extra = templates.filter((item) => !ids.has(item.id));
-  return extra.length ? [...live, ...extra] : live;
-}
+import { mergeCatalogTemplates } from "@/lib/templates";
 
 export function CatalogHydrator() {
   useEffect(() => {
-    setLiveTemplates(mergeCatalog(readLocalTemplates()?.items));
+    setLiveTemplates(mergeCatalogTemplates(readLocalTemplates()?.items));
     setLiveLessons(readLocalLessons()?.items ?? lessons);
     setLivePricing(publicPricing(readLocalSettings()));
-    const stopT = watchCatalogTemplates((list) => setLiveTemplates(mergeCatalog(list)));
+    const stopT = watchCatalogTemplates((list) => setLiveTemplates(mergeCatalogTemplates(list)));
     const stopL = watchCatalogLessons(setLiveLessons);
     const stopP = watchPublicPricing(setLivePricing);
     return () => {
