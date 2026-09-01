@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { readLocalSettings, saveCatalogTemplates, saveSiteSettings, watchSiteSettings } from "@/lib/db";
 import { setLivePricing, setLiveTemplates } from "@/lib/catalogStore";
 import { useI18n } from "@/lib/locale";
@@ -19,24 +19,31 @@ export function AdminPrices() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const dirty = useRef(false);
 
   useEffect(() => {
     setSettings(readLocalSettings());
-    const stop = watchSiteSettings(setSettings, () => setError(t.admin.needFirestore));
+    const stop = watchSiteSettings((next) => {
+      if (dirty.current) return;
+      setSettings(next);
+    }, () => setError(t.admin.needFirestore));
     return () => stop?.();
   }, [t.admin.needFirestore]);
 
   useEffect(() => {
+    if (dirty.current || !templates.length) return;
     setRows(mergeCatalogTemplates(templates).map((item) => structuredClone(item)));
   }, [templates]);
 
   function setPro(value: number) {
+    dirty.current = true;
     setSettings((prev) => ({ ...prev, proPriceSom: value }));
     setStatus("");
     setError("");
   }
 
   function setRow(id: string, value: number) {
+    dirty.current = true;
     setRows((prev) => prev.map((item) => (item.id === id ? { ...item, priceSom: value } : item)));
     setStatus("");
     setError("");
@@ -49,6 +56,7 @@ export function AdminPrices() {
       const [catalog, site] = await Promise.all([saveCatalogTemplates(rows), saveSiteSettings(settings)]);
       setLiveTemplates(rows);
       setLivePricing(publicPricing(settings));
+      dirty.current = true;
       setStatus(catalog.remote && site.remote ? t.admin.saved : t.admin.savedLocal);
     } catch {
       setError(t.admin.error);

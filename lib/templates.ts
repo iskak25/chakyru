@@ -544,9 +544,7 @@ function applyCatalogPrices(list: InvitationTemplate[]): InvitationTemplate[] {
 }
 
 export function pickStoredPrice(live: number | undefined, seed: number) {
-  if (typeof live !== "number" || !Number.isFinite(live)) return seed;
-  if (seed === 0) return live;
-  if (live <= 11) return seed;
+  if (typeof live !== "number" || !Number.isFinite(live) || live < 0) return seed;
   return live;
 }
 

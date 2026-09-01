@@ -227,7 +227,7 @@ export function watchCatalogTemplates(
       if (!Array.isArray(items)) return;
       const remoteAt = Number(data?.updatedAt) || Date.parse(String(data?.updatedAtIso ?? data?.updatedAt ?? "")) || 0;
       const local = readLocalTemplates();
-      if (local && local.updatedAt > remoteAt) {
+      if (local && local.updatedAt >= remoteAt) {
         onItems(local.items);
         return;
       }
