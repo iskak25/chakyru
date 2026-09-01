@@ -35,7 +35,6 @@ export type InvitationTemplate = {
   designer: string;
   format: InviteFormat;
   priceSom: number;
-  priceTenge: number;
   eventTypes: EventType[];
   style: TemplateStyle;
   featured?: boolean;
@@ -146,7 +145,6 @@ export type User = {
 
 export type SiteSettings = {
   proPriceSom: number;
-  proPriceTenge: number;
   finikApiKey: string;
   finikAccountId: string;
   finikPrivateKey: string;

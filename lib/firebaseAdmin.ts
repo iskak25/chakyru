@@ -102,7 +102,7 @@ export async function getAdminSettings(): Promise<SiteSettings> {
 
 export async function publicProPricing(): Promise<PublicPricing> {
   const settings = await getAdminSettings();
-  return { proPriceSom: settings.proPriceSom, proPriceTenge: settings.proPriceTenge };
+  return { proPriceSom: settings.proPriceSom };
 }
 
 export async function templatePriceSom(templateId: string): Promise<number | null> {

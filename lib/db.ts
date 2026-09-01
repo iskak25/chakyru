@@ -380,7 +380,6 @@ export async function saveSiteSettings(input: SiteSettings) {
       doc(db, "catalog", "pricing"),
       {
         proPriceSom: settings.proPriceSom,
-        proPriceTenge: settings.proPriceTenge,
         updatedAt,
         updatedAtIso: iso,
       },

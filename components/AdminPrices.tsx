@@ -30,14 +30,14 @@ export function AdminPrices() {
     setRows(mergeCatalogTemplates(templates).map((item) => structuredClone(item)));
   }, [templates]);
 
-  function setPro(field: "proPriceSom" | "proPriceTenge", value: number) {
-    setSettings((prev) => ({ ...prev, [field]: value }));
+  function setPro(value: number) {
+    setSettings((prev) => ({ ...prev, proPriceSom: value }));
     setStatus("");
     setError("");
   }
 
-  function setRow(id: string, field: "priceSom" | "priceTenge", value: number) {
-    setRows((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  function setRow(id: string, value: number) {
+    setRows((prev) => prev.map((item) => (item.id === id ? { ...item, priceSom: value } : item)));
     setStatus("");
     setError("");
   }
@@ -64,7 +64,7 @@ export function AdminPrices() {
 
       <section>
         <h2 className="font-serif text-2xl uppercase">Pro</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 max-w-xs">
           <label className="text-xs text-ink-soft">
             {t.admin.proPriceSom}
             <input
@@ -72,17 +72,7 @@ export function AdminPrices() {
               min={0}
               className={`${input} mt-1`}
               value={settings.proPriceSom}
-              onChange={(e) => setPro("proPriceSom", Number(e.target.value) || 0)}
-            />
-          </label>
-          <label className="text-xs text-ink-soft">
-            {t.admin.proPriceTenge}
-            <input
-              type="number"
-              min={0}
-              className={`${input} mt-1`}
-              value={settings.proPriceTenge}
-              onChange={(e) => setPro("proPriceTenge", Number(e.target.value) || 0)}
+              onChange={(e) => setPro(Number(e.target.value) || 0)}
             />
           </label>
         </div>
@@ -94,12 +84,11 @@ export function AdminPrices() {
           <p className="mt-4 text-sm text-ink-soft">{t.admin.emptyTemplates}</p>
         ) : (
           <div className="mt-5 overflow-x-auto bg-cream-deep">
-            <table className="w-full min-w-[520px] text-left text-sm">
+            <table className="w-full min-w-[420px] text-left text-sm">
               <thead className="border-b border-ink/8 text-[11px] uppercase tracking-[0.16em] text-ink-soft">
                 <tr>
                   <th className="px-4 py-3 font-medium">{t.admin.name}</th>
                   <th className="px-4 py-3 font-medium">{t.admin.priceSom}</th>
-                  <th className="px-4 py-3 font-medium">{t.admin.priceTenge}</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,16 +104,7 @@ export function AdminPrices() {
                         min={0}
                         className={input}
                         value={item.priceSom}
-                        onChange={(e) => setRow(item.id, "priceSom", Number(e.target.value) || 0)}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
-                      <input
-                        type="number"
-                        min={0}
-                        className={input}
-                        value={item.priceTenge}
-                        onChange={(e) => setRow(item.id, "priceTenge", Number(e.target.value) || 0)}
+                        onChange={(e) => setRow(item.id, Number(e.target.value) || 0)}
                       />
                     </td>
                   </tr>

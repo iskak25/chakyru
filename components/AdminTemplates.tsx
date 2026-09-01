@@ -33,7 +33,6 @@ function blankTemplate(): InvitationTemplate {
     designer: "Chakyru",
     format: "site3d",
     priceSom: 0,
-    priceTenge: 0,
     eventTypes: ["toi"],
     featured: false,
     style: { ...blankStyle },
@@ -520,10 +519,6 @@ function FormFields({
         <label className="text-xs text-ink-soft">
           {t.admin.priceSom}
           <input type="number" className={`${input} mt-1`} value={draft.priceSom} onChange={(e) => patch({ priceSom: Number(e.target.value) || 0 })} />
-        </label>
-        <label className="text-xs text-ink-soft">
-          {t.admin.priceTenge}
-          <input type="number" className={`${input} mt-1`} value={draft.priceTenge} onChange={(e) => patch({ priceTenge: Number(e.target.value) || 0 })} />
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={Boolean(draft.featured)} onChange={(e) => patch({ featured: e.target.checked })} />

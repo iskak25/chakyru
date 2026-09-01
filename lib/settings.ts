@@ -1,11 +1,9 @@
 import type { SiteSettings } from "./types";
 
 export const DEFAULT_PRO_SOM = 1990;
-export const DEFAULT_PRO_TENGE = 4900;
 
 export const defaultSettings: SiteSettings = {
   proPriceSom: DEFAULT_PRO_SOM,
-  proPriceTenge: DEFAULT_PRO_TENGE,
   finikApiKey: "",
   finikAccountId: "",
   finikPrivateKey: "",
@@ -40,7 +38,6 @@ export function mergeSettings(stored?: Partial<SiteSettings> | Record<string, un
   const raw = stored ?? {};
   return {
     proPriceSom: num(raw.proPriceSom, env.proPriceSom),
-    proPriceTenge: num(raw.proPriceTenge, env.proPriceTenge),
     finikApiKey: text(raw.finikApiKey).trim() || env.finikApiKey,
     finikAccountId: text(raw.finikAccountId).trim() || env.finikAccountId,
     finikPrivateKey: text(raw.finikPrivateKey).trim() || env.finikPrivateKey,
@@ -52,9 +49,8 @@ export function mergeSettings(stored?: Partial<SiteSettings> | Record<string, un
 
 export type PublicPricing = {
   proPriceSom: number;
-  proPriceTenge: number;
 };
 
 export function publicPricing(settings: SiteSettings): PublicPricing {
-  return { proPriceSom: settings.proPriceSom, proPriceTenge: settings.proPriceTenge };
+  return { proPriceSom: settings.proPriceSom };
 }

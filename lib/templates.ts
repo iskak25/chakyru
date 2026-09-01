@@ -31,7 +31,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "site3d",
     priceSom: 11,
-    priceTenge: 4900,
     eventTypes: ["toi", "wedding"],
     featured: true,
     style: style(
@@ -48,7 +47,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Chakyru Studio",
     format: "site3d",
     priceSom: 0,
-    priceTenge: 0,
     eventTypes: ["toi", "wedding", "birthday", "anniversary"],
     style: style(
       "linear-gradient(165deg, #4a3b2c 0%, #2a2118 100%)",
@@ -64,7 +62,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "site3d",
     priceSom: 11,
-    priceTenge: 4900,
     eventTypes: ["wedding", "toi"],
     featured: true,
     style: style(
@@ -81,7 +78,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["toi", "kyz"],
     style: style(
       "linear-gradient(165deg, #3d2a18 0%, #1c140c 100%)",
@@ -97,7 +93,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 2900,
     eventTypes: ["wedding", "birthday", "toi"],
     featured: true,
     style: style(
@@ -114,7 +109,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["kyz", "wedding"],
     featured: true,
     style: style(
@@ -131,7 +125,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "videoMusic",
     priceSom: 590,
-    priceTenge: 500,
     eventTypes: ["kyz", "toi", "wedding"],
     style: style(
       "linear-gradient(165deg, #6b2d4a 0%, #3a1828 100%)",
@@ -147,7 +140,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "photo",
     priceSom: 250,
-    priceTenge: 500,
     eventTypes: ["beshik", "birthday"],
     style: style(
       "linear-gradient(165deg, #3d4a2c 0%, #1e2616 100%)",
@@ -163,7 +155,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "site3d",
     priceSom: 11,
-    priceTenge: 4900,
     eventTypes: ["anniversary", "toi"],
     featured: true,
     style: style(
@@ -180,7 +171,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Bishkek Type",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 2900,
     eventTypes: ["iftar"],
     style: style(
       "linear-gradient(165deg, #1e3a34 0%, #0d1f1b 100%)",
@@ -196,7 +186,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Chakyru Studio",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 2900,
     eventTypes: ["wedding", "toi", "anniversary"],
     featured: true,
     style: style(
@@ -213,7 +202,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Chakyru Studio",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["wedding", "toi"],
     featured: true,
     style: style("#ffffff", "rgba(255,255,255,0.96)", "#c4a35e", "#c4a35e", "#b8a078", {
@@ -228,7 +216,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["wedding", "anniversary"],
     featured: true,
     style: style("#ffffff", "rgba(255,255,255,0.96)", "#c5b48a", "#9a8b6a", "#b0a488", {
@@ -243,7 +230,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["wedding", "kyz"],
     featured: true,
     style: style("#fff8f4", "rgba(255,248,244,0.96)", "#d4a090", "#c4897a", "#c4a090", {
@@ -258,7 +244,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 2900,
     eventTypes: ["wedding", "toi", "birthday"],
     featured: true,
     style: style("#fbf7f0", "rgba(251,247,240,0.96)", "#b8924a", "#b8924a", "#c4b090", {
@@ -273,7 +258,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Bishkek Type",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 2900,
     eventTypes: ["wedding", "beshik", "anniversary"],
     featured: true,
     style: style("#f6f8f5", "rgba(246,248,245,0.96)", "#8aa890", "#6a8a72", "#90a898", {
@@ -288,7 +272,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Bishkek Type",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["toi", "wedding"],
     featured: true,
     style: style(
@@ -305,7 +288,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["kyz", "wedding"],
     featured: true,
     style: style(
@@ -322,7 +304,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "site3d",
     priceSom: 11,
-    priceTenge: 4900,
     eventTypes: ["toi", "wedding", "anniversary"],
     featured: true,
     style: style(
@@ -339,7 +320,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["toi", "wedding"],
     style: style(
       "linear-gradient(165deg, #4e0d11 0%, #2a1210 100%)",
@@ -355,7 +335,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 2900,
     eventTypes: ["beshik", "birthday"],
     featured: true,
     style: style(
@@ -372,7 +351,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["kyz", "wedding", "birthday"],
     style: style(
       "linear-gradient(165deg, #5c2430 0%, #2c1218 100%)",
@@ -388,7 +366,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "site3d",
     priceSom: 1,
-    priceTenge: 1,
     eventTypes: ["toi", "kyz", "anniversary"],
     style: style(
       "linear-gradient(165deg, #3d2a18 0%, #1c140c 100%)",
@@ -404,7 +381,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "videoVoice",
     priceSom: 1,
-    priceTenge: 500,
     eventTypes: ["wedding", "kyz"],
     style: style(
       "linear-gradient(165deg, #7a3040 0%, #3a181e 100%)",
@@ -420,7 +396,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Chakyru Studio",
     format: "videoMusic",
     priceSom: 590,
-    priceTenge: 1500,
     eventTypes: ["toi", "wedding", "anniversary"],
     style: style(
       "linear-gradient(165deg, #0d1117 0%, #1b2430 100%)",
@@ -436,7 +411,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Bishkek Type",
     format: "videoMusic",
     priceSom: 590,
-    priceTenge: 1500,
     eventTypes: ["toi", "wedding"],
     style: style(
       "linear-gradient(165deg, #1b3a4a 0%, #0c1c24 100%)",
@@ -452,7 +426,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "videoVoice",
     priceSom: 1,
-    priceTenge: 500,
     eventTypes: ["anniversary"],
     style: style(
       "linear-gradient(165deg, #2c2414 0%, #12100a 100%)",
@@ -468,7 +441,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Studio Nur",
     format: "photo",
     priceSom: 250,
-    priceTenge: 500,
     eventTypes: ["birthday", "beshik"],
     style: style(
       "linear-gradient(165deg, #4a6a8a 0%, #243848 100%)",
@@ -484,7 +456,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "photo",
     priceSom: 250,
-    priceTenge: 500,
     eventTypes: ["wedding", "kyz", "toi"],
     style: style(
       "linear-gradient(165deg, #f3e6d8 0%, #c9b49a 100%)",
@@ -500,7 +471,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Amina K.",
     format: "photo",
     priceSom: 250,
-    priceTenge: 500,
     eventTypes: ["wedding", "toi"],
     style: style(
       "linear-gradient(165deg, #1c3326 0%, #0f1f16 100%)",
@@ -516,7 +486,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Chakyru Studio",
     format: "photo",
     priceSom: 250,
-    priceTenge: 500,
     eventTypes: ["wedding", "birthday", "anniversary"],
     style: style(
       "linear-gradient(165deg, #f7f4ef 0%, #e4ddd2 100%)",
@@ -532,7 +501,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Meerim Design",
     format: "photo",
     priceSom: 250,
-    priceTenge: 500,
     eventTypes: ["kyz", "wedding"],
     style: style(
       "linear-gradient(165deg, #8a3a4a 0%, #4a1c28 100%)",
@@ -548,7 +516,6 @@ const seedTemplates: InvitationTemplate[] = [
     designer: "Bishkek Type",
     format: "videoVoice",
     priceSom: 1,
-    priceTenge: 1500,
     eventTypes: ["iftar"],
     style: style(
       "linear-gradient(165deg, #243028 0%, #101612 100%)",
@@ -561,18 +528,18 @@ const seedTemplates: InvitationTemplate[] = [
 ];
 
 const FORMAT_PRICE = {
-  photo: { priceSom: 250, priceTenge: 500 },
-  videoMusic: { priceSom: 590, priceTenge: 1500 },
-  videoVoice: { priceSom: 590, priceTenge: 1500 },
-  site3d: { priceSom: 590, priceTenge: 1500 },
+  photo: { priceSom: 250 },
+  videoMusic: { priceSom: 590 },
+  videoVoice: { priceSom: 590 },
+  site3d: { priceSom: 590 },
 } as const;
 
 const FREE_TEMPLATE_IDS = new Set(["klassika"]);
 
 function applyCatalogPrices(list: InvitationTemplate[]): InvitationTemplate[] {
   return list.map((item) => {
-    if (FREE_TEMPLATE_IDS.has(item.id)) return { ...item, priceSom: 0, priceTenge: 0 };
-    return { ...item, ...FORMAT_PRICE[item.format] };
+    if (FREE_TEMPLATE_IDS.has(item.id)) return { ...item, priceSom: 0 };
+    return { ...item, priceSom: FORMAT_PRICE[item.format].priceSom };
   });
 }
 
@@ -591,17 +558,17 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
   const merged = live.map((item) => {
     const seed = seedById.get(item.id);
     if (!seed) return item;
+    const { priceTenge: _tenge, ...live } = item as InvitationTemplate & { priceTenge?: number };
     return {
       ...seed,
-      ...item,
+      ...live,
       name: {
-        ky: item.name?.ky || seed.name.ky,
-        ru: item.name?.ru || seed.name.ru,
+        ky: live.name?.ky || seed.name.ky,
+        ru: live.name?.ru || seed.name.ru,
       },
-      style: { ...seed.style, ...item.style },
-      format: item.format || seed.format,
-      priceSom: pickStoredPrice(item.priceSom, seed.priceSom),
-      priceTenge: pickStoredPrice(item.priceTenge, seed.priceTenge),
+      style: { ...seed.style, ...live.style },
+      format: live.format || seed.format,
+      priceSom: pickStoredPrice(live.priceSom, seed.priceSom),
     };
   });
   const seen = new Set(merged.map((item) => item.id));
