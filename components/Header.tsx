@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { locales } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
@@ -11,14 +12,26 @@ import { Logo } from "./Logo";
 
 export function Header() {
   const { locale, t, setLocale } = useI18n();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [user, setUserState] = useState<User | null>(null);
+  const isHome = pathname === "/";
+  const overHero = isHome && !scrolled && !open;
+  const tone = overHero ? "cream" : "ink";
 
   useEffect(() => {
     const sync = () => setUserState(getUser());
     sync();
     window.addEventListener("chakyru-sync", sync);
     return () => window.removeEventListener("chakyru-sync", sync);
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 36);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -45,79 +58,90 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-page/80">
-        <div className="relative mx-auto flex h-20 max-w-[1400px] items-center justify-between px-5">
+      <header
+        className={`z-50 transition-colors duration-500 ${
+          isHome ? "fixed inset-x-0 top-0" : "sticky top-0"
+        } ${overHero ? "over-hero bg-transparent text-gold-bright" : "bg-page/95 text-ink"}`}
+      >
+        <div className="relative mx-auto flex h-[76px] max-w-[1320px] items-center justify-between px-5 sm:h-[88px] sm:px-8 lg:px-12 xl:px-16">
           <button
             type="button"
-            className="label transition-colors duration-200 hover:text-ink"
+            className={`text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50 ${
+              overHero ? "text-gold-bright" : ""
+            }`}
             onClick={() => setOpen(true)}
           >
             Menu
           </button>
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <Logo className="h-16 w-auto" />
+            <Logo tone={tone} />
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-5 sm:gap-7">
             <div className="hidden gap-3 sm:flex">
               {locales.map((item) => (
                 <button
                   key={item.code}
                   type="button"
                   onClick={() => setLocale(item.code)}
-                  className={`label transition-colors duration-200 ${locale === item.code ? "text-ink" : "hover:text-ink"}`}
+                  className={`label transition-opacity duration-200 hover:opacity-55 ${
+                    locale === item.code ? "opacity-100" : "opacity-50"
+                  } ${overHero ? "text-gold-bright" : ""}`}
                 >
                   {item.code}
                 </button>
               ))}
             </div>
-            {user ? (
-              <Link href="/dashboard" className="label hidden transition-colors duration-200 hover:text-ink md:inline">
-                {t.nav.mine}
-              </Link>
-            ) : (
-              <Link href="/login" className="label hidden transition-colors duration-200 hover:text-ink md:inline">
-                {t.nav.login}
-              </Link>
-            )}
+            <Link
+              href="/templates"
+              className={`hidden text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50 md:inline ${
+                overHero ? "text-gold-bright" : ""
+              }`}
+            >
+              Book
+            </Link>
           </div>
         </div>
+        {!overHero ? <div className="h-px bg-ink/10" /> : null}
       </header>
 
       {open ? (
-        <div className="fixed inset-0 z-[80]">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/35"
-            aria-label="Close"
-            onClick={() => setOpen(false)}
-          />
-          <div className="menu-drawer relative flex h-full w-[30vw] min-w-[17rem] flex-col bg-menu text-gold-bright shadow-[8px_0_40px_rgba(0,0,0,0.28)]">
-            <div className="flex h-20 shrink-0 items-center px-6">
-              <button
-                type="button"
-                className="text-[10px] uppercase tracking-[0.14em] text-[#5c5148] transition-colors duration-200 hover:text-gold-bright"
+        <div className="menu-fade fixed inset-0 z-[80] flex flex-col bg-page text-ink">
+          <div className="relative mx-auto flex h-[76px] w-full max-w-[1320px] items-center justify-between px-5 sm:h-[88px] sm:px-8 lg:px-12 xl:px-16">
+            <button
+              type="button"
+              className="label hover:opacity-55"
+              onClick={() => setOpen(false)}
+            >
+              Close
+            </button>
+            <Logo onClick={() => setOpen(false)} />
+            <span className="label w-10" />
+          </div>
+          <nav className="flex flex-1 flex-col items-center justify-center px-6 pb-16">
+            {links.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
                 onClick={() => setOpen(false)}
+                className="font-serif py-2 text-center text-[40px] italic leading-none tracking-[-0.02em] transition-opacity duration-300 hover:opacity-40 sm:text-[56px] lg:text-[64px]"
               >
-                Menu
-              </button>
-            </div>
-            <nav className="flex flex-1 flex-col justify-center px-6 pb-10">
-              {links.map((item) => (
+                {item.label}
+              </Link>
+            ))}
+            {user ? (
+              <>
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  href="/dashboard"
                   onClick={() => setOpen(false)}
-                  className="font-serif border-b border-[#8c7b6c] py-4 text-center text-[22px] uppercase leading-tight tracking-[0.08em] sm:text-[26px]"
+                  className="font-serif py-2 text-center text-[40px] italic leading-none tracking-[-0.02em] transition-opacity duration-300 hover:opacity-40 sm:text-[56px]"
                 >
-                  {item.label}
+                  {t.nav.mine}
                 </Link>
-              ))}
-              {user ? (
                 <button
                   type="button"
-                  className="font-serif border-b border-[#8c7b6c] py-4 text-center text-[22px] uppercase leading-tight tracking-[0.08em] sm:text-[26px]"
+                  className="font-serif py-2 text-center text-[40px] italic leading-none tracking-[-0.02em] transition-opacity duration-300 hover:opacity-40 sm:text-[56px]"
                   onClick={() => {
                     void logout();
                     setOpen(false);
@@ -125,21 +149,29 @@ export function Header() {
                 >
                   {t.nav.logout}
                 </button>
-              ) : null}
-              <div className="mt-8 flex justify-center gap-5">
-                {locales.map((item) => (
-                  <button
-                    key={item.code}
-                    type="button"
-                    onClick={() => setLocale(item.code)}
-                    className={`text-[10px] uppercase tracking-[0.16em] ${locale === item.code ? "text-gold-bright" : "text-[#5c5148]"}`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </nav>
-          </div>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="font-serif py-2 text-center text-[40px] italic leading-none tracking-[-0.02em] transition-opacity duration-300 hover:opacity-40 sm:text-[56px]"
+              >
+                {t.nav.login}
+              </Link>
+            )}
+            <div className="mt-12 flex justify-center gap-6">
+              {locales.map((item) => (
+                <button
+                  key={item.code}
+                  type="button"
+                  onClick={() => setLocale(item.code)}
+                  className={`label ${locale === item.code ? "text-ink" : "text-meta"}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </nav>
         </div>
       ) : null}
     </>

@@ -3,12 +3,13 @@
 import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
+import { fetchTemplateAccess } from "@/lib/accessClient";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
-import { markPaidTemplate, unlockPaidTemplate } from "@/lib/payAccess";
+import { unlockPaidTemplate } from "@/lib/payAccess";
 
 function editorHref(templateId: string) {
-  return `/create/new?template=${encodeURIComponent(templateId)}&paid=1`;
+  return `/create/new?template=${encodeURIComponent(templateId)}`;
 }
 
 function ReturnInner() {
@@ -21,10 +22,7 @@ function ReturnInner() {
     if (started.current) return;
     started.current = true;
     const pid = search.get("pid") || "";
-    const plan = (search.get("plan") === "pro" ? "pro" : "standard") as "standard" | "pro";
-    const template =
-      search.get("template") || sessionStorage.getItem("chakyru-edit-template") || "";
-    if (template) markPaidTemplate(template, pid);
+    const templateHint = search.get("template") || "";
 
     let cancelled = false;
 
@@ -45,32 +43,51 @@ function ReturnInner() {
         return;
       }
 
-      let grantedPlan = plan;
-      let grantedTemplate = template;
-      try {
-        const res = await fetch("/api/pay/confirm", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ pid, templateId: template, plan }),
-        });
-        const data = (await res.json().catch(() => null)) as {
-          templateId?: string | null;
-          plan?: string | null;
-        } | null;
-        if (data?.templateId) grantedTemplate = data.templateId;
-        if (data?.plan === "pro") grantedPlan = "pro";
-      } catch {
-        /* open editor anyway */
+      let grantedTemplate = templateHint;
+      let grantedPlan: "standard" | "pro" = "standard";
+      const deadline = Date.now() + 12000;
+      while (!cancelled && Date.now() < deadline) {
+        try {
+          const res = await fetch("/api/pay/confirm", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ pid }),
+          });
+          const data = (await res.json().catch(() => null)) as {
+            paid?: boolean;
+            templateId?: string | null;
+            plan?: string | null;
+          } | null;
+          if (data?.paid) {
+            if (data.templateId) grantedTemplate = data.templateId;
+            if (data.plan === "pro") grantedPlan = "pro";
+            break;
+          }
+        } catch {
+          /* retry */
+        }
+        if (grantedTemplate) {
+          const access = await fetchTemplateAccess(grantedTemplate).catch(() => null);
+          if (access?.allowed) {
+            grantedPlan = access.accessType === "pro" ? "pro" : "standard";
+            break;
+          }
+        }
+        await new Promise((r) => window.setTimeout(r, 800));
       }
 
       if (cancelled) return;
       if (grantedTemplate) {
-        markPaidTemplate(grantedTemplate, pid);
-        unlockPaidTemplate(grantedTemplate, grantedPlan);
-        router.replace(editorHref(grantedTemplate));
+        const access = await fetchTemplateAccess(grantedTemplate).catch(() => null);
+        if (access?.allowed) {
+          unlockPaidTemplate(grantedTemplate, grantedPlan);
+          router.replace(editorHref(grantedTemplate));
+          return;
+        }
+        router.replace(`/templates/${encodeURIComponent(grantedTemplate)}`);
         return;
       }
       router.replace("/templates");

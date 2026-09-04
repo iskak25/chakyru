@@ -12,8 +12,8 @@ const previewBase = {
   eventType: "toi" as const,
   names: "Манас & Каныкей",
   hosts: "",
-  date: "2012-12-12",
-  time: "17:00",
+  date: "2026-10-06",
+  time: "18:00",
   venue: "«Ала-Тоо»",
   address: "Ресторанный комплекс",
   city: "Бишкек",
@@ -84,7 +84,7 @@ export function TemplateCard({
         </div>
       </div>
       <div className="mt-3 text-center">
-        <h3 className="font-serif text-xl uppercase leading-tight">{name}</h3>
+        <h3 className="font-serif text-[22px] leading-tight tracking-[-0.02em]">{name}</h3>
         <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-meta">{t.preview}</p>
       </div>
     </>

@@ -20,14 +20,17 @@ service cloud.firestore {
         ];
     }
 
+    function admin() {
+      return isAdminUser() || isBootstrapAdmin();
+    }
+
     match /users/{uid} {
-      allow read: if signedIn() && (request.auth.uid == uid || isAdminUser() || isBootstrapAdmin());
+      allow read: if signedIn() && (request.auth.uid == uid || admin());
       allow create: if signedIn()
         && request.auth.uid == uid
         && request.resource.data.accountRole == 'user';
       allow update: if signedIn() && (
-        isAdminUser()
-        || isBootstrapAdmin()
+        admin()
         || (
           request.auth.uid == uid
           && request.resource.data.accountRole == resource.data.accountRole
@@ -35,6 +38,11 @@ service cloud.firestore {
           && request.resource.data.get('templates', []) == resource.data.get('templates', [])
         )
       );
+
+      match /templateAccess/{templateId} {
+        allow read: if signedIn() && (request.auth.uid == uid || admin());
+        allow write: if false;
+      }
     }
 
     match /payments/{id} {
@@ -42,13 +50,32 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
+    match /purchases/{id} {
+      allow read: if signedIn() && (
+        request.auth.uid == resource.data.userId
+        || request.auth.uid == resource.data.uid
+        || admin()
+      );
+      allow create, update, delete: if false;
+    }
+
+    match /userTemplatePrices/{id} {
+      allow read: if signedIn() && (resource.data.userId == request.auth.uid || admin());
+      allow write: if admin();
+    }
+
+    match /invitations/{id} {
+      allow read: if true;
+      allow create, update, delete: if false;
+    }
+
     match /catalog/payments {
-      allow read, write: if isAdminUser() || isBootstrapAdmin();
+      allow read, write: if admin();
     }
 
     match /catalog/{docId} {
       allow read: if true;
-      allow write: if isAdminUser() || isBootstrapAdmin();
+      allow write: if admin();
     }
   }
 }

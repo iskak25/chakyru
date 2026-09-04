@@ -213,6 +213,14 @@ export async function setUserPlan(uid: string, plan: PlanId) {
   );
 }
 
+const TEMPLATES_KEY = "chakyru-catalog-templates";
+const LESSONS_KEY = "chakyru-catalog-lessons";
+
+function writeBundle<T>(key: string, items: T[], updatedAt: number) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(key, JSON.stringify({ items, updatedAt }));
+}
+
 export function watchCatalogTemplates(
   onItems: (items: InvitationTemplate[]) => void,
   onError?: (err: unknown) => void,
@@ -224,13 +232,69 @@ export function watchCatalogTemplates(
     (snap) => {
       const data = snap.data();
       const items = data?.items;
-      if (!Array.isArray(items)) return;
-      const remoteAt = Number(data?.updatedAt) || Date.parse(String(data?.updatedAtIso ?? data?.updatedAt ?? "")) || 0;
       const local = readLocalTemplates();
-      if (local && local.updatedAt >= remoteAt) {
+      if (!Array.isArray(items) || items.length === 0) {
+        // #region agent log
+        fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+          body: JSON.stringify({
+            sessionId: "c008f9",
+            hypothesisId: "J",
+            location: "lib/db.ts:watchCatalogTemplates",
+            message: "catalog source",
+            data: { source: "remote-empty", hadLocal: Boolean(local?.items?.length) },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
+        return;
+      }
+      const remoteAt = Number(data?.updatedAt) || Date.parse(String(data?.updatedAtIso ?? data?.updatedAt ?? "")) || 0;
+      const localAt = local?.updatedAt || 0;
+      if (local?.items?.length && localAt > remoteAt) {
+        // #region agent log
+        fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+          body: JSON.stringify({
+            sessionId: "c008f9",
+            hypothesisId: "J",
+            location: "lib/db.ts:watchCatalogTemplates",
+            message: "catalog source",
+            data: {
+              source: "local-newer",
+              localAt,
+              remoteAt,
+              sample: local.items.slice(0, 4).map((item) => ({ id: item.id, priceSom: item.priceSom })),
+            },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
         onItems(local.items);
         return;
       }
+      writeBundle(TEMPLATES_KEY, items as InvitationTemplate[], remoteAt || Date.now());
+      // #region agent log
+      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+        body: JSON.stringify({
+          sessionId: "c008f9",
+          hypothesisId: "J",
+          location: "lib/db.ts:watchCatalogTemplates",
+          message: "catalog source",
+          data: {
+            source: "remote",
+            localAt,
+            remoteAt,
+            sample: (items as InvitationTemplate[]).slice(0, 4).map((item) => ({ id: item.id, priceSom: item.priceSom })),
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       onItems(items as InvitationTemplate[]);
     },
     (err) => onError?.(err),
@@ -251,18 +315,16 @@ export function watchCatalogLessons(
       if (!Array.isArray(items)) return;
       const remoteAt = Number(data?.updatedAt) || Date.parse(String(data?.updatedAtIso ?? data?.updatedAt ?? "")) || 0;
       const local = readLocalLessons();
-      if (local && local.updatedAt > remoteAt) {
+      if (local?.items?.length && local.updatedAt > remoteAt) {
         onItems(local.items);
         return;
       }
+      writeBundle(LESSONS_KEY, items as Lesson[], remoteAt || Date.now());
       onItems(items as Lesson[]);
     },
     (err) => onError?.(err),
   );
 }
-
-const TEMPLATES_KEY = "chakyru-catalog-templates";
-const LESSONS_KEY = "chakyru-catalog-lessons";
 
 type CatalogBundle<T> = { items: T[]; updatedAt: number };
 
@@ -298,14 +360,94 @@ export function readLocalLessons() {
   return readBundle<Lesson>(LESSONS_KEY);
 }
 
+function jsonBytes(value: unknown) {
+  return new TextEncoder().encode(JSON.stringify(value)).length;
+}
+
+function dropInline(value?: string) {
+  if (!value) return "";
+  if (value.startsWith("data:") || value.startsWith("blob:")) return "";
+  return value;
+}
+
+function forFirestore(items: InvitationTemplate[]): InvitationTemplate[] {
+  return items.map((item) => {
+    const canvas = item.canvas;
+    if (!canvas) return item;
+    const gallery: Record<string, string> = {};
+    for (const [key, src] of Object.entries(canvas.gallery ?? {})) {
+      const next = dropInline(src);
+      if (next) gallery[key] = next;
+    }
+    return {
+      ...item,
+      canvas: {
+        ...canvas,
+        coverImage: dropInline(canvas.coverImage),
+        musicUrl: dropInline(canvas.musicUrl),
+        gallery,
+        extras: (canvas.extras ?? []).map((extra) => ({
+          ...extra,
+          src: dropInline(extra.src),
+          url: dropInline(extra.url),
+        })),
+      },
+    };
+  });
+}
+
 export async function saveCatalogTemplates(items: InvitationTemplate[]) {
+  const started = Date.now();
+  const rawBytes = jsonBytes(items);
+  let remoteItems = forFirestore(items);
+  let remoteBytes = jsonBytes(remoteItems);
+  if (remoteBytes > 900_000) {
+    remoteItems = remoteItems.map(({ canvas: _canvas, ...rest }) => rest);
+    remoteBytes = jsonBytes(remoteItems);
+  }
   const updatedAt = Date.now();
+  // #region agent log
+  fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+    body: JSON.stringify({
+      sessionId: "c008f9",
+      hypothesisId: "K",
+      location: "lib/db.ts:saveCatalogTemplates",
+      message: "catalog save payload",
+      data: { count: items.length, rawBytes, remoteBytes },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
   if (typeof window !== "undefined") {
-    localStorage.setItem(TEMPLATES_KEY, JSON.stringify({ items, updatedAt }));
+    try {
+      localStorage.setItem(TEMPLATES_KEY, JSON.stringify({ items: remoteItems, updatedAt }));
+    } catch {
+      /* quota */
+    }
   }
   const db = getFirebaseDb();
   if (!db) return { remote: false as const };
-  await setDoc(doc(db, "catalog", "templates"), { items, updatedAt, updatedAtIso: new Date(updatedAt).toISOString() });
+  await setDoc(doc(db, "catalog", "templates"), {
+    items: remoteItems,
+    updatedAt,
+    updatedAtIso: new Date(updatedAt).toISOString(),
+  });
+  // #region agent log
+  fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+    body: JSON.stringify({
+      sessionId: "c008f9",
+      hypothesisId: "K",
+      location: "lib/db.ts:saveCatalogTemplates:done",
+      message: "catalog save finished",
+      data: { ms: Date.now() - started, remoteBytes },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
   return { remote: true as const };
 }
 

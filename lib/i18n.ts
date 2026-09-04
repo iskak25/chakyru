@@ -32,6 +32,8 @@ const dict = {
       stat2: "5 мүнөт",
       stat3: "RSVP",
     },
+    chapterQuote: "Жер, үй-бүлө жана салтанат — бир чакырууда.",
+    place: "Bishkek · 42.87°N",
     featuresTitle: "Эмне үчүн Chakyru",
     featuresSub: "Invite.kg студиясы менен SHAQYRU24 сервисин бириктирдик",
     features: [
@@ -68,6 +70,7 @@ const dict = {
       edit: "Өзгөртүү",
       paywall: "Шаблонду карап чыксаңыз болот. Өзгөртүү үчүн төлөм керек. Төлөмсүз өзгөртө ала турган — админ гана.",
       pay: "Төлөмдү ачуу",
+      purchased: "Сатылып алынган",
     },
     plans: {
       standard: {
@@ -242,6 +245,16 @@ const dict = {
       weInvite: "Тойго чакырабыз",
       guestWishes: "Коноктордун каалоолору",
       guestsWord: "Коноктор",
+      saveTheDate: "Save the Date",
+      details: "Деталдар",
+      dressCode: "Дресс-код",
+      dressHint: "Сураныч, палитрага жакын кийим тандаңыз.",
+      program: "Күндүн программасы",
+      gifts: "Гүлдун ордуна конверт.",
+      phoneCta: "Чалуу",
+      seeYou: "Жолугалы!",
+      friends: "Достор!",
+      dateOfEvent: "Иш-чаранын күнү",
     },
     guest: {
       youAreInvited: "Сизди чакырабыз",
@@ -327,7 +340,7 @@ const dict = {
       lessons: "Сабактар",
       settings: "Жөндөөлөр",
       prices: "Баалар",
-      pricesHint: "Pro жана ар шаблондун баасы ушул жерден. Сайт менен Finik ушул сандарды алат.",
+      pricesHint: "Бул жерде каталогдун учурдагы баасы. Эски сатып алуулардын баасы өзгөрбөйт.",
       proPriceSom: "Pro, сом",
       payments: "Төлөм / Finik",
       finikHint: "openssl genrsa менен ачкыч жасап, public key'ди Finik кабинетине жүктөңүз. API key, account id жана private key'ди бул жерге жазыңыз.",
@@ -336,6 +349,7 @@ const dict = {
       save: "Сактоо",
       saved: "Сакталды",
       savedLocal: "Жергиликтүү сакталды",
+      saving: "Сакталууда…",
       error: "Сакталган жок. Firestore'ду текшериңиз.",
       needFirestore: "Firestore иштетилген эмес же эрежелер туура эмес.",
       role: "Роль",
@@ -358,6 +372,10 @@ const dict = {
       designer: "Дизайнер",
       format: "Формат",
       priceSom: "Баа, сом",
+      userPrice: "Жеке баа",
+      userPriceHint: "Бул баа бир колдонуучуга гана. Каталогдун базалык баасы өзгөрбөйт.",
+      userId: "User ID",
+      specialPrice: "Жеке баа, сом",
       featured: "Башкы бетте",
       events: "Окуялар",
       colors: "Дизайн түстөрү",
@@ -376,6 +394,22 @@ const dict = {
         arches: "Үч арка",
         heroTimer: "Сүрөт + таймер",
         bloom: "Ромашка / алтын",
+        storybook: "Полароид / окуя",
+        poppy: "Гүл / жыртык кагаз",
+        velvet: "Баркыт",
+        watermark: "Алтын саат",
+        satin: "Олива / атлас",
+        archive: "Монохром арка",
+        atelier: "Минимал",
+        dusk: "Көмүр / крем",
+        splash: "Сүрөт-обложка",
+        engage: "Save the Date",
+        splitbrush: "Боёк / сплит",
+        marble: "Мрамор / арка",
+        oliveWave: "Олива / толкун",
+        monoInk: "Моно сыя",
+        roundedMono: "Тегерек моно",
+        softInvite: "Жумшак чакыруу",
       },
       youtube: "YouTube шилтеме же ID",
       minutes: "Мүнөт",
@@ -413,6 +447,8 @@ const dict = {
       stat2: "5 минут",
       stat3: "RSVP",
     },
+    chapterQuote: "Земля, семья и торжество — в одном приглашении.",
+    place: "Bishkek · 42.87°N",
     featuresTitle: "Почему Chakyru",
     featuresSub: "Гибрид студии Invite.kg и сервиса SHAQYRU24",
     features: [
@@ -449,6 +485,7 @@ const dict = {
       edit: "Изменить",
       paywall: "Шаблон можно смотреть. Чтобы менять текст и дизайн, нужна оплата. Без оплаты правит только админ.",
       pay: "Перейти к оплате",
+      purchased: "Куплено",
     },
     plans: {
       standard: {
@@ -623,6 +660,16 @@ const dict = {
       weInvite: "Приглашаем на свадьбу",
       guestWishes: "Пожелания гостей",
       guestsWord: "Гостей",
+      saveTheDate: "Save the Date",
+      details: "Детали",
+      dressCode: "Дресс-код",
+      dressHint: "Просим выбрать наряд в этой палитре.",
+      program: "Программа дня",
+      gifts: "Вместо цветов — конверт.",
+      phoneCta: "Позвонить",
+      seeYou: "До встречи!",
+      friends: "Друзья!",
+      dateOfEvent: "Дата события",
     },
     guest: {
       youAreInvited: "Приглашаем вас",
@@ -708,7 +755,7 @@ const dict = {
       lessons: "Уроки",
       settings: "Настройки",
       prices: "Цены",
-      pricesHint: "Цена Pro и каждого шаблона задаётся здесь. Сайт и Finik берут эти суммы.",
+      pricesHint: "Здесь задаётся текущая цена каталога. Уже созданные покупки не меняются.",
       proPriceSom: "Pro, сом",
       payments: "Оплата / Finik",
       finikHint: "Сгенерируйте ключ (openssl genrsa), загрузите public key в кабинет Finik и вставьте сюда API key, account id и private key.",
@@ -717,6 +764,7 @@ const dict = {
       save: "Сохранить",
       saved: "Сохранено",
       savedLocal: "Сохранено на этом устройстве",
+      saving: "Сохранение…",
       error: "Не удалось сохранить. Проверьте Firestore.",
       needFirestore: "Firestore не включён или правила неверны.",
       role: "Роль",
@@ -739,6 +787,10 @@ const dict = {
       designer: "Дизайнер",
       format: "Формат",
       priceSom: "Цена, сом",
+      userPrice: "Индивидуальная цена",
+      userPriceHint: "Эта цена только для выбранного пользователя. Базовая цена каталога не меняется.",
+      userId: "User ID",
+      specialPrice: "Индивидуальная цена, сом",
       featured: "На главной",
       events: "События",
       colors: "Цвета дизайна",
@@ -757,6 +809,22 @@ const dict = {
         arches: "Три арки",
         heroTimer: "Фото + таймер",
         bloom: "Ромашка / золото",
+        storybook: "Полароид / история",
+        poppy: "Цветы / рваная бумага",
+        velvet: "Бархат",
+        watermark: "Золотой час",
+        satin: "Олива / атлас",
+        archive: "Монохром / арка",
+        atelier: "Минимал",
+        dusk: "Уголь / крем",
+        splash: "Фото-обложка",
+        engage: "Save the Date",
+        splitbrush: "Кисть / сплит",
+        marble: "Мрамор / арка",
+        oliveWave: "Олива / волна",
+        monoInk: "Моно чернила",
+        roundedMono: "Скруглённый моно",
+        softInvite: "Мягкое приглашение",
       },
       youtube: "Ссылка YouTube или ID",
       minutes: "Минуты",
@@ -774,6 +842,56 @@ export type Dictionary = (typeof dict)[Locale];
 
 export function getDict(locale: Locale): Dictionary {
   return dict[locale];
+}
+
+const KY_MONTHS = [
+  "январь",
+  "февраль",
+  "март",
+  "апрель",
+  "май",
+  "июнь",
+  "июль",
+  "август",
+  "сентябрь",
+  "октябрь",
+  "ноябрь",
+  "декабрь",
+];
+
+const RU_MONTHS = [
+  "января",
+  "февраля",
+  "марта",
+  "апреля",
+  "мая",
+  "июня",
+  "июля",
+  "августа",
+  "сентября",
+  "октября",
+  "ноября",
+  "декабря",
+];
+
+export function formatInviteDate(date: string, locale: string) {
+  if (!date) return "";
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date.trim());
+  if (!match) return date;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return date;
+  if (locale === "ru") return `${day} ${RU_MONTHS[month - 1]} ${year} г.`;
+  return `${year}-ж., ${day}-${KY_MONTHS[month - 1]}`;
+}
+
+export function formatInviteDay(iso: string) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  return `${day}.${month}.${d.getFullYear()}`;
 }
 
 export function formatPrice(locale: Locale, som: number) {

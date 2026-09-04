@@ -14,8 +14,8 @@ import { useI18n } from "@/lib/locale";
 import { useInviteHistory } from "@/lib/useInviteHistory";
 import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
-import { canEditInvitation, canEditTemplate } from "@/lib/auth";
-import { restorePaidTemplate, paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
+import { canEditInvitation } from "@/lib/auth";
+import { fetchTemplateAccess } from "@/lib/accessClient";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
@@ -35,25 +35,19 @@ export default function EditorPage() {
   useEffect(() => {
     if (!inv) return;
     let cancelled = false;
-    const sync = () => {
+    const sync = async () => {
       const user = getUser();
-      if (user?.auth === "google" && inv.ownerId === user.id) {
-        unlockPaidTemplate(inv.templateId);
-      } else if (paidTemplateId() === inv.templateId) {
-        unlockPaidTemplate(inv.templateId);
-      }
-      setAllowed(canEditInvitation(getUser(), inv) || canEditTemplate(getUser(), inv.templateId));
-    };
-    sync();
-    void restorePaidTemplate(inv.templateId).then((ok) => {
+      const owns = Boolean(user && inv.ownerId === user.id);
+      const access = await fetchTemplateAccess(inv.templateId);
       if (cancelled) return;
-      if (ok) unlockPaidTemplate(inv.templateId);
-      sync();
-    });
-    window.addEventListener("chakyru-sync", sync);
+      setAllowed(Boolean(owns && access?.allowed && canEditInvitation(user, inv)));
+    };
+    void sync();
+    const onSync = () => void sync();
+    window.addEventListener("chakyru-sync", onSync);
     return () => {
       cancelled = true;
-      window.removeEventListener("chakyru-sync", sync);
+      window.removeEventListener("chakyru-sync", onSync);
     };
   }, [inv]);
 
@@ -100,7 +94,7 @@ export default function EditorPage() {
           <h1 className="font-serif mt-2 text-4xl uppercase">{t.editor.title}</h1>
           <p className="mt-4 max-w-md text-sm leading-7 text-ink-soft">{t.templateView.paywall}</p>
           <Link
-            href={`/pricing?from=${encodeURIComponent(inv.templateId)}`}
+            href={`/templates/${encodeURIComponent(inv.templateId)}`}
             className="mt-6 inline-block bg-forest px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-cream"
           >
             {t.templateView.pay}

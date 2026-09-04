@@ -15,6 +15,7 @@ function fieldText(fields: Record<string, unknown>, ...keys: string[]) {
 export async function POST(req: NextRequest) {
   try {
     const admin = await import("@/lib/firebaseAdmin");
+    const { fulfillPurchase } = await import("@/lib/server/purchases");
     const raw = await req.text();
     let body: FinikWebhook = {};
     try {
@@ -57,12 +58,10 @@ export async function POST(req: NextRequest) {
     if (!paymentId) {
       return NextResponse.json({ error: "payment" }, { status: 400 });
     }
-    const done = await admin.fulfillPayment({
+    const done = await fulfillPurchase({
       paymentId,
       amount,
-      uid: fieldText(fields, "uid") || undefined,
-      plan: fieldText(fields, "plan") || undefined,
-      templateId: fieldText(fields, "templateId") || undefined,
+      transactionId: typeof body.transactionId === "string" ? body.transactionId : undefined,
     });
     if (!done) {
       return NextResponse.json({ error: "fulfill" }, { status: 500 });

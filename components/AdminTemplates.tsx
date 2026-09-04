@@ -67,10 +67,6 @@ export function AdminTemplates() {
 
   useEffect(() => {
     if (dirty.current) return;
-    if (!catalog.length && loaded.current) {
-      setList([]);
-      return;
-    }
     if (!catalog.length) return;
     loaded.current = true;
     setList(catalog.map((item) => structuredClone(item)));
@@ -204,8 +200,22 @@ export function AdminTemplates() {
     try {
       const result = await saveCatalogTemplates(next);
       setLiveTemplates(next);
-      dirty.current = false;
+      dirty.current = true;
       setStatus(result.remote ? t.admin.saved : t.admin.savedLocal);
+      // #region agent log
+      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+        body: JSON.stringify({
+          sessionId: "c008f9",
+          hypothesisId: "H",
+          location: "AdminTemplates.tsx:persist",
+          message: "template catalog saved",
+          data: { remote: result.remote, count: next.length, selectedId },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
     } catch {
       setError(t.admin.error);
       setStatus(t.admin.savedLocal);
@@ -301,7 +311,7 @@ export function AdminTemplates() {
           onClick={() => void save()}
           className="bg-forest px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-cream disabled:opacity-50"
         >
-          {t.admin.save}
+          {busy ? t.admin.saving : t.admin.save}
         </button>
         <button type="button" onClick={cloneCurrent} disabled={!draft} className="border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.14em] disabled:opacity-40">
           {t.admin.clone}
@@ -518,7 +528,29 @@ function FormFields({
         ) : null}
         <label className="text-xs text-ink-soft">
           {t.admin.priceSom}
-          <input type="number" className={`${input} mt-1`} value={draft.priceSom} onChange={(e) => patch({ priceSom: Number(e.target.value) || 0 })} />
+          <input
+            type="number"
+            className={`${input} mt-1`}
+            value={draft.priceSom}
+            onChange={(e) => {
+              const value = Number(e.target.value) || 0;
+              patch({ priceSom: value });
+              // #region agent log
+              fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+                body: JSON.stringify({
+                  sessionId: "c008f9",
+                  hypothesisId: "I",
+                  location: "AdminTemplates.tsx:price",
+                  message: "template editor price changed",
+                  data: { id: draft.id, value, format: draft.format },
+                  timestamp: Date.now(),
+                }),
+              }).catch(() => {});
+              // #endregion
+            }}
+          />
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={Boolean(draft.featured)} onChange={(e) => patch({ featured: e.target.checked })} />

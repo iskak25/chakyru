@@ -1,6 +1,7 @@
 "use client";
 
 import { normalizeUser } from "./auth";
+import { fetchTemplateAccess } from "./accessClient";
 import { getFirebaseAuth, profileFromFirebase } from "./firebase";
 import { getUser, grantLocalTemplate, setPendingTemplate, setUser } from "./store";
 
@@ -40,10 +41,7 @@ export function lastCheckout() {
 
 export function markPaidTemplate(templateId: string, paymentId?: string) {
   if (typeof window === "undefined") return;
-  if (templateId) {
-    sessionStorage.setItem(PAID_TEMPLATE_KEY, templateId);
-    setPendingTemplate(templateId);
-  }
+  if (templateId) setPendingTemplate(templateId);
   if (paymentId) sessionStorage.setItem(PAYMENT_ID_KEY, paymentId);
 }
 
@@ -78,33 +76,9 @@ export function unlockPaidTemplate(templateId: string, plan: "standard" | "pro" 
 
 export async function restorePaidTemplate(templateId: string) {
   if (!templateId) return false;
-  const last = lastCheckout();
-  if (paidTemplateId() === templateId || last?.templateId === templateId) {
-    unlockPaidTemplate(templateId, last?.plan === "pro" ? "pro" : "standard");
-    return true;
-  }
   ensureGoogleUser();
-  const uid = getFirebaseAuth()?.currentUser?.uid;
-  const { getFirebaseDb } = await import("./db");
-  const db = getFirebaseDb();
-  if (!uid || !db) return false;
-  try {
-    const { collection, getDocs, query, where } = await import("firebase/firestore");
-    const snap = await getDocs(query(collection(db, "payments"), where("uid", "==", uid)));
-    let found = false;
-    let plan: "standard" | "pro" = "standard";
-    snap.forEach((doc) => {
-      const data = doc.data() as { plan?: string; templateId?: string };
-      if (data.plan === "pro" || data.plan === "unlimited") {
-        found = true;
-        plan = "pro";
-      }
-      if (data.templateId === templateId) found = true;
-    });
-    if (!found) return false;
-    unlockPaidTemplate(templateId, plan);
-    return true;
-  } catch {
-    return false;
-  }
+  const access = await fetchTemplateAccess(templateId).catch(() => null);
+  if (!access?.allowed) return false;
+  unlockPaidTemplate(templateId, access.accessType === "pro" ? "pro" : "standard");
+  return true;
 }

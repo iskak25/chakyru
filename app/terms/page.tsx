@@ -12,7 +12,7 @@ export default function TermsPage() {
       <Link href="/login" className="inline-flex items-center gap-2 text-sm text-ink-soft">
         <ArrowLeft size={16} /> {t.login.home}
       </Link>
-      <h1 className="font-serif mt-6 text-4xl uppercase text-ink">{t.login.termsLink}</h1>
+      <h1 className="font-serif mt-6 text-[40px] tracking-[-0.025em] text-ink">{t.login.termsLink}</h1>
       <div className="mt-6 space-y-4 text-sm leading-7 text-ink-soft">
         {ru ? (
           <>

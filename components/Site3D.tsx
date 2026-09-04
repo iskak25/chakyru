@@ -11,7 +11,8 @@ import { InviteAudio } from "./InviteAudio";
 import { MusicPickModal } from "./MusicPicker";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
 import { getSiteLook } from "@/lib/siteLooks";
-import { Site3DInner, Site3DThumb, type LayoutKit, type Site3DLabels } from "./Site3DLayouts";
+import type { LayoutKit, Site3DLabels } from "./Site3DLayouts";
+import { Site3DInner, Site3DThumb } from "./Site3DResolve";
 
 export type { Site3DLabels };
 

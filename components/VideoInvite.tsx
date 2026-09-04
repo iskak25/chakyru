@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Mic, Music, Pause, Play } from "lucide-react";
+import { formatInviteDate } from "@/lib/i18n";
 import { effectiveMusicUrl } from "@/lib/music";
 import { getTemplate } from "@/lib/templates";
 import { stopSpeech, speakInvite, voiceScript } from "@/lib/voice";
@@ -23,16 +24,7 @@ function splitNames(names: string) {
 }
 
 function prettyDate(date: string, locale: string) {
-  if (!date) return "";
-  try {
-    return new Date(`${date}T12:00:00`).toLocaleDateString(locale === "ru" ? "ru-RU" : "ky-KG", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return date;
-  }
+  return formatInviteDate(date, locale);
 }
 
 function slidesOf(invitation: Invitation) {

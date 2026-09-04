@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { ExternalLink, Heart } from "lucide-react";
+import { formatInviteDay } from "@/lib/i18n";
 import { addRsvp, likeWish } from "@/lib/store";
 import type { SiteLook, SitePageLayout } from "@/lib/siteLooks";
 import type { Invitation, RsvpStatus, Wish } from "@/lib/types";
@@ -68,6 +69,16 @@ export type Site3DLabels = {
   weInvite: string;
   guestWishes: string;
   guestsWord: string;
+  saveTheDate: string;
+  details: string;
+  dressCode: string;
+  dressHint: string;
+  program: string;
+  gifts: string;
+  phoneCta: string;
+  seeYou: string;
+  friends: string;
+  dateOfEvent: string;
 };
 
 export type LayoutKit = {
@@ -108,9 +119,7 @@ function pad(n: number) {
 }
 
 function wishDate(iso: string) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("ru-RU");
+  return formatInviteDay(iso);
 }
 
 function initials(name: string) {
@@ -179,7 +188,7 @@ function EnvelopeIcon() {
   );
 }
 
-function MonthCalendar({
+export function MonthCalendar({
   event,
   locale,
   time,
@@ -290,7 +299,7 @@ function CollageStack({
   );
 }
 
-function Names({ kit, className }: { kit: LayoutKit; className?: string }) {
+export function Names({ kit, className }: { kit: LayoutKit; className?: string }) {
   const { a, b, onChange, invitation } = kit;
   const color = paint(invitation, "names", "inherit");
   return (
@@ -329,7 +338,7 @@ function LoveMark({ kit }: { kit: LayoutKit }) {
   );
 }
 
-function MessageBlock({ kit, className }: { kit: LayoutKit; className?: string }) {
+export function MessageBlock({ kit, className }: { kit: LayoutKit; className?: string }) {
   const { invitation, fallback, onChange, editing } = kit;
   const greet = useInViewOnce(editing);
   const color = paint(invitation, "message", "inherit");
@@ -360,7 +369,7 @@ function MessageBlock({ kit, className }: { kit: LayoutKit; className?: string }
   );
 }
 
-function AddressBlock({ kit }: { kit: LayoutKit }) {
+export function AddressBlock({ kit }: { kit: LayoutKit }) {
   const { invitation, labels, onChange, venuePhoto, mapHref, mapQuery } = kit;
   return (
     <section className="relative px-8 py-8 text-center">
@@ -424,7 +433,7 @@ function AddressBlock({ kit }: { kit: LayoutKit }) {
   );
 }
 
-function RsvpBlock({ kit, soft }: { kit: LayoutKit; soft?: boolean }) {
+export function RsvpBlock({ kit, soft }: { kit: LayoutKit; soft?: boolean }) {
   const { variant, onChange, labels, invitation, rsvp, setRsvp, rsvpName, setRsvpName, rsvpDone, setRsvpDone, onReload } = kit;
   if (variant !== "guest" && !onChange) return null;
   const yes = fieldValue(invitation, "rsvpYes", labels.rsvpYes);
@@ -503,7 +512,7 @@ function RsvpBlock({ kit, soft }: { kit: LayoutKit; soft?: boolean }) {
   );
 }
 
-function CountdownBlock({ kit, light, gold, title }: { kit: LayoutKit; light?: boolean; gold?: boolean; title?: string }) {
+export function CountdownBlock({ kit, light, gold, title }: { kit: LayoutKit; light?: boolean; gold?: boolean; title?: string }) {
   const { count, labels, invitation, onChange } = kit;
   return (
     <Selectable id="timer">
@@ -539,7 +548,7 @@ function CountdownBlock({ kit, light, gold, title }: { kit: LayoutKit; light?: b
   );
 }
 
-function WishesBlock({ kit, script, hideIcon }: { kit: LayoutKit; script?: boolean; hideIcon?: boolean }) {
+export function WishesBlock({ kit, script, hideIcon }: { kit: LayoutKit; script?: boolean; hideIcon?: boolean }) {
   const { labels, activeWish, wishes, slide, setSlide, setAllOpen, invitation, onReload, onChange } = kit;
   return (
     <section className="px-5 pb-8 pt-6">
@@ -606,7 +615,7 @@ function WishesBlock({ kit, script, hideIcon }: { kit: LayoutKit; script?: boole
   );
 }
 
-function FooterBlock({ kit, withLove }: { kit: LayoutKit; withLove?: boolean }) {
+export function FooterBlock({ kit, withLove }: { kit: LayoutKit; withLove?: boolean }) {
   const { invitation, labels, a, b, onChange } = kit;
   return (
     <>
@@ -1032,7 +1041,7 @@ function LayoutBloom({ kit }: { kit: LayoutKit }) {
   );
 }
 
-const LAYOUTS: Record<SitePageLayout, (kit: LayoutKit) => ReactNode> = {
+export const BASE_LAYOUTS: Partial<Record<SitePageLayout, (kit: LayoutKit) => ReactNode>> = {
   classic: (kit) => <LayoutClassic kit={kit} />,
   editorial: (kit) => <LayoutEditorial kit={kit} />,
   arches: (kit) => <LayoutArches kit={kit} />,
@@ -1041,7 +1050,7 @@ const LAYOUTS: Record<SitePageLayout, (kit: LayoutKit) => ReactNode> = {
 };
 
 export function Site3DInner({ kit }: { kit: LayoutKit }) {
-  return (LAYOUTS[kit.look.pageLayout] ?? LAYOUTS.classic)(kit);
+  return (BASE_LAYOUTS[kit.look.pageLayout] ?? BASE_LAYOUTS.classic)!(kit);
 }
 
 export function Site3DThumb({

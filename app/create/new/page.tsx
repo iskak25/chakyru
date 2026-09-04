@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { lastCheckout, paidTemplateId, restorePaidTemplate, unlockPaidTemplate } from "@/lib/payAccess";
+import { fetchTemplateAccess } from "@/lib/accessClient";
 import { startInvitation } from "@/lib/store";
 
 function CreateNewInner() {
@@ -10,18 +10,20 @@ function CreateNewInner() {
   const search = useSearchParams();
 
   useEffect(() => {
-    const template = search.get("template") || paidTemplateId() || lastCheckout()?.templateId || "";
+    const template = search.get("template") || "";
     if (!template) {
       router.replace("/templates");
       return;
     }
     let cancelled = false;
     void (async () => {
-      const restored = await restorePaidTemplate(template);
+      const access = await fetchTemplateAccess(template);
       if (cancelled) return;
-      const paid = search.get("paid") === "1" || restored || paidTemplateId() === template;
-      if (paid) unlockPaidTemplate(template);
-      const started = startInvitation(template, { force: paid });
+      if (!access?.allowed) {
+        router.replace(`/templates/${encodeURIComponent(template)}`);
+        return;
+      }
+      const started = startInvitation(template);
       if ("invitation" in started) router.replace(`/create/${started.invitation.id}`);
       else router.replace(started.href);
     })();

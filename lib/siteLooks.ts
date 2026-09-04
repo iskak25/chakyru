@@ -17,7 +17,19 @@ export type SiteLookId =
   | "linen"
   | "mist"
   | "peach"
-  | "porcelain";
+  | "porcelain"
+  | "cocoa"
+  | "poppy"
+  | "velvet"
+  | "gilded"
+  | "moss"
+  | "graphite"
+  | "atelier"
+  | "dusk"
+  | "noir"
+  | "invite"
+  | "brush"
+  | "gilt";
 
 export type FloraItem = {
   src: string;
@@ -25,7 +37,29 @@ export type FloraItem = {
   spin?: "flora-spin" | "flora-spin-slow";
 };
 
-export const PAGE_LAYOUTS = ["classic", "editorial", "arches", "heroTimer", "bloom"] as const;
+export const PAGE_LAYOUTS = [
+  "classic",
+  "editorial",
+  "arches",
+  "heroTimer",
+  "bloom",
+  "storybook",
+  "poppy",
+  "velvet",
+  "watermark",
+  "satin",
+  "archive",
+  "atelier",
+  "dusk",
+  "splash",
+  "engage",
+  "splitbrush",
+  "marble",
+  "oliveWave",
+  "monoInk",
+  "roundedMono",
+  "softInvite",
+] as const;
 
 export type SitePageLayout = (typeof PAGE_LAYOUTS)[number];
 
@@ -445,6 +479,257 @@ const looks: Record<SiteLookId, SiteLook> = {
       { src: "/stickers/frame-bottom-flowers.png", className: "absolute -right-[14%] top-[48%] h-[150px] w-[150px] opacity-80" },
     ],
   },
+  cocoa: {
+    id: "cocoa",
+    pageLayout: "storybook",
+    pageBg: "#f9f8f6",
+    ink: "#4a3728",
+    accent: "#4a3728",
+    mark: "#4a3728",
+    overlay: "#4a3728",
+    cover: "linear-gradient(165deg,#f4efe8 0%,#e4d6c4 100%)",
+    namesColor: "#4a3728",
+    namesFont: "font-ceremonial",
+    hero: "round",
+    panel: "round",
+    button: "rounded-md",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-10 h-10 w-32 -translate-x-1/2 opacity-70",
+    },
+    floras: [
+      { src: "/stickers/ornament-flourish.png", className: "absolute left-1/2 top-[6%] h-10 w-32 -translate-x-1/2 opacity-55" },
+    ],
+  },
+  poppy: {
+    id: "poppy",
+    pageLayout: "poppy",
+    pageBg: "#f7f4ef",
+    ink: "#4a1a1e",
+    accent: "#7a2430",
+    mark: "#7a2430",
+    overlay: "#1a3336",
+    cover: "linear-gradient(165deg,#1a3336 0%,#0d1c1e 100%)",
+    namesColor: "#fff8f2",
+    namesFont: "font-serif italic",
+    hero: "torn",
+    panel: "torn",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/flora-rose.png",
+      className: "absolute -right-6 top-8 h-32 w-32 opacity-90",
+    },
+    floras: [
+      { src: "/stickers/flora-rose.png", className: "absolute -right-[8%] top-[6%] h-24 w-24 opacity-90" },
+      { src: "/stickers/frame-peony-wreath.png", className: "absolute -left-[28%] top-[40%] h-[240px] w-[240px] opacity-75" },
+    ],
+  },
+  velvet: {
+    id: "velvet",
+    pageLayout: "velvet",
+    pageBg: "#4a1a1e",
+    ink: "#f6f1e8",
+    accent: "#d4b48a",
+    mark: "#d4b48a",
+    overlay: "#4a1a1e",
+    cover: "linear-gradient(165deg,#5c2228 0%,#2a1012 100%)",
+    namesColor: "#f6f1e8",
+    namesFont: "font-serif italic",
+    hero: "sharp",
+    panel: "round",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/frame-gold-baroque.png",
+      className: "absolute left-1/2 top-8 h-32 w-32 -translate-x-1/2 opacity-70",
+    },
+    floras: [
+      { src: "/stickers/frame-gold-baroque.png", className: "absolute left-1/2 top-[4%] h-[160px] w-[160px] -translate-x-1/2 opacity-50" },
+    ],
+  },
+  gilded: {
+    id: "gilded",
+    pageLayout: "watermark",
+    pageBg: "#f7f3ee",
+    ink: "#3a322c",
+    accent: "#b8a078",
+    mark: "#3a322c",
+    overlay: "#2c2620",
+    cover: "linear-gradient(165deg,#d8c4a8 0%,#8a7060 100%)",
+    namesColor: "#ffffff",
+    namesFont: "font-serif italic",
+    hero: "sharp",
+    panel: "sharp",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-12 h-10 w-36 -translate-x-1/2 opacity-50",
+    },
+    floras: [],
+  },
+  moss: {
+    id: "moss",
+    pageLayout: "satin",
+    pageBg: "#4a5138",
+    ink: "#faf9f5",
+    accent: "#c4b07a",
+    mark: "#c4b07a",
+    overlay: "#4a5138",
+    cover: "linear-gradient(165deg,#5a6244 0%,#2c3018 100%)",
+    namesColor: "#faf9f5",
+    namesFont: "font-ceremonial",
+    hero: "sharp",
+    panel: "round",
+    button: "rounded-xl",
+    previewFlora: {
+      src: "/stickers/frame-laurel.png",
+      className: "absolute left-1/2 top-8 h-32 w-32 -translate-x-1/2 opacity-80",
+    },
+    floras: [
+      { src: "/stickers/frame-wreath-leaves.png", className: "absolute -right-[16%] top-[10%] h-[180px] w-[180px] opacity-50" },
+    ],
+  },
+  graphite: {
+    id: "graphite",
+    pageLayout: "archive",
+    pageBg: "#ffffff",
+    ink: "#161616",
+    accent: "#161616",
+    mark: "#161616",
+    overlay: "#2d2d2d",
+    cover: "linear-gradient(165deg,#2a2a2a 0%,#111 100%)",
+    namesColor: "#ffffff",
+    namesFont: "font-serif italic",
+    hero: "round",
+    panel: "round",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/frame-wreath-leaves.png",
+      className: "absolute left-1/2 top-8 h-28 w-28 -translate-x-1/2 opacity-40",
+    },
+    floras: [],
+  },
+  atelier: {
+    id: "atelier",
+    pageLayout: "atelier",
+    pageBg: "#ffffff",
+    ink: "#1a1a1a",
+    accent: "#1a1a1a",
+    mark: "#1a1a1a",
+    overlay: "#1a1a1a",
+    cover: "linear-gradient(180deg,#ffffff 0%,#ececec 100%)",
+    namesColor: "#1a1a1a",
+    namesFont: "font-ceremonial",
+    hero: "round",
+    panel: "round",
+    button: "rounded-none",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-10 h-8 w-28 -translate-x-1/2 opacity-40",
+    },
+    floras: [],
+  },
+  dusk: {
+    id: "dusk",
+    pageLayout: "dusk",
+    pageBg: "#f4f1ee",
+    ink: "#2d2d2d",
+    accent: "#2d2d2d",
+    mark: "#2d2d2d",
+    overlay: "#2d2d2d",
+    cover: "linear-gradient(165deg,#3a3a3a 0%,#1c1c1c 100%)",
+    namesColor: "#ffffff",
+    namesFont: "font-ceremonial",
+    hero: "round",
+    panel: "round",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-10 h-8 w-28 -translate-x-1/2 opacity-45",
+    },
+    floras: [],
+  },
+  noir: {
+    id: "noir",
+    pageLayout: "splash",
+    pageBg: "#111111",
+    ink: "#ffffff",
+    accent: "#ffffff",
+    mark: "#ffffff",
+    overlay: "#111111",
+    cover: "linear-gradient(165deg,#2a2118 0%,#111 100%)",
+    namesColor: "#ffffff",
+    namesFont: "font-ceremonial",
+    hero: "sharp",
+    panel: "sharp",
+    button: "rounded-none",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-10 h-8 w-28 -translate-x-1/2 opacity-30",
+    },
+    floras: [],
+  },
+  invite: {
+    id: "invite",
+    pageLayout: "engage",
+    pageBg: "#1c1814",
+    ink: "#ffffff",
+    accent: "#ffffff",
+    mark: "#ffffff",
+    overlay: "#1c1814",
+    cover: "linear-gradient(165deg,#c4b49a 0%,#6a5a48 100%)",
+    namesColor: "#ffffff",
+    namesFont: "font-serif italic",
+    hero: "round",
+    panel: "round",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-10 h-8 w-28 -translate-x-1/2 opacity-30",
+    },
+    floras: [],
+  },
+  brush: {
+    id: "brush",
+    pageLayout: "splitbrush",
+    pageBg: "#f3f1ec",
+    ink: "#222222",
+    accent: "#222222",
+    mark: "#222222",
+    overlay: "#eae8e2",
+    cover: "linear-gradient(165deg,#f3f1ec 0%,#d8d2c6 100%)",
+    namesColor: "#222222",
+    namesFont: "font-serif italic",
+    hero: "torn",
+    panel: "sharp",
+    button: "rounded-none",
+    previewFlora: {
+      src: "/stickers/ornament-flourish.png",
+      className: "absolute left-1/2 top-10 h-8 w-24 -translate-x-1/2 opacity-40",
+    },
+    floras: [],
+  },
+  gilt: {
+    id: "gilt",
+    pageLayout: "marble",
+    pageBg: "#f4f2ee",
+    ink: "#c4a35e",
+    accent: "#c4a35e",
+    mark: "#c4a35e",
+    overlay: "#f4f2ee",
+    cover: "linear-gradient(180deg,#f7f5f1 0%,#e8e2d6 100%)",
+    namesColor: "#c4a35e",
+    namesFont: "font-serif italic",
+    hero: "round",
+    panel: "round",
+    button: "rounded-full",
+    previewFlora: {
+      src: "/stickers/frame-gold-baroque.png",
+      className: "absolute left-1/2 top-6 h-28 w-28 -translate-x-1/2 opacity-70",
+    },
+    floras: [
+      { src: "/stickers/frame-gold-baroque.png", className: "absolute left-1/2 top-[2%] h-[140px] w-[140px] -translate-x-1/2 opacity-50" },
+    ],
+  },
 };
 
 const byTemplate: Record<string, SiteLookId> = {
@@ -469,6 +754,18 @@ const byTemplate: Record<string, SiteLookId> = {
   "shai-gul": "peach",
   "zhas-shamal": "linen",
   "tan-tuman": "mist",
+  polaroid: "cocoa",
+  mak: "poppy",
+  baxmal: "velvet",
+  "altyn-kun": "gilded",
+  "zhai-tokoi": "moss",
+  "ak-kara": "graphite",
+  atelier: "atelier",
+  komur: "dusk",
+  "veil-kun": "noir",
+  nishan: "invite",
+  jeek: "brush",
+  mramor: "gilt",
 };
 
 const layoutByTemplate: Record<string, SitePageLayout> = {
@@ -493,6 +790,18 @@ const layoutByTemplate: Record<string, SitePageLayout> = {
   "shai-gul": "bloom",
   "zhas-shamal": "bloom",
   "tan-tuman": "editorial",
+  polaroid: "storybook",
+  mak: "poppy",
+  baxmal: "velvet",
+  "altyn-kun": "watermark",
+  "zhai-tokoi": "satin",
+  "ak-kara": "archive",
+  atelier: "atelier",
+  komur: "dusk",
+  "veil-kun": "splash",
+  nishan: "engage",
+  jeek: "splitbrush",
+  mramor: "marble",
 };
 
 function solidFrom(bg: string) {
@@ -510,12 +819,9 @@ export function getSiteLook(templateId: string): SiteLook {
     preview?.id === templateId ? preview : peekTemplates()?.find((item) => item.id === templateId);
   const mappedLayout = layoutByTemplate[templateId] ?? base.pageLayout;
   if (!tpl) return { ...base, pageLayout: mappedLayout };
-  const customLayout = PAGE_LAYOUTS.includes(tpl.style.pageLayout as SitePageLayout)
-    ? (tpl.style.pageLayout as SitePageLayout)
-    : mappedLayout;
   return {
     ...base,
-    pageLayout: customLayout,
+    pageLayout: mappedLayout,
     accent: tpl.style.accent || base.accent,
     overlay: tpl.style.overlay || solidFrom(tpl.style.bg) || base.overlay,
     pageBg: tpl.style.pageBg || base.pageBg,

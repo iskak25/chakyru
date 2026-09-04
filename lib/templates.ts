@@ -39,6 +39,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#c4a35e",
       "#1c3326",
       "#6b5e4a",
+      { overlay: "#0f2a1c", pageBg: "#ffffff", pageLayout: "classic" },
     ),
   },
   {
@@ -54,6 +55,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#8b5e34",
       "#3a2c20",
       "#7a6a58",
+      { overlay: "#4a3b2c", pageBg: "#faf6ef", pageLayout: "editorial" },
     ),
   },
   {
@@ -70,6 +72,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#c9b48a",
       "#2a2438",
       "#6a6478",
+      { overlay: "#121018", pageBg: "#f6efe4", pageLayout: "heroTimer" },
     ),
   },
   {
@@ -101,6 +104,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#2a4a36",
       "#2a4a36",
       "#6d6458",
+      { overlay: "#3d5346", pageBg: "#efe4d2", pageLayout: "editorial" },
     ),
   },
   {
@@ -178,6 +182,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#b7a06a",
       "#16332c",
       "#5a6b64",
+      { overlay: "#16332c", pageBg: "#0d1f1b", pageLayout: "classic" },
     ),
   },
   {
@@ -194,6 +199,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#4a4a4a",
       "#2a2a2a",
       "#7a7a7a",
+      { overlay: "#c9b49a", pageBg: "#faf6ef", pageLayout: "editorial" },
     ),
   },
   {
@@ -312,6 +318,7 @@ const seedTemplates: InvitationTemplate[] = [
       "#e0c070",
       "#2c2414",
       "#7a6c48",
+      { overlay: "#12100a", pageBg: "#101010", pageLayout: "classic" },
     ),
   },
   {
@@ -525,6 +532,174 @@ const seedTemplates: InvitationTemplate[] = [
       "#607066",
     ),
   },
+  {
+    id: "polaroid",
+    name: { ky: "Полароид", ru: "Полароид" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#f9f8f6", "rgba(255,255,255,0.96)", "#4a3728", "#4a3728", "#8a7a6a", {
+      overlay: "#4a3728",
+      pageBg: "#f9f8f6",
+      pageLayout: "storybook",
+    }),
+  },
+  {
+    id: "mak",
+    name: { ky: "Мак", ru: "Мак" },
+    designer: "Meerim Design",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "kyz"],
+    featured: true,
+    style: style("#1a3336", "rgba(247,244,239,0.96)", "#7a2430", "#4a1a1e", "#8a6070", {
+      overlay: "#1a3336",
+      pageBg: "#f7f4ef",
+      pageLayout: "poppy",
+    }),
+  },
+  {
+    id: "baxmal",
+    name: { ky: "Баркыт", ru: "Бархат" },
+    designer: "Amina K.",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi", "anniversary"],
+    featured: true,
+    style: style("#4a1a1e", "rgba(246,241,232,0.95)", "#d4b48a", "#f6f1e8", "#c4a890", {
+      overlay: "#4a1a1e",
+      pageBg: "#4a1a1e",
+      pageLayout: "velvet",
+    }),
+  },
+  {
+    id: "altyn-kun",
+    name: { ky: "Алтын күн", ru: "Золотой час" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#f7f3ee", "rgba(247,243,238,0.96)", "#b8a078", "#3a322c", "#8a8074", {
+      overlay: "#2c2620",
+      pageBg: "#f7f3ee",
+      pageLayout: "watermark",
+    }),
+  },
+  {
+    id: "zhai-tokoi",
+    name: { ky: "Жай токой", ru: "Олива" },
+    designer: "Studio Nur",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#4a5138", "rgba(250,249,245,0.95)", "#c4b07a", "#faf9f5", "#c8c0a8", {
+      overlay: "#4a5138",
+      pageBg: "#4a5138",
+      pageLayout: "satin",
+    }),
+  },
+  {
+    id: "ak-kara",
+    name: { ky: "Ак-кара", ru: "Монохром" },
+    designer: "Bishkek Type",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "anniversary"],
+    featured: true,
+    style: style("#ffffff", "rgba(255,255,255,0.96)", "#161616", "#161616", "#888888", {
+      overlay: "#2d2d2d",
+      pageBg: "#ffffff",
+      pageLayout: "archive",
+    }),
+  },
+  {
+    id: "atelier",
+    name: { ky: "Ателье", ru: "Ателье" },
+    designer: "Bishkek Type",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#ffffff", "rgba(255,255,255,0.96)", "#1a1a1a", "#1a1a1a", "#888888", {
+      overlay: "#1a1a1a",
+      pageBg: "#ffffff",
+      pageLayout: "atelier",
+    }),
+  },
+  {
+    id: "komur",
+    name: { ky: "Көмүр", ru: "Уголь" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi", "birthday"],
+    featured: true,
+    style: style("#f4f1ee", "rgba(244,241,238,0.96)", "#2d2d2d", "#2d2d2d", "#8a8680", {
+      overlay: "#2d2d2d",
+      pageBg: "#f4f1ee",
+      pageLayout: "dusk",
+    }),
+  },
+  {
+    id: "veil-kun",
+    name: { ky: "Нике күнү", ru: "Wedding day" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#111111", "rgba(20,16,12,0.9)", "#ffffff", "#ffffff", "#d0d0d0", {
+      overlay: "#111111",
+      pageBg: "#111111",
+      pageLayout: "splash",
+    }),
+  },
+  {
+    id: "nishan",
+    name: { ky: "Нике той", ru: "Save the Date" },
+    designer: "Meerim Design",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#1c1814", "rgba(28,24,20,0.9)", "#ffffff", "#ffffff", "#d8d0c4", {
+      overlay: "#1c1814",
+      pageBg: "#1c1814",
+      pageLayout: "engage",
+    }),
+  },
+  {
+    id: "jeek",
+    name: { ky: "Жээк", ru: "Берег" },
+    designer: "Bishkek Type",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#f3f1ec", "rgba(243,241,236,0.96)", "#222222", "#222222", "#7a7a7a", {
+      overlay: "#eae8e2",
+      pageBg: "#f3f1ec",
+      pageLayout: "splitbrush",
+    }),
+  },
+  {
+    id: "mramor",
+    name: { ky: "Мрамор", ru: "Мрамор" },
+    designer: "Amina K.",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "anniversary"],
+    featured: true,
+    style: style("#f4f2ee", "rgba(244,242,238,0.96)", "#c4a35e", "#c4a35e", "#b8a878", {
+      overlay: "#f4f2ee",
+      pageBg: "#f4f2ee",
+      pageLayout: "marble",
+    }),
+  },
 ];
 
 const FORMAT_PRICE = {
@@ -534,7 +709,12 @@ const FORMAT_PRICE = {
   site3d: { priceSom: 590 },
 } as const;
 
-const FREE_TEMPLATE_IDS = new Set(["klassika"]);
+export const FREE_TEMPLATE_IDS = new Set(["klassika"]);
+
+export function isFreeTemplate(templateId: string, basePrice?: number) {
+  if (FREE_TEMPLATE_IDS.has(templateId)) return true;
+  return typeof basePrice === "number" && Number.isFinite(basePrice) && basePrice <= 0;
+}
 
 function applyCatalogPrices(list: InvitationTemplate[]): InvitationTemplate[] {
   return list.map((item) => {
@@ -551,26 +731,79 @@ export function pickStoredPrice(live: number | undefined, seed: number) {
 export const templates = applyCatalogPrices(seedTemplates);
 
 export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): InvitationTemplate[] {
-  if (!live?.length) return templates;
+  if (!live?.length) {
+    // #region agent log
+    if (typeof window !== "undefined") {
+      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+        body: JSON.stringify({
+          sessionId: "c008f9",
+          hypothesisId: "G",
+          location: "lib/templates.ts:mergeCatalogTemplates",
+          message: "merge used format seed prices",
+          data: {
+            liveCount: live?.length ?? 0,
+            sample: templates.slice(0, 4).map((item) => ({ id: item.id, priceSom: item.priceSom, format: item.format })),
+          },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+    }
+    // #endregion
+    return templates;
+  }
   const seedById = new Map(templates.map((item) => [item.id, item]));
+  let usedSeed = 0;
+  let usedLive = 0;
   const merged = live.map((item) => {
     const seed = seedById.get(item.id);
     if (!seed) return item;
-    const { priceTenge: _tenge, ...live } = item as InvitationTemplate & { priceTenge?: number };
+    const { priceTenge: _tenge, ...liveItem } = item as InvitationTemplate & { priceTenge?: number };
+    const picked = pickStoredPrice(liveItem.priceSom, seed.priceSom);
+    if (picked === seed.priceSom && liveItem.priceSom !== seed.priceSom) usedSeed += 1;
+    else usedLive += 1;
     return {
       ...seed,
-      ...live,
+      ...liveItem,
       name: {
-        ky: live.name?.ky || seed.name.ky,
-        ru: live.name?.ru || seed.name.ru,
+        ky: liveItem.name?.ky || seed.name.ky,
+        ru: liveItem.name?.ru || seed.name.ru,
       },
-      style: { ...seed.style, ...live.style },
-      format: live.format || seed.format,
-      priceSom: pickStoredPrice(live.priceSom, seed.priceSom),
+      style: { ...seed.style, ...liveItem.style },
+      format: liveItem.format || seed.format,
+      priceSom: picked,
     };
   });
   const seen = new Set(merged.map((item) => item.id));
-  return [...merged, ...templates.filter((item) => !seen.has(item.id))];
+  const result = [...merged, ...templates.filter((item) => !seen.has(item.id))];
+  // #region agent log
+  if (typeof window !== "undefined") {
+    fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+      body: JSON.stringify({
+        sessionId: "c008f9",
+        hypothesisId: "G",
+        location: "lib/templates.ts:mergeCatalogTemplates",
+        message: "merge prices",
+        data: {
+          liveCount: live.length,
+          usedSeed,
+          usedLive,
+          sample: result.slice(0, 4).map((item, i) => ({
+            id: item.id,
+            live: live[i]?.priceSom,
+            seed: seedById.get(item.id)?.priceSom,
+            picked: item.priceSom,
+          })),
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  }
+  // #endregion
+  return result;
 }
 
 export function getTemplate(id: string) {

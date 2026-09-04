@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getInvitation, saveInvitation } from "@/lib/store";
+import { getInvitation, rememberRemoteInvitation, saveInvitation } from "@/lib/store";
+import { fetchInvitationRemote } from "@/lib/accessClient";
 import type { Invitation } from "@/lib/types";
 
 const LIMIT = 40;
@@ -17,6 +18,13 @@ export function useInviteHistory(id: string) {
   const future = useRef<Invitation[]>([]);
   const burst = useRef<number | null>(null);
 
+  const hydrate = useCallback((next: Invitation | null) => {
+    now.current = next;
+    setInv(next);
+    setCanUndo(past.current.length > 0);
+    setCanRedo(future.current.length > 0);
+  }, []);
+
   const sync = useCallback((next: Invitation | null) => {
     now.current = next;
     setInv(next);
@@ -31,16 +39,29 @@ export function useInviteHistory(id: string) {
       future.current = [];
       if (burst.current) window.clearTimeout(burst.current);
       burst.current = null;
-      sync(next);
+      hydrate(next);
     },
-    [sync],
+    [hydrate],
   );
 
   useEffect(() => {
+    let cancelled = false;
     setReady(false);
-    reset(getInvitation(id) ?? null);
-    setReady(true);
+    const local = getInvitation(id) ?? null;
+    reset(local);
+    if (local) setReady(true);
+    void fetchInvitationRemote(id).then((remote) => {
+      if (cancelled) return;
+      if (remote) {
+        rememberRemoteInvitation(remote);
+        reset(remote);
+      } else if (local && local.id !== "demo") {
+        saveInvitation(local);
+      }
+      setReady(true);
+    });
     return () => {
+      cancelled = true;
       if (burst.current) window.clearTimeout(burst.current);
     };
   }, [id, reset]);

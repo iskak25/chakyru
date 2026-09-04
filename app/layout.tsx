@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Great_Vibes, Manrope, Marck_Script, Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Great_Vibes, Manrope, Marck_Script } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
@@ -8,10 +8,11 @@ const sans = Manrope({
   subsets: ["latin", "cyrillic"],
 });
 
-const display = Playfair_Display({
+const display = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
 const vibes = Great_Vibes({

@@ -1,16 +1,8 @@
+import { formatInviteDate } from "./i18n";
 import type { Invitation } from "./types";
 
 function formatDay(date: string, locale: string) {
-  if (!date) return "";
-  try {
-    return new Date(`${date}T12:00:00`).toLocaleDateString(locale === "ru" ? "ru-RU" : "ky-KG", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return date;
-  }
+  return formatInviteDate(date, locale);
 }
 
 export function voiceScript(invitation: Invitation, locale: string) {

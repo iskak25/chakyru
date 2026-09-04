@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "migrate:commerce": "npx --yes tsx --env-file=.env.local scripts/migrate-chakyru-data.ts",
+    "verify:commerce": "npx --yes tsx scripts/verify-commerce.ts"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",

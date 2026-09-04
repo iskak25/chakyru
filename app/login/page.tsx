@@ -74,6 +74,20 @@ function LoginInner() {
       const next = search.get("next") || "";
       const dest =
         next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/";
+      // #region agent log
+      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
+        body: JSON.stringify({
+          sessionId: "c008f9",
+          hypothesisId: "B",
+          location: "login/page.tsx:existing",
+          message: "login auto-redirect",
+          data: { auth: existing.auth, plan: existing.plan, dest, next },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
       void (async () => {
         if (existing.auth === "google") {
           await Promise.race([
@@ -98,9 +112,9 @@ function LoginInner() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-page px-4 py-10">
       <div className="w-full max-w-[420px] px-2 py-12">
-        <Logo className="mx-auto h-28 w-auto" />
-        <h1 className="font-serif mt-6 text-center text-5xl uppercase tracking-[0.04em] text-ink">{t.login.title}</h1>
-        <p className="mt-4 text-center text-sm leading-7 tracking-wide text-ink-soft">{t.login.desc}</p>
+        <Logo className="mx-auto" />
+        <h1 className="font-serif mt-8 text-center text-[40px] leading-none tracking-[-0.025em] text-ink sm:text-[48px]">{t.login.title}</h1>
+        <p className="mt-4 text-center text-[15px] leading-8 text-ink-soft">{t.login.desc}</p>
         {forceGoogle ? (
           <p className="mt-3 text-center text-sm text-rose">{t.login.planNeedGoogle}</p>
         ) : null}
@@ -164,25 +178,29 @@ function LoginInner() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={t.login.name}
-                className="w-full border border-ink/15 bg-transparent px-3 py-2.5 text-sm"
+                className="w-full border-0 border-b border-ink/20 bg-transparent px-0 py-3 text-[15px] outline-none focus:border-ink"
               />
-              <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="mt-6 grid grid-cols-2 gap-6">
                 <button
                   type="button"
                   onClick={() => setRole("host")}
-                  className={`py-2.5 text-sm ${role === "host" ? "bg-forest text-cream" : "border border-ink/10"}`}
+                  className={`py-2 text-[11px] uppercase tracking-[0.16em] ${
+                    role === "host" ? "link-edit" : "text-meta"
+                  }`}
                 >
                   {t.login.host}
                 </button>
                 <button
                   type="button"
                   onClick={() => setRole("designer")}
-                  className={`py-2.5 text-sm ${role === "designer" ? "bg-forest text-cream" : "border border-ink/10"}`}
+                  className={`py-2 text-[11px] uppercase tracking-[0.16em] ${
+                    role === "designer" ? "link-edit" : "text-meta"
+                  }`}
                 >
                   {t.login.designer}
                 </button>
               </div>
-              <button type="submit" className="mt-4 w-full border border-ink/20 py-3 text-sm">
+              <button type="submit" className="link-edit mt-8 w-full border-0 bg-transparent py-3 text-center">
                 {t.login.go}
               </button>
             </form>

@@ -31,16 +31,18 @@ export default function TemplatesPage() {
 
   return (
     <SiteShell>
-      <div className="min-h-[70vh] bg-page">
-        <div className="mx-auto max-w-[1400px] px-5 py-16">
-          <p className="eyebrow text-left">{t.nav.studio}</p>
-          <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
-            <h1 className="font-serif text-4xl uppercase sm:text-6xl">{t.templatesTitle}</h1>
+      <div className="min-h-[70vh] overflow-x-hidden bg-page">
+        <div className="mx-auto max-w-[1320px] px-5 py-16 sm:px-8 lg:px-12 xl:px-16 lg:py-24">
+          <p className="label">{t.nav.studio}</p>
+          <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
+            <h1 className="font-serif text-[40px] leading-[1.02] tracking-[-0.03em] sm:text-[64px]">
+              <em className="italic">{t.templatesTitle}</em>
+            </h1>
             <p className="text-[10px] uppercase tracking-[0.16em] text-meta">
               {list.length} {t.catalogCount}
             </p>
           </div>
-          <p className="mt-4 max-w-md text-sm leading-7 tracking-wide text-ink-soft">{t.templatesSub}</p>
+          <p className="mt-5 max-w-md text-[15px] leading-8 text-ink-soft">{t.templatesSub}</p>
 
           <div className="-mx-5 mt-10 overflow-x-auto px-5">
             <div className="flex gap-1 pb-1">

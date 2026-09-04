@@ -1,5 +1,6 @@
 "use client";
 
+import { formatInviteDate } from "@/lib/i18n";
 import { getTemplate } from "@/lib/templates";
 import { useCatalog } from "@/lib/useCatalog";
 import type { Invitation } from "@/lib/types";
@@ -10,15 +11,7 @@ import { CornerFrame, Ornament } from "./Ornament";
 import { INVITE_EXPORT_ID } from "@/lib/exportInvite";
 
 function formatDate(date: string, locale: string) {
-  if (!date) return "—";
-  try {
-    return new Date(date + "T12:00:00").toLocaleDateString(
-      locale === "ru" ? "ru-RU" : "ky-KG",
-      { day: "numeric", month: "long", year: "numeric" },
-    );
-  } catch {
-    return date;
-  }
+  return formatInviteDate(date, locale) || "—";
 }
 
 export function InviteCard({

@@ -26,7 +26,28 @@ export type TemplateStyle = {
   ornament: string;
   overlay?: string;
   pageBg?: string;
-  pageLayout?: "classic" | "editorial" | "arches" | "heroTimer" | "bloom";
+  pageLayout?:
+    | "classic"
+    | "editorial"
+    | "arches"
+    | "heroTimer"
+    | "bloom"
+    | "storybook"
+    | "poppy"
+    | "velvet"
+    | "watermark"
+    | "satin"
+    | "archive"
+    | "atelier"
+    | "dusk"
+    | "splash"
+    | "engage"
+    | "splitbrush"
+    | "marble"
+    | "oliveWave"
+    | "monoInk"
+    | "roundedMono"
+    | "softInvite";
 };
 
 export type InvitationTemplate = {
@@ -34,12 +55,57 @@ export type InvitationTemplate = {
   name: LocalizedName;
   designer: string;
   format: InviteFormat;
+  /** Current catalog price (basePrice). Changing this never rewrites old purchases. */
   priceSom: number;
   eventTypes: EventType[];
   style: TemplateStyle;
   featured?: boolean;
   canvas?: TemplateCanvas;
 };
+
+export type AuthMethod = "name" | "google";
+export type PlanId = "free" | "standard" | "pro" | "unlimited";
+export type AccountRole = "admin" | "vip" | "user";
+export type TemplateAccessType = "free" | "purchase" | "pro" | "vip" | "admin";
+export type PurchaseStatus = "pending" | "paid" | "failed" | "cancelled" | "refunded";
+export type PurchaseSource = "template" | "pro" | "admin";
+export type InvitationStatus = "draft" | "published" | "archived";
+
+export type Purchase = {
+  id: string;
+  userId: string;
+  templateId?: string;
+  plan: Exclude<PlanId, "free">;
+  price: number;
+  currency: "KGS";
+  status: PurchaseStatus;
+  finikPaymentId?: string;
+  finikTransactionId?: string;
+  createdAt: string;
+  paidAt?: string;
+  source: PurchaseSource;
+};
+
+export type TemplateAccess = {
+  templateId: string;
+  accessType: TemplateAccessType;
+  purchaseId?: string;
+  grantedAt: string;
+};
+
+export type UserTemplatePrice = {
+  userId: string;
+  templateId: string;
+  price: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UserProfile = User & {
+  firebaseUid?: string;
+};
+
+export type InvitationData = Omit<Invitation, "id" | "templateId" | "ownerId" | "createdAt" | "guests" | "wishes">;
 
 export type Guest = {
   id: string;
@@ -122,14 +188,14 @@ export type Invitation = {
   copy?: Record<string, string>;
   gallery?: Record<string, string>;
   createdAt: string;
+  updatedAt?: string;
   guests: Guest[];
   wishes: Wish[];
   ownerId?: string;
+  ownerUid?: string;
+  status?: InvitationStatus;
+  language?: Locale;
 };
-
-export type AuthMethod = "name" | "google";
-export type PlanId = "free" | "standard" | "pro" | "unlimited";
-export type AccountRole = "admin" | "vip" | "user";
 
 export type User = {
   id: string;

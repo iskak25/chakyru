@@ -139,6 +139,34 @@ function writeInvitations(list: Invitation[]) {
   window.dispatchEvent(new Event("chakyru-sync"));
 }
 
+let remoteSyncTimer: number | null = null;
+let remoteSyncPending: Invitation | null = null;
+
+function queueInvitationSync(invitation: Invitation) {
+  if (typeof window === "undefined") return;
+  if (invitation.id === "demo" || invitation.id.startsWith("preview-")) return;
+  remoteSyncPending = invitation;
+  if (remoteSyncTimer) window.clearTimeout(remoteSyncTimer);
+  remoteSyncTimer = window.setTimeout(() => {
+    const next = remoteSyncPending;
+    remoteSyncPending = null;
+    if (!next) return;
+    void import("./accessClient").then(({ pushInvitationRemote }) => pushInvitationRemote(next)).catch(() => {});
+  }, 700);
+}
+
+function mergeInvitation(inv: Invitation) {
+  const list = readInvitations();
+  const idx = list.findIndex((item) => item.id === inv.id);
+  if (idx >= 0) list[idx] = inv;
+  else list.unshift(inv);
+  writeInvitations(list);
+}
+
+export function rememberRemoteInvitation(inv: Invitation) {
+  mergeInvitation(inv);
+}
+
 export function getInvitations(): Invitation[] {
   return readInvitations();
 }
@@ -204,27 +232,17 @@ export function grantLocalTemplate(templateId: string, plan: PlanId = "standard"
 
 export function startInvitation(
   templateId: string,
-  opts?: { force?: boolean },
 ): { invitation: Invitation } | { href: string } {
-  if (opts?.force) grantLocalTemplate(templateId);
   const user = getUser();
   if (!user) return { href: createStartHref(templateId) };
   if (!canEditTemplate(user, templateId)) {
-    if (opts?.force && user.auth === "google") {
-      grantLocalTemplate(templateId);
-      try {
-        return { invitation: createInvitation(templateId, { force: true }) };
-      } catch {
-        return { href: pricingHref(templateId) };
-      }
-    }
     if (user.auth === "name") {
       return { href: `/login?google=1&next=${encodeURIComponent(`/create/new?template=${templateId}`)}` };
     }
     return { href: pricingHref(templateId) };
   }
   try {
-    return { invitation: createInvitation(templateId, { force: opts?.force }) };
+    return { invitation: createInvitation(templateId) };
   } catch {
     return { href: pricingHref(templateId) };
   }
@@ -267,17 +285,22 @@ export function createInvitation(templateId: string, opts?: { force?: boolean })
     guests: [],
     wishes: [],
     ownerId: user.id,
+    status: "published",
+    updatedAt: new Date().toISOString(),
   };
   writeInvitations([invitation, ...readInvitations()]);
+  queueInvitationSync(invitation);
   return invitation;
 }
 
 export function saveInvitation(next: Invitation) {
   const list = readInvitations();
   const idx = list.findIndex((i) => i.id === next.id);
-  if (idx >= 0) list[idx] = next;
-  else list.unshift(next);
+  const stored = { ...next, updatedAt: new Date().toISOString() };
+  if (idx >= 0) list[idx] = stored;
+  else list.unshift(stored);
   writeInvitations(list);
+  queueInvitationSync(stored);
 }
 
 export function addRsvp(
@@ -301,6 +324,11 @@ export function addRsvp(
     ? inv.guests.map((g) => (g.id === guest.id ? guest : g))
     : [...inv.guests, guest];
   saveInvitation({ ...inv, guests });
+  void fetch(`/api/invitations/${encodeURIComponent(invitationId)}/rsvp`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ name, rsvp, plusOne }),
+  }).catch(() => {});
   return guest;
 }
 
@@ -318,6 +346,11 @@ export function addWish(invitationId: string, name: string, text: string): Wish 
     createdAt: new Date().toISOString(),
   };
   saveInvitation({ ...inv, wishes: [wish, ...inv.wishes] });
+  void fetch(`/api/invitations/${encodeURIComponent(invitationId)}/wish`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ name, text }),
+  }).catch(() => {});
   return wish;
 }
 
@@ -330,6 +363,11 @@ export function likeWish(invitationId: string, wishId: string) {
       w.id === wishId ? { ...w, likes: w.likes + 1 } : w,
     ),
   });
+  void fetch(`/api/invitations/${encodeURIComponent(invitationId)}/like`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ wishId }),
+  }).catch(() => {});
 }
 
 export function getUser(): User | null {

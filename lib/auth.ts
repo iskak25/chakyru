@@ -44,6 +44,10 @@ export function isAdmin(user: User | null) {
   return user.accountRole === "admin" || isAdminEmail(user.email);
 }
 
+export function isAdminUser(user: User | null) {
+  return isAdmin(user);
+}
+
 export function myInvitations(user: User | null, list: Invitation[]): Invitation[] {
   if (!user) return [];
   return list.filter((inv) => inv.id !== "demo" && inv.ownerId === user.id);
@@ -51,27 +55,20 @@ export function myInvitations(user: User | null, list: Invitation[]): Invitation
 
 export function canEditTemplate(user: User | null, templateId?: string): boolean {
   if (!user || user.auth !== "google") return false;
-  if (isAdmin(user) || user.accountRole === "vip") return true;
+  if (isAdminUser(user) || user.accountRole === "vip") return true;
   if (user.plan === "pro" || user.plan === "unlimited") return true;
-  if (typeof window !== "undefined" && templateId) {
-    try {
-      if (sessionStorage.getItem("chakyru-paid-template") === templateId) return true;
-    } catch {
-      /* ignore */
-    }
-  }
   if (!templateId) return (user.templates?.length ?? 0) > 0;
+  if (templateId === "klassika") return true;
   return (user.templates ?? []).includes(templateId);
 }
 
 export function canEditInvitation(
   user: User | null,
-  inv?: { ownerId?: string; templateId?: string } | null,
+  inv?: { ownerId?: string; ownerUid?: string; templateId?: string } | null,
 ): boolean {
   if (!user || user.auth !== "google" || !inv) return false;
-  if (canEditTemplate(user, inv.templateId)) return true;
   if (inv.ownerId && inv.ownerId !== user.id) return false;
-  return true;
+  return canEditTemplate(user, inv.templateId);
 }
 
 export function canCreateInvitation(user: User | null, _list?: Invitation[]): boolean {

@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { canCreateInvitation, myInvitations } from "@/lib/auth";
 import { useI18n } from "@/lib/locale";
-import { getInvitations, getUser } from "@/lib/store";
+import { getInvitations, getUser, rememberRemoteInvitation } from "@/lib/store";
+import { fetchMyInvitationsRemote, pushInvitationRemote } from "@/lib/accessClient";
 import { formatOf } from "@/lib/templates";
 import type { Invitation, User } from "@/lib/types";
 
@@ -24,6 +25,13 @@ export default function DashboardPage() {
       if (!u) router.replace("/login?next=/dashboard");
     };
     sync();
+    const localMine = myInvitations(getUser(), getInvitations());
+    void Promise.all(localMine.map((inv) => pushInvitationRemote(inv))).then(() =>
+      fetchMyInvitationsRemote().then((remote) => {
+        remote.forEach(rememberRemoteInvitation);
+        setList(getInvitations());
+      }),
+    );
     window.addEventListener("chakyru-sync", sync);
     return () => window.removeEventListener("chakyru-sync", sync);
   }, [router]);
@@ -31,7 +39,7 @@ export default function DashboardPage() {
   if (!user) {
     return (
       <SiteShell>
-        <div className="mx-auto max-w-[1400px] px-5 py-24 text-center text-ink-soft">…</div>
+        <div className="mx-auto max-w-[1320px] px-5 py-24 text-center text-ink-soft">…</div>
       </SiteShell>
     );
   }
@@ -46,11 +54,11 @@ export default function DashboardPage() {
 
   return (
     <SiteShell>
-      <div className="mx-auto max-w-[1400px] px-5 py-16">
+      <div className="mx-auto max-w-[1320px] px-5 py-16 sm:px-8 lg:px-12">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow text-left">{t.nav.mine}</p>
-            <h1 className="font-serif mt-4 text-5xl uppercase">{t.dash.title}</h1>
+            <p className="label">{t.nav.mine}</p>
+            <h1 className="font-serif mt-4 text-[40px] leading-[1.05] tracking-[-0.025em] sm:text-[56px]">{t.dash.title}</h1>
             <p className="mt-3 text-sm tracking-wide text-ink-soft">
               {user.name} · {user.auth === "google" ? t.dash.viaGoogle : t.dash.viaName} · {planLabel}
             </p>
@@ -78,7 +86,7 @@ export default function DashboardPage() {
                   className="flex flex-col justify-between gap-4 border-b border-ink/10 py-6 sm:flex-row sm:items-center"
                 >
                   <div>
-                    <p className="font-serif text-2xl uppercase">{inv.names || "—"}</p>
+                    <p className="font-serif text-[26px] tracking-[-0.02em]">{inv.names || "—"}</p>
                     <p className="mt-1 text-sm tracking-wide text-ink-soft">
                       {t.events[inv.eventType]} · {inv.date || "—"} · {inv.venue || "—"}
                     </p>

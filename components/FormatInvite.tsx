@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { ImagePlus, Mic, Music } from "lucide-react";
-import { formatOf, getTemplate } from "@/lib/templates";
+import { formatOf } from "@/lib/templates";
 import { useCatalog } from "@/lib/useCatalog";
 import { useI18n } from "@/lib/locale";
 import type { Invitation, InviteFormat } from "@/lib/types";
-import { ExtraLayer } from "./ExtraLayer";
-import { CanvasDateTime, CanvasText, PhotoLayer, type InvitePatch } from "./CanvasEdit";
-import { FreeMove, MoveCanvas } from "./MoveCanvas";
+import { type InvitePatch } from "./CanvasEdit";
+import { PhotoInvite } from "./PhotoInvite";
 import { Site3D } from "./Site3D";
 import { MusicPickModal } from "./MusicPicker";
 import { VideoInvite } from "./VideoInvite";
@@ -36,75 +35,8 @@ export function MediaStage({
   onSelect?: (id: string | null) => void;
 }) {
   useCatalog();
-  const template = getTemplate(invitation.templateId);
-  const names = invitation.names || "Манас & Каныкей";
-  const text =
-    invitation.message ||
-    (locale === "ru"
-      ? "Приглашаем разделить с нами радость этого дня"
-      : "Бул кубанычты биз менен бөлүшүүгө чакырабыз");
-
   return (
-    <div className={`relative overflow-hidden ${compact ? "h-full" : "min-h-[560px]"}`}>
-        <div
-          className="kenburns absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: invitation.coverImage
-              ? `url(${invitation.coverImage})`
-              : template.style.bg,
-            backgroundColor: template.style.text,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/35" />
-        <PhotoLayer onChange={onChange} />
-        <MoveCanvas
-          editable={!!onChange}
-          layout={invitation.layout ?? {}}
-          onLayout={onChange ? (layout) => onChange({ layout }) : undefined}
-          onSelect={onSelect}
-          onChange={onChange}
-          invitation={invitation}
-        >
-          <FreeMove id="names" defaults={{ x: 8, y: 58, w: 84, h: 14, z: 5 }}>
-            <div className="flex h-full items-center justify-center">
-              <CanvasText
-                value={invitation.names}
-                placeholder={names}
-                onChange={onChange ? (v) => onChange({ names: v }) : undefined}
-                className="font-serif text-4xl italic leading-none text-white"
-              />
-            </div>
-          </FreeMove>
-          <FreeMove id="message" defaults={{ x: 8, y: 73, w: 84, h: 12, z: 5 }}>
-            <div className="flex h-full items-center justify-center">
-              <CanvasText
-                multiline
-                value={invitation.message}
-                placeholder={text}
-                onChange={onChange ? (v) => onChange({ message: v }) : undefined}
-                className="max-w-xs text-sm leading-6 text-white/85"
-              />
-            </div>
-          </FreeMove>
-          <FreeMove id="date" defaults={{ x: 18, y: 88, w: 64, h: 7, z: 5 }}>
-            <div className="flex h-full items-center justify-center">
-              {onChange ? (
-                <CanvasDateTime
-                  date={invitation.date}
-                  time={invitation.time}
-                  onChange={onChange}
-                  className="text-white/80"
-                />
-              ) : invitation.date ? (
-                <p className="text-xs tracking-[0.2em] text-white/70">
-                  {invitation.date} · {invitation.time}
-                </p>
-              ) : null}
-            </div>
-          </FreeMove>
-          <ExtraLayer invitation={invitation} onChange={onChange} locale={locale} />
-        </MoveCanvas>
-    </div>
+    <PhotoInvite invitation={invitation} locale={locale} compact={compact} onChange={onChange} onSelect={onSelect} />
   );
 }
 

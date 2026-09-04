@@ -49,8 +49,8 @@ function LessonCard({
         <p className="text-[10px] uppercase tracking-[0.16em] text-meta">
           {minutes} {minLabel}
         </p>
-        <h2 className="font-serif mt-2 text-2xl uppercase">{title}</h2>
-        <p className="mt-3 text-sm leading-7 tracking-wide text-ink-soft">{desc}</p>
+        <h2 className="font-serif mt-2 text-[26px] leading-tight tracking-[-0.02em]">{title}</h2>
+        <p className="mt-3 text-[15px] leading-8 text-ink-soft">{desc}</p>
         {ready ? (
           <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-meta underline underline-offset-4">{watch}</p>
         ) : null}
@@ -64,14 +64,14 @@ export default function LearnPage() {
   const { lessons } = useCatalog();
   return (
     <SiteShell>
-      <div className="bg-cream-deep px-5 py-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="eyebrow">{t.learn.kicker}</p>
-          <h1 className="font-serif mt-6 text-5xl uppercase sm:text-6xl">{t.learn.title}</h1>
-          <p className="mx-auto mt-5 max-w-md text-sm leading-7 tracking-wide text-ink-soft">{t.learn.sub}</p>
+      <div className="bg-cream-deep px-5 py-20 sm:px-8">
+        <div className="mx-auto max-w-3xl">
+          <p className="label">{t.learn.kicker}</p>
+          <h1 className="font-serif mt-5 text-[40px] leading-[1.05] tracking-[-0.025em] sm:text-[60px]">{t.learn.title}</h1>
+          <p className="mt-5 max-w-md text-[15px] leading-8 text-ink-soft">{t.learn.sub}</p>
         </div>
       </div>
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-5 py-20 md:grid-cols-2">
+      <div className="mx-auto grid max-w-[1320px] gap-12 px-5 py-20 sm:px-8 md:grid-cols-2 lg:px-12">
         {lessons.map((lesson) => (
           <LessonCard
             key={lesson.id}
