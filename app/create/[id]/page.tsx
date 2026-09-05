@@ -99,11 +99,17 @@ export default function EditorPage() {
           >
             {t.templateView.pay}
           </Link>
-          <div className="mt-12 flex justify-center">
-            <PhoneFrame large scroll={format === "site3d"}>
-              <FormatInvite invitation={inv} locale={locale} compact interactive startOpen />
-            </PhoneFrame>
-          </div>
+          {isSite ? (
+            <div className="mx-auto mt-12 h-auto w-full max-w-[430px]">
+              <FormatInvite invitation={inv} locale={locale} interactive startOpen />
+            </div>
+          ) : (
+            <div className="mt-12 flex justify-center">
+              <PhoneFrame large>
+                <FormatInvite invitation={inv} locale={locale} compact interactive startOpen />
+              </PhoneFrame>
+            </div>
+          )}
         </div>
       </SiteShell>
     );
@@ -212,26 +218,39 @@ export default function EditorPage() {
 
           <p className="mb-6 text-center text-sm text-ink-soft">{t.editor.tapHint}</p>
 
-          <div className="mx-auto w-fit">
+          <div className={isSite ? "mx-auto w-full" : "mx-auto w-fit"}>
             <p className="mb-3 text-center text-[10px] uppercase tracking-[0.16em] text-meta">
               {t.editor.live}
             </p>
-            <div className="flex items-center gap-1 sm:gap-3">
+            <div className="flex items-start justify-center gap-1 sm:gap-3">
               <StepArrow
                 dir="left"
                 onClick={undo}
                 disabled={!canUndo}
                 label={`${t.editor.undo} · Ctrl+Z`}
               />
-              <PhoneFrame large scroll={format === "site3d"} capture>
-                <FormatInvite
-                  invitation={inv}
-                  locale={locale}
-                  compact
-                  onChange={patch}
-                  onSelect={onSelect}
-                />
-              </PhoneFrame>
+              {isSite ? (
+                <div className="min-w-0 flex-1">
+                  <div className="mx-auto h-auto w-full max-w-[430px]">
+                    <FormatInvite
+                      invitation={inv}
+                      locale={locale}
+                      onChange={patch}
+                      onSelect={onSelect}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <PhoneFrame large capture>
+                  <FormatInvite
+                    invitation={inv}
+                    locale={locale}
+                    compact
+                    onChange={patch}
+                    onSelect={onSelect}
+                  />
+                </PhoneFrame>
+              )}
               <StepArrow
                 dir="right"
                 onClick={redo}
