@@ -74,20 +74,6 @@ function LoginInner() {
       const next = search.get("next") || "";
       const dest =
         next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/login") ? next : "/";
-      // #region agent log
-      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-        body: JSON.stringify({
-          sessionId: "c008f9",
-          hypothesisId: "B",
-          location: "login/page.tsx:existing",
-          message: "login auto-redirect",
-          data: { auth: existing.auth, plan: existing.plan, dest, next },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       void (async () => {
         if (existing.auth === "google") {
           await Promise.race([

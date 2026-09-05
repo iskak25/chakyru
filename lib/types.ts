@@ -47,7 +47,14 @@ export type TemplateStyle = {
     | "oliveWave"
     | "monoInk"
     | "roundedMono"
-    | "softInvite";
+    | "softInvite"
+    | "luxury"
+    | "elegant"
+    | "modern"
+    | "romantic"
+    | "traditional"
+    | "ivory"
+    | "mauve";
 };
 
 export type InvitationTemplate = {

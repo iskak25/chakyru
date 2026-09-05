@@ -4,12 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { TemplateRenderer } from "@/components/TemplateRenderer";
-import { PhoneFrame } from "@/components/InviteCard";
 import { SiteShell } from "@/components/SiteShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
 import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
-import { formatOf } from "@/lib/templates";
 import { getUser, previewInvitation, pricingHref, startInvitation } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
 
@@ -21,7 +19,6 @@ export default function TemplatePreviewPage() {
   const id = params.id;
   const template = templates.find((item) => item.id === id);
   const invitation = useMemo(() => (template ? previewInvitation(template.id) : null), [template]);
-  const format = template ? formatOf(template.id) : "site3d";
   const [access, setAccess] = useState<TemplateAccessResponse | null>(null);
 
   useEffect(() => {
@@ -103,17 +100,14 @@ export default function TemplatePreviewPage() {
           </div>
         </div>
 
-        <div className="mt-12 flex justify-center">
-          <PhoneFrame large scroll={format === "site3d"}>
-            <TemplateRenderer
-              templateId={invitation.templateId}
-              data={invitation}
-              locale={locale}
-              compact
-              interactive
-              startOpen
-            />
-          </PhoneFrame>
+        <div className="mx-auto mt-12 h-auto w-full max-w-[430px]">
+          <TemplateRenderer
+            templateId={invitation.templateId}
+            data={invitation}
+            locale={locale}
+            interactive
+            startOpen
+          />
         </div>
       </div>
     </SiteShell>

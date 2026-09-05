@@ -375,7 +375,7 @@ export function MoveCanvas({
         className={`relative ${placing ? "cursor-crosshair" : ""} ${height === "auto" ? "" : "h-full"} ${className}`}
         style={{
           ...(height === "auto"
-            ? { height: "auto", minHeight: "100%" }
+            ? { height: "auto" }
             : height != null
               ? { height, minHeight: height }
               : { height: "100%" }),

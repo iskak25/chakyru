@@ -67,7 +67,7 @@ export function FormatInvite({
   if (format === "site3d") {
     const variant = onChange ? "editor" : compact && !interactive ? "preview" : "guest";
     return (
-      <div className={compact && !onChange ? "h-full" : "min-h-full"}>
+      <div className={compact && !onChange && !interactive ? "h-full" : "h-auto"}>
         <Site3D
           invitation={invitation}
           locale={locale}

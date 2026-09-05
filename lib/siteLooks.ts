@@ -1,4 +1,5 @@
 import { peekPreview, peekTemplates } from "./catalogStore";
+import { getInviteFamily } from "./inviteFamilies";
 
 export type SiteLookId =
   | "wine"
@@ -59,6 +60,13 @@ export const PAGE_LAYOUTS = [
   "monoInk",
   "roundedMono",
   "softInvite",
+  "luxury",
+  "elegant",
+  "modern",
+  "romantic",
+  "traditional",
+  "ivory",
+  "mauve",
 ] as const;
 
 export type SitePageLayout = (typeof PAGE_LAYOUTS)[number];
@@ -769,39 +777,41 @@ const byTemplate: Record<string, SiteLookId> = {
 };
 
 const layoutByTemplate: Record<string, SitePageLayout> = {
-  "ak-shumkar": "classic",
-  klassika: "editorial",
-  elegant: "heroTimer",
-  salt: "arches",
-  "modern-cream": "editorial",
-  "kyz-gulu": "arches",
-  "altin-jildiz": "heroTimer",
-  "ramadan-nur": "classic",
-  "ak-kyoshok": "editorial",
-  "kok-too": "heroTimer",
-  jipek: "arches",
-  "tun-almaz": "classic",
-  "toi-kyzyl": "heroTimer",
-  "beshik-jyluu": "editorial",
-  "gul-zar": "arches",
-  shyrdak: "classic",
-  romashka: "bloom",
-  "ak-bilet": "bloom",
-  "shai-gul": "bloom",
-  "zhas-shamal": "bloom",
-  "tan-tuman": "editorial",
-  polaroid: "storybook",
-  mak: "poppy",
-  baxmal: "velvet",
-  "altyn-kun": "watermark",
-  "zhai-tokoi": "satin",
-  "ak-kara": "archive",
-  atelier: "atelier",
-  komur: "dusk",
-  "veil-kun": "splash",
-  nishan: "engage",
-  jeek: "splitbrush",
-  mramor: "marble",
+  "ak-shumkar": "luxury",
+  klassika: "elegant",
+  elegant: "luxury",
+  salt: "traditional",
+  "modern-cream": "modern",
+  "kyz-gulu": "romantic",
+  "altin-jildiz": "traditional",
+  "ramadan-nur": "traditional",
+  "ak-kyoshok": "elegant",
+  "kok-too": "traditional",
+  jipek: "romantic",
+  "tun-almaz": "luxury",
+  "toi-kyzyl": "traditional",
+  "beshik-jyluu": "traditional",
+  "gul-zar": "romantic",
+  shyrdak: "traditional",
+  romashka: "romantic",
+  "ak-bilet": "elegant",
+  "shai-gul": "romantic",
+  "zhas-shamal": "modern",
+  "tan-tuman": "elegant",
+  polaroid: "modern",
+  mak: "romantic",
+  baxmal: "romantic",
+  "altyn-kun": "elegant",
+  "zhai-tokoi": "traditional",
+  "ak-kara": "luxury",
+  atelier: "luxury",
+  komur: "luxury",
+  "veil-kun": "luxury",
+  nishan: "modern",
+  jeek: "modern",
+  mramor: "elegant",
+  ivory: "ivory",
+  mauve: "mauve",
 };
 
 function solidFrom(bg: string) {
@@ -817,14 +827,36 @@ export function getSiteLook(templateId: string): SiteLook {
   const preview = peekPreview();
   const tpl =
     preview?.id === templateId ? preview : peekTemplates()?.find((item) => item.id === templateId);
-  const mappedLayout = layoutByTemplate[templateId] ?? base.pageLayout;
-  if (!tpl) return { ...base, pageLayout: mappedLayout };
+  const mappedLayout = layoutByTemplate[templateId] ?? getInviteFamily(templateId);
+  const family = getInviteFamily(templateId);
+  const familyPage: Record<string, string> = {
+    luxury: "#120e0c",
+    elegant: "#f7f1e8",
+    modern: "#ffffff",
+    romantic: "#fbf7f2",
+    traditional: "#f4efe4",
+    ivory: "#fcfaf9",
+    mauve: "#fdf8f5",
+  };
+  const familyInk: Record<string, string> = {
+    luxury: "#f3eadc",
+    elegant: "#3a2c20",
+    modern: "#111111",
+    romantic: "#3f3a36",
+    traditional: "#3d2a18",
+    ivory: "#1a1a1a",
+    mauve: "#2b2624",
+  };
+  const pageBg = familyPage[family] ?? base.pageBg;
+  const ink = familyInk[family] ?? base.ink;
+  if (!tpl) return { ...base, pageLayout: mappedLayout, pageBg, ink };
   return {
     ...base,
     pageLayout: mappedLayout,
+    pageBg,
+    ink,
     accent: tpl.style.accent || base.accent,
     overlay: tpl.style.overlay || solidFrom(tpl.style.bg) || base.overlay,
-    pageBg: tpl.style.pageBg || base.pageBg,
     namesColor: tpl.style.text === "#ffffff" || tpl.style.text === "#F5F5F5" ? tpl.style.text : base.namesColor,
   };
 }

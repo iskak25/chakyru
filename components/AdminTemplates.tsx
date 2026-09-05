@@ -202,20 +202,6 @@ export function AdminTemplates() {
       setLiveTemplates(next);
       dirty.current = true;
       setStatus(result.remote ? t.admin.saved : t.admin.savedLocal);
-      // #region agent log
-      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-        body: JSON.stringify({
-          sessionId: "c008f9",
-          hypothesisId: "H",
-          location: "AdminTemplates.tsx:persist",
-          message: "template catalog saved",
-          data: { remote: result.remote, count: next.length, selectedId },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
     } catch {
       setError(t.admin.error);
       setStatus(t.admin.savedLocal);
@@ -535,20 +521,6 @@ function FormFields({
             onChange={(e) => {
               const value = Number(e.target.value) || 0;
               patch({ priceSom: value });
-              // #region agent log
-              fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-                body: JSON.stringify({
-                  sessionId: "c008f9",
-                  hypothesisId: "I",
-                  location: "AdminTemplates.tsx:price",
-                  message: "template editor price changed",
-                  data: { id: draft.id, value, format: draft.format },
-                  timestamp: Date.now(),
-                }),
-              }).catch(() => {});
-              // #endregion
             }}
           />
         </label>

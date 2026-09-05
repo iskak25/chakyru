@@ -175,7 +175,7 @@ export function PhoneFrame({
         <div className="absolute left-1/2 top-2 z-20 h-4 w-20 -translate-x-1/2 rounded-full bg-[#1a1c19]" />
         <div
           id={capture ? INVITE_EXPORT_ID : undefined}
-          className={`aspect-[9/19] ${scroll ? "overflow-y-auto bg-[#f6efe4]" : "overflow-hidden bg-[#fafafa]"}`}
+          className={`phone-frame-scroll aspect-[9/19] ${scroll ? "overflow-x-hidden overflow-y-auto bg-[#f6efe4]" : "overflow-hidden bg-[#fafafa]"}`}
         >
           {children}
         </div>

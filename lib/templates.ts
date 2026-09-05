@@ -700,6 +700,63 @@ const seedTemplates: InvitationTemplate[] = [
       pageLayout: "marble",
     }),
   },
+  {
+    id: "ivory",
+    name: { ky: "Ivory", ru: "Ivory" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 1,
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    style: style("#fcfaf9", "rgba(252,250,249,0.96)", "#e2c2b9", "#1a1a1a", "#7a7a7a", {
+      overlay: "#e8d5cc",
+      pageBg: "#fcfaf9",
+      pageLayout: "ivory",
+    }),
+    canvas: {
+      layout: {},
+      extras: [],
+      copy: {
+        greeting: "Дорогие наши родные и друзья!",
+        program: "Программа",
+      },
+      gallery: {},
+      blockColors: {},
+      coverImage: "",
+      names: "Анна & Вадим",
+      message: "В нашей жизни скоро состоится важное событие — наша свадьба!",
+    },
+  },
+  {
+    id: "mauve",
+    name: { ky: "Mauve", ru: "Mauve" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    eventTypes: ["wedding", "toi"],
+    featured: true,
+    priceSom: 1,
+    style: style("#fdf8f5", "rgba(253,248,245,0.96)", "#9f7e7e", "#2b2624", "#7a7068", {
+      overlay: "#9f7e7e",
+      pageBg: "#fdf8f5",
+      pageLayout: "mauve",
+    }),
+    canvas: {
+      layout: {},
+      extras: [],
+      copy: {
+        untilTitle: "ДО СВАДЬБЫ ОСТАЛОСЬ:",
+        venueTitle: "МЕСТО ПРОВЕДЕНИЯ",
+        drinksTitle: "НАПИТКИ",
+        drinksHint: "Что бы вы предпочли?",
+        wishesTitle: "ВАШИ ПОЖЕЛАНИЯ",
+      },
+      gallery: {},
+      blockColors: {},
+      coverImage: "",
+      names: "Александр & Виктория",
+      message: "С нетерпением ждём встречи с вами!",
+    },
+  },
 ];
 
 const FORMAT_PRICE = {
@@ -711,6 +768,9 @@ const FORMAT_PRICE = {
 
 export const FREE_TEMPLATE_IDS = new Set(["klassika"]);
 
+/** Keep these at the seed price instead of the format default (590 for site3d). */
+const SEED_PRICE_IDS = new Set(["mauve", "ivory"]);
+
 export function isFreeTemplate(templateId: string, basePrice?: number) {
   if (FREE_TEMPLATE_IDS.has(templateId)) return true;
   return typeof basePrice === "number" && Number.isFinite(basePrice) && basePrice <= 0;
@@ -719,11 +779,18 @@ export function isFreeTemplate(templateId: string, basePrice?: number) {
 function applyCatalogPrices(list: InvitationTemplate[]): InvitationTemplate[] {
   return list.map((item) => {
     if (FREE_TEMPLATE_IDS.has(item.id)) return { ...item, priceSom: 0 };
+    if (SEED_PRICE_IDS.has(item.id)) return item;
     return { ...item, priceSom: FORMAT_PRICE[item.format].priceSom };
   });
 }
 
-export function pickStoredPrice(live: number | undefined, seed: number) {
+export function pickStoredPrice(live: number | undefined, seed: number, templateId?: string, format?: InviteFormat) {
+  if (templateId && SEED_PRICE_IDS.has(templateId)) {
+    const formatDefault = format ? FORMAT_PRICE[format].priceSom : 590;
+    if (typeof live !== "number" || !Number.isFinite(live) || live < 0 || live === formatDefault) {
+      return seed;
+    }
+  }
   if (typeof live !== "number" || !Number.isFinite(live) || live < 0) return seed;
   return live;
 }
@@ -732,37 +799,14 @@ export const templates = applyCatalogPrices(seedTemplates);
 
 export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): InvitationTemplate[] {
   if (!live?.length) {
-    // #region agent log
-    if (typeof window !== "undefined") {
-      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-        body: JSON.stringify({
-          sessionId: "c008f9",
-          hypothesisId: "G",
-          location: "lib/templates.ts:mergeCatalogTemplates",
-          message: "merge used format seed prices",
-          data: {
-            liveCount: live?.length ?? 0,
-            sample: templates.slice(0, 4).map((item) => ({ id: item.id, priceSom: item.priceSom, format: item.format })),
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-    }
-    // #endregion
     return templates;
   }
   const seedById = new Map(templates.map((item) => [item.id, item]));
-  let usedSeed = 0;
-  let usedLive = 0;
   const merged = live.map((item) => {
     const seed = seedById.get(item.id);
     if (!seed) return item;
     const { priceTenge: _tenge, ...liveItem } = item as InvitationTemplate & { priceTenge?: number };
-    const picked = pickStoredPrice(liveItem.priceSom, seed.priceSom);
-    if (picked === seed.priceSom && liveItem.priceSom !== seed.priceSom) usedSeed += 1;
-    else usedLive += 1;
+    const picked = pickStoredPrice(liveItem.priceSom, seed.priceSom, item.id, seed.format);
     return {
       ...seed,
       ...liveItem,
@@ -777,32 +821,6 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
   });
   const seen = new Set(merged.map((item) => item.id));
   const result = [...merged, ...templates.filter((item) => !seen.has(item.id))];
-  // #region agent log
-  if (typeof window !== "undefined") {
-    fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-      body: JSON.stringify({
-        sessionId: "c008f9",
-        hypothesisId: "G",
-        location: "lib/templates.ts:mergeCatalogTemplates",
-        message: "merge prices",
-        data: {
-          liveCount: live.length,
-          usedSeed,
-          usedLive,
-          sample: result.slice(0, 4).map((item, i) => ({
-            id: item.id,
-            live: live[i]?.priceSom,
-            seed: seedById.get(item.id)?.priceSom,
-            picked: item.priceSom,
-          })),
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  }
-  // #endregion
   return result;
 }
 

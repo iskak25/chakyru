@@ -40,6 +40,16 @@ body {
   color: var(--ink);
 }
 
+.phone-frame-scroll {
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.phone-frame-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   font-family: var(--font-manrope), system-ui, sans-serif;
 }
@@ -673,5 +683,146 @@ textarea {
 
   .envelope-stage.is-opening {
     opacity: 0;
+  }
+}
+
+.font-lux {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-mod {
+  font-family: var(--font-unbounded), var(--font-manrope), sans-serif;
+}
+
+.font-rom {
+  font-family: var(--font-caveat), var(--font-ceremonial), cursive;
+}
+
+.font-ele-script {
+  font-family: var(--font-ceremonial), var(--font-cormorant), Georgia, serif;
+}
+
+.font-tra-script {
+  font-family: var(--font-ceremonial), var(--font-cormorant), Georgia, serif;
+}
+
+.font-tra-title {
+  font-family: var(--font-philosopher), var(--font-cormorant), Georgia, serif;
+}
+
+.fam-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fam-reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.fam-rom-arch {
+  border-radius: 0 0 50% 50% / 0 0 22% 22%;
+}
+
+.fam-rom-wave-photo {
+  clip-path: ellipse(140% 88% at 50% 38%);
+}
+
+.fam-lux-silk {
+  background: linear-gradient(180deg, #1a1410 0%, #241910 48%, #16110e 100%);
+}
+
+.fam-lux-ken {
+  animation: fam-ken 22s ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes fam-ken {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+.fam-tra-border {
+  border: 1px solid rgba(176, 137, 72, 0.45);
+  box-shadow: inset 0 0 0 5px #f4efe4, inset 0 0 0 6px rgba(176, 137, 72, 0.32);
+}
+
+.fam-tra-band {
+  height: 8px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(176, 137, 72, 0.7) 0 7px,
+    transparent 7px 14px
+  );
+  mask-image: repeating-linear-gradient(90deg, #000 0 7px, transparent 7px 16px);
+}
+
+[data-family="luxury"] .site3d-sticky button {
+  border-radius: 0;
+}
+
+[data-family="modern"] .site3d-sticky button {
+  border-radius: 0;
+}
+
+[data-family="romantic"] .site3d-sticky button {
+  border-radius: 999px;
+}
+
+[data-family="elegant"] .site3d-sticky button,
+[data-family="traditional"] .site3d-sticky button {
+  border-radius: 0;
+}
+
+.font-ivory {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+.font-ivory-script {
+  font-family: var(--font-ceremonial), var(--font-cormorant), Georgia, serif;
+}
+
+.font-mauve {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+.fam-ivory-drop::first-letter {
+  font-family: var(--font-ceremonial), serif;
+  font-size: 2.8em;
+  line-height: 0.75;
+  padding-right: 4px;
+  float: left;
+}
+
+.fam-ivory-ken {
+  animation: fam-ken 20s ease-out forwards;
+}
+
+.fam-ivory-btn {
+  transition: transform 0.25s ease, opacity 0.25s ease, filter 0.25s ease;
+}
+
+.fam-ivory-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.96);
+}
+
+[data-family="ivory"] .site3d-sticky button,
+[data-family="mauve"] .site3d-sticky button {
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fam-reveal,
+  .fam-reveal.is-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .fam-lux-ken,
+  .fam-ivory-ken {
+    animation: none;
   }
 }

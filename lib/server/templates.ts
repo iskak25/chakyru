@@ -25,7 +25,12 @@ export async function getCatalogTemplate(templateId: string): Promise<Invitation
   if (!live && !seed) return null;
   const base = seed ?? live;
   if (!base) return null;
-  const priceSom = pickStoredPrice(live?.priceSom, seed?.priceSom ?? live?.priceSom ?? 0);
+  const priceSom = pickStoredPrice(
+    live?.priceSom,
+    seed?.priceSom ?? live?.priceSom ?? 0,
+    templateId,
+    (seed ?? live)?.format,
+  );
   return { ...base, ...live, priceSom };
 }
 
@@ -36,6 +41,10 @@ export async function getCatalogBasePrice(templateId: string): Promise<number | 
   return template.priceSom;
 }
 
+function firestoreSafe<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
 export async function patchCatalogBasePrices(prices: Record<string, number>) {
   const db = getAdminDb();
   if (!db) throw new Error("firestore");
@@ -43,11 +52,13 @@ export async function patchCatalogBasePrices(prices: Record<string, number>) {
   const snap = await ref.get();
   const existing = Array.isArray(snap.data()?.items) ? (snap.data()?.items as InvitationTemplate[]) : [];
   const base = existing.length ? existing : seedTemplates;
-  const items = base.map((item) => {
-    const next = prices[item.id];
-    if (typeof next !== "number" || !Number.isFinite(next) || next < 0) return item;
-    return { ...item, priceSom: next };
-  });
+  const items = firestoreSafe(
+    base.map((item) => {
+      const next = prices[item.id];
+      if (typeof next !== "number" || !Number.isFinite(next) || next < 0) return item;
+      return { ...item, priceSom: next };
+    }),
+  );
   const updatedAt = Date.now();
   await ref.set(
     {

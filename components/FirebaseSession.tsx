@@ -21,20 +21,6 @@ export function FirebaseSession() {
           stopWatch = () => {};
           if (!fbUser) {
             const local = getUser();
-            // #region agent log
-            fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-              body: JSON.stringify({
-                sessionId: "c008f9",
-                hypothesisId: "B",
-                location: "FirebaseSession.tsx:no-fb",
-                message: "firebase signed out",
-                data: { localAuth: local?.auth ?? null, willClear: local?.auth === "google" },
-                timestamp: Date.now(),
-              }),
-            }).catch(() => {});
-            // #endregion
             if (local?.auth === "google") clearUser();
             return;
           }

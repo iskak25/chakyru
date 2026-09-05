@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/locale";
 import { defaultSettings, publicPricing } from "@/lib/settings";
 import { useCatalog } from "@/lib/useCatalog";
 import { mergeCatalogTemplates } from "@/lib/templates";
-import { readLocalSettings, watchSiteSettings } from "@/lib/db";
+import { readLocalSettings, saveCatalogTemplates, saveSiteSettings, watchSiteSettings } from "@/lib/db";
 import type { InvitationTemplate, SiteSettings } from "@/lib/types";
 
 const input = "w-full border border-ink/15 bg-transparent px-3 py-2 text-sm";
@@ -80,18 +80,12 @@ export function AdminPrices() {
     setBusy(true);
     setError("");
     try {
-      const headers = await authHeaders();
-      const prices = Object.fromEntries(rows.map((item) => [item.id, item.priceSom]));
-      const res = await fetch("/api/admin/prices", {
-        method: "PATCH",
-        headers,
-        body: JSON.stringify({ prices, proPriceSom: settings.proPriceSom }),
-      });
-      if (!res.ok) throw new Error("save");
+      const catalog = await saveCatalogTemplates(rows);
+      const pricing = await saveSiteSettings(settings);
       setLiveTemplates(rows);
       setLivePricing(publicPricing(settings));
       dirty.current = true;
-      setStatus(t.admin.saved);
+      setStatus(catalog.remote || pricing.remote ? t.admin.saved : t.admin.savedLocal);
     } catch {
       setError(t.admin.error);
     } finally {

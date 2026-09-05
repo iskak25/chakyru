@@ -58,11 +58,8 @@ function GuestInviteInner() {
 
   if (formatOf(inv.templateId) === "site3d") {
     return (
-      <div className="min-h-svh bg-page md:flex md:justify-center md:py-6">
-        <div className="relative min-h-svh w-full max-w-[430px] overflow-y-auto bg-white md:min-h-[90svh] md:border-[12px] md:border-[#1a1a1a]">
-          <div className="pointer-events-none absolute left-1/2 top-0 z-50 hidden h-[30px] w-[150px] -translate-x-1/2 rounded-b-[20px] bg-[#1a1a1a] md:block" />
-          {renderer}
-        </div>
+      <div className="bg-page">
+        <div className="mx-auto h-auto w-full max-w-[430px]">{renderer}</div>
       </div>
     );
   }

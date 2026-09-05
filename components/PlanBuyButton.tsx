@@ -60,27 +60,6 @@ export function PlanBuyButton({
         granted?: boolean;
         error?: string;
       } | null;
-      // #region agent log
-      fetch("http://127.0.0.1:7861/ingest/fdb6035a-9503-48b4-894a-ead00d842d89", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "c008f9" },
-        body: JSON.stringify({
-          sessionId: "c008f9",
-          hypothesisId: "A",
-          location: "PlanBuyButton.tsx:checkout",
-          message: "pay response",
-          data: {
-            plan,
-            templateId: templateId ?? null,
-            status: res.status,
-            granted: Boolean(data?.granted),
-            hasUrl: Boolean(data?.paymentUrl),
-            error: data?.error ?? null,
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       const { rememberCheckout, markPaidTemplate, unlockPaidTemplate } = await import("@/lib/payAccess");
       rememberCheckout({ paymentId: data?.paymentId, templateId, plan });
       if (data?.granted) {

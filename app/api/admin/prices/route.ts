@@ -37,8 +37,12 @@ export async function PATCH(req: NextRequest) {
       await setProPriceSom(body.proPriceSom);
     }
     return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "save" }, { status: 500 });
+  } catch (err) {
+    console.error("PATCH /api/admin/prices", err);
+    return NextResponse.json(
+      { error: "save", detail: err instanceof Error ? err.message : "unknown" },
+      { status: 500 },
+    );
   }
 }
 

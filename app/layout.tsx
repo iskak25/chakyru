@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Great_Vibes, Manrope, Marck_Script } from "next/font/google";
+import { Caveat, Cormorant_Garamond, Great_Vibes, Manrope, Marck_Script, Philosopher, Playfair_Display, Unbounded } from "next/font/google";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
@@ -27,6 +27,32 @@ const ceremonial = Marck_Script({
   weight: "400",
 });
 
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const philosopher = Philosopher({
+  variable: "--font-philosopher",
+  subsets: ["latin", "cyrillic"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "Chakyru — Тойго чакыруу",
   description:
@@ -37,7 +63,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ky"
-      className={`${sans.variable} ${display.variable} ${vibes.variable} ${ceremonial.variable} h-full antialiased`}
+      className={`${sans.variable} ${display.variable} ${vibes.variable} ${ceremonial.variable} ${playfair.variable} ${unbounded.variable} ${caveat.variable} ${philosopher.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-page text-ink">
         <Providers>{children}</Providers>

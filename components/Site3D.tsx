@@ -10,6 +10,7 @@ import { MoveCanvas, Selectable } from "./MoveCanvas";
 import { InviteAudio } from "./InviteAudio";
 import { MusicPickModal } from "./MusicPicker";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
+import { resolveInviteFamily } from "@/lib/inviteFamilies";
 import { getSiteLook } from "@/lib/siteLooks";
 import type { LayoutKit, Site3DLabels } from "./Site3DLayouts";
 import { Site3DInner, Site3DThumb } from "./Site3DResolve";
@@ -342,11 +343,12 @@ export function Site3D({
   const closedBox = framed
     ? "h-full min-h-full overflow-hidden"
     : "h-[100svh] min-h-[100svh] overflow-hidden";
-  const openBox = framed ? "h-full overflow-y-auto" : "min-h-full";
+  const openBox = framed ? "min-h-full overflow-x-clip" : "h-auto overflow-visible";
 
   return (
     <div
       className={`relative mx-auto w-full max-w-[430px] ${open && !opening ? openBox : closedBox}`}
+      data-family={resolveInviteFamily(invitation.templateId, look.pageLayout)}
       style={{ color: look.ink }}
     >
       {musicSrc ? (
@@ -379,7 +381,7 @@ export function Site3D({
           className="site3d-page"
         >
           <Site3DInner kit={kit} />
-          <div className="sticky bottom-3 z-30 flex justify-between px-3 pb-2">
+          <div className="site3d-sticky sticky bottom-3 z-30 flex justify-between px-3 pb-2">
             <Selectable id="musicBtn">
             <button
               type="button"
