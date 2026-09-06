@@ -127,10 +127,10 @@ export async function fulfillPurchase(input: {
     (await getPurchase(paymentId)) ||
     (input.transactionId ? await getPurchase(input.transactionId) : null);
   if (!found) return false;
-  if (input.uid && found.userId && input.uid !== found.userId) return false;
+  if (input.uid && found.userId && !samePurchasePayer(found.userId, input.uid)) return false;
 
   const id = found.id;
-  const uid = found.userId;
+  const uid = input.uid || found.userId;
   const plan = found.plan;
   const templateId = found.templateId;
   const frozenPrice = found.price;
@@ -202,22 +202,42 @@ export async function fulfillPurchase(input: {
   return true;
 }
 
+export function samePurchasePayer(userId: string | undefined, uid: string) {
+  if (!userId || !uid) return false;
+  return userId === uid || userId === `google:${uid}` || userId.replace(/^google:/, "") === uid;
+}
+
 export async function confirmOwnedPurchase(
   paymentId: string,
   uid: string,
 ): Promise<{ paid: boolean; plan?: string; templateId?: string | null }> {
   const purchase = await getPurchase(paymentId);
-  if (!purchase || purchase.userId !== uid) return { paid: false };
+  if (!purchase || !samePurchasePayer(purchase.userId, uid)) return { paid: false };
   if (purchasePriceLocked(purchase.status)) {
-    if (purchase.plan === "standard" && purchase.templateId) {
+    if (purchase.plan === "pro" || purchase.plan === "unlimited") {
+      return { paid: true, plan: purchase.plan, templateId: purchase.templateId ?? null };
+    }
+    if (purchase.templateId) {
       await grantTemplateAccess({
         uid,
         templateId: purchase.templateId,
         accessType: "purchase",
-        purchaseId: paymentId,
+        purchaseId: purchase.id,
       });
     }
     return { paid: true, plan: purchase.plan, templateId: purchase.templateId ?? null };
+  }
+  if (purchase.status === "pending") {
+    const done = await fulfillPurchase({
+      paymentId: purchase.id,
+      amount: purchase.price,
+      uid,
+      plan: purchase.plan,
+      templateId: purchase.templateId,
+    });
+    if (done) {
+      return { paid: true, plan: purchase.plan, templateId: purchase.templateId ?? null };
+    }
   }
   return { paid: false, plan: purchase.plan, templateId: purchase.templateId ?? null };
 }

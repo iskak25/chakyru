@@ -30,22 +30,44 @@ function purchaseMatchesTemplate(
   return data.plan === "pro" || data.plan === "unlimited";
 }
 
-async function hasPaidTemplatePurchase(uid: string, templateId: string) {
+async function listUserCommerceDocs(uid: string) {
   const db = getAdminDb();
-  if (!db) return false;
-  const [purchasesByUser, purchasesByUid, paymentsByUid, paymentsByUser] = await Promise.all([
-    db.collection("purchases").where("userId", "==", uid).get().catch(() => null),
-    db.collection("purchases").where("uid", "==", uid).get().catch(() => null),
-    db.collection("payments").where("uid", "==", uid).get().catch(() => null),
-    db.collection("payments").where("userId", "==", uid).get().catch(() => null),
-  ]);
-  const docs = [
-    ...(purchasesByUser?.docs ?? []),
-    ...(purchasesByUid?.docs ?? []),
-    ...(paymentsByUid?.docs ?? []),
-    ...(paymentsByUser?.docs ?? []),
-  ];
-  return docs.some((doc) => purchaseMatchesTemplate(doc.data() as { templateId?: string; status?: string; plan?: string }, templateId));
+  if (!db) return [];
+  const ids = [...new Set([uid, `google:${uid}`])];
+  const snaps = await Promise.all(
+    ids.flatMap((id) => [
+      db.collection("purchases").where("userId", "==", id).get().catch(() => null),
+      db.collection("purchases").where("uid", "==", id).get().catch(() => null),
+      db.collection("payments").where("uid", "==", id).get().catch(() => null),
+      db.collection("payments").where("userId", "==", id).get().catch(() => null),
+    ]),
+  );
+  return snaps.flatMap((snap) => snap?.docs ?? []);
+}
+
+async function hasPaidTemplatePurchase(uid: string, templateId: string) {
+  const docs = await listUserCommerceDocs(uid);
+  return docs.some((doc) =>
+    purchaseMatchesTemplate(doc.data() as { templateId?: string; status?: string; plan?: string }, templateId),
+  );
+}
+
+export async function ensurePaidTemplateAccess(uid: string, templateId: string, email?: string) {
+  let access = await canUserAccessTemplate(uid, templateId, email);
+  if (access.allowed) return access;
+  const paid = (await listUserCommerceDocs(uid)).find((doc) =>
+    purchaseMatchesTemplate(doc.data() as { templateId?: string; status?: string; plan?: string }, templateId),
+  );
+  if (paid) {
+    await grantTemplateAccess({
+      uid,
+      templateId,
+      accessType: "purchase",
+      purchaseId: paid.id,
+    });
+    access = await canUserAccessTemplate(uid, templateId, email);
+  }
+  return access;
 }
 
 export async function canUserAccessTemplate(uid: string, templateId: string, email?: string) {

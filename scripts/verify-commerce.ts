@@ -5,6 +5,7 @@ import {
   purchasePriceLocked,
 } from "../lib/server/accessLogic";
 import { sameInvitationOwner } from "../lib/server/invitations";
+import { samePurchasePayer } from "../lib/server/purchases";
 import type { User } from "../lib/types";
 
 function assert(cond: unknown, message: string) {
@@ -103,6 +104,13 @@ function test8ServerSaveAcceptsOwnerAliases() {
   assert(!sameInvitationOwner({ ownerId: "someone-else", ownerUid: "other" }, owner), "foreign invitation must not save");
 }
 
+function test9PurchasePayerAliases() {
+  assert(samePurchasePayer("uid123", "uid123"), "exact uid must match");
+  assert(samePurchasePayer("google:uid123", "uid123"), "google:uid purchase must match firebase uid");
+  assert(!samePurchasePayer("other", "uid123"), "foreign purchase must not match");
+}
+
 test7OwnerAliasesUnlockEditor();
 test8ServerSaveAcceptsOwnerAliases();
+test9PurchasePayerAliases();
 console.log("commerce checks ok");

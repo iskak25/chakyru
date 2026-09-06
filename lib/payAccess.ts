@@ -85,3 +85,33 @@ export async function restorePaidTemplate(templateId: string) {
   unlockPaidTemplate(templateId, access.accessType === "pro" ? "pro" : "standard");
   return true;
 }
+
+export async function confirmLastCheckout() {
+  const checkout = lastCheckout();
+  if (!checkout?.pid) return false;
+  const auth = getFirebaseAuth();
+  await auth?.authStateReady();
+  const token = await auth?.currentUser?.getIdToken();
+  if (!token) return false;
+  try {
+    const res = await fetch("/api/pay/confirm", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ pid: checkout.pid }),
+    });
+    const data = (await res.json().catch(() => null)) as {
+      paid?: boolean;
+      templateId?: string | null;
+      plan?: string | null;
+    } | null;
+    if (!data?.paid) return false;
+    const templateId = data.templateId || checkout.templateId;
+    if (templateId) unlockPaidTemplate(templateId, data.plan === "pro" ? "pro" : "standard");
+    return true;
+  } catch {
+    return false;
+  }
+}

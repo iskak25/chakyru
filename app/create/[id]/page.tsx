@@ -16,7 +16,7 @@ import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
 import { fetchTemplateAccess } from "@/lib/accessClient";
-import { lastCheckout, paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
+import { confirmLastCheckout, lastCheckout, paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
@@ -41,6 +41,8 @@ export default function EditorPage() {
     }
     let cancelled = false;
     const sync = async () => {
+      await confirmLastCheckout().catch(() => false);
+      if (cancelled) return;
       const access = await fetchTemplateAccess(inv.templateId).catch(() => null);
       if (cancelled) return;
       if (access?.allowed) {

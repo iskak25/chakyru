@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
-import { canUserAccessTemplate, getTemplatePriceForUser } from "@/lib/server/access";
+import { ensurePaidTemplateAccess, getTemplatePriceForUser } from "@/lib/server/access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   if (!templateId) return NextResponse.json({ error: "template" }, { status: 400 });
   try {
     const [access, price] = await Promise.all([
-      canUserAccessTemplate(session.uid, templateId),
+      ensurePaidTemplateAccess(session.uid, templateId, session.email),
       getTemplatePriceForUser(session.uid, templateId),
     ]);
     return NextResponse.json(

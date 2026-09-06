@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
 import { getInvitationDoc, listUserInvitations, sameInvitationOwner, saveInvitationDoc } from "@/lib/server/invitations";
-import { canUserAccessTemplate } from "@/lib/server/access";
+import { ensurePaidTemplateAccess } from "@/lib/server/access";
 import { loadUserProfile } from "@/lib/server/users";
 import type { Invitation } from "@/lib/types";
 
@@ -31,10 +31,10 @@ export async function PUT(req: NextRequest) {
     email: session.email || profile?.email,
   };
   const existing = await getInvitationDoc(invitation.id);
-  const access = await canUserAccessTemplate(session.uid, invitation.templateId, session.email);
+  const access = await ensurePaidTemplateAccess(session.uid, invitation.templateId, session.email);
   const owns = sameInvitationOwner(existing, owner);
   if (!access.allowed && !(existing && owns)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    return NextResponse.json({ error: "forbidden", reason: "access" }, { status: 403 });
   }
   const saved = await saveInvitationDoc({
     invitation,
