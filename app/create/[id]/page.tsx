@@ -14,8 +14,9 @@ import { useI18n } from "@/lib/locale";
 import { useInviteHistory } from "@/lib/useInviteHistory";
 import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
-import { canEditInvitation } from "@/lib/auth";
+import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
 import { fetchTemplateAccess } from "@/lib/accessClient";
+import { unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
@@ -34,13 +35,21 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (!inv) return;
+    if (inv.id.startsWith("preview-")) {
+      router.replace(`/create/new?template=${encodeURIComponent(inv.templateId)}`);
+      return;
+    }
     let cancelled = false;
     const sync = async () => {
-      const user = getUser();
-      const owns = Boolean(user && inv.ownerId === user.id);
-      const access = await fetchTemplateAccess(inv.templateId);
+      const access = await fetchTemplateAccess(inv.templateId).catch(() => null);
       if (cancelled) return;
-      setAllowed(Boolean(owns && access?.allowed && canEditInvitation(user, inv)));
+      if (access?.allowed) {
+        unlockPaidTemplate(inv.templateId, access.accessType === "pro" ? "pro" : "standard");
+      }
+      const user = getUser();
+      const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId));
+      const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
+      setAllowed(Boolean(user?.auth === "google" && paid && mine));
     };
     void sync();
     const onSync = () => void sync();
@@ -49,7 +58,7 @@ export default function EditorPage() {
       cancelled = true;
       window.removeEventListener("chakyru-sync", onSync);
     };
-  }, [inv]);
+  }, [inv, router]);
 
   const onSelect = useCallback((id: string | null) => setSelected(id), []);
 

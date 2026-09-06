@@ -19,7 +19,15 @@ export type TemplateAccessResponse = {
 export async function fetchTemplateAccess(templateId: string): Promise<TemplateAccessResponse | null> {
   const auth = getFirebaseAuth();
   await auth?.authStateReady();
-  const token = await auth?.currentUser?.getIdToken();
+  let token = await auth?.currentUser?.getIdToken();
+  if (!token) {
+    const waitUntil = Date.now() + 4000;
+    while (!token && Date.now() < waitUntil) {
+      await new Promise((r) => window.setTimeout(r, 200));
+      await auth?.authStateReady();
+      token = await auth?.currentUser?.getIdToken();
+    }
+  }
   if (!token) return null;
   const res = await fetch(`/api/access?templateId=${encodeURIComponent(templateId)}`, {
     headers: { authorization: `Bearer ${token}` },

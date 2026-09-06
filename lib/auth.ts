@@ -50,7 +50,7 @@ export function isAdminUser(user: User | null) {
 
 export function myInvitations(user: User | null, list: Invitation[]): Invitation[] {
   if (!user) return [];
-  return list.filter((inv) => inv.id !== "demo" && inv.ownerId === user.id);
+  return list.filter((inv) => inv.id !== "demo" && !inv.id.startsWith("preview-") && ownsInvitation(user, inv));
 }
 
 export function canEditTemplate(user: User | null, templateId?: string): boolean {
@@ -62,12 +62,40 @@ export function canEditTemplate(user: User | null, templateId?: string): boolean
   return (user.templates ?? []).includes(templateId);
 }
 
+export function userIdentityIds(user: User | null): string[] {
+  if (!user) return [];
+  const ids = new Set<string>([user.id]);
+  const raw = user.id.startsWith("google:") ? user.id.slice("google:".length) : user.id;
+  if (raw) {
+    ids.add(raw);
+    ids.add(`google:${raw}`);
+  }
+  if (user.email) {
+    ids.add(user.email);
+    ids.add(`google:${user.email}`);
+  }
+  return [...ids];
+}
+
+export function ownsInvitation(
+  user: User | null,
+  inv?: { ownerId?: string; ownerUid?: string } | null,
+): boolean {
+  if (!user || !inv) return false;
+  if (isAdmin(user)) return true;
+  const ids = userIdentityIds(user);
+  if (inv.ownerId && ids.includes(inv.ownerId)) return true;
+  if (inv.ownerUid && (ids.includes(inv.ownerUid) || ids.includes(`google:${inv.ownerUid}`))) return true;
+  return !inv.ownerId && !inv.ownerUid;
+}
+
 export function canEditInvitation(
   user: User | null,
   inv?: { ownerId?: string; ownerUid?: string; templateId?: string } | null,
 ): boolean {
   if (!user || user.auth !== "google" || !inv) return false;
-  if (inv.ownerId && inv.ownerId !== user.id) return false;
+  if (isAdmin(user)) return true;
+  if (!ownsInvitation(user, inv)) return false;
   return canEditTemplate(user, inv.templateId);
 }
 

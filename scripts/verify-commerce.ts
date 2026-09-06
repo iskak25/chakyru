@@ -1,8 +1,10 @@
+import { canEditInvitation, ownsInvitation } from "../lib/auth";
 import {
   canUserAccessTemplateFromFacts,
   resolveTemplatePriceForUser,
   purchasePriceLocked,
 } from "../lib/server/accessLogic";
+import type { User } from "../lib/types";
 
 function assert(cond: unknown, message: string) {
   if (!cond) throw new Error(message);
@@ -64,10 +66,32 @@ function test6WebhookIdempotent() {
   assert(second.grants === 1, "duplicate webhook must not grant twice");
 }
 
+function test7OwnerAliasesUnlockEditor() {
+  const user: User = {
+    id: "google:uid123",
+    name: "Host",
+    role: "host",
+    auth: "google",
+    email: "host@example.com",
+    plan: "standard",
+    accountRole: "user",
+    templates: ["mauve"],
+  };
+  assert(ownsInvitation(user, { ownerId: "google:uid123" }), "exact ownerId must match");
+  assert(ownsInvitation(user, { ownerUid: "uid123" }), "firebase uid must match google:uid");
+  assert(ownsInvitation(user, { ownerId: "google:host@example.com" }), "legacy email ownerId must match");
+  assert(canEditInvitation(user, { ownerId: "uid123", templateId: "mauve" }), "paid owner must edit after uid alias");
+  assert(
+    !canEditInvitation(user, { ownerId: "someone-else", templateId: "mauve" }),
+    "other people's invitations stay locked",
+  );
+}
+
 test1FrozenPurchasePrice();
 test2IndividualPrice();
 test3InvitationIsolation();
 test4AccessDeniedWithoutPurchase();
 test5AccessFromFirestoreFacts();
 test6WebhookIdempotent();
+test7OwnerAliasesUnlockEditor();
 console.log("commerce checks ok");

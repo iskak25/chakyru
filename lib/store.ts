@@ -285,6 +285,7 @@ export function createInvitation(templateId: string, opts?: { force?: boolean })
     guests: [],
     wishes: [],
     ownerId: user.id,
+    ownerUid: user.id.startsWith("google:") ? user.id.slice("google:".length) : user.id,
     status: "published",
     updatedAt: new Date().toISOString(),
   };
