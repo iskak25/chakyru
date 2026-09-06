@@ -8,7 +8,8 @@ import { SiteShell } from "@/components/SiteShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
 import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
-import { getUser, previewInvitation, pricingHref, startInvitation } from "@/lib/store";
+import { canEditTemplate } from "@/lib/auth";
+import { getUser, openPaidInvitation, previewInvitation, pricingHref, startInvitation } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
 
 export default function TemplatePreviewPage() {
@@ -36,14 +37,18 @@ export default function TemplatePreviewPage() {
     };
   }, [id]);
 
-  const canEdit = Boolean(access?.allowed || (template && getUser() && template.priceSom <= 0));
+  const canEdit = Boolean(
+    access?.allowed ||
+      canEditTemplate(getUser(), id) ||
+      (template && getUser() && template.priceSom <= 0),
+  );
   const displayPrice = access?.price ?? template?.priceSom ?? 0;
 
   async function onEdit() {
     if (!template) return;
     const latest = await fetchTemplateAccess(template.id);
-    if (latest?.allowed) {
-      const started = startInvitation(template.id);
+    if (latest?.allowed || canEditTemplate(getUser(), template.id)) {
+      const started = latest?.allowed ? openPaidInvitation(template.id) : startInvitation(template.id);
       if ("invitation" in started) router.push(`/create/${started.invitation.id}`);
       else router.push(started.href);
       return;

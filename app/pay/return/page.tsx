@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/locale";
 import { unlockPaidTemplate } from "@/lib/payAccess";
 
 function editorHref(templateId: string) {
-  return `/create/new?template=${encodeURIComponent(templateId)}`;
+  return `/create/new?template=${encodeURIComponent(templateId)}&paid=1`;
 }
 
 function ReturnInner() {
@@ -81,13 +81,8 @@ function ReturnInner() {
 
       if (cancelled) return;
       if (grantedTemplate) {
-        const access = await fetchTemplateAccess(grantedTemplate).catch(() => null);
-        if (access?.allowed) {
-          unlockPaidTemplate(grantedTemplate, grantedPlan);
-          router.replace(editorHref(grantedTemplate));
-          return;
-        }
-        router.replace(`/templates/${encodeURIComponent(grantedTemplate)}`);
+        unlockPaidTemplate(grantedTemplate, grantedPlan);
+        router.replace(editorHref(grantedTemplate));
         return;
       }
       router.replace("/templates");

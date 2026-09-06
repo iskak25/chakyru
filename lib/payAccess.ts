@@ -41,7 +41,10 @@ export function lastCheckout() {
 
 export function markPaidTemplate(templateId: string, paymentId?: string) {
   if (typeof window === "undefined") return;
-  if (templateId) setPendingTemplate(templateId);
+  if (templateId) {
+    setPendingTemplate(templateId);
+    sessionStorage.setItem(PAID_TEMPLATE_KEY, templateId);
+  }
   if (paymentId) sessionStorage.setItem(PAYMENT_ID_KEY, paymentId);
 }
 

@@ -16,7 +16,7 @@ import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
 import { fetchTemplateAccess } from "@/lib/accessClient";
-import { unlockPaidTemplate } from "@/lib/payAccess";
+import { lastCheckout, paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
@@ -47,7 +47,8 @@ export default function EditorPage() {
         unlockPaidTemplate(inv.templateId, access.accessType === "pro" ? "pro" : "standard");
       }
       const user = getUser();
-      const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId));
+      const markedPaid = paidTemplateId() === inv.templateId || lastCheckout()?.templateId === inv.templateId;
+      const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId) || markedPaid);
       const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
       setAllowed(Boolean(user?.auth === "google" && paid && mine));
     };

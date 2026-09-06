@@ -1,7 +1,7 @@
 "use client";
 
 import type { Guest, Invitation, PlanId, RsvpStatus, User, Wish } from "./types";
-import { canCreateInvitation, canEditTemplate, normalizeUser } from "./auth";
+import { canCreateInvitation, canEditTemplate, normalizeUser, ownsInvitation } from "./auth";
 import { getTemplate } from "./templates";
 import { DEFAULT_MUSIC_URL } from "./music";
 
@@ -245,6 +245,29 @@ export function startInvitation(
     return { invitation: createInvitation(templateId) };
   } catch {
     return { href: pricingHref(templateId) };
+  }
+}
+
+export function openPaidInvitation(templateId: string): { invitation: Invitation } | { href: string } {
+  const user = getUser();
+  if (!user) return { href: createStartHref(templateId) };
+  if (user.auth !== "google") {
+    return { href: `/login?google=1&next=${encodeURIComponent(`/create/new?template=${templateId}&paid=1`)}` };
+  }
+  grantLocalTemplate(templateId);
+  const host = getUser();
+  const mine = readInvitations().find(
+    (inv) =>
+      inv.id !== "demo" &&
+      !inv.id.startsWith("preview-") &&
+      inv.templateId === templateId &&
+      ownsInvitation(host, inv),
+  );
+  if (mine) return { invitation: mine };
+  try {
+    return { invitation: createInvitation(templateId, { force: true }) };
+  } catch {
+    return startInvitation(templateId);
   }
 }
 
