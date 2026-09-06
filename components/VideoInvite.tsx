@@ -39,7 +39,7 @@ function slidesOf(invitation: Invitation) {
     pack.c0,
     pack.c1,
   ].filter(Boolean) as string[];
-  return raw.filter((src, i, all) => all.indexOf(src) !== i).slice(0, 4);
+  return raw.filter((src, i, all) => all.indexOf(src) === i).slice(0, 4);
 }
 
 const PETALS = [
