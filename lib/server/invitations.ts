@@ -53,18 +53,35 @@ function forStore(inv: Invitation): Invitation {
   };
 }
 
+export function sameInvitationOwner(
+  existing: { ownerId?: string; ownerUid?: string } | null | undefined,
+  input: { ownerId: string; ownerUid: string; email?: string },
+) {
+  if (!existing) return true;
+  const aliases = new Set<string>([input.ownerId, input.ownerUid].filter(Boolean));
+  if (input.ownerUid) aliases.add(`google:${input.ownerUid}`);
+  if (input.ownerId.startsWith("google:")) aliases.add(input.ownerId.slice("google:".length));
+  if (input.email) {
+    aliases.add(input.email);
+    aliases.add(`google:${input.email}`);
+  }
+  if (existing.ownerUid && aliases.has(existing.ownerUid)) return true;
+  if (existing.ownerId && aliases.has(existing.ownerId)) return true;
+  return !existing.ownerUid && !existing.ownerId;
+}
+
 export async function saveInvitationDoc(input: {
   invitation: Invitation;
   ownerUid: string;
   ownerId: string;
+  email?: string;
 }) {
   const db = getAdminDb();
   if (!db) return false;
   const id = input.invitation.id;
   if (!id || id === "demo" || id.startsWith("preview-")) return false;
   const existing = await getInvitationDoc(id);
-  if (existing?.ownerUid && existing.ownerUid !== input.ownerUid) return false;
-  if (existing?.ownerId && existing.ownerId !== input.ownerId && existing.ownerUid !== input.ownerUid) return false;
+  if (existing && !sameInvitationOwner(existing, input)) return false;
   const now = new Date().toISOString();
   const stored = forStore({
     ...input.invitation,

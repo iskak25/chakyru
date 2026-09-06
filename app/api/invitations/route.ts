@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
-import { getInvitationDoc, listUserInvitations, saveInvitationDoc } from "@/lib/server/invitations";
+import { getInvitationDoc, listUserInvitations, sameInvitationOwner, saveInvitationDoc } from "@/lib/server/invitations";
 import { canUserAccessTemplate } from "@/lib/server/access";
 import { loadUserProfile } from "@/lib/server/users";
 import type { Invitation } from "@/lib/types";
@@ -24,15 +24,21 @@ export async function PUT(req: NextRequest) {
   if (!invitation?.id || !invitation.templateId) {
     return NextResponse.json({ error: "invitation" }, { status: 400 });
   }
-  const access = await canUserAccessTemplate(session.uid, invitation.templateId);
-  if (!access.allowed) {
+  const profile = await loadUserProfile(session.uid);
+  const owner = {
+    ownerUid: session.uid,
+    ownerId: profile?.id || `google:${session.uid}`,
+    email: session.email || profile?.email,
+  };
+  const existing = await getInvitationDoc(invitation.id);
+  const access = await canUserAccessTemplate(session.uid, invitation.templateId, session.email);
+  const owns = sameInvitationOwner(existing, owner);
+  if (!access.allowed && !(existing && owns)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
-  const profile = await loadUserProfile(session.uid);
   const saved = await saveInvitationDoc({
     invitation,
-    ownerUid: session.uid,
-    ownerId: profile?.id || session.uid,
+    ...owner,
   });
   if (!saved) return NextResponse.json({ error: "save" }, { status: 403 });
   return NextResponse.json({ ok: true });

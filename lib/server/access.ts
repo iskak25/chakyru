@@ -21,27 +21,34 @@ async function hasTemplateAccessDoc(uid: string, templateId: string) {
   return snap.exists;
 }
 
+function purchaseMatchesTemplate(
+  data: { templateId?: string; status?: string; plan?: string },
+  templateId: string,
+) {
+  if (!isPaidPurchaseStatus(data.status)) return false;
+  if (data.templateId === templateId) return true;
+  return data.plan === "pro" || data.plan === "unlimited";
+}
+
 async function hasPaidTemplatePurchase(uid: string, templateId: string) {
   const db = getAdminDb();
   if (!db) return false;
-  const [purchases, payments] = await Promise.all([
+  const [purchasesByUser, purchasesByUid, paymentsByUid, paymentsByUser] = await Promise.all([
     db.collection("purchases").where("userId", "==", uid).get().catch(() => null),
+    db.collection("purchases").where("uid", "==", uid).get().catch(() => null),
     db.collection("payments").where("uid", "==", uid).get().catch(() => null),
+    db.collection("payments").where("userId", "==", uid).get().catch(() => null),
   ]);
-  const paidPurchase = purchases?.docs.some((doc) => {
-    const data = doc.data() as { templateId?: string; status?: string };
-    return data.templateId === templateId && isPaidPurchaseStatus(data.status);
-  });
-  if (paidPurchase) return true;
-  return Boolean(
-    payments?.docs.some((doc) => {
-      const data = doc.data() as { templateId?: string; status?: string };
-      return data.templateId === templateId && isPaidPurchaseStatus(data.status);
-    }),
-  );
+  const docs = [
+    ...(purchasesByUser?.docs ?? []),
+    ...(purchasesByUid?.docs ?? []),
+    ...(paymentsByUid?.docs ?? []),
+    ...(paymentsByUser?.docs ?? []),
+  ];
+  return docs.some((doc) => purchaseMatchesTemplate(doc.data() as { templateId?: string; status?: string; plan?: string }, templateId));
 }
 
-export async function canUserAccessTemplate(uid: string, templateId: string) {
+export async function canUserAccessTemplate(uid: string, templateId: string, email?: string) {
   const profile = await loadUserProfile(uid);
   const template = await getCatalogTemplate(templateId);
   const basePrice = template?.priceSom ?? 0;
@@ -52,7 +59,7 @@ export async function canUserAccessTemplate(uid: string, templateId: string) {
   const decision = canUserAccessTemplateFromFacts({
     accountRole: profile?.accountRole ?? "user",
     plan: profile?.plan ?? "free",
-    isAdminEmail: isAdminEmail(profile?.email),
+    isAdminEmail: isAdminEmail(email) || isAdminEmail(profile?.email),
     isFreeTemplate: free,
     hasPaidPurchase: hasPaid,
     hasTemplateAccess: hasAccessDoc || hasLegacy,

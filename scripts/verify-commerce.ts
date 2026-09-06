@@ -4,6 +4,7 @@ import {
   resolveTemplatePriceForUser,
   purchasePriceLocked,
 } from "../lib/server/accessLogic";
+import { sameInvitationOwner } from "../lib/server/invitations";
 import type { User } from "../lib/types";
 
 function assert(cond: unknown, message: string) {
@@ -93,5 +94,15 @@ test3InvitationIsolation();
 test4AccessDeniedWithoutPurchase();
 test5AccessFromFirestoreFacts();
 test6WebhookIdempotent();
+function test8ServerSaveAcceptsOwnerAliases() {
+  const owner = { ownerId: "google:uid123", ownerUid: "uid123", email: "host@example.com" };
+  assert(sameInvitationOwner({ ownerId: "google:host@example.com" }, owner), "legacy email ownerId must save");
+  assert(sameInvitationOwner({ ownerId: "uid123" }, owner), "bare uid ownerId must save");
+  assert(sameInvitationOwner({ ownerId: "google:uid123" }, owner), "google:uid ownerId must save");
+  assert(sameInvitationOwner({ ownerUid: "uid123", ownerId: "google:old@example.com" }, owner), "matching ownerUid must save");
+  assert(!sameInvitationOwner({ ownerId: "someone-else", ownerUid: "other" }, owner), "foreign invitation must not save");
+}
+
 test7OwnerAliasesUnlockEditor();
+test8ServerSaveAcceptsOwnerAliases();
 console.log("commerce checks ok");
