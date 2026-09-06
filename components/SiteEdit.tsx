@@ -67,10 +67,11 @@ export function SlotPhoto({
   imgClass?: string;
 }) {
   const url = invitation.gallery?.[slot] || src;
+  if (!url && !onChange) return null;
   return (
     <Selectable id={`photo-${slot}`} className={className}>
       <div className="relative h-full w-full overflow-hidden">
-        <img src={url} alt="" className={imgClass} />
+        {url ? <img src={url} alt="" className={imgClass} /> : <div className={`bg-black/[0.04] ${imgClass}`} />}
         {onChange ? (
           <label
             className="absolute bottom-2 right-2 z-[3] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/95 text-[#161616] shadow"

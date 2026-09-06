@@ -5,9 +5,8 @@ import { CanvasDateTime, CanvasText, PhotoLayer, type InvitePatch } from "./Canv
 import { Field } from "./SiteEdit";
 import { MoveCanvas } from "./MoveCanvas";
 import { addHour, getPhotoLayout, photoDate, splitNames } from "@/lib/photoLooks";
+import { getTemplatePhotos } from "@/lib/templatePhotos";
 import type { Invitation } from "@/lib/types";
-
-const FALLBACK_COVER = "/images/hero-toi.jpg";
 const SWATCHES = ["#f7f3ec", "#efe4d2", "#e8d5c4", "#d8c8b0", "#c5cdd4", "#9aa8b4", "#7a8a96", "#8a9a88", "#6a7358", "#4a5340"];
 
 function Cover({ src, dim }: { src: string; dim?: string }) {
@@ -33,7 +32,7 @@ export function PhotoInvite({
   onSelect?: (id: string | null) => void;
 }) {
   const layout = getPhotoLayout(invitation.templateId);
-  const cover = invitation.coverImage || FALLBACK_COVER;
+  const cover = invitation.coverImage || getTemplatePhotos(invitation.templateId).hero;
   const names = invitation.names || "Манас & Каныкей";
   const { a, b } = splitNames(names);
   const when = photoDate(invitation.date, locale);

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Mic, Music, Pause, Play } from "lucide-react";
 import { formatInviteDate } from "@/lib/i18n";
+import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { effectiveMusicUrl } from "@/lib/music";
 import { getTemplate } from "@/lib/templates";
 import { stopSpeech, speakInvite, voiceScript } from "@/lib/voice";
@@ -12,7 +13,6 @@ import { ExtraLayer } from "./ExtraLayer";
 import { InviteAudio } from "./InviteAudio";
 import { FreeMove, MoveCanvas } from "./MoveCanvas";
 
-const FALLBACKS = ["/images/hero-toi.jpg", "/images/collage-1.jpg", "/images/collage-2.jpg"];
 const SCENE_MS = 3400;
 
 function splitNames(names: string) {
@@ -28,15 +28,18 @@ function prettyDate(date: string, locale: string) {
 }
 
 function slidesOf(invitation: Invitation) {
+  const pack = getTemplatePhotos(invitation.templateId);
   const raw = [
     invitation.coverImage,
     invitation.gallery?.hero,
     invitation.gallery?.c0,
     invitation.gallery?.c1,
     invitation.gallery?.c2,
-    ...FALLBACKS,
+    pack.hero,
+    pack.c0,
+    pack.c1,
   ].filter(Boolean) as string[];
-  return raw.filter((src, i, all) => all.indexOf(src) === i).slice(0, 4);
+  return raw.filter((src, i, all) => all.indexOf(src) !== i).slice(0, 4);
 }
 
 const PETALS = [
@@ -88,7 +91,9 @@ export function VideoInvite({
   const [run, setRun] = useState(0);
   const [scene, setScene] = useState(0);
   const slides = useMemo(() => slidesOf(invitation), [invitation]);
-  const photo = slides[scene % slides.length] || FALLBACKS[0];
+  const photo = slides.length
+    ? slides[scene % slides.length]
+    : getTemplatePhotos(invitation.templateId).hero;
   const names = invitation.names || "Манас & Каныкей";
   const { a, b } = splitNames(names);
   const kicker = locale === "ru" ? "Приглашение на той" : "Тойго чакыруу";

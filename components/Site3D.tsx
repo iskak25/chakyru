@@ -11,6 +11,7 @@ import { InviteAudio } from "./InviteAudio";
 import { MusicPickModal } from "./MusicPicker";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
 import { resolveInviteFamily } from "@/lib/inviteFamilies";
+import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { getSiteLook } from "@/lib/siteLooks";
 import type { LayoutKit, Site3DLabels } from "./Site3DLayouts";
 import { Site3DInner, Site3DThumb } from "./Site3DResolve";
@@ -233,13 +234,14 @@ export function Site3D({
   const overlay = look.overlay;
   const cover = invitation.coverImage;
   const gallery = invitation.gallery ?? {};
+  const pack = getTemplatePhotos(invitation.templateId);
   const photos = [
-    gallery.c0 || cover || "/images/collage-1.jpg",
-    gallery.c1 || "/images/collage-2.jpg",
-    gallery.c2 || "/images/collage-3.jpg",
+    gallery.c0 || cover || pack.c0,
+    gallery.c1 || pack.c1,
+    gallery.c2 || pack.c2,
   ];
-  const heroPhoto = gallery.hero || cover || "/images/hero-toi.jpg";
-  const venuePhoto = gallery.venue || "/images/venue-table.jpg";
+  const heroPhoto = gallery.hero || cover || pack.hero;
+  const venuePhoto = gallery.venue || pack.venue;
 
   useEffect(() => {
     if (wishes.length < 2) return;
