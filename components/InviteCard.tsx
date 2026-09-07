@@ -171,13 +171,32 @@ export function PhoneFrame({
 }) {
   return (
     <div className={`relative mx-auto shrink-0 ${large ? "w-[320px] sm:w-[360px]" : "w-[280px]"}`}>
-      <div className="relative overflow-hidden border-[10px] border-[#1a1c19] bg-black">
-        <div className="absolute left-1/2 top-2 z-20 h-4 w-20 -translate-x-1/2 rounded-full bg-[#1a1c19]" />
-        <div
-          id={capture ? INVITE_EXPORT_ID : undefined}
-          className={`phone-frame-scroll aspect-[9/19] ${scroll ? "overflow-x-hidden overflow-y-auto bg-[#f6efe4]" : "overflow-hidden bg-[#fafafa]"}`}
-        >
-          {children}
+      {/* side buttons */}
+      <span className="pointer-events-none absolute -left-[3px] top-[18%] z-10 h-8 w-[3px] rounded-l-sm bg-[#2a2a2c]" />
+      <span className="pointer-events-none absolute -left-[3px] top-[28%] z-10 h-14 w-[3px] rounded-l-sm bg-[#2a2a2c]" />
+      <span className="pointer-events-none absolute -left-[3px] top-[42%] z-10 h-14 w-[3px] rounded-l-sm bg-[#2a2a2c]" />
+      <span className="pointer-events-none absolute -right-[3px] top-[32%] z-10 h-20 w-[3px] rounded-r-sm bg-[#2a2a2c]" />
+
+      <div className="relative rounded-[2.35rem] bg-gradient-to-b from-[#3a3a3c] via-[#1c1c1e] to-[#0b0b0c] p-[2px] shadow-[0_18px_40px_rgba(26,28,25,0.22)] sm:rounded-[2.6rem]">
+        <div className="relative overflow-hidden rounded-[2.2rem] bg-black p-[7px] sm:rounded-[2.45rem] sm:p-[8px]">
+          {/* Dynamic Island */}
+          <div className="pointer-events-none absolute left-1/2 top-[11px] z-30 flex h-[22px] w-[92px] -translate-x-1/2 items-center justify-center rounded-full bg-black sm:top-[12px] sm:h-[24px] sm:w-[100px]">
+            <span className="absolute right-[18px] h-[8px] w-[8px] rounded-full bg-[#1a1a1c] ring-1 ring-[#2c2c2e]" />
+          </div>
+
+          <div
+            id={capture ? INVITE_EXPORT_ID : undefined}
+            className={`phone-frame-scroll aspect-[9/19.5] overflow-hidden rounded-[1.85rem] sm:rounded-[2.05rem] ${
+              scroll ? "overflow-x-hidden overflow-y-auto bg-[#f6efe4]" : "bg-[#fafafa]"
+            }`}
+          >
+            {children}
+          </div>
+
+          {/* home indicator */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-[7px] z-30 flex justify-center sm:bottom-[8px]">
+            <span className="h-[4px] w-[34%] max-w-[110px] rounded-full bg-white/35" />
+          </div>
         </div>
       </div>
     </div>

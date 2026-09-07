@@ -813,106 +813,246 @@ textarea {
   border-radius: 999px;
 }
 
-.invite-showcase-rail {
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 20px;
-  scrollbar-width: none;
-  padding: 18px 20px 28px;
+.invite-coverflow {
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+  padding: 12px 0 4px;
 }
 
-.invite-showcase-rail::-webkit-scrollbar {
-  display: none;
+.invite-coverflow-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(280px, calc(100vw - 5.5rem));
+  margin-left: calc(min(280px, calc(100vw - 5.5rem)) / -2);
+  margin-top: calc(min(560px, 78vw) / -2.15);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  transition:
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 480ms ease,
+    filter 480ms ease;
+  will-change: transform, opacity;
+  filter: brightness(0.92);
+  pointer-events: none;
 }
 
-.invite-showcase-item {
-  flex: 0 0 auto;
-  scroll-snap-align: center;
+.invite-coverflow-stage {
+  position: relative;
+  height: min(560px, 78vw);
+  perspective: 1100px;
+  perspective-origin: 50% 48%;
+  transform-style: preserve-3d;
+  cursor: grab;
+}
+
+.invite-coverflow-stage:active {
+  cursor: grabbing;
+}
+
+.invite-coverflow-card.is-active {
+  filter: brightness(1);
+}
+
+.invite-nav-btn {
+  display: inline-flex;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(26, 28, 25, 0.14);
+  background: transparent;
+  color: #1a1c19;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 1;
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.invite-nav-btn:hover {
+  background: rgba(26, 28, 25, 0.04);
+  border-color: rgba(26, 28, 25, 0.28);
+}
+
+.invite-dot {
+  height: 7px;
+  width: 7px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0;
+  background: rgba(26, 28, 25, 0.2);
+  transition: width 280ms ease, background 280ms ease;
+}
+
+.invite-dot.is-active {
+  width: 22px;
+  background: #1a1c19;
 }
 
 .invite-phone {
-  width: min(340px, calc(100vw - 4.75rem));
-  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  width: 100%;
 }
 
 .invite-phone-featured {
-  width: min(368px, calc(100vw - 3.75rem));
+  width: 100%;
+}
+
+.invite-phone-shell {
+  border-radius: 2.2rem;
+  padding: 1.5px;
+  background: linear-gradient(180deg, #3a3a3c 0%, #1c1c1e 48%, #0b0b0c 100%);
+  box-shadow: 0 18px 44px rgba(28, 24, 20, 0.16);
 }
 
 .invite-phone-bezel {
   position: relative;
-  border-radius: 32px;
+  overflow: hidden;
+  border-radius: calc(2.2rem - 1.5px);
   padding: 6px;
-  background: #1a1a1a;
-  box-shadow: 0 16px 40px rgba(28, 24, 20, 0.1);
+  background: #000;
+  aspect-ratio: 9 / 19.5;
+}
+
+.invite-phone-btn {
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+  width: 3px;
+  border-radius: 2px;
+  background: #2a2a2c;
+}
+
+.invite-phone-btn-silent {
+  left: -2px;
+  top: 18%;
+  height: 18px;
+}
+
+.invite-phone-btn-vol-up {
+  left: -2px;
+  top: 28%;
+  height: 34px;
+}
+
+.invite-phone-btn-vol-down {
+  left: -2px;
+  top: 42%;
+  height: 34px;
+}
+
+.invite-phone-btn-power {
+  right: -2px;
+  top: 32%;
+  height: 52px;
 }
 
 .invite-phone-island {
   position: absolute;
-  top: 13px;
+  top: 12px;
   left: 50%;
-  z-index: 2;
-  width: 68px;
-  height: 16px;
+  z-index: 3;
+  width: 78px;
+  height: 18px;
   transform: translateX(-50%);
   border-radius: 999px;
-  background: #1a1a1a;
+  background: #000;
+}
+
+.invite-phone-island::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 7px;
+  height: 7px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: #1a1a1c;
+  box-shadow: 0 0 0 1px #2c2c2e;
 }
 
 .invite-phone-screen {
+  height: 100%;
   overflow: hidden;
-  border-radius: 26px;
-  aspect-ratio: 9 / 17;
+  border-radius: 1.75rem;
   background: #fff;
 }
 
+.invite-phone-home {
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  z-index: 3;
+  width: 34%;
+  max-width: 110px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .invite-phone:hover {
-    transform: translateY(-6px) scale(1.02);
+  .invite-coverflow-card:not(.is-active):hover {
+    filter: brightness(0.98);
+  }
+}
+
+@media (min-width: 640px) {
+  .invite-coverflow-stage {
+    height: 600px;
+  }
+
+  .invite-coverflow-card {
+    width: 300px;
+    margin-left: -150px;
+    margin-top: -280px;
   }
 }
 
 @media (min-width: 1024px) {
-  .invite-showcase-rail {
-    justify-content: center;
+  .invite-coverflow {
     overflow: visible;
-    scroll-snap-type: none;
-    padding-inline: 0;
-    gap: 20px;
+    padding: 24px 0 8px;
   }
 
-  .invite-phone {
-    width: 320px;
+  .invite-coverflow-stage {
+    height: 640px;
+    perspective: 1400px;
   }
 
-  .invite-phone-featured {
-    width: 356px;
+  .invite-coverflow-card {
+    width: 340px;
+    margin-left: -170px;
+    margin-top: -300px;
   }
 }
 
 @media (min-width: 1280px) {
-  .invite-showcase-rail {
-    gap: 24px;
+  .invite-coverflow-card {
+    width: 360px;
+    margin-left: -180px;
   }
 
-  .invite-phone {
-    width: 340px;
-  }
-
-  .invite-phone-featured {
-    width: 376px;
+  .invite-coverflow-stage {
+    height: 680px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .invite-phone,
-  .invite-phone:hover {
+  .invite-coverflow-card {
     transition: none;
-    transform: none;
+  }
+
+  .invite-coverflow-stage {
+    perspective: none;
   }
 
   .fam-reveal,

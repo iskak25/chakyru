@@ -66,7 +66,7 @@ function FloralCard({ invitation }: { invitation: ShowcaseInvitation }) {
         <h3 className="font-mauve text-[30px] uppercase leading-none tracking-[0.08em]">{invitation.groom}</h3>
         <div className="my-2.5 flex items-center justify-center gap-3 text-[#9f7e7e]">
           <span className="h-px w-8 bg-[#c8b2aa]" />
-          <span className="font-ivory-script text-[20px] italic leading-none">и</span>
+          <span className="font-ivory-script text-[20px] italic leading-none">&</span>
           <span className="h-px w-8 bg-[#c8b2aa]" />
         </div>
         <h3 className="font-mauve text-[30px] uppercase leading-none tracking-[0.08em]">{invitation.bride}</h3>
