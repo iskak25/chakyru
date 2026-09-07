@@ -16,14 +16,14 @@ import { formatOf } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
 import { fetchTemplateAccess } from "@/lib/accessClient";
-import { confirmLastCheckout, lastCheckout, paidTemplateId, unlockPaidTemplate } from "@/lib/payAccess";
+import { confirmLastCheckout, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 
 export default function EditorPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { locale, t } = useI18n();
-  const { inv, ready, patch, undo, redo, canUndo, canRedo } = useInviteHistory(params.id);
+  const { inv, ready, patch, undo, redo, canUndo, canRedo, saveState } = useInviteHistory(params.id);
   const [copied, setCopied] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -49,8 +49,7 @@ export default function EditorPage() {
         unlockPaidTemplate(inv.templateId, access.accessType === "pro" ? "pro" : "standard");
       }
       const user = getUser();
-      const markedPaid = paidTemplateId() === inv.templateId || lastCheckout()?.templateId === inv.templateId;
-      const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId) || markedPaid);
+      const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId));
       const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
       setAllowed(Boolean(user?.auth === "google" && paid && mine));
     };
@@ -182,6 +181,17 @@ export default function EditorPage() {
             <div>
               <p className="label">{t.formats[format]}</p>
               <h1 className="font-serif text-4xl uppercase">{t.editor.title}</h1>
+              {saveState === "saving" ? (
+                <p className="mt-2 text-xs text-ink-soft">{t.editor.savingRemote}</p>
+              ) : saveState === "saved" ? (
+                <p className="mt-2 text-xs text-ink-soft">{t.editor.savedRemote}</p>
+              ) : saveState === "pending" ? (
+                <p className="mt-2 text-xs text-ink-soft">{t.editor.savePending}</p>
+              ) : saveState === "forbidden" ? (
+                <p className="mt-2 text-xs text-ink-soft">{t.editor.saveForbidden}</p>
+              ) : saveState === "error" ? (
+                <p className="mt-2 text-xs text-ink-soft">{t.editor.saveError}</p>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-2">
               <StepArrow

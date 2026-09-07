@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createFinikPayment, finikReady, isPaidPlan } from "@/lib/finik";
 import { quoteCheckout, openCheckout } from "@/lib/server/payments";
-import { fulfillPurchase } from "@/lib/server/purchases";
+import { attachFinikPaymentId, fulfillPurchase } from "@/lib/server/purchases";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -31,7 +31,8 @@ export async function GET(req: NextRequest) {
       }
       try {
         const { confirmReturnPayment } = await import("@/lib/firebaseAdmin");
-        const status = await confirmReturnPayment(pid, uid);
+        const templateId = req.nextUrl.searchParams.get("template")?.trim() || "";
+        const status = await confirmReturnPayment(pid, uid, templateId || undefined);
         return NextResponse.json(status, { headers: { "cache-control": "no-store" } });
       } catch (err) {
         const message = err instanceof Error ? err.message : "confirm";
@@ -127,6 +128,9 @@ export async function POST(req: NextRequest) {
     });
     if (!created.paymentUrl) {
       return NextResponse.json({ error: "finik" }, { status: 502 });
+    }
+    if (created.paymentId && created.paymentId !== paymentId) {
+      await attachFinikPaymentId(paymentId, created.paymentId);
     }
     return NextResponse.json({ paymentUrl: created.paymentUrl, paymentId, amount });
   } catch (err) {

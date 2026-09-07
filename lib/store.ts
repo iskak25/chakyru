@@ -146,12 +146,31 @@ function queueInvitationSync(invitation: Invitation) {
   if (typeof window === "undefined") return;
   if (invitation.id === "demo" || invitation.id.startsWith("preview-")) return;
   remoteSyncPending = invitation;
+  window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: invitation.id, state: "saving" } }));
   if (remoteSyncTimer) window.clearTimeout(remoteSyncTimer);
   remoteSyncTimer = window.setTimeout(() => {
     const next = remoteSyncPending;
     remoteSyncPending = null;
     if (!next) return;
-    void import("./accessClient").then(({ pushInvitationRemote }) => pushInvitationRemote(next)).catch(() => {});
+    void import("./accessClient")
+      .then(async ({ pushInvitationRemote }) => {
+        const result = await pushInvitationRemote(next);
+        if (result.ok) {
+          if (result.invitation) mergeInvitation(result.invitation);
+          window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state: "saved" } }));
+          return;
+        }
+        const state =
+          result.pending || result.reason === "access"
+            ? "pending"
+            : result.reason === "owner"
+              ? "forbidden"
+              : "error";
+        window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state } }));
+      })
+      .catch(() => {
+        window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state: "error" } }));
+      });
   }, 700);
 }
 

@@ -1,6 +1,8 @@
 import { canEditInvitation, ownsInvitation } from "../lib/auth";
 import {
+  canSaveInvitation,
   canUserAccessTemplateFromFacts,
+  isFinikSucceeded,
   resolveTemplatePriceForUser,
   purchasePriceLocked,
 } from "../lib/server/accessLogic";
@@ -113,4 +115,19 @@ function test9PurchasePayerAliases() {
 test7OwnerAliasesUnlockEditor();
 test8ServerSaveAcceptsOwnerAliases();
 test9PurchasePayerAliases();
+
+function test10CanSaveInvitationGate() {
+  assert(canSaveInvitation({ existing: false, owns: true, accessAllowed: true }).ok, "new paid invite must save");
+  assert(!canSaveInvitation({ existing: false, owns: true, accessAllowed: false }).ok, "new unpaid invite must not save");
+  assert(canSaveInvitation({ existing: false, owns: true, accessAllowed: false }).reason === "access", "unpaid reason is access");
+  assert(!canSaveInvitation({ existing: true, owns: false, accessAllowed: true }).ok, "foreign invite must not save");
+  assert(canSaveInvitation({ existing: true, owns: false, accessAllowed: true }).reason === "owner", "foreign reason is owner");
+  assert(canSaveInvitation({ existing: true, owns: true, accessAllowed: true }).ok, "owner with access must save");
+  assert(!canSaveInvitation({ existing: true, owns: true, accessAllowed: false }).ok, "owner without access must not save");
+  assert(isFinikSucceeded("SUCCEEDED"), "Finik SUCCEEDED must count");
+  assert(isFinikSucceeded("paid"), "paid must count");
+  assert(!isFinikSucceeded("pending"), "pending must not count");
+}
+
+test10CanSaveInvitationGate();
 console.log("commerce checks ok");

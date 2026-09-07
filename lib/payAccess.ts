@@ -100,7 +100,7 @@ export async function confirmLastCheckout() {
         "content-type": "application/json",
         authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ pid: checkout.pid }),
+      body: JSON.stringify({ pid: checkout.pid, templateId: checkout.templateId || undefined }),
     });
     const data = (await res.json().catch(() => null)) as {
       paid?: boolean;

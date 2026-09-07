@@ -13,7 +13,6 @@ function CreateNewInner() {
 
   useEffect(() => {
     const template = search.get("template") || "";
-    const paid = search.get("paid") === "1";
     if (!template) {
       router.replace("/templates");
       return;
@@ -25,12 +24,12 @@ function CreateNewInner() {
       if (access?.allowed) {
         unlockPaidTemplate(template, access.accessType === "pro" ? "pro" : "standard");
       }
-      const canOpen = Boolean(paid || access?.allowed || canEditTemplate(getUser(), template));
+      const canOpen = Boolean(access?.allowed || canEditTemplate(getUser(), template));
       if (!canOpen) {
         router.replace(`/templates/${encodeURIComponent(template)}`);
         return;
       }
-      const started = paid || access?.allowed ? openPaidInvitation(template) : startInvitation(template);
+      const started = access?.allowed ? openPaidInvitation(template) : startInvitation(template);
       if ("invitation" in started) router.replace(`/create/${started.invitation.id}`);
       else router.replace(started.href);
     })();

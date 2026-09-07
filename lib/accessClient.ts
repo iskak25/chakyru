@@ -16,6 +16,10 @@ export type TemplateAccessResponse = {
   price: number | null;
 };
 
+export type InvitationSaveResult =
+  | { ok: true; invitation?: Invitation }
+  | { ok: false; error: string; reason?: string; pending?: boolean };
+
 export async function fetchTemplateAccess(templateId: string): Promise<TemplateAccessResponse | null> {
   const auth = getFirebaseAuth();
   await auth?.authStateReady();
@@ -37,14 +41,37 @@ export async function fetchTemplateAccess(templateId: string): Promise<TemplateA
   return (await res.json()) as TemplateAccessResponse;
 }
 
-export async function pushInvitationRemote(invitation: Invitation) {
+export async function pushInvitationRemote(invitation: Invitation): Promise<InvitationSaveResult> {
   const headers = await authHeaders();
-  if (!("authorization" in headers)) return;
-  await fetch("/api/invitations", {
-    method: "PUT",
-    headers,
-    body: JSON.stringify({ invitation }),
-  }).catch(() => {});
+  if (!("authorization" in headers)) {
+    return { ok: false, error: "auth" };
+  }
+  try {
+    const res = await fetch("/api/invitations", {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({ invitation }),
+    });
+    const data = (await res.json().catch(() => null)) as {
+      success?: boolean;
+      ok?: boolean;
+      invitation?: Invitation;
+      error?: string;
+      reason?: string;
+    } | null;
+    if (res.ok && (data?.success || data?.ok)) {
+      return { ok: true, invitation: data.invitation };
+    }
+    const reason = data?.reason || data?.error || "save";
+    return {
+      ok: false,
+      error: reason,
+      reason,
+      pending: reason === "access" || reason === "pending",
+    };
+  } catch {
+    return { ok: false, error: "network" };
+  }
 }
 
 export async function fetchInvitationRemote(id: string): Promise<Invitation | null> {

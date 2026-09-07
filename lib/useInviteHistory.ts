@@ -8,12 +8,15 @@ import type { Invitation } from "@/lib/types";
 const LIMIT = 40;
 const BURST_MS = 500;
 
+export type InviteSaveState = "idle" | "saving" | "saved" | "pending" | "forbidden" | "error";
+
 export function useInviteHistory(id: string) {
-  const [inv, setInv] = useState<Invitation | null>(null);
-  const [ready, setReady] = useState(false);
+  const [inv, setInv] = useState<Invitation | null>(() => getInvitation(id) ?? null);
+  const [ready, setReady] = useState(() => Boolean(getInvitation(id)));
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const now = useRef<Invitation | null>(null);
+  const [saveState, setSaveState] = useState<InviteSaveState>("idle");
+  const now = useRef<Invitation | null>(getInvitation(id) ?? null);
   const past = useRef<Invitation[]>([]);
   const future = useRef<Invitation[]>([]);
   const burst = useRef<number | null>(null);
@@ -33,28 +36,23 @@ export function useInviteHistory(id: string) {
     if (next) saveInvitation(next);
   }, []);
 
-  const reset = useCallback(
-    (next: Invitation | null) => {
-      past.current = [];
-      future.current = [];
-      if (burst.current) window.clearTimeout(burst.current);
-      burst.current = null;
-      hydrate(next);
-    },
-    [hydrate],
-  );
-
+  /* Invitation hydrate by route id; local first, then remote. */
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     let cancelled = false;
-    setReady(false);
     const local = getInvitation(id) ?? null;
-    reset(local);
-    if (local) setReady(true);
+    past.current = [];
+    future.current = [];
+    hydrate(local);
+    setReady(Boolean(local));
+    setSaveState("idle");
     void fetchInvitationRemote(id).then((remote) => {
       if (cancelled) return;
       if (remote) {
         rememberRemoteInvitation(remote);
-        reset(remote);
+        past.current = [];
+        future.current = [];
+        hydrate(remote);
       } else if (local && local.id !== "demo") {
         saveInvitation(local);
       }
@@ -64,7 +62,18 @@ export function useInviteHistory(id: string) {
       cancelled = true;
       if (burst.current) window.clearTimeout(burst.current);
     };
-  }, [id, reset]);
+  }, [hydrate, id]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    function onSave(e: Event) {
+      const detail = (e as CustomEvent<{ id?: string; state?: InviteSaveState }>).detail;
+      if (!detail?.id || detail.id !== id || !detail.state) return;
+      setSaveState(detail.state);
+    }
+    window.addEventListener("chakyru-save", onSave);
+    return () => window.removeEventListener("chakyru-save", onSave);
+  }, [id]);
 
   const patch = useCallback(
     (partial: Partial<Invitation>) => {
@@ -126,5 +135,5 @@ export function useInviteHistory(id: string) {
     return () => window.removeEventListener("keydown", onKey);
   }, [undo, redo]);
 
-  return { inv, ready, patch, undo, redo, canUndo, canRedo };
+  return { inv, ready, patch, undo, redo, canUndo, canRedo, saveState };
 }

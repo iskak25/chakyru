@@ -57,3 +57,17 @@ export function purchasePriceLocked(status?: string) {
 export function userTemplatePriceId(userId: string, templateId: string) {
   return `${userId}_${templateId}`;
 }
+
+export function isFinikSucceeded(status?: string) {
+  return String(status || "").toUpperCase() === "SUCCEEDED" || isPaidPurchaseStatus(status);
+}
+
+export function canSaveInvitation(facts: {
+  existing: boolean;
+  owns: boolean;
+  accessAllowed: boolean;
+}): { ok: boolean; reason?: "owner" | "access" } {
+  if (facts.existing && !facts.owns) return { ok: false, reason: "owner" };
+  if (!facts.accessAllowed) return { ok: false, reason: "access" };
+  return { ok: true };
+}

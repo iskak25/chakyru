@@ -248,3 +248,72 @@ export type FinikWebhook = {
   accountId?: string;
   fields?: Record<string, unknown>;
 };
+
+export type FinikPaymentStatus = {
+  paymentId: string;
+  status: string;
+  amount?: number;
+};
+
+function fieldFrom(record: Record<string, unknown>, ...keys: string[]) {
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "number" && Number.isFinite(value)) return String(value);
+  }
+  return "";
+}
+
+export function finikWebhookPaymentId(body: FinikWebhook) {
+  const fields = body.fields ?? {};
+  const data = ((body as { Data?: Record<string, unknown> }).Data ?? {}) as Record<string, unknown>;
+  return (
+    fieldFrom(fields, "paymentId", "PaymentId", "payment_id") ||
+    fieldFrom(data, "paymentId", "PaymentId", "payment_id") ||
+    fieldFrom(body as Record<string, unknown>, "paymentId", "PaymentId") ||
+    (typeof body.id === "string" ? body.id.trim() : "") ||
+    (typeof body.transactionId === "string" ? body.transactionId.trim() : "")
+  );
+}
+
+export async function fetchFinikPaymentStatus(
+  paymentId: string,
+  cfg: FinikConfig,
+): Promise<FinikPaymentStatus | null> {
+  if (!paymentId || !finikReady(cfg)) return null;
+  const host = new URL(baseUrl(cfg)).host;
+  const timestamp = Date.now().toString();
+  const paths = [`/v1/payment/${encodeURIComponent(paymentId)}`, `/v1/payments/${encodeURIComponent(paymentId)}`];
+  for (const path of paths) {
+    try {
+      const headers = {
+        Host: host,
+        "x-api-key": cfg.apiKey.trim(),
+        "x-api-timestamp": timestamp,
+      };
+      const signature = sign(canonicalString({ method: "GET", path, headers }), cfg);
+      const res = await fetch(`${baseUrl(cfg)}${path}`, {
+        method: "GET",
+        headers: {
+          "x-api-key": cfg.apiKey.trim(),
+          "x-api-timestamp": timestamp,
+          signature,
+        },
+      });
+      if (!res.ok) continue;
+      const data = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+      if (!data) continue;
+      const status = fieldFrom(data, "status", "Status") || fieldFrom((data.fields as Record<string, unknown>) ?? {}, "status");
+      if (!status) continue;
+      const amount = Number(data.amount ?? data.Amount ?? 0);
+      return {
+        paymentId: fieldFrom(data, "paymentId", "PaymentId", "id") || paymentId,
+        status,
+        amount: Number.isFinite(amount) ? amount : undefined,
+      };
+    } catch {
+      /* try next path */
+    }
+  }
+  return null;
+}

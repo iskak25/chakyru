@@ -132,7 +132,33 @@ export async function fulfillPayment(input: {
   return fulfillPurchase(input);
 }
 
-export async function confirmReturnPayment(paymentId: string, uid: string) {
-  const { confirmOwnedPurchase } = await import("./server/purchases");
-  return confirmOwnedPurchase(paymentId, uid);
+export async function confirmReturnPayment(
+  paymentId: string,
+  uid: string,
+  templateId?: string,
+) {
+  const { confirmOwnedPurchase, findUserPurchase } = await import("./server/purchases");
+  const { fetchFinikPaymentStatus } = await import("./finik");
+  const settings = await getAdminSettings();
+  const cfg = {
+    apiKey: settings.finikApiKey,
+    accountId: settings.finikAccountId,
+    privateKey: settings.finikPrivateKey,
+    mcc: settings.finikMcc,
+    beta: settings.finikBeta,
+  };
+  const purchase = await findUserPurchase(uid, { paymentId, templateId });
+  const ids = [...new Set([paymentId, purchase?.finikPaymentId, purchase?.id].filter((value): value is string => Boolean(value)))];
+  let finikStatus: string | undefined;
+  for (const id of ids) {
+    const finik = await fetchFinikPaymentStatus(id, cfg);
+    if (finik?.status) {
+      finikStatus = finik.status;
+      break;
+    }
+  }
+  return confirmOwnedPurchase(paymentId, uid, {
+    templateId,
+    finikStatus,
+  });
 }
