@@ -186,7 +186,7 @@ function LoginInner() {
                   {t.login.designer}
                 </button>
               </div>
-              <button type="submit" className="link-edit mt-8 w-full border-0 bg-transparent py-3 text-center">
+              <button type="submit" className="link-edit mt-8 min-h-12 w-full border-0 bg-transparent py-3 text-center">
                 {t.login.go}
               </button>
             </form>

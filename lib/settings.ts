@@ -4,24 +4,10 @@ export const DEFAULT_PRO_SOM = 1990;
 
 export const defaultSettings: SiteSettings = {
   proPriceSom: DEFAULT_PRO_SOM,
-  finikApiKey: "",
-  finikAccountId: "",
-  finikPrivateKey: "",
-  finikMcc: "5999",
-  finikBeta: false,
-  siteUrl: "",
 };
 
 export function settingsFromEnv(): SiteSettings {
-  return {
-    ...defaultSettings,
-    finikApiKey: process.env.FINIK_API_KEY?.trim() || "",
-    finikAccountId: process.env.FINIK_ACCOUNT_ID?.trim() || "",
-    finikPrivateKey: process.env.FINIK_PRIVATE_KEY?.trim() || "",
-    finikMcc: process.env.FINIK_MCC?.trim() || "5999",
-    finikBeta: process.env.FINIK_BETA === "1" || process.env.FINIK_BETA === "true",
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL?.trim() || "",
-  };
+  return { ...defaultSettings };
 }
 
 function num(value: unknown, fallback: number) {
@@ -34,16 +20,9 @@ function text(value: unknown, fallback = "") {
 }
 
 export function mergeSettings(stored?: Partial<SiteSettings> | Record<string, unknown> | null): SiteSettings {
-  const env = settingsFromEnv();
   const raw = stored ?? {};
   return {
-    proPriceSom: num(raw.proPriceSom, env.proPriceSom),
-    finikApiKey: text(raw.finikApiKey).trim() || env.finikApiKey,
-    finikAccountId: text(raw.finikAccountId).trim() || env.finikAccountId,
-    finikPrivateKey: text(raw.finikPrivateKey).trim() || env.finikPrivateKey,
-    finikMcc: text(raw.finikMcc).trim() || env.finikMcc,
-    finikBeta: typeof raw.finikBeta === "boolean" ? raw.finikBeta : env.finikBeta,
-    siteUrl: text(raw.siteUrl).trim() || env.siteUrl,
+    proPriceSom: num(raw.proPriceSom, DEFAULT_PRO_SOM),
   };
 }
 

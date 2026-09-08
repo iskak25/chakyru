@@ -128,7 +128,7 @@ export default function EditorPage() {
 
   return (
     <SiteShell>
-      <div className="flex min-h-[calc(100vh-4rem)]">
+      <div className="editor-page flex min-h-[calc(100vh-4rem)] pb-20 lg:pb-0">
         <EditorDock
           invitation={inv}
           format={format}
@@ -213,13 +213,13 @@ export default function EditorPage() {
                   <button
                     type="button"
                     onClick={copyLink}
-                    className="border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.12em]"
+                    className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
                   >
                     {copied ? t.editor.copied : t.editor.share}
                   </button>
                   <Link
                     href={`/i/${inv.id}`}
-                    className="bg-forest px-4 py-2 text-[11px] uppercase tracking-[0.12em] text-cream"
+                    className="inline-flex h-10 items-center rounded-[12px] bg-espresso px-4 text-[11px] uppercase tracking-[0.12em] text-cream"
                   >
                     {t.editor.openGuest}
                   </Link>
@@ -229,7 +229,7 @@ export default function EditorPage() {
                   type="button"
                   onClick={download}
                   disabled={saving}
-                  className="flex items-center gap-1.5 bg-forest px-4 py-2 text-[11px] uppercase tracking-[0.12em] text-cream disabled:opacity-60"
+                  className="flex h-10 items-center gap-1.5 rounded-[12px] bg-espresso px-4 text-[11px] uppercase tracking-[0.12em] text-cream disabled:opacity-60"
                 >
                   <Download size={15} />
                   {saving ? t.editor.downloading : t.editor.download}

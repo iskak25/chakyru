@@ -1,3 +1,5 @@
+import "server-only";
+
 import { createSign, createVerify, createPublicKey } from "crypto";
 import type { PlanId } from "./types";
 

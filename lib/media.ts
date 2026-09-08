@@ -6,7 +6,7 @@ export const media = {
   table: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1600&q=80",
   grove: "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1400&q=80",
   pool: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1600&q=80",
-  chapter: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2200&q=80",
+  chapter: "/images/hero-family.png",
   portraitA: "/images/journal-walk.jpg",
   portraitB: "/images/journal-rings.jpg",
   portraitC: "/images/journal-hands.jpg",

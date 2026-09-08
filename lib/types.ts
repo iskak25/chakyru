@@ -110,6 +110,7 @@ export type UserTemplatePrice = {
 
 export type UserProfile = User & {
   firebaseUid?: string;
+  creativeCredits?: number;
 };
 
 export type InvitationData = Omit<Invitation, "id" | "templateId" | "ownerId" | "createdAt" | "guests" | "wishes">;
@@ -218,10 +219,4 @@ export type User = {
 
 export type SiteSettings = {
   proPriceSom: number;
-  finikApiKey: string;
-  finikAccountId: string;
-  finikPrivateKey: string;
-  finikMcc: string;
-  finikBeta: boolean;
-  siteUrl: string;
 };

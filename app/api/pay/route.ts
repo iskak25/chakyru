@@ -40,14 +40,7 @@ export async function GET(req: NextRequest) {
       }
     }
     return NextResponse.json(
-      {
-        ok: true,
-        hasSa: Boolean(process.env.FIREBASE_SERVICE_ACCOUNT),
-        hasFinikKey: Boolean(process.env.FINIK_API_KEY),
-        hasAccount: Boolean(process.env.FINIK_ACCOUNT_ID),
-        hasPem: Boolean(process.env.FINIK_PRIVATE_KEY?.includes("BEGIN")),
-        hasProjectId: Boolean(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
-      },
+      { ok: true },
       { headers: { "cache-control": "no-store" } },
     );
   } catch (err) {
@@ -58,15 +51,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const { uidFromBearer } = await import("@/lib/firebaseToken");
-    const { settingsFromEnv } = await import("@/lib/settings");
+    const { getPaymentSettings } = await import("@/lib/server/paymentSettings");
+    const { publicProPricing } = await import("@/lib/firebaseAdmin");
     const uid = await uidFromBearer(req.headers.get("authorization"));
-    let admin: typeof import("@/lib/firebaseAdmin") | null = null;
-    try {
-      admin = await import("@/lib/firebaseAdmin");
-    } catch {
-      admin = null;
-    }
-    const settings = admin ? await admin.getAdminSettings() : settingsFromEnv();
+    const settings = await getPaymentSettings();
+    const pricing = await publicProPricing();
     const cfg = {
       apiKey: settings.finikApiKey,
       accountId: settings.finikAccountId,
@@ -86,7 +75,7 @@ export async function POST(req: NextRequest) {
       uid,
       plan: body.plan,
       templateId: templateId || undefined,
-      proPriceSom: settings.proPriceSom,
+      proPriceSom: pricing.proPriceSom,
     });
     if ("error" in quoted) {
       return NextResponse.json({ error: quoted.error }, { status: 400 });

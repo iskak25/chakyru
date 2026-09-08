@@ -35,6 +35,7 @@ export async function loadUserProfile(uid: string): Promise<UserProfile | null> 
     plan: parsePlan(data.plan),
     accountRole,
     templates: parseTemplates(data.templates),
+    creativeCredits: typeof data.creativeCredits === "number" ? data.creativeCredits : undefined,
   };
 }
 

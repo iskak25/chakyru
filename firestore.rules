@@ -69,13 +69,17 @@ service cloud.firestore {
       allow create, update, delete: if false;
     }
 
-    match /catalog/payments {
-      allow read, write: if admin();
+    match /catalog/{docId} {
+      allow read: if docId != 'payments';
+      allow write: if admin() && docId != 'payments';
     }
 
-    match /catalog/{docId} {
-      allow read: if true;
-      allow write: if admin();
+    match /private_settings/{docId} {
+      allow read, write: if false;
+    }
+
+    match /auditLogs/{id} {
+      allow read, write: if false;
     }
   }
 }

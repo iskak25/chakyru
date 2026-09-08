@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
 import { TemplateRenderer } from "@/components/TemplateRenderer";
 import { SiteShell } from "@/components/SiteShell";
+import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
 import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
@@ -38,9 +40,7 @@ export default function TemplatePreviewPage() {
   }, [id]);
 
   const canEdit = Boolean(
-    access?.allowed ||
-      canEditTemplate(getUser(), id) ||
-      (template && getUser() && template.priceSom <= 0),
+    access?.allowed || canEditTemplate(getUser(), id) || (template && getUser() && template.priceSom <= 0),
   );
   const displayPrice = access?.price ?? template?.priceSom ?? 0;
 
@@ -64,9 +64,9 @@ export default function TemplatePreviewPage() {
   if (!template || !invitation) {
     return (
       <SiteShell>
-        <div className="mx-auto max-w-[1400px] px-5 py-24 text-center">
+        <div className="py-24 text-center">
           <p className="text-sm text-ink-soft">{t.catalogEmpty}</p>
-          <Link href="/templates" className="mt-6 inline-block text-[11px] uppercase tracking-[0.16em] underline underline-offset-4">
+          <Link href="/templates" className="mt-6 inline-block text-[11px] uppercase tracking-[0.16em] underline">
             {t.nav.templates}
           </Link>
         </div>
@@ -76,36 +76,14 @@ export default function TemplatePreviewPage() {
 
   return (
     <SiteShell>
-      <div className="mx-auto max-w-[1400px] px-5 py-12">
-        <p className="label">{t.preview}</p>
-        <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-[40px] leading-[1.05] tracking-[-0.025em] sm:text-[52px]">{template.name[locale]}</h1>
-            <p className="mt-3 max-w-md text-sm leading-7 text-ink-soft">
-              {canEdit ? t.editor.tapHint : t.templateView.paywall}
-            </p>
-            <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-meta">
-              {canEdit ? t.templateView.purchased : formatPrice(locale, displayPrice)}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/templates"
-              className="border border-ink/15 px-4 py-2 text-[11px] uppercase tracking-[0.14em]"
-            >
-              {t.nav.templates}
-            </Link>
-            <button
-              type="button"
-              onClick={() => void onEdit()}
-              className="bg-forest px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-cream"
-            >
-              {canEdit ? t.templateView.edit : t.templateView.pay}
-            </button>
-          </div>
-        </div>
+      <PageHeader
+        eyebrow={t.preview}
+        title={template.name[locale]}
+        description={canEdit ? t.editor.tapHint : t.templateView.paywall}
+      />
 
-        <div className="mx-auto mt-12 h-auto w-full max-w-[430px]">
+      <div className="grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <div className="mx-auto w-full max-w-[430px] overflow-hidden rounded-[var(--radius-xl)] bg-white p-3 sm:p-4" style={{ boxShadow: "var(--shadow-soft)" }}>
           <TemplateRenderer
             templateId={invitation.templateId}
             data={invitation}
@@ -113,6 +91,47 @@ export default function TemplatePreviewPage() {
             interactive
             startOpen
           />
+        </div>
+
+        <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-6 sm:p-8">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--gold)]">
+            {t.events[template.eventTypes[0] ?? "wedding"]}
+          </p>
+          <h2 className="font-serif mt-3 text-4xl tracking-[-0.03em]">{template.name[locale]}</h2>
+          <p className="mt-4 text-[15px] leading-7 text-ink-soft">
+            {canEdit ? t.templateView.purchased : t.templateView.paywall}
+          </p>
+          <p className="mt-6 font-serif text-3xl">{canEdit ? t.templateView.purchased : formatPrice(locale, displayPrice)}</p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void onEdit()}
+              className="inline-flex h-11 items-center rounded-[12px] bg-espresso px-5 text-[11px] uppercase tracking-[0.14em] text-cream transition hover:opacity-90"
+            >
+              {canEdit ? t.templateView.edit : t.templateView.pay}
+            </button>
+            <button
+              type="button"
+              className="inline-flex h-11 items-center gap-2 rounded-[12px] border border-[var(--line)] px-5 text-[11px] uppercase tracking-[0.14em]"
+            >
+              <Heart size={14} />
+              {locale === "ru" ? "В избранное" : "Тандалмаларга"}
+            </button>
+          </div>
+
+          <div className="mt-10 space-y-3 border-t border-[var(--line)] pt-8">
+            {[t.editor.music, t.editor.addGuest, t.editor.images, t.editor.map, "RSVP"].map((label) => (
+              <div key={label} className="flex items-center justify-between text-sm">
+                <span className="text-ink">{label}</span>
+                <span className="text-[11px] uppercase tracking-[0.14em] text-meta">✓</span>
+              </div>
+            ))}
+          </div>
+
+          <Link href="/templates" className="mt-8 inline-block text-[11px] uppercase tracking-[0.14em] text-meta underline underline-offset-4">
+            {t.nav.templates}
+          </Link>
         </div>
       </div>
     </SiteShell>

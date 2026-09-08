@@ -6,7 +6,6 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const admin = await import("@/lib/firebaseAdmin");
     const { failPurchase, fulfillPurchase } = await import("@/lib/server/purchases");
     const raw = await req.text();
     let body: FinikWebhook = {};
@@ -15,7 +14,7 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: "body" }, { status: 400 });
     }
-    const settings = await admin.getAdminSettings();
+    const settings = await (await import("@/lib/server/paymentSettings")).getPaymentSettings();
     const signature = req.headers.get("signature") || "";
     const timestamp = req.headers.get("x-api-timestamp") || "";
     const forwarded = req.headers.get("x-forwarded-host") || "";

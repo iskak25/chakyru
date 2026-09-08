@@ -403,30 +403,7 @@ export function watchPublicPricing(
   );
 }
 
-export function watchSiteSettings(
-  onSettings: (settings: SiteSettings) => void,
-  onError?: (err: unknown) => void,
-): Unsubscribe | null {
-  const db = getFirebaseDb();
-  if (!db) return null;
-  let pricing: Record<string, unknown> = {};
-  let payments: Record<string, unknown> = {};
-  const emit = () => onSettings(mergeSettings({ ...pricing, ...payments }));
-  const stopP = onSnapshot(doc(db, "catalog", "pricing"), (snap) => {
-    pricing = snap.data() ?? {};
-    emit();
-  }, (err) => onError?.(err));
-  const stopPay = onSnapshot(doc(db, "catalog", "payments"), (snap) => {
-    payments = snap.data() ?? {};
-    emit();
-  }, (err) => onError?.(err));
-  return () => {
-    stopP();
-    stopPay();
-  };
-}
-
-export async function saveSiteSettings(input: SiteSettings) {
+export async function savePublicSiteSettings(input: SiteSettings) {
   const settings = mergeSettings(input);
   if (typeof window !== "undefined") {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
@@ -435,30 +412,10 @@ export async function saveSiteSettings(input: SiteSettings) {
   if (!db) return { remote: false as const };
   const updatedAt = Date.now();
   const iso = new Date(updatedAt).toISOString();
-  await Promise.all([
-    setDoc(
-      doc(db, "catalog", "pricing"),
-      {
-        proPriceSom: settings.proPriceSom,
-        updatedAt,
-        updatedAtIso: iso,
-      },
-      { merge: true },
-    ),
-    setDoc(
-      doc(db, "catalog", "payments"),
-      {
-        finikApiKey: settings.finikApiKey,
-        finikAccountId: settings.finikAccountId,
-        finikPrivateKey: settings.finikPrivateKey,
-        finikMcc: settings.finikMcc,
-        finikBeta: settings.finikBeta,
-        siteUrl: settings.siteUrl,
-        updatedAt,
-        updatedAtIso: iso,
-      },
-      { merge: true },
-    ),
-  ]);
+  await setDoc(doc(db, "catalog", "pricing"), {
+    proPriceSom: settings.proPriceSom,
+    updatedAt,
+    updatedAtIso: iso,
+  }, { merge: true });
   return { remote: true as const };
 }

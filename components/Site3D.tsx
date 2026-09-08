@@ -383,7 +383,7 @@ export function Site3D({
           className="site3d-page"
         >
           <Site3DInner kit={kit} />
-          <div className="site3d-sticky sticky bottom-3 z-30 flex justify-between px-3 pb-2">
+          <div className="site3d-sticky sticky bottom-3 z-30 flex justify-between gap-3 px-3 pb-2">
             <Selectable id="musicBtn">
             <button
               type="button"
@@ -402,7 +402,7 @@ export function Site3D({
                 }
                 toggleMusic();
               }}
-              className="flex h-[48px] min-w-[110px] items-center justify-center gap-2 rounded-full px-5 text-[15px] text-white shadow-lg"
+              className="flex min-h-[48px] min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-3 text-[15px] text-white shadow-lg sm:min-w-[110px] sm:flex-none sm:px-5"
               style={{ background: playing && !onChange ? "#111" : wine }}
             >
               <Music size={16} />
@@ -417,7 +417,7 @@ export function Site3D({
                 if (variant === "guest") setWishOpen(true);
                 else onSelect?.("wishes");
               }}
-              className="flex h-[48px] min-w-[110px] items-center justify-center rounded-full bg-black px-5 text-[15px] text-white shadow-lg"
+              className="flex min-h-[48px] min-w-0 flex-1 items-center justify-center rounded-full bg-black px-3 text-[15px] text-white shadow-lg sm:min-w-[110px] sm:flex-none sm:px-5"
             >
               {labels.writeWish}
             </button>

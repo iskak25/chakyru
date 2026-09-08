@@ -2,24 +2,20 @@
 
 import { Chapter } from "./landing/Chapter";
 import { Faq } from "./landing/Faq";
-import { Features } from "./landing/Features";
 import { Hero } from "./landing/Hero";
 import { HowItWorks } from "./landing/HowItWorks";
-import { Intro } from "./landing/Intro";
 import { InvitationShowcase } from "./landing/InvitationShowcase";
-import { Journal } from "./landing/Journal";
 import { PricingTeaser } from "./landing/PricingTeaser";
 import { Showcase } from "./landing/Showcase";
+import { Stats } from "./landing/Stats";
 
 export function Landing() {
   return (
-    <article className="overflow-x-hidden bg-page">
+    <article className="overflow-x-hidden bg-[#f7f4ef]">
       <Hero />
-      <Intro />
-      <Journal />
+      <Stats />
       <InvitationShowcase />
       <Chapter />
-      <Features />
       <Showcase />
       <HowItWorks />
       <PricingTeaser />

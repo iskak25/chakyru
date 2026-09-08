@@ -214,15 +214,15 @@ function coverflowStyle(offset: number): CSSProperties {
     return {
       opacity: 1,
       pointerEvents: "none",
-      transform: "translate3d(0, 0, 60px) rotateY(0deg) scale(1)",
+      transform: "translate3d(0, 0, 24px) rotateY(0deg) scale(1)",
       zIndex: 30,
     };
   }
   const side = offset < 0 ? -1 : 1;
   return {
-    opacity: 0.82,
+    opacity: 0.98,
     pointerEvents: "none",
-    transform: `translate3d(${side * 52}%, 0, -60px) rotateY(${side * -34}deg) scale(0.84)`,
+    transform: `translate3d(${side * 52}%, 0, -24px) rotateY(${side * -22}deg) scale(0.9)`,
     zIndex: 20 - abs,
   };
 }

@@ -262,13 +262,13 @@ export function MusicPickModal({
       onClick={onClose}
     >
       <div
-        className="max-h-[80vh] w-full max-w-sm overflow-y-auto bg-page p-4"
+        className="max-h-[82svh] w-full max-w-sm overflow-y-auto bg-page p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
           <p className="font-medium">{L.title}</p>
-          <button type="button" onClick={onClose} className="text-ink-soft">
+          <button type="button" onClick={onClose} className="flex min-h-11 min-w-11 items-center justify-center text-ink-soft">
             ✕
           </button>
         </div>

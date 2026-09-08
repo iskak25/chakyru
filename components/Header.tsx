@@ -66,7 +66,7 @@ export function Header() {
         <div className="relative mx-auto flex h-[76px] max-w-[1320px] items-center justify-between px-5 sm:h-[88px] sm:px-8 lg:px-12 xl:px-16">
           <button
             type="button"
-            className={`text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50 ${
+            className={`flex min-h-11 min-w-11 items-center justify-start text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50 ${
               overHero ? "text-gold-bright" : ""
             }`}
             onClick={() => setOpen(true)}
@@ -107,11 +107,11 @@ export function Header() {
       </header>
 
       {open ? (
-        <div className="menu-fade fixed inset-0 z-[80] flex flex-col bg-page text-ink">
+        <div className="menu-fade fixed inset-0 z-[80] flex flex-col bg-page pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-ink">
           <div className="relative mx-auto flex h-[76px] w-full max-w-[1320px] items-center justify-between px-5 sm:h-[88px] sm:px-8 lg:px-12 xl:px-16">
             <button
               type="button"
-              className="label hover:opacity-55"
+              className="flex min-h-11 min-w-11 items-center label hover:opacity-55"
               onClick={() => setOpen(false)}
             >
               Close

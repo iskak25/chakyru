@@ -14,7 +14,7 @@ export function PricingTeaser() {
 
   return (
     <section className="bg-page">
-      <Container className="pb-20 sm:pb-28 lg:pb-36">
+      <Container className="pb-16 sm:pb-28 lg:pb-36">
         <Reveal>
           <p className="label">005</p>
           <h2 className="font-serif mt-5 text-[36px] leading-[1.08] tracking-[-0.025em] sm:text-[52px] lg:text-[60px]">
@@ -22,7 +22,7 @@ export function PricingTeaser() {
           </h2>
           <p className="mt-5 max-w-md text-[15px] leading-8 text-ink-soft">{t.pricingSub}</p>
         </Reveal>
-        <div className="mt-14 grid gap-px bg-ink/10 md:grid-cols-2">
+        <div className="mt-10 grid gap-px bg-ink/10 sm:mt-14 md:grid-cols-2">
           {(
             [
               ["standard", false],
@@ -30,7 +30,7 @@ export function PricingTeaser() {
             ] as const
           ).map(([key], i) => (
             <Reveal key={key} delay={i * 80}>
-              <article className={`h-full px-6 py-10 sm:px-10 sm:py-14 ${key === "pro" ? "bg-forest text-gold-bright" : "bg-page"}`}>
+              <article className={`h-full px-5 py-8 sm:px-10 sm:py-14 ${key === "pro" ? "bg-forest text-gold-bright" : "bg-page"}`}>
                 <h3 className="font-serif text-[34px] leading-none tracking-[-0.02em] sm:text-[40px]">
                   {t.plans[key].name}
                 </h3>

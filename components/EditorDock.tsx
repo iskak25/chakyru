@@ -239,8 +239,8 @@ export function EditorDock({
   };
 
   return (
-    <div className={stickyClass ?? "relative sticky top-16 z-30 flex h-[calc(100vh-4rem)] shrink-0 self-start"}>
-      <nav className="z-20 flex w-[84px] shrink-0 flex-col gap-0.5 border-r border-ink/10 bg-page py-2">
+    <div className={`editor-dock ${stickyClass ?? "relative sticky top-16 z-30 flex h-[calc(100vh-4rem)] shrink-0 self-start"}`}>
+      <nav className="editor-dock-tabs z-20 flex w-[84px] shrink-0 flex-col gap-0.5 border-r border-ink/10 bg-page py-2">
         {tabs.map((item) => {
           const on = tab === item.id;
           return (
@@ -263,7 +263,7 @@ export function EditorDock({
 
       {tab ? (
         <>
-        <div className={`absolute left-[84px] top-0 z-10 flex h-full flex-col overflow-hidden border-r border-ink/10 bg-page p-3 md:static ${
+        <div className={`editor-dock-panel absolute left-[84px] top-0 z-10 flex h-full flex-col overflow-hidden border-r border-ink/10 bg-page p-3 md:static ${
           templatesPanel && tab === "templates"
             ? "w-[min(320px,calc(100vw-84px))] md:w-[320px]"
             : "w-[min(288px,calc(100vw-84px))] md:w-[288px]"

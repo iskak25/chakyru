@@ -1,7 +1,8 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { mergeSettings, settingsFromEnv, type PublicPricing } from "./settings";
-import type { PlanId, SiteSettings } from "./types";
+import { mergeSettings, type PublicPricing } from "./settings";
+import type { PlanId } from "./types";
+import { getPaymentSettings, type PaymentSettings } from "./server/paymentSettings";
 export { uidFromBearer } from "./firebaseToken";
 
 function parseServiceAccount(raw: string) {
@@ -83,25 +84,21 @@ export function serviceAccount() {
   }
 }
 
-export async function getAdminSettings(): Promise<SiteSettings> {
-  const env = settingsFromEnv();
-  const app = adminApp();
-  if (!app) return env;
-  try {
-    const db = getFirestore(app);
-    const [pricing, payments] = await Promise.all([
-      db.collection("catalog").doc("pricing").get(),
-      db.collection("catalog").doc("payments").get(),
-    ]);
-    return mergeSettings({ ...(pricing.data() ?? {}), ...(payments.data() ?? {}) });
-  } catch {
-    return env;
-  }
+export async function getAdminSettings(): Promise<PaymentSettings & { proPriceSom: number }> {
+  const payment = await getPaymentSettings();
+  const pricing = await publicProPricing();
+  return { ...payment, proPriceSom: pricing.proPriceSom };
 }
 
 export async function publicProPricing(): Promise<PublicPricing> {
-  const settings = await getAdminSettings();
-  return { proPriceSom: settings.proPriceSom };
+  const app = adminApp();
+  if (!app) return { proPriceSom: 1990 };
+  try {
+    const snap = await getFirestore(app).collection("catalog").doc("pricing").get();
+    return { proPriceSom: mergeSettings(snap.data()).proPriceSom };
+  } catch {
+    return { proPriceSom: 1990 };
+  }
 }
 
 export async function templatePriceSom(templateId: string): Promise<number | null> {

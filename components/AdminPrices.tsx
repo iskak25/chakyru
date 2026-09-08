@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/locale";
 import { defaultSettings, publicPricing } from "@/lib/settings";
 import { useCatalog } from "@/lib/useCatalog";
 import { mergeCatalogTemplates } from "@/lib/templates";
-import { readLocalSettings, saveCatalogTemplates, saveSiteSettings, watchSiteSettings } from "@/lib/db";
+import { readLocalSettings, saveCatalogTemplates, savePublicSiteSettings, watchPublicPricing } from "@/lib/db";
 import type { InvitationTemplate, SiteSettings } from "@/lib/types";
 
 const input = "w-full border border-ink/15 bg-transparent px-3 py-2 text-sm";
@@ -31,7 +31,7 @@ export function AdminPrices() {
 
   useEffect(() => {
     setSettings(readLocalSettings());
-    const stop = watchSiteSettings((next) => {
+    const stop = watchPublicPricing((next) => {
       if (dirty.current) return;
       setSettings(next);
     }, () => setError(t.admin.needFirestore));
@@ -81,7 +81,7 @@ export function AdminPrices() {
     setError("");
     try {
       const catalog = await saveCatalogTemplates(rows);
-      const pricing = await saveSiteSettings(settings);
+      const pricing = await savePublicSiteSettings(settings);
       setLiveTemplates(rows);
       setLivePricing(publicPricing(settings));
       dirty.current = true;

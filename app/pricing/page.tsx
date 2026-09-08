@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { PlanBuyButton } from "@/components/PlanBuyButton";
 import { SiteShell } from "@/components/SiteShell";
+import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess } from "@/lib/accessClient";
 import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
@@ -29,48 +30,36 @@ export default function PricingPage() {
 
   return (
     <SiteShell>
-      <div className="mx-auto max-w-[1320px] px-5 py-20 sm:px-8 lg:px-12 xl:px-16">
-        <p className="label">005</p>
-        <h1 className="font-serif mt-5 text-[40px] leading-[1.05] tracking-[-0.025em] sm:text-[60px]">{t.pricingTitle}</h1>
-        <p className="mt-5 max-w-md text-[15px] leading-8 text-ink-soft">{t.pricingSub}</p>
-        <div className="mt-14 grid gap-px bg-ink/10 md:grid-cols-2">
-          <article className="bg-page px-6 py-10 sm:px-10 sm:py-14">
-            <h2 className="font-serif text-[34px] leading-none tracking-[-0.02em] sm:text-[40px]">{t.plans.standard.name}</h2>
-            <p className="font-serif mt-6 text-[40px] leading-none">
-              {template ? formatPrice(locale, userPrice ?? template.priceSom) : t.plans.standard.priceHint}
-            </p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-meta">{t.perInvite}</p>
-            {template ? (
-              <p className="mt-3 text-[15px] text-ink-soft">{template.name[locale]}</p>
-            ) : null}
-            <ul className="mt-8 space-y-2 text-[15px] leading-8 text-ink-soft">
-              {t.plans.standard.feat.map((f) => (
-                <li key={f}>— {f}</li>
-              ))}
-            </ul>
-            <PlanBuyButton
-              plan="standard"
-              templateId={template?.id}
-              className="link-edit mt-10"
-            />
-          </article>
-          <article className="bg-forest px-6 py-10 text-gold-bright sm:px-10 sm:py-14">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-gold-bright/55">{t.popular}</p>
-            <h2 className="font-serif mt-3 text-[34px] leading-none tracking-[-0.02em] sm:text-[40px]">{t.plans.pro.name}</h2>
-            <p className="font-serif mt-6 text-[40px] leading-none">{formatPrice(locale, pricing.proPriceSom)}</p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-gold-bright/55">{t.perInvite}</p>
-            <ul className="mt-8 space-y-2 text-[15px] leading-8 text-gold-bright/75">
-              {t.plans.pro.feat.map((f) => (
-                <li key={f}>— {f}</li>
-              ))}
-            </ul>
-            <PlanBuyButton
-              plan="pro"
-              templateId={template?.id}
-              className="link-edit mt-10 !text-gold-bright"
-            />
-          </article>
-        </div>
+      <PageHeader eyebrow="005" title={t.pricingTitle} description={t.pricingSub} />
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <article className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-7 sm:p-10" style={{ boxShadow: "var(--shadow-soft)" }}>
+          <h2 className="font-serif text-[34px] tracking-[-0.02em] sm:text-[40px]">{t.plans.standard.name}</h2>
+          <p className="font-serif mt-6 text-[40px] leading-none">
+            {template ? formatPrice(locale, userPrice ?? template.priceSom) : t.plans.standard.priceHint}
+          </p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-meta">{t.perInvite}</p>
+          {template ? <p className="mt-3 text-[15px] text-ink-soft">{template.name[locale]}</p> : null}
+          <ul className="mt-8 space-y-2 text-[15px] leading-8 text-ink-soft">
+            {t.plans.standard.feat.map((f) => (
+              <li key={f}>— {f}</li>
+            ))}
+          </ul>
+          <PlanBuyButton plan="standard" templateId={template?.id} className="mt-10 inline-flex min-h-12 w-full items-center justify-center rounded-[12px] bg-espresso px-5 text-[11px] uppercase tracking-[0.14em] text-cream" />
+        </article>
+
+        <article className="rounded-[var(--radius-xl)] bg-espresso p-7 text-cream sm:p-10" style={{ boxShadow: "var(--shadow-soft)" }}>
+          <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--gold)]">{t.popular}</p>
+          <h2 className="font-serif mt-3 text-[34px] tracking-[-0.02em] sm:text-[40px]">{t.plans.pro.name}</h2>
+          <p className="font-serif mt-6 text-[40px] leading-none">{formatPrice(locale, pricing.proPriceSom)}</p>
+          <p className="mt-2 text-[10px] uppercase tracking-[0.14em] text-cream/50">{t.perInvite}</p>
+          <ul className="mt-8 space-y-2 text-[15px] leading-8 text-cream/70">
+            {t.plans.pro.feat.map((f) => (
+              <li key={f}>— {f}</li>
+            ))}
+          </ul>
+          <PlanBuyButton plan="pro" templateId={template?.id} className="mt-10 inline-flex min-h-12 w-full items-center justify-center rounded-[12px] bg-cream px-5 text-[11px] uppercase tracking-[0.14em] text-espresso" />
+        </article>
       </div>
     </SiteShell>
   );
