@@ -152,7 +152,6 @@ export function AdminSettings() {
               <textarea
                 rows={8}
                 className={`${input} mt-1 font-mono text-[11px]`}
-                type="password"
                 value={newPrivateKey}
                 onChange={(e) => setNewPrivateKey(e.target.value)}
                 placeholder="Новый private key (необязательно)"
