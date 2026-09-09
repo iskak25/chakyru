@@ -141,78 +141,6 @@ function KyrgyzOrnament({ className = "" }: { className?: string }) {
   );
 }
 
-function PremiumWaxSeal({ label, opening }: { label: string; opening?: boolean }) {
-  const uid = useId().replace(/:/g, "");
-  return (
-    <button
-      type="button"
-      className={`wax-seal-premium relative inline-flex h-20 w-20 items-center justify-center transition-all duration-300 sm:h-24 sm:w-24 ${
-        opening ? "is-opening" : ""
-      }`}
-      aria-hidden="true"
-      disabled
-    >
-      <svg
-        className="absolute inset-0 h-full w-full drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]"
-        viewBox="0 0 100 120"
-        aria-hidden
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          <radialGradient id={`seal-${uid}`} cx="35%" cy="30%">
-            <stop offset="0%" stopColor="#f5e6d3" />
-            <stop offset="30%" stopColor="#d4a574" />
-            <stop offset="65%" stopColor="#b8935d" />
-            <stop offset="100%" stopColor="#7a5c3e" />
-          </radialGradient>
-          <filter id={`seal-glow-${uid}`}>
-            <feGaussianBlur stdDeviation="1" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* Tassel cord */}
-        <line x1="50" y1="58" x2="50" y2="95" stroke="#c9a076" strokeWidth="1.5" opacity="0.8" />
-
-        {/* Tassel threads */}
-        <line x1="45" y1="95" x2="50" y2="108" stroke="#c9a076" strokeWidth="0.8" opacity="0.7" />
-        <line x1="50" y1="95" x2="50" y2="110" stroke="#c9a076" strokeWidth="0.8" opacity="0.7" />
-        <line x1="55" y1="95" x2="50" y2="108" stroke="#c9a076" strokeWidth="0.8" opacity="0.7" />
-
-        {/* Main seal circle */}
-        <circle cx="50" cy="45" r="45" fill={`url(#seal-${uid})`} filter={`url(#seal-glow-${uid})`} />
-
-        {/* Inner rings */}
-        <circle cx="50" cy="45" r="41" fill="none" stroke="#3d2f1f" strokeWidth="0.5" opacity="0.4" />
-        <circle cx="50" cy="45" r="38" fill="none" stroke="#c9a076" strokeWidth="0.3" opacity="0.3" />
-        <circle cx="50" cy="45" r="35" fill="none" stroke="#3d2f1f" strokeWidth="0.4" opacity="0.2" />
-
-        {/* Kyrgyz-inspired ornament center */}
-        <g stroke="#3d2f1f" strokeWidth="0.6" fill="none" opacity="0.5">
-          <circle cx="50" cy="45" r="18" />
-          <path d="M 50,27 L 62,45 L 50,63 L 38,45 Z" />
-          <circle cx="50" cy="45" r="12" />
-          <circle cx="50" cy="45" r="8" />
-        </g>
-
-        {/* Wax texture lines */}
-        <g stroke="#6a5438" strokeWidth="0.2" opacity="0.15">
-          <path d="M 35,35 Q 50,30 65,35" />
-          <path d="M 32,45 Q 50,40 68,45" />
-          <path d="M 35,55 Q 50,60 65,55" />
-        </g>
-      </svg>
-
-      <span className="relative z-10 text-center font-serif text-[11px] font-bold uppercase tracking-wide leading-tight text-[#3d2f1f] sm:text-[12px]">
-        {label}
-      </span>
-    </button>
-  );
-}
-
 function Cover({
   overlay,
   ticket,
@@ -235,11 +163,10 @@ function Cover({
   const copy = paperCopy(overlay);
   return (
     <div
-      className={`kyrgyz-envelope-stage relative overflow-hidden ${fill ? "h-full min-h-full" : "min-h-[100svh]"} ${opening ? "is-opening" : ""} ${onOpen ? "cursor-pointer" : ""}`}
+      className={`relative overflow-hidden ${fill ? "h-full min-h-full" : "min-h-[100svh]"} ${opening ? "is-opening" : ""} ${onOpen ? "cursor-pointer" : ""}`}
       style={{
-        ["--paper" as string]: overlay || "#0F0C0A",
-        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect fill="%23241c16" width="100" height="100" /><rect fill="%23332b21" width="100" height="100" opacity="0.6" filter="url(%23n)" /></svg>')`,
-        backgroundColor: "#241c16",
+        background: "radial-gradient(circle at 18% 18%, rgba(201, 181, 153, .34), transparent 25%), radial-gradient(circle at 82% 18%, rgba(186, 159, 127, .18), transparent 28%), linear-gradient(180deg, #5c5147 0%, #383128 35%, #29251f 66%, #4a4034 100%)",
+        color: "#eee6da",
       }}
       role={onOpen ? "button" : undefined}
       tabIndex={onOpen ? 0 : undefined}
@@ -256,102 +183,165 @@ function Cover({
           : undefined
       }
     >
-      {/* Top ornament */}
-      <div className="absolute left-1/2 top-8 z-5 -translate-x-1/2 text-[#b79b79] opacity-60 sm:top-12">
-        <KyrgyzOrnament className="h-6 w-6 sm:h-8 sm:w-8" />
-      </div>
+      {/* Soft lighting overlay */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: "radial-gradient(ellipse at 22% 13%, rgba(244, 222, 190, .22), transparent 16%), radial-gradient(ellipse at 75% 7%, rgba(236, 210, 176, .16), transparent 18%), radial-gradient(ellipse at 10% 48%, rgba(0,0,0,.38), transparent 27%), radial-gradient(ellipse at 92% 48%, rgba(0,0,0,.34), transparent 28%)",
+        filter: "blur(10px)",
+      }} />
 
-      {/* Envelope body */}
-      <div className="kyrgyz-envelope absolute left-1/2 top-1/2 w-[min(88vw,_520px)] -translate-x-1/2 -translate-y-1/2 transform">
-        {/* Envelope shell */}
-        <div className="kyrgyz-envelope-shell relative aspect-[3/4]">
-          {/* Paper background */}
-          <div
-            className="kyrgyz-envelope-body absolute inset-0 rounded-lg shadow-2xl overflow-hidden"
-            style={{
-              backgroundColor: "#efe5d6",
-              backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" /></filter><rect fill="%23efe5d6" width="200" height="200" /><rect width="200" height="200" fill="%23e4d5c1" opacity="0.08" filter="url(%23paper)" /></svg>')`,
-              boxShadow:
-                "0 20px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 8px rgba(0,0,0,0.08)",
-            }}
-          >
-            {/* Diagonal X lines pattern */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              viewBox="0 0 100 133"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              {/* Top-left to bottom-right diagonal lines */}
-              <line x1="0" y1="0" x2="100" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="15" y1="0" x2="100" y2="113" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="30" y1="0" x2="100" y2="93" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="0" y1="20" x2="85" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="0" y1="40" x2="65" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-
-              {/* Top-right to bottom-left diagonal lines */}
-              <line x1="100" y1="0" x2="0" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="85" y1="0" x2="0" y2="113" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="70" y1="0" x2="0" y2="93" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="100" y1="20" x2="15" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-              <line x1="100" y1="40" x2="35" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
-            </svg>
-
-            {/* Envelope border */}
-            <div className="absolute inset-0 rounded-lg border border-[#d4a574] border-opacity-30" />
-
-            {/* Top flap */}
-            <div
-              className="kyrgyz-envelope-flap-top absolute left-0 right-0 top-0 h-1/2 origin-top transform-gpu transition-transform duration-1000 ease-out"
-              style={{
-                backgroundColor: "#f3ebdd",
-                clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-                transform: opening ? "rotateX(180deg) rotateZ(0deg)" : "rotateX(0deg) rotateZ(0deg)",
-                transformStyle: "preserve-3d" as any,
-                backfaceVisibility: "hidden" as any,
-                boxShadow: "inset 0 -1px 3px rgba(0,0,0,0.08)",
-              }}
-            />
-
-            {/* Bottom flap */}
-            <div
-              className="kyrgyz-envelope-flap-bottom absolute bottom-0 left-0 right-0 h-1/2 origin-bottom"
-              style={{
-                backgroundColor: "#e4d5c1",
-                clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-              }}
-            />
-          </div>
-
-          {/* Wax seal - centered */}
-          <div className="kyrgyz-envelope-seal absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform-gpu">
-            <PremiumWaxSeal label={openLabel} opening={opening} />
-          </div>
-
-          {/* Envelope ornament inside */}
-          <div className="kyrgyz-envelope-ornament absolute left-1/2 top-1/4 z-5 -translate-x-1/2 text-[#c4a574] opacity-20">
-            <KyrgyzOrnament className="h-8 w-8" />
-          </div>
-        </div>
-      </div>
+      {/* Shadow leaves */}
+      <div className="absolute top-2 left-0 w-[45px] h-[140px] bg-[#090806] rounded-full opacity-[0.22] blur-[7px]" style={{ transform: "rotate(-37deg)" }} />
+      <div className="absolute top-4 right-0 w-[50px] h-[145px] bg-[#090806] rounded-full opacity-[0.22] blur-[7px]" style={{ transform: "rotate(31deg)" }} />
+      <div className="absolute bottom-0 right-0 w-[50px] h-[170px] bg-[#090806] rounded-full opacity-[0.22] blur-[7px]" style={{ transform: "rotate(40deg)" }} />
 
       {/* Top text */}
-      <div className="kyrgyz-envelope-copy absolute left-0 right-0 top-0 z-10 px-6 pt-16 text-center sm:pt-20">
-        <div className="text-[#b79b79] opacity-70 mb-2">
-          <KyrgyzOrnament className="mx-auto h-4 w-4" />
+      <header className="absolute z-10 top-[8.5%] left-1/2 w-full -translate-x-1/2 text-center">
+        <div className="w-[27px] h-[27px] mx-auto mb-4 opacity-95">
+          <KyrgyzOrnament />
         </div>
-        <p className="font-serif text-[11px] uppercase tracking-[0.3em]" style={{ color: "#b79b79" }}>
-          Сүйүү
-        </p>
-        <p className="font-serif text-[10px] uppercase tracking-[0.2em] mt-1" style={{ color: "#b79b79", opacity: 0.8 }}>
-          Жаңы бир окуя
-        </p>
+        <h1 className="m-0 text-[#f3eadf] text-[clamp(12px,3.4vw,17px)] font-normal leading-[1.42] tracking-[0.19em] uppercase" style={{ textShadow: "0 1px 3px rgba(0,0,0,.4)" }}>
+          Сүйүү<br />Жаңы бир окуя
+        </h1>
+      </header>
+
+      {/* Envelope */}
+      <section className="absolute z-5 top-[30.8%] left-1/2 w-[88%] -translate-x-1/2" style={{
+        aspectRatio: "1.08 / 1",
+        filter: "drop-shadow(0 17px 13px rgba(0,0,0,.33)) drop-shadow(0 4px 4px rgba(0,0,0,.22))",
+      }}>
+        <div className="absolute inset-0">
+          {/* Envelope back */}
+          <div className="absolute inset-0 border border-[rgba(152,123,84,.24)]" style={{
+            backgroundColor: "#efe5d5",
+            backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.2px), radial-gradient(circle at 80% 60%, rgba(132,99,57,.10) 0 1px, transparent 1.2px), repeating-linear-gradient(30deg, rgba(127,91,49,.025) 0 1px, transparent 1px 8px)",
+            backgroundSize: "12px 12px, 17px 17px, 100% 100%",
+          }}>
+            <div className="absolute top-[18%] left-[-10%] w-[120%] text-[rgba(160,128,85,.12)] text-[60px] leading-none tracking-[-18px] opacity-75" style={{ transform: "rotate(-8deg)" }}>
+              ❧   ❧   ❧   ❧   ❧
+            </div>
+          </div>
+
+          {/* Flap left */}
+          <div className="absolute left-0 bottom-0 z-3" style={{
+            width: "51%",
+            height: "78%",
+            clipPath: "polygon(0 0, 100% 51%, 100% 100%, 0 100%)",
+            background: "linear-gradient(135deg, #f4eadb, #e8ddcb)",
+            backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.2px), radial-gradient(circle at 80% 60%, rgba(132,99,57,.10) 0 1px, transparent 1.2px), repeating-linear-gradient(30deg, rgba(127,91,49,.025) 0 1px, transparent 1px 8px)",
+            backgroundSize: "12px 12px, 17px 17px, 100% 100%",
+          }}>
+            <div className="absolute inset-0" style={{
+              background: "repeating-radial-gradient(ellipse at 30% 60%, transparent 0 15px, rgba(152,117,73,.07) 16px 17px)",
+            }} />
+          </div>
+
+          {/* Flap right */}
+          <div className="absolute right-0 bottom-0 z-3" style={{
+            width: "51%",
+            height: "78%",
+            clipPath: "polygon(0 51%, 100% 0, 100% 100%, 0 100%)",
+            background: "linear-gradient(225deg, #f4eadb, #e8ddcb)",
+            backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.2px), radial-gradient(circle at 80% 60%, rgba(132,99,57,.10) 0 1px, transparent 1.2px), repeating-linear-gradient(30deg, rgba(127,91,49,.025) 0 1px, transparent 1px 8px)",
+            backgroundSize: "12px 12px, 17px 17px, 100% 100%",
+          }}>
+            <div className="absolute inset-0" style={{
+              background: "repeating-radial-gradient(ellipse at 80% 65%, transparent 0 15px, rgba(152,117,73,.07) 16px 17px)",
+            }} />
+          </div>
+
+          {/* Flap bottom */}
+          <div className="absolute left-0 bottom-0 z-4 w-full" style={{
+            height: "53%",
+            clipPath: "polygon(0 100%, 50% 12%, 100% 100%)",
+            background: "linear-gradient(180deg, #eee3d2, #e1d4c0)",
+            backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.2px), radial-gradient(circle at 80% 60%, rgba(132,99,57,.10) 0 1px, transparent 1.2px), repeating-linear-gradient(30deg, rgba(127,91,49,.025) 0 1px, transparent 1px 8px)",
+            backgroundSize: "12px 12px, 17px 17px, 100% 100%",
+          }} />
+
+          {/* Flap top */}
+          <div className="absolute top-0 left-0 z-5 w-full" style={{
+            height: "50%",
+            clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+            background: "linear-gradient(180deg, #f7eee0, #e7dac5)",
+            backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.2px), radial-gradient(circle at 80% 60%, rgba(132,99,57,.10) 0 1px, transparent 1.2px), repeating-linear-gradient(30deg, rgba(127,91,49,.025) 0 1px, transparent 1px 8px)",
+            backgroundSize: "12px 12px, 17px 17px, 100% 100%",
+            filter: "drop-shadow(0 2px 1px rgba(78,53,28,.22))",
+            transform: opening ? "rotateX(180deg)" : "rotateX(0deg)",
+            transformOrigin: "top",
+            transition: "transform 1s cubic-bezier(0.22, 1, 0.36, 1)",
+            transformStyle: "preserve-3d" as any,
+          }}>
+            {/* Gold line */}
+            <div className="absolute inset-0" style={{
+              clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+              background: "linear-gradient(135deg, transparent 49.45%, #ae7734 49.7%, #c59a5f 50.05%, transparent 50.3%), linear-gradient(225deg, transparent 49.45%, #ae7734 49.7%, #c59a5f 50.05%, transparent 50.3%)",
+            }} />
+          </div>
+
+          {/* Gold lines */}
+          <div className="absolute z-6 h-[1.4px] bottom-[4%] left-0" style={{
+            width: "64%",
+            background: "linear-gradient(90deg, #876026, #c69d63, #9b6a2c)",
+            transform: "rotate(-42deg)",
+            opacity: 0.9,
+          }} />
+          <div className="absolute z-6 h-[1.4px] top-1/2 left-1/2" style={{
+            width: "64%",
+            background: "linear-gradient(90deg, #876026, #c69d63, #9b6a2c)",
+            transform: "rotate(42deg)",
+            opacity: 0.9,
+          }} />
+        </div>
+      </section>
+
+      {/* Seal */}
+      <div className="absolute z-20 left-1/2 top-[48%] -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute w-[62px] h-[62px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(38,20,8,.35)] blur-[5px]" />
+        <div className="relative flex items-center justify-center w-[clamp(45px,18vw,63px)] aspect-square rounded-[48%_52%_51%_49%_/_54%_47%_53%_46%] border-2 border-[#b16e2a]" style={{
+          background: "radial-gradient(circle at 37% 30%, #a65e20, #794014 42%, #54290c 70%, #381806 100%)",
+          boxShadow: "inset 0 0 0 3px #56280d, inset 0 0 0 5px #a66a28, inset 0 -8px 10px rgba(38,14,1,.55), 0 2px 7px rgba(0,0,0,.5)",
+        }}>
+          <svg className="w-[53%] h-[53%] opacity-90" viewBox="0 0 40 40">
+            <path d="M20 7 C18 12 15 14 11 15 C14 18 16 20 16 24 C19 22 21 19 20 15 M20 7 C22 12 25 14 29 15 C26 18 24 20 24 24 C21 22 19 19 20 15 M20 18 C15 21 13 25 12 30 M20 18 C25 21 27 25 28 30 M20 18 L20 33" fill="none" stroke="#d39a4c" strokeWidth="1.8" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Tassel */}
+      <div className="absolute z-18 left-1/2 -translate-x-1/2" style={{ top: "calc(48% + 25px)", width: "24px", height: "102px" }}>
+        <div className="absolute w-[3px] h-[43px] left-1/2 top-0 -translate-x-1/2 rounded-[4px]" style={{
+          background: "linear-gradient(90deg, #81551f, #dfb362, #72451b)",
+        }} />
+        <div className="absolute left-1/2 top-[35px] w-[10px] h-[13px] -translate-x-1/2 rounded-[45%]" style={{
+          background: "linear-gradient(90deg, #704319, #d5a34d, #81531e)",
+          transform: "translateX(-50%) rotate(4deg)",
+        }} />
+        <div className="absolute top-[45px] left-1/2 w-[17px] h-[16px] -translate-x-1/2" style={{
+          background: "linear-gradient(90deg, #775022, #c79849, #795021)",
+          clipPath: "polygon(30% 0, 70% 0, 100% 100%, 0 100%)",
+        }} />
+        <div className="absolute left-1/2 top-[56px] w-[26px] h-[44px] -translate-x-1/2" style={{
+          background: "repeating-linear-gradient(93deg, #80551d 0 1px, #c39443 1px 2px, #e0b866 2px 3px, #744719 3px 4px)",
+          clipPath: "polygon(15% 0, 85% 0, 100% 100%, 0 100%)",
+        }} />
       </div>
 
       {/* Bottom text */}
-      <p className="kyrgyz-envelope-hint absolute inset-x-0 bottom-0 z-10 px-8 pb-12 text-center font-serif text-[11px] leading-5" style={{ color: "#b79b79", opacity: 0.75 }}>
-        {hint}
-      </p>
+      <footer className="absolute z-10 left-1/2 bottom-[9.5%] w-full -translate-x-1/2 text-center">
+        <p className="m-0 text-[#eee1d2] text-[clamp(13px,4.1vw,18px)] font-normal leading-[1.45] tracking-[0.055em]" style={{ textShadow: "0 1px 4px rgba(0,0,0,.5)" }}>
+          {hint}
+        </p>
+        <div className="w-[25px] h-[25px] mx-auto mt-3 opacity-95">
+          <KyrgyzOrnament />
+        </div>
+      </footer>
+
+      {/* Fabric */}
+      <div className="absolute z-3 bottom-[-25px] left-[-35px] w-[155px] h-[70px] rounded-[50%_30%_0_0]" style={{
+        background: "repeating-linear-gradient(35deg, #cab698 0 3px, #dfceb2 3px 6px, #b7a383 6px 8px)",
+        filter: "blur(.35px) drop-shadow(0 -3px 6px rgba(0,0,0,.2))",
+        transform: "rotate(13deg)",
+      }} />
     </div>
   );
 }
