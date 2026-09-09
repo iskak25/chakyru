@@ -54,7 +54,16 @@ export type TemplateStyle = {
     | "romantic"
     | "traditional"
     | "ivory"
-    | "mauve";
+    | "mauve"
+    | "kyrgyz"
+    | "mono"
+    | "blush"
+    | "frost"
+    | "meadow"
+    | "noir"
+    | "tuscany"
+    | "toiAnket"
+    | "stars";
 };
 
 export type InvitationTemplate = {

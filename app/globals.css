@@ -1031,6 +1031,10 @@ textarea {
   border-radius: 999px;
 }
 
+[data-family="kyrgyz"] .site3d-sticky button {
+  border-radius: 4px;
+}
+
 .invite-coverflow {
   position: relative;
   overflow: hidden;

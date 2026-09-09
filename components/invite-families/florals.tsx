@@ -28,6 +28,20 @@ export function MauveCornerBloom({ className = "" }: { className?: string }) {
   );
 }
 
+export function BlushCornerBloom({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 160 140" className={className} aria-hidden>
+      <ellipse cx="118" cy="30" rx="26" ry="18" fill="#f0d8d2" opacity="0.85" />
+      <ellipse cx="98" cy="20" rx="20" ry="15" fill="#e7c0b6" opacity="0.75" />
+      <ellipse cx="134" cy="46" rx="16" ry="13" fill="#f6e6e1" opacity="0.9" />
+      <ellipse cx="80" cy="34" rx="14" ry="11" fill="#c98a86" opacity="0.4" />
+      <path d="M60 60c18-6 30 2 38 18" stroke="#c98a86" strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.6" />
+      <ellipse cx="52" cy="52" rx="10" ry="18" fill="#e2b8ae" opacity="0.55" transform="rotate(-30 52 52)" />
+      <ellipse cx="70" cy="70" rx="8" ry="14" fill="#d8a49a" opacity="0.5" transform="rotate(20 70 70)" />
+    </svg>
+  );
+}
+
 export function GoldFlourish({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 160 18" className={className} fill="none" aria-hidden>

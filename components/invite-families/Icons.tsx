@@ -88,6 +88,34 @@ export function IconCake({ className = "h-6 w-6" }: IconProps) {
   );
 }
 
+export function IconDressOutline({ className = "h-8 w-8" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 28" className={className} fill="none" aria-hidden>
+      <path
+        d="M9 2h6l1 4-2 2 4 17H6L10 8 8 6l1-4Z"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+      <path d="M9 8h6" stroke="currentColor" strokeWidth="1" />
+    </svg>
+  );
+}
+
+export function IconSuitOutline({ className = "h-8 w-8" }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 28" className={className} fill="none" aria-hidden>
+      <path
+        d="M9 2 12 5 15 2l4 3-2 3-1-1v18H8V7l-1 1-2-3 4-3Z"
+        stroke="currentColor"
+        strokeWidth="1.1"
+        strokeLinejoin="round"
+      />
+      <path d="M12 5v6l-1.5-1.5M12 11l1.5-1.5" stroke="currentColor" strokeWidth="1" />
+    </svg>
+  );
+}
+
 export function FloralCorner({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 180 160" className={className} aria-hidden>

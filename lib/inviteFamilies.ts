@@ -1,4 +1,4 @@
-export const INVITE_FAMILIES = ["luxury", "elegant", "modern", "romantic", "traditional", "ivory", "mauve"] as const;
+export const INVITE_FAMILIES = ["luxury", "elegant", "modern", "romantic", "traditional", "ivory", "mauve", "kyrgyz", "mono", "blush", "frost", "meadow", "noir", "tuscany", "toiAnket", "stars"] as const;
 
 export type InviteFamily = (typeof INVITE_FAMILIES)[number];
 
@@ -43,6 +43,17 @@ const FAMILY_BY_TEMPLATE: Record<string, InviteFamily> = {
 
   ivory: "ivory",
   mauve: "mauve",
+  kyial: "kyrgyz",
+
+  "ak-tunuk": "mono",
+  "kyz-sham": "blush",
+  "muzdak-nur": "frost",
+  "boz-talaa": "meadow",
+  "ak-dilda": "toiAnket",
+  "kyzyl-gul-anke": "mauve",
+  "kara-sham": "noir",
+  "toskana-jel": "tuscany",
+  "asman-jyldyz": "stars",
 };
 
 export function getInviteFamily(templateId: string): InviteFamily {
