@@ -163,7 +163,7 @@ function Cover({
   const copy = paperCopy(overlay);
   return (
     <div
-      className={`relative overflow-hidden ${fill ? "h-full min-h-full" : "min-h-[100svh]"} ${opening ? "is-opening" : ""} ${onOpen ? "cursor-pointer" : ""}`}
+      className={`kyrgyz-envelope-stage relative overflow-hidden ${fill ? "h-full min-h-full" : "min-h-[100svh]"} ${opening ? "is-opening" : ""} ${onOpen ? "cursor-pointer" : ""}`}
       style={{
         background: "radial-gradient(circle at 18% 18%, rgba(201, 181, 153, .34), transparent 25%), radial-gradient(circle at 82% 18%, rgba(186, 159, 127, .18), transparent 28%), linear-gradient(180deg, #5c5147 0%, #383128 35%, #29251f 66%, #4a4034 100%)",
         color: "#eee6da",
@@ -259,16 +259,14 @@ function Cover({
           }} />
 
           {/* Flap top */}
-          <div className="absolute top-0 left-0 z-5 w-full" style={{
+          <div className="kyrgyz-envelope-flap-top absolute top-0 left-0 z-5 w-full transform-gpu" style={{
             height: "50%",
             clipPath: "polygon(0 0, 100% 0, 50% 100%)",
             background: "linear-gradient(180deg, #f7eee0, #e7dac5)",
             backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,.8) 0 1px, transparent 1.2px), radial-gradient(circle at 80% 60%, rgba(132,99,57,.10) 0 1px, transparent 1.2px), repeating-linear-gradient(30deg, rgba(127,91,49,.025) 0 1px, transparent 1px 8px)",
             backgroundSize: "12px 12px, 17px 17px, 100% 100%",
             filter: "drop-shadow(0 2px 1px rgba(78,53,28,.22))",
-            transform: opening ? "rotateX(180deg)" : "rotateX(0deg)",
             transformOrigin: "top",
-            transition: "transform 1s cubic-bezier(0.22, 1, 0.36, 1)",
             transformStyle: "preserve-3d" as any,
           }}>
             {/* Gold line */}
