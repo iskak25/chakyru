@@ -368,9 +368,154 @@ textarea {
   100% { opacity: 0; visibility: hidden; }
 }
 
+/* Premium Kyrgyz Envelope Redesign */
+
+.kyrgyz-envelope-stage {
+  --paper: #0f0c0a;
+  perspective: 1200px;
+  background-attachment: fixed;
+  background-size: 100px 100px;
+}
+
+.kyrgyz-envelope-copy {
+  transition: opacity 0.4s ease;
+}
+
+.kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-copy,
+.kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-ornament {
+  animation: envelope-copy-fade 0.5s ease-out forwards;
+}
+
+@keyframes envelope-copy-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.kyrgyz-envelope {
+  perspective: 1400px;
+  transform-style: preserve-3d;
+}
+
+.kyrgyz-envelope-shell {
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+}
+
+.kyrgyz-envelope-body {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.kyrgyz-envelope-flap-top {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+.kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-flap-top {
+  animation: envelope-flap-open 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes envelope-flap-open {
+  0% {
+    transform: rotateX(0deg) rotateZ(0deg);
+  }
+  50% {
+    transform: rotateX(90deg) rotateZ(0deg);
+  }
+  100% {
+    transform: rotateX(180deg) rotateZ(0deg);
+  }
+}
+
+.kyrgyz-envelope-seal {
+  animation: none;
+  transition: all 0.3s ease;
+}
+
+.kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-seal {
+  animation: wax-seal-pop-out 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes wax-seal-pop-out {
+  0% {
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(1.08) translateZ(10px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.3) translateZ(-40px);
+    opacity: 0;
+  }
+}
+
+.wax-seal-premium {
+  perspective: 600px;
+  transform-style: preserve-3d;
+}
+
+.wax-seal-premium:not(:disabled):hover {
+  transform: scale(1.05);
+}
+
+.wax-seal-premium.is-opening {
+  animation: seal-press 0.6s ease-out forwards;
+}
+
+@keyframes seal-press {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.95);
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(0.3);
+  }
+}
+
+.kyrgyz-envelope-hint {
+  animation: none;
+  transition: opacity 0.4s ease;
+}
+
+.kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-hint {
+  animation: envelope-copy-fade 0.5s ease-out forwards;
+}
+
+/* Envelope ornament SVG */
+.kyrgyz-envelope-ornament {
+  transition: opacity 0.4s ease;
+  color: inherit;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-flap-top {
+    animation: none;
+    transform: rotateX(180deg);
+  }
+
+  .kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-seal {
+    animation: none;
+    opacity: 0;
+  }
+
+  .kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-copy,
+  .kyrgyz-envelope-stage.is-opening .kyrgyz-envelope-hint {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* Fallback for old envelope classes - deprecated */
 .envelope-stage {
   --paper: #0f0c0a;
-  background: var(--paper);
   perspective: 1600px;
 }
 
@@ -381,63 +526,6 @@ textarea {
 .envelope-stage.is-opening .envelope-copy,
 .envelope-stage.is-opening .envelope-seal-wrap {
   opacity: 0;
-}
-
-.envelope-flap {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  transition: transform 0.9s cubic-bezier(0.65, 0.05, 0.35, 1);
-}
-
-.envelope-flap-top {
-  z-index: 4;
-  clip-path: polygon(0 0, 100% 0, 50% 52%);
-  background:
-    linear-gradient(180deg, rgba(245, 245, 245, 0.1), transparent 46%),
-    color-mix(in srgb, var(--paper) 78%, #1a1410);
-  box-shadow: inset 0 -1px 0 rgba(168, 142, 110, 0.28);
-  transform-origin: 50% 0%;
-}
-
-.envelope-flap-bottom {
-  z-index: 2;
-  clip-path: polygon(0 100%, 100% 100%, 50% 48%);
-  background: color-mix(in srgb, var(--paper) 62%, #0a0806);
-  box-shadow: inset 0 1px 0 rgba(168, 142, 110, 0.16);
-  transform-origin: 50% 100%;
-}
-
-.envelope-flap-left {
-  z-index: 3;
-  clip-path: polygon(0 0, 50% 50%, 0 100%);
-  background: color-mix(in srgb, var(--paper) 70%, #000);
-  transform-origin: 0% 50%;
-}
-
-.envelope-flap-right {
-  z-index: 3;
-  clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: color-mix(in srgb, var(--paper) 70%, #000);
-  transform-origin: 100% 50%;
-}
-
-.envelope-stage.is-opening .envelope-flap-top {
-  transform: rotateX(-170deg);
-}
-
-.envelope-stage.is-opening .envelope-flap-bottom {
-  transform: rotateX(170deg);
-}
-
-.envelope-stage.is-opening .envelope-flap-left {
-  transform: rotateY(-170deg);
-}
-
-.envelope-stage.is-opening .envelope-flap-right {
-  transform: rotateY(170deg);
 }
 
 .envelope-overlay {

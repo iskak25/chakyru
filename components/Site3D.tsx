@@ -121,6 +121,89 @@ function WaxSeal({ label }: { label: string }) {
   );
 }
 
+function KyrgyzOrnament({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 120 120" aria-hidden="true">
+      <defs>
+        <pattern id="kyrgyz-pattern" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+          <circle cx="15" cy="15" r="2" fill="currentColor" opacity="0.3" />
+          <line x1="15" y1="5" x2="15" y2="25" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+          <line x1="5" y1="15" x2="25" y2="15" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+        </pattern>
+      </defs>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+      <circle cx="60" cy="60" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+      <g stroke="currentColor" strokeWidth="0.8" fill="none">
+        <path d="M 30,60 Q 60,30 90,60 Q 60,90 30,60" opacity="0.25" />
+        <path d="M 60,30 L 90,60 L 60,90 L 30,60 Z" opacity="0.2" />
+      </g>
+    </svg>
+  );
+}
+
+function PremiumWaxSeal({ label, opening }: { label: string; opening?: boolean }) {
+  const uid = useId().replace(/:/g, "");
+  return (
+    <button
+      type="button"
+      className={`wax-seal-premium relative inline-flex h-20 w-20 items-center justify-center transition-all duration-300 sm:h-24 sm:w-24 ${
+        opening ? "is-opening" : ""
+      }`}
+      aria-hidden="true"
+      disabled
+    >
+      <svg
+        className="absolute inset-0 h-full w-full drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]"
+        viewBox="0 0 100 100"
+        aria-hidden
+      >
+        <defs>
+          <radialGradient id={`seal-${uid}`} cx="35%" cy="30%">
+            <stop offset="0%" stopColor="#f5e6d3" />
+            <stop offset="30%" stopColor="#d4a574" />
+            <stop offset="65%" stopColor="#b8935d" />
+            <stop offset="100%" stopColor="#7a5c3e" />
+          </radialGradient>
+          <filter id={`seal-glow-${uid}`}>
+            <feGaussianBlur stdDeviation="1" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Main seal circle */}
+        <circle cx="50" cy="50" r="45" fill={`url(#seal-${uid})`} filter={`url(#seal-glow-${uid})`} />
+
+        {/* Inner rings */}
+        <circle cx="50" cy="50" r="41" fill="none" stroke="#3d2f1f" strokeWidth="0.5" opacity="0.4" />
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#c9a076" strokeWidth="0.3" opacity="0.3" />
+        <circle cx="50" cy="50" r="35" fill="none" stroke="#3d2f1f" strokeWidth="0.4" opacity="0.2" />
+
+        {/* Kyrgyz-inspired ornament center */}
+        <g stroke="#3d2f1f" strokeWidth="0.6" fill="none" opacity="0.5">
+          <circle cx="50" cy="50" r="18" />
+          <path d="M 50,32 L 62,50 L 50,68 L 38,50 Z" />
+          <circle cx="50" cy="50" r="12" />
+          <circle cx="50" cy="50" r="8" />
+        </g>
+
+        {/* Wax texture lines */}
+        <g stroke="#6a5438" strokeWidth="0.2" opacity="0.15">
+          <path d="M 35,40 Q 50,35 65,40" />
+          <path d="M 32,50 Q 50,45 68,50" />
+          <path d="M 35,60 Q 50,65 65,60" />
+        </g>
+      </svg>
+
+      <span className="relative z-10 text-center font-serif text-[11px] font-bold uppercase tracking-wide leading-tight text-[#3d2f1f] sm:text-[12px]">
+        {label}
+      </span>
+    </button>
+  );
+}
+
 function Cover({
   overlay,
   ticket,
@@ -143,8 +226,12 @@ function Cover({
   const copy = paperCopy(overlay);
   return (
     <div
-      className={`envelope-stage relative overflow-hidden ${fill ? "h-full min-h-full" : "min-h-[100svh]"} ${opening ? "is-opening" : ""} ${onOpen ? "cursor-pointer" : ""}`}
-      style={{ ["--paper" as string]: overlay || "#0F0C0A" }}
+      className={`kyrgyz-envelope-stage relative overflow-hidden ${fill ? "h-full min-h-full" : "min-h-[100svh]"} ${opening ? "is-opening" : ""} ${onOpen ? "cursor-pointer" : ""}`}
+      style={{
+        ["--paper" as string]: overlay || "#0F0C0A",
+        backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /></filter><rect fill="%23241c16" width="100" height="100" /><rect fill="%23332b21" width="100" height="100" opacity="0.6" filter="url(%23n)" /></svg>')`,
+        backgroundColor: "#241c16",
+      }}
       role={onOpen ? "button" : undefined}
       tabIndex={onOpen ? 0 : undefined}
       aria-label={onOpen ? openLabel : undefined}
@@ -160,21 +247,78 @@ function Cover({
           : undefined
       }
     >
-      <div className="envelope-flap envelope-flap-left" />
-      <div className="envelope-flap envelope-flap-right" />
-      <div className="envelope-flap envelope-flap-bottom" />
-      <div className="envelope-flap envelope-flap-top" />
-
-      <div className="envelope-copy pointer-events-none absolute inset-x-0 top-0 z-10 px-6 pt-10 text-center">
-        <p className="font-script text-[28px] leading-none" style={{ color: copy }}>{ticket}</p>
-        <p className="mt-3 font-serif text-[12px] uppercase tracking-[0.22em]" style={{ color: copy, opacity: 0.9 }}>{inviteTitle}</p>
+      {/* Top ornament */}
+      <div className="absolute left-1/2 top-8 z-5 -translate-x-1/2 text-[#b79b79] opacity-60 sm:top-12">
+        <KyrgyzOrnament className="h-6 w-6 sm:h-8 sm:w-8" />
       </div>
 
-      <div className="envelope-seal-wrap pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
-        <WaxSeal label={openLabel} />
+      {/* Envelope body */}
+      <div className="kyrgyz-envelope absolute left-1/2 top-1/2 w-[min(88vw,_520px)] -translate-x-1/2 -translate-y-1/2 transform">
+        {/* Envelope shell */}
+        <div className="kyrgyz-envelope-shell relative aspect-[3/4]">
+          {/* Paper background */}
+          <div
+            className="kyrgyz-envelope-body absolute inset-0 rounded-lg shadow-2xl"
+            style={{
+              backgroundColor: "#efe5d6",
+              backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" /></filter><rect fill="%23efe5d6" width="200" height="200" /><rect width="200" height="200" fill="%23e4d5c1" opacity="0.08" filter="url(%23paper)" /></svg>')`,
+              boxShadow:
+                "0 20px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            {/* Envelope border */}
+            <div className="absolute inset-0 rounded-lg border border-[#d4a574] border-opacity-30" />
+
+            {/* Top flap */}
+            <div
+              className="kyrgyz-envelope-flap-top absolute left-0 right-0 top-0 h-1/2 origin-top transform-gpu transition-transform duration-1000 ease-out"
+              style={{
+                backgroundColor: "#f3ebdd",
+                clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+                transform: opening ? "rotateX(180deg) rotateZ(0deg)" : "rotateX(0deg) rotateZ(0deg)",
+                transformStyle: "preserve-3d" as any,
+                backfaceVisibility: "hidden" as any,
+                boxShadow: "inset 0 -1px 3px rgba(0,0,0,0.08)",
+              }}
+            />
+
+            {/* Bottom flap */}
+            <div
+              className="kyrgyz-envelope-flap-bottom absolute bottom-0 left-0 right-0 h-1/2 origin-bottom"
+              style={{
+                backgroundColor: "#e4d5c1",
+                clipPath: "polygon(0 0, 100% 0, 50% 100%)",
+              }}
+            />
+          </div>
+
+          {/* Wax seal - centered */}
+          <div className="kyrgyz-envelope-seal absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform-gpu">
+            <PremiumWaxSeal label={openLabel} opening={opening} />
+          </div>
+
+          {/* Envelope ornament inside */}
+          <div className="kyrgyz-envelope-ornament absolute left-1/2 top-1/4 z-5 -translate-x-1/2 text-[#c4a574] opacity-20">
+            <KyrgyzOrnament className="h-8 w-8" />
+          </div>
+        </div>
       </div>
 
-      <p className="envelope-copy pointer-events-none absolute inset-x-0 bottom-0 z-10 px-8 pb-10 text-center font-serif text-[12px] leading-5" style={{ color: copy, opacity: 0.85 }}>
+      {/* Top text */}
+      <div className="kyrgyz-envelope-copy absolute left-0 right-0 top-0 z-10 px-6 pt-16 text-center sm:pt-20">
+        <div className="text-[#b79b79] opacity-70 mb-2">
+          <KyrgyzOrnament className="mx-auto h-4 w-4" />
+        </div>
+        <p className="font-serif text-[11px] uppercase tracking-[0.3em]" style={{ color: "#b79b79" }}>
+          Сүйүү
+        </p>
+        <p className="font-serif text-[10px] uppercase tracking-[0.2em] mt-1" style={{ color: "#b79b79", opacity: 0.8 }}>
+          Жаңы бир окуя
+        </p>
+      </div>
+
+      {/* Bottom text */}
+      <p className="kyrgyz-envelope-hint absolute inset-x-0 bottom-0 z-10 px-8 pb-12 text-center font-serif text-[11px] leading-5" style={{ color: "#b79b79", opacity: 0.75 }}>
         {hint}
       </p>
     </div>
