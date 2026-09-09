@@ -142,8 +142,8 @@ html {
   }
 
   .invite-coverflow-stage {
-    height: min(750px, 200vw);
-    min-height: 700px;
+    height: min(820px, 220vw);
+    min-height: 800px;
     overflow-y: visible;
   }
 
@@ -949,7 +949,7 @@ textarea {
   left: 50%;
   width: min(280px, calc(100vw - 5.5rem));
   margin-left: calc(min(280px, calc(100vw - 5.5rem)) / -2);
-  margin-top: calc(min(650px, 85vh) / -2.15);
+  margin-top: calc(min(700px, 90vh) / -2.15);
   border: 0;
   background: transparent;
   padding: 0;
@@ -970,7 +970,7 @@ textarea {
 
 .invite-coverflow-stage {
   position: relative;
-  height: min(650px, 85vh);
+  height: min(700px, 90vh);
   perspective: 1100px;
   perspective-origin: 50% 48%;
   transform-style: preserve-3d;
