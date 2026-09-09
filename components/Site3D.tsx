@@ -154,8 +154,9 @@ function PremiumWaxSeal({ label, opening }: { label: string; opening?: boolean }
     >
       <svg
         className="absolute inset-0 h-full w-full drop-shadow-[0_12px_28px_rgba(0,0,0,0.35)]"
-        viewBox="0 0 100 100"
+        viewBox="0 0 100 120"
         aria-hidden
+        preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <radialGradient id={`seal-${uid}`} cx="35%" cy="30%">
@@ -173,27 +174,35 @@ function PremiumWaxSeal({ label, opening }: { label: string; opening?: boolean }
           </filter>
         </defs>
 
+        {/* Tassel cord */}
+        <line x1="50" y1="58" x2="50" y2="95" stroke="#c9a076" strokeWidth="1.5" opacity="0.8" />
+
+        {/* Tassel threads */}
+        <line x1="45" y1="95" x2="50" y2="108" stroke="#c9a076" strokeWidth="0.8" opacity="0.7" />
+        <line x1="50" y1="95" x2="50" y2="110" stroke="#c9a076" strokeWidth="0.8" opacity="0.7" />
+        <line x1="55" y1="95" x2="50" y2="108" stroke="#c9a076" strokeWidth="0.8" opacity="0.7" />
+
         {/* Main seal circle */}
-        <circle cx="50" cy="50" r="45" fill={`url(#seal-${uid})`} filter={`url(#seal-glow-${uid})`} />
+        <circle cx="50" cy="45" r="45" fill={`url(#seal-${uid})`} filter={`url(#seal-glow-${uid})`} />
 
         {/* Inner rings */}
-        <circle cx="50" cy="50" r="41" fill="none" stroke="#3d2f1f" strokeWidth="0.5" opacity="0.4" />
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#c9a076" strokeWidth="0.3" opacity="0.3" />
-        <circle cx="50" cy="50" r="35" fill="none" stroke="#3d2f1f" strokeWidth="0.4" opacity="0.2" />
+        <circle cx="50" cy="45" r="41" fill="none" stroke="#3d2f1f" strokeWidth="0.5" opacity="0.4" />
+        <circle cx="50" cy="45" r="38" fill="none" stroke="#c9a076" strokeWidth="0.3" opacity="0.3" />
+        <circle cx="50" cy="45" r="35" fill="none" stroke="#3d2f1f" strokeWidth="0.4" opacity="0.2" />
 
         {/* Kyrgyz-inspired ornament center */}
         <g stroke="#3d2f1f" strokeWidth="0.6" fill="none" opacity="0.5">
-          <circle cx="50" cy="50" r="18" />
-          <path d="M 50,32 L 62,50 L 50,68 L 38,50 Z" />
-          <circle cx="50" cy="50" r="12" />
-          <circle cx="50" cy="50" r="8" />
+          <circle cx="50" cy="45" r="18" />
+          <path d="M 50,27 L 62,45 L 50,63 L 38,45 Z" />
+          <circle cx="50" cy="45" r="12" />
+          <circle cx="50" cy="45" r="8" />
         </g>
 
         {/* Wax texture lines */}
         <g stroke="#6a5438" strokeWidth="0.2" opacity="0.15">
-          <path d="M 35,40 Q 50,35 65,40" />
-          <path d="M 32,50 Q 50,45 68,50" />
-          <path d="M 35,60 Q 50,65 65,60" />
+          <path d="M 35,35 Q 50,30 65,35" />
+          <path d="M 32,45 Q 50,40 68,45" />
+          <path d="M 35,55 Q 50,60 65,55" />
         </g>
       </svg>
 
@@ -258,7 +267,7 @@ function Cover({
         <div className="kyrgyz-envelope-shell relative aspect-[3/4]">
           {/* Paper background */}
           <div
-            className="kyrgyz-envelope-body absolute inset-0 rounded-lg shadow-2xl"
+            className="kyrgyz-envelope-body absolute inset-0 rounded-lg shadow-2xl overflow-hidden"
             style={{
               backgroundColor: "#efe5d6",
               backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" /></filter><rect fill="%23efe5d6" width="200" height="200" /><rect width="200" height="200" fill="%23e4d5c1" opacity="0.08" filter="url(%23paper)" /></svg>')`,
@@ -266,6 +275,28 @@ function Cover({
                 "0 20px 50px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 8px rgba(0,0,0,0.08)",
             }}
           >
+            {/* Diagonal X lines pattern */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              viewBox="0 0 100 133"
+              preserveAspectRatio="none"
+              aria-hidden
+            >
+              {/* Top-left to bottom-right diagonal lines */}
+              <line x1="0" y1="0" x2="100" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="15" y1="0" x2="100" y2="113" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="30" y1="0" x2="100" y2="93" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="0" y1="20" x2="85" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="0" y1="40" x2="65" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+
+              {/* Top-right to bottom-left diagonal lines */}
+              <line x1="100" y1="0" x2="0" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="85" y1="0" x2="0" y2="113" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="70" y1="0" x2="0" y2="93" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="100" y1="20" x2="15" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+              <line x1="100" y1="40" x2="35" y2="133" stroke="#c9a076" strokeWidth="0.8" opacity="0.3" />
+            </svg>
+
             {/* Envelope border */}
             <div className="absolute inset-0 rounded-lg border border-[#d4a574] border-opacity-30" />
 
