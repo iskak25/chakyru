@@ -134,6 +134,32 @@ html {
     bottom: 0.5rem;
     padding-bottom: env(safe-area-inset-bottom);
   }
+
+  .invite-coverflow {
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding-inline: 0;
+  }
+
+  .invite-coverflow-stage {
+    height: min(750px, 200vw);
+    min-height: 700px;
+    overflow-y: visible;
+  }
+
+  .invite-coverflow-card {
+    width: calc(100vw - 24px);
+    margin-left: calc((100vw - 24px) / -2);
+  }
+
+  .invite-coverflow-card.is-active {
+    width: calc(100vw - 24px);
+    margin-left: calc((100vw - 24px) / -2);
+  }
+
+  .invite-coverflow-card:not(.is-active) {
+    opacity: 0.2 !important;
+  }
 }
 
 .phone-frame-scroll {
@@ -923,7 +949,7 @@ textarea {
   left: 50%;
   width: min(280px, calc(100vw - 5.5rem));
   margin-left: calc(min(280px, calc(100vw - 5.5rem)) / -2);
-  margin-top: calc(min(560px, 78vw) / -2.15);
+  margin-top: calc(min(650px, 85vh) / -2.15);
   border: 0;
   background: transparent;
   padding: 0;
@@ -944,7 +970,7 @@ textarea {
 
 .invite-coverflow-stage {
   position: relative;
-  height: min(560px, 78vw);
+  height: min(650px, 85vh);
   perspective: 1100px;
   perspective-origin: 50% 48%;
   transform-style: preserve-3d;
@@ -1106,31 +1132,32 @@ textarea {
 
 @media (min-width: 640px) {
   .invite-coverflow-stage {
-    height: 600px;
+    height: 750px;
   }
 
   .invite-coverflow-card {
     width: 300px;
     margin-left: -150px;
-    margin-top: -280px;
+    margin-top: -340px;
   }
 }
 
 @media (min-width: 1024px) {
   .invite-coverflow {
-    overflow: visible;
+    overflow-x: visible;
+    overflow-y: visible;
     padding: 24px 0 8px;
   }
 
   .invite-coverflow-stage {
-    height: 640px;
+    height: 850px;
     perspective: 1400px;
   }
 
   .invite-coverflow-card {
     width: 340px;
     margin-left: -170px;
-    margin-top: -300px;
+    margin-top: -390px;
   }
 }
 
@@ -1141,7 +1168,7 @@ textarea {
   }
 
   .invite-coverflow-stage {
-    height: 680px;
+    height: 900px;
   }
 }
 
