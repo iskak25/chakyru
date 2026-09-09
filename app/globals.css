@@ -136,25 +136,33 @@ html {
   }
 
   .invite-coverflow {
+    --invite-phone-width: calc(100vw - 24px);
+    --invite-phone-aspect: 9 / 19.5;
+    --invite-phone-height: calc(var(--invite-phone-width) / 0.4615);
     overflow-x: hidden;
     overflow-y: visible;
     padding-inline: 0;
   }
 
   .invite-coverflow-stage {
-    height: min(820px, 220vw);
+    height: max(820px, calc(var(--invite-phone-height) * 1.05));
     min-height: 800px;
     overflow-y: visible;
+    perspective: 1100px;
+    perspective-origin: 50% 48%;
+    transform-style: preserve-3d;
   }
 
   .invite-coverflow-card {
-    width: calc(100vw - 24px);
-    margin-left: calc((100vw - 24px) / -2);
+    width: var(--invite-phone-width);
+    margin-left: calc(var(--invite-phone-width) / -2);
+    margin-top: calc(var(--invite-phone-height) / -2.15);
   }
 
   .invite-coverflow-card.is-active {
-    width: calc(100vw - 24px);
-    margin-left: calc((100vw - 24px) / -2);
+    width: var(--invite-phone-width);
+    margin-left: calc(var(--invite-phone-width) / -2);
+    margin-top: calc(var(--invite-phone-height) / -2.15);
   }
 
   .invite-coverflow-card:not(.is-active) {
@@ -949,7 +957,7 @@ textarea {
   left: 50%;
   width: min(280px, calc(100vw - 5.5rem));
   margin-left: calc(min(280px, calc(100vw - 5.5rem)) / -2);
-  margin-top: calc(min(720px, 88vh) / -2.15);
+  margin-top: calc(min(280px, calc(100vw - 5.5rem)) / -4.33);
   border: 0;
   background: transparent;
   padding: 0;
@@ -970,10 +978,6 @@ textarea {
 
 .invite-coverflow-stage {
   position: relative;
-  height: min(720px, 88vh);
-  perspective: 1100px;
-  perspective-origin: 50% 48%;
-  transform-style: preserve-3d;
   cursor: grab;
 }
 
@@ -1131,44 +1135,57 @@ textarea {
 }
 
 @media (min-width: 640px) {
+  .invite-coverflow {
+    --invite-phone-width: 300px;
+    --invite-phone-height: calc(300px / 0.4615);
+  }
+
   .invite-coverflow-stage {
-    height: 800px;
+    height: max(800px, calc(var(--invite-phone-height) * 1.05));
   }
 
   .invite-coverflow-card {
-    width: 300px;
-    margin-left: -150px;
-    margin-top: -360px;
+    width: var(--invite-phone-width);
+    margin-left: calc(var(--invite-phone-width) / -2);
+    margin-top: calc(var(--invite-phone-height) / -2.15);
   }
 }
 
 @media (min-width: 1024px) {
   .invite-coverflow {
+    --invite-phone-width: 340px;
+    --invite-phone-height: calc(340px / 0.4615);
     overflow-x: visible;
     overflow-y: visible;
     padding: 24px 0 8px;
   }
 
   .invite-coverflow-stage {
-    height: 900px;
+    height: max(900px, calc(var(--invite-phone-height) * 1.05));
     perspective: 1400px;
   }
 
   .invite-coverflow-card {
-    width: 340px;
-    margin-left: -170px;
-    margin-top: -410px;
+    width: var(--invite-phone-width);
+    margin-left: calc(var(--invite-phone-width) / -2);
+    margin-top: calc(var(--invite-phone-height) / -2.15);
   }
 }
 
 @media (min-width: 1280px) {
+  .invite-coverflow {
+    --invite-phone-width: 360px;
+    --invite-phone-height: calc(360px / 0.4615);
+  }
+
   .invite-coverflow-card {
-    width: 360px;
-    margin-left: -180px;
+    width: var(--invite-phone-width);
+    margin-left: calc(var(--invite-phone-width) / -2);
+    margin-top: calc(var(--invite-phone-height) / -2.15);
   }
 
   .invite-coverflow-stage {
-    height: 950px;
+    height: max(950px, calc(var(--invite-phone-height) * 1.05));
   }
 }
 
