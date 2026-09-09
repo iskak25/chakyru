@@ -211,14 +211,18 @@ export function takePendingTemplate() {
 export function previewInvitation(templateId: string): Invitation {
   const template = getTemplate(templateId);
   const canvas = template.canvas;
+
+  // Custom preview data for ak-kyoshok template
+  const isAkKyoshok = templateId === "ak-kyoshok";
+
   return {
     ...demoInvitation,
     id: `preview-${template.id}`,
     templateId: template.id,
     eventType: template.eventTypes[0],
-    names: canvas?.names || demoInvitation.names,
+    names: isAkKyoshok ? "Айбек & Айгул" : canvas?.names || demoInvitation.names,
     message: canvas?.message ?? demoInvitation.message,
-    musicUrl: template.format === "photo" ? "" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
+    musicUrl: template.format === "photo" ? "" : isAkKyoshok ? "https://www.youtube.com/watch?v=ozgoche-kun" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
     music: template.format !== "photo",
     coverImage: canvas?.coverImage ?? "",
     layout: { ...(canvas?.layout ?? {}) },

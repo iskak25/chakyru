@@ -40,6 +40,12 @@ export const ONLINE_TRACKS: { id: string; ky: string; ru: string; url: string }[
     ru: "Канон (Kevin MacLeod)",
     url: wikiMp3("5/59", "Kevin_MacLeod_-_Canon_in_D_Major.ogg"),
   },
+  {
+    id: "jax-ozgoche-kun",
+    ky: "Өзгөчө күн",
+    ru: "Өзгөчө күн",
+    url: "https://www.youtube.com/watch?v=ozgoche-kun",
+  },
 ];
 
 export const DEFAULT_MUSIC_URL = ONLINE_TRACKS[0].url;
