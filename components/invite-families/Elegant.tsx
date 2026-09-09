@@ -98,8 +98,8 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
           БИЗДИН ҮЙЛӨНҮҮ ҮЛПӨТҮ
         </div>
 
-        <div className="h-[565px] overflow-hidden">
-          <img src={invitation.coverImage || "/wedding/hero.jpg"} alt="" className="h-full w-full object-cover" />
+        <div className="h-[565px] overflow-hidden bg-[#e8dcc8]">
+          <img src={invitation.coverImage || "/images/hero.jpg"} alt="hero" className="h-full w-full object-cover" />
         </div>
 
         <div className="relative z-20 -mt-[150px] rounded-t-[50%_90px] bg-[#f4ecdf] px-6 pb-8 pt-14 text-center">
@@ -170,8 +170,8 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
       <section className="px-6 pb-11">
         <Ornament />
         <h2 className="mt-6 text-center font-serif text-[18px] tracking-[0.14em]">ӨТКӨРҮҮ ЖЕРИ</h2>
-        <div className="mt-5 overflow-hidden rounded-[15px]">
-          <img src="/wedding/venue.jpg" alt="" className="h-[190px] w-full object-cover" />
+        <div className="mt-5 overflow-hidden rounded-[15px] bg-[#e8dcc8] h-[190px]">
+          <img src={invitation.gallery?.venue || "/images/venue.jpg"} alt="venue" className="h-full w-full object-cover" />
         </div>
         <div className="mt-4 text-center">
           <h3 className="font-serif text-[18px]">{invitation.venue || "«Ала-Тоо»"}</h3>
