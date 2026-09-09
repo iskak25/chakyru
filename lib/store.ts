@@ -222,7 +222,7 @@ export function previewInvitation(templateId: string): Invitation {
     eventType: template.eventTypes[0],
     names: isAkKyoshok ? "Айбек & Айгул" : canvas?.names || demoInvitation.names,
     message: canvas?.message ?? demoInvitation.message,
-    musicUrl: template.format === "photo" ? "" : isAkKyoshok ? "https://www.youtube.com/watch?v=ozgoche-kun" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
+    musicUrl: template.format === "photo" ? "" : isAkKyoshok ? "https://www.youtube.com/watch?v=sadyraliev-eki-zhas" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
     music: template.format !== "photo",
     coverImage: canvas?.coverImage ?? "",
     layout: { ...(canvas?.layout ?? {}) },

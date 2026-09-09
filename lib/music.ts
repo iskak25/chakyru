@@ -46,6 +46,12 @@ export const ONLINE_TRACKS: { id: string; ky: string; ru: string; url: string }[
     ru: "Өзгөчө күн",
     url: "https://www.youtube.com/watch?v=ozgoche-kun",
   },
+  {
+    id: "sultan-eki-zhas",
+    ky: "Эки жаш",
+    ru: "Два года",
+    url: "https://www.youtube.com/watch?v=sadyraliev-eki-zhas",
+  },
 ];
 
 export const DEFAULT_MUSIC_URL = ONLINE_TRACKS[0].url;
