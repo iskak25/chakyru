@@ -31,8 +31,8 @@ export const showcaseInvitations: ShowcaseInvitation[] = [
   {
     id: 3,
     template: "editorial",
-    bride: "Каныкей",
-    groom: "Манас",
+    bride: "Айгүл",
+    groom: "Айбек",
     date: "14.09.2026",
     hero: "/images/editorial-couple.jpg",
   },

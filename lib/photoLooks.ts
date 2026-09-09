@@ -20,7 +20,7 @@ export function splitNames(names: string) {
     .split(/\s*[&+/]| менен | жана | и /i)
     .map((s) => s.trim())
     .filter(Boolean);
-  return { a: parts[0] || "Манас", b: parts[1] || "Каныкей" };
+  return { a: parts[0] || "Айбек", b: parts[1] || "Айгүл" };
 }
 
 const WEEKDAYS = {

@@ -1,20 +1,16 @@
 ﻿"use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Heart, Music } from "lucide-react";
-import { addWish, likeWish } from "@/lib/store";
-import type { Invitation, RsvpStatus } from "@/lib/types";
-import { ExtraLayer, paint } from "./ExtraLayer";
+import { addWish } from "@/lib/store";
+import type { Invitation } from "@/lib/types";
 import type { InvitePatch } from "./CanvasEdit";
-import { MoveCanvas, Selectable } from "./MoveCanvas";
-import { InviteAudio } from "./InviteAudio";
-import { MusicPickModal } from "./MusicPicker";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
 import { resolveInviteFamily } from "@/lib/inviteFamilies";
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { getSiteLook } from "@/lib/siteLooks";
-import type { LayoutKit, Site3DLabels } from "./Site3DLayouts";
-import { Site3DInner, Site3DThumb } from "./Site3DResolve";
+import type { Site3DLabels } from "./Site3DLayouts";
+import { Site3DThumb } from "./Site3DResolve";
+import { WeddingInvitation } from "./WeddingInvitation";
 
 export type { Site3DLabels };
 
@@ -57,8 +53,8 @@ function splitNames(names: string) {
     .split(/\s*[&+/]| менен | жана | и /i)
     .map((s) => s.trim())
     .filter(Boolean);
-  const a = parts[0] || "Манас";
-  const b = parts[1] || "Каныкей";
+  const a = parts[0] || "Айбек";
+  const b = parts[1] || "Айгүл";
   return { a, b };
 }
 
@@ -365,35 +361,17 @@ export function Site3D({
   startOpen?: boolean;
   framed?: boolean;
 }) {
-  const { a, b } = splitNames(invitation.names || "Манас & Каныкей");
+  const { a, b } = splitNames(invitation.names || "Айбек & Айгүл");
   const [open, setOpen] = useState(variant === "editor" || !!startOpen);
   const [opening, setOpening] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [pickOpen, setPickOpen] = useState(false);
   const [wishName, setWishName] = useState("");
   const [wishText, setWishText] = useState("");
   const [wishOpen, setWishOpen] = useState(false);
-  const [allOpen, setAllOpen] = useState(false);
-  const [slide, setSlide] = useState(0);
-  const [rsvpName, setRsvpName] = useState("");
-  const [rsvp, setRsvp] = useState<RsvpStatus>("yes");
-  const [rsvpDone, setRsvpDone] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music);
-  const count = useCountdown(invitation.date, invitation.time);
-  const editing = !!onChange;
 
-  const event = invitation.date
-    ? new Date(`${invitation.date}T${invitation.time || "17:00"}:00`)
-    : new Date("2012-12-12T17:00:00");
-
-  const mapQuery = venueSearch(invitation);
-  const mapHref = mapLink(invitation);
-  const wishes = invitation.wishes;
-  const activeWish = wishes[slide % Math.max(wishes.length, 1)];
-  const fallback = labels.inviteFallback.replace("{a}", a).replace("{b}", b);
   const look = getSiteLook(invitation.templateId);
-  const wine = paint(invitation, "invite", look.accent);
   const overlay = look.overlay;
   const cover = invitation.coverImage;
   const gallery = invitation.gallery ?? {};
@@ -404,36 +382,10 @@ export function Site3D({
     gallery.c2 || pack.c2,
   ];
   const heroPhoto = gallery.hero || cover || pack.hero;
-  const venuePhoto = gallery.venue || pack.venue;
-
-  useEffect(() => {
-    if (wishes.length < 2) return;
-    const id = setInterval(() => setSlide((s) => s + 1), 3500);
-    return () => clearInterval(id);
-  }, [wishes.length]);
 
   function playMusic() {
     const el = audioRef.current;
     if (el && musicSrc && !youtubeId(musicSrc)) void el.play().catch(() => {});
-  }
-
-  function toggleMusic() {
-    if (onChange) {
-      setPickOpen(true);
-      return;
-    }
-    if (!musicSrc) return;
-    setPlaying((was) => {
-      const next = !was;
-      if (!youtubeId(musicSrc)) {
-        const el = audioRef.current;
-        if (el) {
-          if (next) void el.play().catch(() => {});
-          else el.pause();
-        }
-      }
-      return next;
-    });
   }
 
   function openInvite() {
@@ -471,38 +423,6 @@ export function Site3D({
     );
   }
 
-  const kit: LayoutKit = {
-    invitation,
-    look,
-    locale,
-    labels,
-    onChange,
-    onSelect,
-    variant,
-    editing,
-    a,
-    b,
-    photos,
-    heroPhoto,
-    venuePhoto,
-    fallback,
-    event,
-    mapHref,
-    mapQuery,
-    count,
-    wishes,
-    activeWish,
-    slide,
-    setSlide,
-    setAllOpen,
-    rsvp,
-    setRsvp,
-    rsvpName,
-    setRsvpName,
-    rsvpDone,
-    setRsvpDone,
-    onReload,
-  };
 
   const showCover = !open || opening;
   const closedBox = framed
@@ -516,80 +436,15 @@ export function Site3D({
       data-family={resolveInviteFamily(invitation.templateId, look.pageLayout)}
       style={{ color: look.ink }}
     >
-      {musicSrc ? (
-        <InviteAudio src={musicSrc} audioRef={audioRef} playing={playing} />
-      ) : null}
-
       {showCover ? (
         <div className="absolute inset-0 z-40">
           <Cover {...coverProps} fill onOpen={openInvite} opening={opening} />
         </div>
       ) : null}
 
-      <div
-        className={`${open && !opening ? "block" : "invisible h-0 overflow-hidden"} relative`}
-        onPointerDown={() => {
-          if (variant !== "guest" || playing || !musicSrc) return;
-          setPlaying(true);
-          playMusic();
-        }}
-      >
-        <MoveCanvas
-          editable={!!onChange}
-          layout={invitation.layout ?? {}}
-          onLayout={onChange ? (layout) => onChange({ layout }) : undefined}
-          onSelect={onSelect}
-          onChange={onChange}
-          invitation={invitation}
-          height="auto"
-          background={look.pageBg || PAGE}
-          className="site3d-page"
-        >
-          <Site3DInner kit={kit} />
-          <div className="site3d-sticky sticky bottom-3 z-30 flex justify-between gap-3 px-3 pb-2">
-            <Selectable id="musicBtn">
-            <button
-              type="button"
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                if (onChange) {
-                  e.preventDefault();
-                  setPickOpen(true);
-                }
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onChange) {
-                  setPickOpen(true);
-                  return;
-                }
-                toggleMusic();
-              }}
-              className="flex min-h-[48px] min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-3 text-[15px] text-white shadow-lg sm:min-w-[110px] sm:flex-none sm:px-5"
-              style={{ background: playing && !onChange ? "#111" : wine }}
-            >
-              <Music size={16} />
-              {labels.music}
-            </button>
-            </Selectable>
-            <Selectable id="wishBtn">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (variant === "guest") setWishOpen(true);
-                else onSelect?.("wishes");
-              }}
-              className="flex min-h-[48px] min-w-0 flex-1 items-center justify-center rounded-full bg-black px-3 text-[15px] text-white shadow-lg sm:min-w-[110px] sm:flex-none sm:px-5"
-            >
-              {labels.writeWish}
-            </button>
-            </Selectable>
-          </div>
-
-          <ExtraLayer invitation={invitation} onChange={onChange} locale={locale} />
-        </MoveCanvas>
-      </div>
+      {open && !opening ? (
+        <WeddingInvitation invitation={invitation} />
+      ) : null}
 
       {wishOpen ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4">
@@ -631,50 +486,6 @@ export function Site3D({
         </div>
       ) : null}
 
-      {onChange ? (
-        <MusicPickModal
-          open={pickOpen}
-          locale={locale}
-          value={invitation.musicUrl}
-          onClose={() => setPickOpen(false)}
-          onChange={(musicUrl) => {
-            onChange({ musicUrl, music: Boolean(musicUrl) });
-            if (musicUrl) {
-              setPlaying(true);
-              setPickOpen(false);
-            }
-          }}
-        />
-      ) : null}
-
-      {allOpen ? (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-white p-5">
-          <button type="button" onClick={() => setAllOpen(false)} className="mb-4 text-sm">
-            ←
-          </button>
-          <p className="font-ceremonial text-3xl">{labels.wishes}</p>
-          <ul className="mt-5 space-y-3">
-            {wishes.map((w) => (
-              <li key={w.id} className="rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
-                <p className="text-sm leading-6">{w.text}</p>
-                <div className="mt-3 flex items-center justify-between">
-                  <p className="text-sm font-medium">{w.name}</p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      likeWish(invitation.id, w.id);
-                      onReload?.();
-                    }}
-                    className="text-xs"
-                  >
-                    <Heart size={12} className="mr-1 inline" /> {w.likes}
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
     </div>
   );
 }

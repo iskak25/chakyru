@@ -16,7 +16,7 @@ export const demoInvitation: Invitation = {
   id: "demo",
   templateId: "ak-shumkar",
   eventType: "toi",
-  names: "Манас & Каныкей",
+  names: "Айбек & Айгүл",
   hosts: "Асанакуновдордун үй-бүлөсү",
   date: "2012-12-12",
   time: "17:00",
@@ -28,7 +28,7 @@ export const demoInvitation: Invitation = {
   dressCode: "Улуттук / классика",
   adultsOnly: true,
   music: true,
-  musicUrl: DEFAULT_MUSIC_URL,
+  musicUrl: "https://www.youtube.com/watch?v=sadyraliev-eki-zhas",
   mapUrl: "https://go.2gis.com/41Efw",
   voiceText: "",
   voiceUrl: "",
@@ -99,7 +99,7 @@ function normalize(inv: Invitation): Invitation {
   }
   return {
     ...base,
-    names: "Манас & Каныкей",
+    names: "Айбек & Айгүл",
     date: "2012-12-12",
     time: base.time || "17:00",
     venue: "«Ала-Тоо»",
@@ -214,6 +214,7 @@ export function previewInvitation(templateId: string): Invitation {
 
   // Custom preview data for ak-kyoshok template
   const isAkKyoshok = templateId === "ak-kyoshok";
+  const isAkShumkar = templateId === "ak-shumkar";
 
   return {
     ...demoInvitation,
@@ -222,7 +223,7 @@ export function previewInvitation(templateId: string): Invitation {
     eventType: template.eventTypes[0],
     names: isAkKyoshok ? "Айбек & Айгул" : canvas?.names || demoInvitation.names,
     message: canvas?.message ?? demoInvitation.message,
-    musicUrl: template.format === "photo" ? "" : isAkKyoshok ? "https://www.youtube.com/watch?v=sadyraliev-eki-zhas" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
+    musicUrl: template.format === "photo" ? "" : isAkKyoshok ? "https://www.youtube.com/watch?v=sadyraliev-eki-zhas" : isAkShumkar ? "https://www.youtube.com/watch?v=sadyraliev-eki-zhas" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
     music: template.format !== "photo",
     coverImage: canvas?.coverImage ?? "",
     layout: { ...(canvas?.layout ?? {}) },
@@ -306,7 +307,7 @@ export function createInvitation(templateId: string, opts?: { force?: boolean })
     id: uid(),
     templateId: template.id,
     eventType: template.eventTypes[0],
-    names: canvas?.names || "Манас & Каныкей",
+    names: canvas?.names || "Айбек & Айгүл",
     hosts: "",
     date: "2012-12-12",
     time: "17:00",

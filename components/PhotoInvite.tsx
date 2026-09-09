@@ -33,7 +33,7 @@ export function PhotoInvite({
 }) {
   const layout = getPhotoLayout(invitation.templateId);
   const cover = invitation.coverImage || getTemplatePhotos(invitation.templateId).hero;
-  const names = invitation.names || "Манас & Каныкей";
+  const names = invitation.names || "Айбек & Айгүл";
   const { a, b } = splitNames(names);
   const when = photoDate(invitation.date, locale);
   const ru = locale === "ru";

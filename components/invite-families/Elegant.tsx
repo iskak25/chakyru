@@ -104,8 +104,8 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
 
         <div className="relative z-20 -mt-[150px] rounded-t-[50%_90px] bg-[#f4ecdf] px-6 pb-8 pt-14 text-center">
           <h1 className="font-serif text-[50px] leading-[0.85] text-[#26211d] italic">
-            {invitation.names?.split("&")[0]?.trim() || "Азамат"}<span className="my-2 block text-[26px]">&</span>
-            {invitation.names?.split("&")[1]?.trim() || "Айнери"}
+            {invitation.names?.split("&")[0]?.trim() || "Айбек"}<span className="my-2 block text-[26px]">&</span>
+            {invitation.names?.split("&")[1]?.trim() || "Айгүл"}
           </h1>
 
           <p className="mt-7 font-serif text-[14px] tracking-[0.2em]">

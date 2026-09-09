@@ -32,7 +32,7 @@ export function InviteCard({
   useCatalog();
   const template = getTemplate(invitation.templateId);
   const { style } = template;
-  const names = invitation.names || "Манас & Каныкей";
+  const names = invitation.names || "Айбек & Айгүл";
   const round = ["rosa", "kyz-uzatuu-photo", "balalyk", "ak-jooluk"].includes(template.id);
   const noFrame = template.id === "minimal-white";
   const message =

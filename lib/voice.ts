@@ -8,7 +8,7 @@ function formatDay(date: string, locale: string) {
 export function voiceScript(invitation: Invitation, locale: string) {
   const custom = invitation.voiceText.trim();
   if (custom) return custom;
-  const names = invitation.names || "Манас жана Каныкей";
+  const names = invitation.names || "Айбек жана Айгүл";
   const when = [formatDay(invitation.date, locale), invitation.time].filter(Boolean).join(", ");
   const where = [invitation.venue, invitation.city].filter(Boolean).join(", ");
   if (locale === "ru") {

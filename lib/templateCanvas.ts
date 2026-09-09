@@ -5,7 +5,7 @@ export const PREVIEW_INVITE: Invitation = {
   id: "preview",
   templateId: "",
   eventType: "toi",
-  names: "Манас & Каныкей",
+  names: "Айбек & Айгүл",
   hosts: "Асанакуновдордун үй-бүлөсү",
   date: "2012-12-12",
   time: "17:00",

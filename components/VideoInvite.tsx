@@ -20,7 +20,7 @@ function splitNames(names: string) {
     .split(/\s*[&+/]| менен | жана | и /i)
     .map((s) => s.trim())
     .filter(Boolean);
-  return { a: parts[0] || "Манас", b: parts[1] || "Каныкей" };
+  return { a: parts[0] || "Айбек", b: parts[1] || "Айгүл" };
 }
 
 function prettyDate(date: string, locale: string) {
@@ -94,7 +94,7 @@ export function VideoInvite({
   const photo = slides.length
     ? slides[scene % slides.length]
     : getTemplatePhotos(invitation.templateId).hero;
-  const names = invitation.names || "Манас & Каныкей";
+  const names = invitation.names || "Айбек & Айгүл";
   const { a, b } = splitNames(names);
   const kicker = locale === "ru" ? "Приглашение на той" : "Тойго чакыруу";
   const text =
