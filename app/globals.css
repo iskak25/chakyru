@@ -145,8 +145,8 @@ html {
   }
 
   .invite-coverflow-stage {
-    height: max(820px, calc(var(--invite-phone-height) * 1.05));
-    min-height: 800px;
+    height: max(820px, calc(var(--invite-phone-height) + 100px));
+    min-height: max(820px, calc(var(--invite-phone-height) + 100px));
     overflow-y: visible;
     perspective: 1100px;
     perspective-origin: 50% 48%;
@@ -156,13 +156,13 @@ html {
   .invite-coverflow-card {
     width: var(--invite-phone-width);
     margin-left: calc(var(--invite-phone-width) / -2);
-    margin-top: calc(var(--invite-phone-height) / -2.15);
+    margin-top: calc(var(--invite-phone-height) / -2);
   }
 
   .invite-coverflow-card.is-active {
     width: var(--invite-phone-width);
     margin-left: calc(var(--invite-phone-width) / -2);
-    margin-top: calc(var(--invite-phone-height) / -2.15);
+    margin-top: calc(var(--invite-phone-height) / -2);
   }
 
   .invite-coverflow-card:not(.is-active) {
@@ -1141,13 +1141,14 @@ textarea {
   }
 
   .invite-coverflow-stage {
-    height: max(800px, calc(var(--invite-phone-height) * 1.05));
+    height: max(800px, calc(var(--invite-phone-height) + 100px));
+    min-height: max(800px, calc(var(--invite-phone-height) + 100px));
   }
 
   .invite-coverflow-card {
     width: var(--invite-phone-width);
     margin-left: calc(var(--invite-phone-width) / -2);
-    margin-top: calc(var(--invite-phone-height) / -2.15);
+    margin-top: calc(var(--invite-phone-height) / -2);
   }
 }
 
@@ -1161,14 +1162,15 @@ textarea {
   }
 
   .invite-coverflow-stage {
-    height: max(900px, calc(var(--invite-phone-height) * 1.05));
+    height: max(900px, calc(var(--invite-phone-height) + 100px));
+    min-height: max(900px, calc(var(--invite-phone-height) + 100px));
     perspective: 1400px;
   }
 
   .invite-coverflow-card {
     width: var(--invite-phone-width);
     margin-left: calc(var(--invite-phone-width) / -2);
-    margin-top: calc(var(--invite-phone-height) / -2.15);
+    margin-top: calc(var(--invite-phone-height) / -2);
   }
 }
 
@@ -1181,11 +1183,12 @@ textarea {
   .invite-coverflow-card {
     width: var(--invite-phone-width);
     margin-left: calc(var(--invite-phone-width) / -2);
-    margin-top: calc(var(--invite-phone-height) / -2.15);
+    margin-top: calc(var(--invite-phone-height) / -2);
   }
 
   .invite-coverflow-stage {
-    height: max(950px, calc(var(--invite-phone-height) * 1.05));
+    height: max(950px, calc(var(--invite-phone-height) + 100px));
+    min-height: max(950px, calc(var(--invite-phone-height) + 100px));
   }
 }
 
