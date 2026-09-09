@@ -949,7 +949,7 @@ textarea {
   left: 50%;
   width: min(280px, calc(100vw - 5.5rem));
   margin-left: calc(min(280px, calc(100vw - 5.5rem)) / -2);
-  margin-top: calc(min(700px, 90vh) / -2.15);
+  margin-top: calc(min(720px, 88vh) / -2.15);
   border: 0;
   background: transparent;
   padding: 0;
@@ -970,7 +970,7 @@ textarea {
 
 .invite-coverflow-stage {
   position: relative;
-  height: min(700px, 90vh);
+  height: min(720px, 88vh);
   perspective: 1100px;
   perspective-origin: 50% 48%;
   transform-style: preserve-3d;
@@ -1132,13 +1132,13 @@ textarea {
 
 @media (min-width: 640px) {
   .invite-coverflow-stage {
-    height: 750px;
+    height: 800px;
   }
 
   .invite-coverflow-card {
     width: 300px;
     margin-left: -150px;
-    margin-top: -340px;
+    margin-top: -360px;
   }
 }
 
@@ -1150,14 +1150,14 @@ textarea {
   }
 
   .invite-coverflow-stage {
-    height: 850px;
+    height: 900px;
     perspective: 1400px;
   }
 
   .invite-coverflow-card {
     width: 340px;
     margin-left: -170px;
-    margin-top: -390px;
+    margin-top: -410px;
   }
 }
 
@@ -1168,7 +1168,7 @@ textarea {
   }
 
   .invite-coverflow-stage {
-    height: 900px;
+    height: 950px;
   }
 }
 
