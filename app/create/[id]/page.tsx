@@ -139,6 +139,7 @@ export default function EditorPage() {
           selected={selected}
           onSelect={onSelect}
           parts={isSite || getPinterestDesign(inv) ? parts : undefined}
+          hideTemplates
           labels={{
             templates: t.editor.dockTemplates,
             media: t.editor.dockMedia,
@@ -247,12 +248,14 @@ export default function EditorPage() {
               {t.editor.live}
             </p>
             <div className="flex items-start justify-center gap-1 sm:gap-3">
-              <StepArrow
-                dir="left"
-                onClick={undo}
-                disabled={!canUndo}
-                label={`${t.editor.undo} · Ctrl+Z`}
-              />
+              <div className="sticky top-[50vh] -translate-y-1/2">
+                <StepArrow
+                  dir="left"
+                  onClick={undo}
+                  disabled={!canUndo}
+                  label={`${t.editor.undo} · Ctrl+Z`}
+                />
+              </div>
               {isSite ? (
                 <div className="min-w-0 flex-1">
                   <div className="mx-auto h-auto w-full max-w-[430px]">
@@ -277,12 +280,14 @@ export default function EditorPage() {
                   />
                 </PhoneFrame>
               )}
-              <StepArrow
-                dir="right"
-                onClick={redo}
-                disabled={!canRedo}
-                label={`${t.editor.redo} · Ctrl+Y`}
-              />
+              <div className="sticky top-[50vh] -translate-y-1/2">
+                <StepArrow
+                  dir="right"
+                  onClick={redo}
+                  disabled={!canRedo}
+                  label={`${t.editor.redo} · Ctrl+Y`}
+                />
+              </div>
             </div>
             <ColorBar
               selected={selected}

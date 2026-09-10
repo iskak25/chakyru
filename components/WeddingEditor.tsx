@@ -2,9 +2,9 @@
 
 /* eslint-disable @next/next/no-img-element -- User-selected media is displayed directly, including Firebase download URLs. */
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { Invitation } from "@/lib/types";
-import { weddingStyle, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
+import { weddingStyle, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
 import { MoveCanvas, Selectable } from "./MoveCanvas";
 import { ExtraLayer } from "./ExtraLayer";
 import type { InvitePatch } from "./CanvasEdit";
@@ -65,11 +65,43 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const value = weddingValue(invitation, { id, label, kind, fallback, field, slot });
   return (
     <Selectable flat id={id} className={onChange ? className.replaceAll("overflow-hidden", "overflow-visible") : className} style={partStyle}>
-      {kind === "text" ? renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{id === "names" ? value.replace(/\s*&\s*/g, "\n&\n") : value}</p> : kind === "image" ? (
+      {kind === "text" ? onChange ? (
+        <WeddingInlineText
+          dataId={id}
+          value={value}
+          placeholder={fallback || label}
+          onChange={next => onChange(weddingTextPatch(invitation, { id, label, kind, fallback, field, slot }, next))}
+        />
+      ) : renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{id === "names" ? value.replace(/\s*&\s*/g, "\n&\n") : value}</p> : kind === "image" ? (
         crop && !invitation.gallery?.[slot || id] ? <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: "inherit" }}>
           <img src={crop.source} alt={label} draggable={false} style={{ position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%` }} />
         </div> : <img src={invitation.gallery?.[slot || id] ?? fallback ?? ""} alt={label} className="h-full w-full object-cover" style={{ objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} />
       ) : children}
     </Selectable>
+  );
+}
+
+function WeddingInlineText({ dataId, value, placeholder, onChange }: {
+  dataId: string; value: string; placeholder: string; onChange: (value: string) => void;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const fit = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+  useEffect(() => { fit(); }, [value, fit]);
+  return (
+    <textarea
+      ref={ref}
+      rows={1}
+      data-wedding-text={dataId}
+      value={value}
+      placeholder={placeholder}
+      onChange={e => onChange(e.target.value)}
+      onInput={fit}
+      className="w-full resize-none overflow-hidden whitespace-pre-line rounded-sm border-none bg-transparent p-0 font-[inherit] leading-[inherit] outline-none ring-1 ring-transparent scrollbar-none hover:ring-gold/60 focus:ring-gold"
+    />
   );
 }

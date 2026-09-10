@@ -20,7 +20,7 @@ export function StepArrow({
       disabled={disabled}
       title={label}
       aria-label={label}
-      className={`flex items-center justify-center text-cream transition hover:text-gold disabled:pointer-events-none disabled:opacity-25 ${
+      className={`flex items-center justify-center text-ink transition hover:text-gold disabled:pointer-events-none disabled:opacity-25 ${
         size === "sm" ? "h-10 w-12" : "h-14 w-16"
       }`}
     >
