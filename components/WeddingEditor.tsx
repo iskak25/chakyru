@@ -9,8 +9,10 @@ import { MoveCanvas, Selectable } from "./MoveCanvas";
 import { ExtraLayer } from "./ExtraLayer";
 import type { InvitePatch } from "./CanvasEdit";
 import type { ReferenceCrop } from "@/lib/referenceWeddings";
+import { invitationText } from "@/lib/inviteTranslations";
 
 type EditorContext = {
+  locale: string;
   invitation: Invitation;
   onChange?: InvitePatch;
   register: (part: WeddingPartInfo) => void;
@@ -24,10 +26,14 @@ export function WeddingEditor({ invitation, onChange, selected: controlledSelect
   const selected = controlledSelected === undefined ? localSelected : controlledSelected;
   const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const register = useCallback((part: WeddingPartInfo) => {
-    setParts(current => current.some(item => item.id === part.id) ? current : [...current, part]);
+    setParts(current => {
+      const previous = current.find(item => item.id === part.id);
+      if (previous && JSON.stringify(previous) === JSON.stringify(part)) return current;
+      return previous ? current.map(item => item.id === part.id ? part : item) : [...current, part];
+    });
   }, []);
   const select = useCallback((id: string | null) => { setLocalSelected(id); onSelect?.(id); }, [onSelect]);
-  const context = useMemo(() => ({ invitation, onChange, register }), [invitation, onChange, register]);
+  const context = useMemo(() => ({ invitation, onChange, register, locale }), [invitation, onChange, register, locale]);
   useEffect(() => { onPartsChange?.(parts); }, [parts, onPartsChange]);
   return (
     <Context.Provider value={context}>
@@ -44,10 +50,12 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
 }) {
   const context = useContext(Context);
   if (!context) throw new Error("WeddingPart requires WeddingEditor");
-  const { invitation, onChange, register } = context;
+  const { invitation, onChange, register, locale } = context;
+  const translatedFallback = fallback === undefined ? undefined : invitationText(fallback, locale);
+  const translatedLabel = invitationText(label, locale);
   useEffect(() => {
-    if (onChange) register({ id, label, kind, fallback, field, slot });
-  }, [register, onChange, id, label, kind, fallback, field, slot]);
+    if (onChange) register({ id, label: translatedLabel, kind, fallback: translatedFallback, field, slot });
+  }, [register, onChange, id, translatedLabel, kind, translatedFallback, field, slot]);
   const color = invitation.blockColors?.[id];
   const fontSize = weddingStyle(invitation, id, "fontSize");
   const alignment = weddingStyle(invitation, id, "align");
@@ -62,14 +70,15 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
     ...(radius ? { borderRadius: `${Number(radius)}px` } : {}),
     fontFamily: weddingStyle(invitation, id, "fontFamily") || style?.fontFamily,
   };
-  const value = weddingValue(invitation, { id, label, kind, fallback, field, slot });
+  const rawValue = weddingValue(invitation, { id, label, kind, fallback, field, slot });
+  const value = kind === "text" ? invitationText(rawValue, locale) : rawValue;
   return (
     <Selectable flat id={id} className={onChange ? className.replaceAll("overflow-hidden", "overflow-visible") : className} style={partStyle}>
       {kind === "text" ? onChange ? (
         <WeddingInlineText
           dataId={id}
           value={value}
-          placeholder={fallback || label}
+          placeholder={translatedFallback || translatedLabel}
           onChange={next => onChange(weddingTextPatch(invitation, { id, label, kind, fallback, field, slot }, next))}
         />
       ) : renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{id === "names" ? value.replace(/\s*&\s*/g, "\n&\n") : value}</p> : kind === "image" ? (
