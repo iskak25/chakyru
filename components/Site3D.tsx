@@ -151,6 +151,7 @@ function Cover({
   fill,
   onOpen,
   opening,
+  locale,
 }: {
   overlay: string;
   ticket: string;
@@ -160,6 +161,7 @@ function Cover({
   fill?: boolean;
   onOpen?: () => void;
   opening?: boolean;
+  locale?: string;
 }) {
   const copy = paperCopy(overlay);
   return (
@@ -201,7 +203,7 @@ function Cover({
           <KyrgyzOrnament />
         </div>
         <h1 className="m-0 text-[#f3eadf] text-[clamp(12px,3.4vw,17px)] font-normal leading-[1.42] tracking-[0.19em] uppercase" style={{ textShadow: "0 1px 3px rgba(0,0,0,.4)" }}>
-          Сүйүү<br />Жаңы бир окуя
+          {locale === "ru" ? <>Любовь<br />Новая история</> : <>Сүйүү<br />Жаңы бир окуя</>}
         </h1>
       </header>
 
@@ -424,6 +426,7 @@ export function Site3D({
     inviteTitle: labels.inviteTitle,
     openLabel: labels.open,
     hint: labels.hint,
+    locale,
   };
 
   const reference = referenceWedding(invitation);

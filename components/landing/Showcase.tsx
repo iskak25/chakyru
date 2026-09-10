@@ -32,7 +32,7 @@ export function Showcase() {
     <section className="bg-cream-deep">
       <Container className="py-20 sm:py-28">
         <Reveal>
-          <p className="text-center font-serif text-[32px] leading-[1.15] tracking-[-0.02em] sm:text-[44px] lg:text-right lg:text-[52px]">
+          <p className="text-center font-serif text-[32px] leading-[1.15] tracking-[-0.02em] sm:text-[44px] lg:text-[52px]">
             {t.learn.title}
           </p>
         </Reveal>

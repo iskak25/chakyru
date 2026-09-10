@@ -20,14 +20,14 @@ export function Hero() {
 
       <div className="relative mx-auto grid min-h-[100svh] max-w-[1400px] grid-rows-[auto_1fr] items-start gap-8 px-5 pb-10 pt-28 sm:gap-10 sm:px-10 sm:pb-16 sm:pt-28 lg:grid-cols-[0.95fr_1.05fr] lg:grid-rows-none lg:items-center lg:gap-6 lg:px-14 lg:pb-20 lg:pt-24">
         <div className="max-w-[28rem]">
-          <h1 className="whitespace-pre-line font-serif text-[clamp(2.5rem,12vw,3.25rem)] font-normal leading-[0.98] tracking-[-0.03em] text-black sm:text-[68px] lg:text-[80px]">
+          <h1 className="whitespace-pre-line font-serif text-[clamp(2.2rem,11vw,2.9rem)] font-normal leading-[0.98] tracking-[-0.03em] text-black sm:text-[58px] lg:text-[68px]">
             {copy.title}
           </h1>
           <p className="mt-5 max-w-[30ch] text-[15px] leading-[1.55] text-[#1a1a1a] sm:mt-6 sm:text-[17px] sm:leading-[1.7]">
             {copy.subtitle}
           </p>
           <Link
-            href="/creativeads/templates"
+            href="/templates"
             className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-full bg-black px-7 text-[15px] font-medium text-white shadow-[0_10px_28px_rgba(0,0,0,0.18)] transition hover:bg-[#1a1a1a]"
           >
             {copy.start}
