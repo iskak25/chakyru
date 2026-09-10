@@ -10,6 +10,7 @@ import {
   type Firestore,
   type Unsubscribe,
 } from "firebase/firestore";
+import { isCatalogTemplate } from "./inviteFormats";
 import { isAdminEmail } from "./auth";
 import { getFirebaseApp, getFirebaseAuth, profileFromFirebase } from "./firebase";
 import type { Lesson } from "./lessons";
@@ -345,7 +346,7 @@ function forFirestore(items: InvitationTemplate[]): InvitationTemplate[] {
 }
 
 export async function saveCatalogTemplates(items: InvitationTemplate[]) {
-  let remoteItems = forFirestore(items);
+  let remoteItems = forFirestore(items.filter(isCatalogTemplate));
   let remoteBytes = jsonBytes(remoteItems);
   if (remoteBytes > 900_000) {
     remoteItems = remoteItems.map(({ canvas: _canvas, ...rest }) => rest);

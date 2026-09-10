@@ -1,0 +1,236 @@
+{
+  "meta": {
+    "project": "chakyru",
+    "purpose": "Design specs for 9 new site3d invitation templates, derived from Pinterest reference screenshots. Colors and photos must be original — do not replicate the reference images pixel-for-pixel, only the structural/mood direction.",
+    "alreadyBuilt": {
+      "familyKey": "kyrgyz",
+      "catalogId": "kyial",
+      "note": "A 10th reference (Kyrgyz national style) was already implemented as components/invite-families/Kyrgyz.tsx + catalog entry id 'kyial'. Use that file as the concrete pattern example — same import style, same use of Field/SlotPhoto/CanvasText/Reveal/RsvpForm/WishesCard, same section-by-section layout."
+    },
+    "architecture": {
+      "familyComponent": "Create components/invite-families/<Name>.tsx exporting function <Name>Family({ kit }: { kit: LayoutKit }). 'use client' at top. Follow the section-splitting pattern used in components/invite-families/Mauve.tsx (self-contained HeroSection/CountdownSection/etc sub-functions) for any template with custom RSVP fields, or the simpler single-return pattern used in Kyrgyz.tsx/Traditional.tsx when the standard RsvpForm/WishesCard components are enough.",
+      "registerSteps": [
+        "lib/inviteFamilies.ts — add the new key to the INVITE_FAMILIES const array, and add 'catalogId: familyKey' to FAMILY_BY_TEMPLATE",
+        "lib/types.ts — add the new key to the TemplateStyle.pageLayout union type",
+        "components/invite-families/index.tsx — import the new Family component; add 'if (family === \"key\") return <XFamily kit={kit} />;' inside FamilyLayout; add a matching thumbnail case inside FamilyThumb (small preview card shown in the template catalog grid — hero photo + names, ~4 lines of JSX, see existing cases for style)",
+        "lib/templates.ts — add one object to the seedTemplates array: { id, name: {ky, ru}, designer: 'Chakyru Studio', format: 'site3d', eventTypes: [...], featured: true, priceSom: 1, style: style(bg, panel, accent, text, muted, { overlay, pageBg, pageLayout: 'familyKey' }) }. Optionally add a 'canvas' object with default names/message like the 'kyial' and 'mauve' entries do.",
+        "app/globals.css — add '[data-family=\"familyKey\"] .site3d-sticky button { border-radius: Npx; }' matching the button corner style of the design (0 = sharp, 4-6 = soft rectangle, 999 = pill)."
+      ],
+      "sharedHelpers": {
+        "components/invite-families/shared.ts": "coupleNames(), mapsEmbedUrl(), pad(), programItems(), addHour(), monthLabel() — reuse, don't reinvent",
+        "components/invite-families/Ornaments.tsx": "per-family decorative SVGs live here (dividers, corner flourishes). Add new ones here if the design needs a unique motif.",
+        "components/invite-families/Icons.tsx / florals.tsx": "generic line icons for program timeline (rings, plate, glasses, cake, music, pin, cutlery, sparkle, note, arch) — reuse these before drawing new ones",
+        "components/invite-families/Reveal.tsx": "wraps a section for a scroll-in fade animation; pass instant={!!kit.onChange}",
+        "components/invite-families/RsvpForm.tsx": "generic name+status(yes/no/maybe)+submit form. To use it: add the new family key to its 'tone' union type and add matching input/optionCls/submit Tailwind strings to its three style maps.",
+        "components/invite-families/Wishes.tsx": "generic guest-wishes carousel card. Same extension pattern as RsvpForm (tone union + title/card style maps).",
+        "note_on_custom_rsvp": "If a design needs extra RSVP fields (guest count, drink preference, dress-code confirmation etc — see 'rsvpExtra' per template below), don't extend the generic RsvpForm — build a bespoke RSVPSection function inside the family file itself, following components/invite-families/Mauve.tsx's RSVPSection as the template (it calls addRsvp() and addWish() from @/lib/store directly)."
+      },
+      "fontsToReuseOnly": [
+        "font-lux", "font-mod", "font-rom", "font-ele-script", "font-tra-script",
+        "font-tra-title", "font-ivory", "font-ivory-script", "font-mauve"
+      ],
+      "fontsRule": "Do not register new Google Fonts / next/font entries. Pick the closest existing font class per template (mapped below per template as 'fonts').",
+      "colorRule": "Each family hardcodes its own literal hex colors inside its component (this matches the existing codebase convention — the catalog 'style' object mainly drives the browse-page thumbnail background, not the live page). Use the palette given per template below as the literal Tailwind arbitrary-value colors (bg-[#xxxxxx] etc).",
+      "globalCoverNote": "The envelope-opening intro screen (Site3D.tsx Cover component) is shared across ALL templates and already exists — do not rebuild an envelope/intro animation per family. Family components only render what appears AFTER the envelope opens.",
+      "afterBuilding": "Run npx tsc --noEmit and npx eslint on changed files before committing. Commit to a feature branch, push, open a PR."
+    }
+  },
+  "templates": [
+    {
+      "sourceImage": "1a9c9bd5e98c3138757dda651784f3ea.jpg",
+      "familyKey": "mono",
+      "catalogId": "ak-tunuk",
+      "name": { "ky": "Ак түнүк", "ru": "Чёрно-белое" },
+      "eventTypes": ["wedding", "toi"],
+      "mood": "Minimalist monochrome / editorial. Desaturated (grayscale-filtered) photography, lots of negative space, phone-mockup framing feel translated to a clean full-width page.",
+      "palette": { "bg": "#f4f4f2", "panel": "#ffffff", "accent": "#1a1a1a", "text": "#1a1a1a", "muted": "#7a7a7a", "overlay": "#0a0a0a", "pageBg": "#f4f4f2" },
+      "fonts": ["font-mod (headline)", "font-lux (secondary serif accents)"],
+      "buttonRadius": 0,
+      "sections": [
+        { "name": "hero", "notes": "Grayscale hero photo (imgClass includes 'grayscale'), overline label 'Наша свадьба' small tracked caps, names below in font-mod uppercase, date." },
+        { "name": "calendar", "notes": "A literal month-grid calendar block (Mon–Sun columns, day numbers, wedding day highlighted with a filled circle/heart) — this is the signature element of this design, not present in other families. Build as a small computed grid from the event Date." },
+        { "name": "message", "notes": "Short 'Родные и близкие!' welcome paragraph, centered, generous line-height." },
+        { "name": "gallery", "notes": "Second grayscale couple photo, full width." },
+        { "name": "program", "notes": "Simple vertical list, time + icon + label rows, thin hairline separators, no colored circle badges (monochrome icons only)." },
+        { "name": "venue", "notes": "Address + map button (black bg, white text, square corners) + embed map." },
+        { "name": "rsvpAndWishes", "notes": "Standard RsvpForm + WishesCard, tone 'mono', square corners throughout." },
+        { "name": "footer", "notes": "Small centered monogram initials + date, plenty of whitespace." }
+      ],
+      "specialElements": ["Grayscale/desaturated photo treatment via Tailwind 'grayscale' class on all imgClass props", "Custom month-calendar-grid component (new, no existing equivalent in codebase)"],
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "2.jpg",
+      "familyKey": "blush",
+      "catalogId": "kyz-sham",
+      "name": { "ky": "Кыз шам", "ru": "Румяна" },
+      "eventTypes": ["wedding", "kyz"],
+      "mood": "Warm sunset engagement-photo romance. Soft blush/rose accents on cream, elegant script names, floral corner sprigs (dried flowers / pampas style).",
+      "palette": { "bg": "#fdf6f2", "panel": "#ffffff", "accent": "#c98a86", "text": "#3a2c28", "muted": "#a5877f", "overlay": "#c98a86", "pageBg": "#fdf6f2" },
+      "fonts": ["font-ele-script (names)", "font-tra-title (labels)"],
+      "buttonRadius": 999,
+      "sections": [
+        { "name": "hero", "notes": "Warm-toned full-bleed couple photo, script names overlaid or directly below in font-ele-script, date in tracked caps." },
+        { "name": "message", "notes": "'Дорогие наши родные и друзья!' welcome text." },
+        { "name": "program", "notes": "Icon-in-circle timeline (blush-colored circles), time + label rows." },
+        { "name": "dressCode", "notes": "Short dress-code paragraph + a *hint block* naming preferred tones (e.g. 'молочный, айвори, бежевый') rather than just color swatches — include this as editable Field text, not only swatches." },
+        { "name": "venue", "notes": "Venue name + address + 'Посмотреть на карте' pill button + embed map." },
+        { "name": "rsvpAndWishes", "notes": "Standard RsvpForm + WishesCard, tone 'blush', pill-shaped inputs/buttons." },
+        { "name": "footer", "notes": "Floral corner flourish (reuse/adapt IvoryCornerBloom-style SVG in a rose palette) + love note." }
+      ],
+      "specialElements": ["Floral corner ornament (add a new 'BlushCornerBloom' svg to florals.tsx, palette-shifted from existing IvoryCornerBloom/MauveCornerBloom)"],
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "3adf81a0e3c7fbdf34f8623d3e70e0d5.jpg",
+      "familyKey": "frost",
+      "catalogId": "muzdak-nur",
+      "name": { "ky": "Муздак нур", "ru": "Морозный свет" },
+      "eventTypes": ["wedding", "toi"],
+      "mood": "Winter wedding. Icy blue-grey palette, crystal chandelier motif, arch-shaped photo crops, white/blue floral border.",
+      "palette": { "bg": "#eef2f6", "panel": "#ffffff", "accent": "#5f7a94", "text": "#2c3a48", "muted": "#7f93a4", "overlay": "#5f7a94", "pageBg": "#eef2f6" },
+      "fonts": ["font-tra-script (names)", "font-tra-title (labels)"],
+      "buttonRadius": 4,
+      "sections": [
+        { "name": "hero", "notes": "Photo cropped into a tall arch shape (border-radius trick: large top border-radius, e.g. 'rounded-t-[50%]' scaled, or an SVG clip-path arch — reuse the .fam-rom-arch CSS pattern already in globals.css as a base) — couple in winter setting/snow." },
+        { "name": "message", "notes": "'Дорогие Гости!' welcome text about a 'winter fairytale day'." },
+        { "name": "program", "notes": "Rounded card (not a plain list) containing the full program as one block with a soft border, icon+time+label rows inside it." },
+        { "name": "dressCode", "notes": "Row of color-swatch diamonds AND small line-drawn clothing silhouette icons (a dress outline, a suit outline) — add two new icon SVGs to Icons.tsx or florals.tsx: IconDressOutline, IconSuitOutline." },
+        { "name": "venue", "notes": "Venue photo in the same arch crop as hero, address, map button." },
+        { "name": "wishesQuestion", "notes": "A short note asking guests to bring no flowers / suggest an alternative gift, plus a 'Вопросы' (questions) link-style button pointing at the RSVP/contact section." },
+        { "name": "rsvpAndWishes", "notes": "Standard RsvpForm + WishesCard, tone 'frost'." },
+        { "name": "footer", "notes": "Blue/white floral footer flourish + names + date." }
+      ],
+      "specialElements": ["Arch-shaped photo crop (reuse/extend .fam-rom-arch pattern from globals.css)", "New clothing-silhouette icon pair for dress code"],
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "4fa7fea3d9ccfb9ebe56f4fc75de78c3.jpg",
+      "familyKey": "meadow",
+      "catalogId": "boz-talaa",
+      "name": { "ky": "Боз талаа", "ru": "Пшеничное поле" },
+      "eventTypes": ["wedding", "toi"],
+      "mood": "Warm neutral / golden-hour field & mountain photography. Editorial, minimalist, staggered photo-grid collage.",
+      "palette": { "bg": "#f7f3ec", "panel": "#ffffff", "accent": "#7a6a4a", "text": "#2c261c", "muted": "#8a7f68", "overlay": "#7a6a4a", "pageBg": "#f7f3ec" },
+      "fonts": ["font-lux (headline)", "font-ivory (labels)"],
+      "buttonRadius": 0,
+      "sections": [
+        { "name": "hero", "notes": "'МЫ ЖЕНИМСЯ!' bold headline over a full-bleed golden-hour couple photo, names + date below." },
+        { "name": "message", "notes": "'Родные и близкие' short paragraph." },
+        { "name": "photoCollage", "notes": "Signature element: a staggered/offset 2-3 column photo grid (not a plain even grid) — some tiles taller, overlapping slightly, like a scrapbook collage. Build with a CSS grid using row-span/col-span variation." },
+        { "name": "venue", "notes": "Restaurant/venue name + one photo." },
+        { "name": "timing", "notes": "Simple time list (сбор гостей / выездная церемония / банкет)." },
+        { "name": "dressCode", "notes": "3 color swatches + 3 small outfit reference photos side by side (SlotPhoto triplet)." },
+        { "name": "gifts", "notes": "Small text block: 'Пожелания — Подарки: цените внимание, а не упаковку' + 'Без цветов' note. Both as editable Field text." },
+        { "name": "contacts", "notes": "Organizer name + phone, simple centered text block (reuse the Mauve ContactsSection pattern)." },
+        { "name": "footer", "notes": "'С любовью!' + closing couple photo." }
+      ],
+      "specialElements": ["Staggered photo-collage grid layout (new CSS grid pattern)"],
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "85a817a7d1bbcfe0ce60b81448b05d35.jpg",
+      "familyKey": "toiAnket",
+      "catalogId": "ak-dilda",
+      "name": { "ky": "Ак дилда", "ru": "Белая монета" },
+      "eventTypes": ["toi", "wedding"],
+      "mood": "National/olive-green formal toi invitation with a full guest-response questionnaire. More RSVP-form-forward than any existing family.",
+      "palette": { "bg": "#f3f6f0", "panel": "#ffffff", "accent": "#4a6a4e", "text": "#243020", "muted": "#7a8a72", "overlay": "#4a6a4e", "pageBg": "#f3f6f0" },
+      "fonts": ["font-tra-script (names)", "font-tra-title (labels)"],
+      "buttonRadius": 4,
+      "sections": [
+        { "name": "hero", "notes": "Couple photo, names in script, small national ornament divider (reuse KyalRule from Ornaments.tsx, or its green-recolored variant)." },
+        { "name": "hostsLine", "notes": "'Той иелери: [Groom]-[Bride]' style host-names line + address line as separate editable Fields (matches invitation.hosts / invitation.venue)." },
+        { "name": "mapCta", "notes": "'Картаны ачуу' / 'Смотреть на карте' full-width button." },
+        { "name": "countdown", "notes": "4-box day/hour/min/sec countdown, prominent placement right under hero." },
+        { "name": "program", "notes": "Time + icon + label rows." },
+        { "name": "rsvpExtended", "notes": "THIS IS A BESPOKE RSVP SECTION (build like Mauve's RSVPSection, not the generic RsvpForm): radio buttons for attendance (Ооба, келем / Жок, келе албаймын / Жубум менен келемин — 3 options not 2), a guest-count <select> (1/2/3+ guests), a full-name text input, and a free-text wishes textarea, single 'Жөнөтүү' submit button at the end." }
+      ],
+      "specialElements": ["3-option attendance radio (yes / no / yes+plus-one) instead of the standard 3-tone yes/no/maybe — still maps to the same RsvpStatus type, just relabel", "Guest-count select dropdown (new form field, store in the wish text or a custom copy field since RsvpStatus/Rsvp type has no dedicated guest-count field — check lib/types.ts Rsvp shape before deciding where to persist it)"],
+      "rsvpExtra": "guestCount select + 3-way attendance radio + name + wishes textarea, single submit"
+    },
+    {
+      "sourceImage": "923153a7a5670bca9d2fe1b0be3587a1.jpg",
+      "decision": "REUSE existing family — do not build a new component",
+      "familyKey": "mauve",
+      "catalogId": "kyzyl-gul-anke",
+      "name": { "ky": "Кызыл гүл", "ru": "Пудровая роза" },
+      "eventTypes": ["wedding", "toi"],
+      "mood": "Dusty-rose floral with full guest questionnaire — structurally this already matches components/invite-families/Mauve.tsx almost exactly (hero names, countdown, gallery, program timeline with icon circles, venue, dress-code swatches, drinks-preference RSVP with wishes, contacts, footer).",
+      "note": "Just add a new lib/templates.ts catalog entry with format 'site3d', pageLayout 'mauve', a fresh default names/message pair, and (optionally) different default photos — no new component file needed. This is the cheapest of the 9 to add.",
+      "palette": null,
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "b0dafbe66aec588bc421884d7b2ee266.jpg",
+      "familyKey": "noir",
+      "catalogId": "kara-sham",
+      "name": { "ky": "Кара шам", "ru": "Вечерний бордо" },
+      "eventTypes": ["wedding", "toi", "anniversary"],
+      "mood": "Dark burgundy + ivory duotone, vintage/editorial. Bold serif 'The Wedding Day'-style bilingual typography, hand-drawn dove illustration, wax-envelope contact graphic.",
+      "palette": { "bg": "#f5f0e8", "panel": "#7a1620", "accent": "#7a1620", "text": "#241612", "muted": "#8a7468", "overlay": "#7a1620", "pageBg": "#f5f0e8" },
+      "fonts": ["font-lux (script/serif titles)", "font-ele-script (names)"],
+      "buttonRadius": 0,
+      "sections": [
+        { "name": "hero", "notes": "Cream section: 'The Wedding day' small headline, dark burgundy photo panel with couple photo, script names below." },
+        { "name": "message", "notes": "Burgundy-background full-width text panel (white/cream text) — alternate cream/burgundy panel backgrounds is the core visual rhythm of this design." },
+        { "name": "calendar", "notes": "Month-grid calendar (like 'mono' family but on cream bg with burgundy wedding-day highlight)." },
+        { "name": "timing", "notes": "Two-column time labels on a burgundy panel." },
+        { "name": "venue", "notes": "Venue photo (banquet hall) + address + burgundy map button." },
+        { "name": "dressCode", "notes": "Two large 'paint smear' color blobs (burgundy + white/silver) instead of small circle swatches — draw as two soft blob SVGs or rounded irregular divs." },
+        { "name": "rsvpAndWishes", "notes": "Cream panel: 'Дорогие гости & родные' intro text + standard RsvpForm (tone 'noir') + WishesCard." },
+        { "name": "contacts", "notes": "Illustrated open-envelope-with-card graphic (SVG) containing the phone number text — decorative but keep the phone number as a real editable Field." },
+        { "name": "footer", "notes": "Small hand-drawn dove/bird ornament SVG (add DoveOrnament to Ornaments.tsx) + closing line." }
+      ],
+      "specialElements": ["Alternating cream/burgundy full-width panel rhythm (unique among all families)", "Dove ornament SVG (new)", "Paint-blob dress-code swatches instead of circles"],
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "dark.jpg",
+      "familyKey": "stars",
+      "catalogId": "asman-jyldyz",
+      "name": { "ky": "Асман жылдыз", "ru": "Звёздная ночь" },
+      "eventTypes": ["wedding", "anniversary"],
+      "mood": "Dark navy + gold celestial theme. The most content-rich design of the batch: big date typography, a 'how we met' story timeline, a wedding-party bios section, and an FAQ accordion. Most implementation effort of the 9.",
+      "palette": { "bg": "#0d1224", "panel": "#161c34", "accent": "#d4af67", "text": "#eef0f6", "muted": "#8892ac", "overlay": "#0d1224", "pageBg": "#0d1224" },
+      "fonts": ["font-lux (headline/date)", "font-mod (labels, tracked caps)"],
+      "buttonRadius": 999,
+      "sections": [
+        { "name": "hero", "notes": "Dark full-bleed couple photo, huge stacked date typography ('AUG / 18 / 2027' style) overlaid, names bottom-left/right." },
+        { "name": "message", "notes": "'Under the Stars' style short love-story intro paragraph." },
+        { "name": "countdown", "notes": "4-box gold-on-navy countdown, prominent." },
+        { "name": "storyTimeline", "notes": "NEW section type not present elsewhere: 2-4 short dated 'chapter' cards (e.g. 'Chapter 01 — How it began') each with a title + 1-2 sentence editable text. Build as a simple vertical stack of bordered cards." },
+        { "name": "gallery", "notes": "2x2 photo grid." },
+        { "name": "program", "notes": "Vertical timeline with a gold connecting line and gold dot markers (no circle-icon badges, just dots + text), matches ceremony/cocktails/dinner/dancing style items." },
+        { "name": "venue", "notes": "Two separate venue blocks (ceremony location + reception location), each with a photo, address, and a 'Get directions' gold pill button." },
+        { "name": "weddingParty", "notes": "NEW section: a small grid of circular photos with name + role (e.g. 'Best Man — Ryan Torres') + one-line blurb, each as editable Fields/SlotPhoto. Make this section optional (skip render if no data) — this is more elaborate than the product currently supports, so scope it as 2-4 fixed slots (bestMan, groomsman1, maidOfHonor, bridesmaid1) rather than a dynamic list." },
+        { "name": "rsvpAndWishes", "notes": "Standard RsvpForm + WishesCard, tone 'stars', gold pill buttons on dark bg." },
+        { "name": "faq", "notes": "NEW section: a simple accordion (2-4 Q&A items, e.g. 'What should I wear?', 'Will there be a shuttle?', 'Can I bring a plus-one?') using a native <details>/<summary> pair per item for zero-JS collapsible behavior." }
+      ],
+      "specialElements": ["Story-timeline chapter cards (new)", "Wedding-party bios grid (new, fixed 2-4 slots)", "FAQ accordion via <details>/<summary> (new)", "This is the richest/most effort-heavy template — consider building it last"],
+      "rsvpExtra": null
+    },
+    {
+      "sourceImage": "ead34eef3a7e815af7bccb685d1682c3.jpg",
+      "familyKey": "tuscany",
+      "catalogId": "toskana-jel",
+      "name": { "ky": "Тоскана жели", "ru": "Тосканский бриз" },
+      "eventTypes": ["wedding", "toi"],
+      "mood": "Warm chocolate-brown + gold, vineyard/villa elegance. Wreath monogram, arched hero photo, polaroid-style detail photo with a handwritten caption, wax seal graphic, day-schedule list.",
+      "palette": { "bg": "#f7f2e8", "panel": "#2c2016", "accent": "#8b5e34", "text": "#3a2c1c", "muted": "#8a7a64", "overlay": "#2c2016", "pageBg": "#f7f2e8" },
+      "fonts": ["font-ele-script (names/script)", "font-tra-title (caps labels)"],
+      "buttonRadius": 0,
+      "sections": [
+        { "name": "hero", "notes": "Dark brown panel: laurel-wreath monogram (initials) SVG at top, 'Дорогие [Names]!' welcome line, arch-cropped hero photo (couple walking away, vineyard road), 'Save the Date' + date/location line below the arch." },
+        { "name": "daySchedule", "notes": "Cream panel: simple time list (сбор гостей / церемония / фотосессия / ужин и торжество), reuse the Traditional.tsx-style plain list." },
+        { "name": "storyPolaroid", "notes": "NEW element: a polaroid-framed photo (white border, slight rotation via CSS transform: rotate(-4deg), small shadow) paired with a short handwritten-style caption line ('Everything began with a look') using font-ele-script, plus a short 'our story' paragraph." },
+        { "name": "venue", "notes": "'ЛОКАЦИЯ' label, venue photo, name + address, 'Как добраться' outline button, small map/pin preview." },
+        { "name": "stay", "notes": "Optional: a second venue-style block for 'Проживание' (accommodation info) with its own photo + 'Забронировать' button — can reuse the same VenueSection component with different copy ids." },
+        { "name": "dressCode", "notes": "4 small color swatch circles + simple line-art dress/suit illustration pair (reuse the icon pair suggested for the 'frost' family if already built) + 'thank you' handwritten note." },
+        { "name": "rsvpAndWishes", "notes": "Cream panel: 'Подтверждение присутствия' heading, then a bespoke RSVP form (name, guest count select, yes/no radio, wishes textarea — same shape as toiAnket's rsvpExtra) closed with a wax-seal SVG divider." }
+      ],
+      "specialElements": ["Laurel-wreath monogram SVG (new, add to Ornaments.tsx)", "Polaroid-photo-with-caption component (new, reusable rotate+border style)", "Wax-seal SVG (a simpler version already exists as WaxSeal in components/Site3D.tsx — check if it can be imported/reused instead of redrawing)"],
+      "rsvpExtra": "guestCount select + yes/no radio + name + wishes textarea"
+    }
+  ]
+}

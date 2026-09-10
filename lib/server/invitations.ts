@@ -41,7 +41,6 @@ function forStore(inv: Invitation): Invitation {
     ...inv,
     coverImage: inv.coverImage?.startsWith("data:") ? "" : inv.coverImage,
     musicUrl: inv.musicUrl?.startsWith("data:") || inv.musicUrl?.startsWith("blob:") ? "" : inv.musicUrl,
-    voiceUrl: inv.voiceUrl?.startsWith("data:") || inv.voiceUrl?.startsWith("blob:") ? "" : inv.voiceUrl,
     gallery: Object.fromEntries(
       Object.entries(inv.gallery ?? {}).filter(([, src]) => typeof src === "string" && !src.startsWith("data:") && !src.startsWith("blob:")),
     ),
@@ -102,6 +101,8 @@ export async function addInvitationRsvp(input: {
   name: string;
   rsvp: RsvpStatus;
   plusOne: number;
+  drinks?: string;
+  note?: string;
 }): Promise<Guest | null> {
   const db = getAdminDb();
   if (!db) return null;
@@ -115,6 +116,8 @@ export async function addInvitationRsvp(input: {
   const guest: Guest = existing
     ? { ...existing, rsvp: input.rsvp, plusOne: input.plusOne }
     : { id: crypto.randomUUID(), name: input.name, rsvp: input.rsvp, plusOne: input.plusOne };
+  if (input.drinks !== undefined) guest.drinks = input.drinks;
+  if (input.note !== undefined) guest.note = input.note;
   const next = existing ? guests.map((g) => (g.id === guest.id ? guest : g)) : [...guests, guest];
   await ref.set({ guests: next, updatedAt: new Date().toISOString() }, { merge: true });
   return guest;

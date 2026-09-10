@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Calendar,
   CloudUpload,
   Image as ImageIcon,
   LayoutGrid,
   MapPin,
-  Mic,
   Minus,
   Music,
+  PenLine,
   Plus,
   Timer,
   Type,
@@ -22,12 +22,14 @@ import { STICKERS, STICKER_GROUPS, StickerGlyph } from "@/lib/stickers";
 import { CLIPART, CLIPART_GROUPS } from "@/lib/clipart";
 import { useCatalog } from "@/lib/useCatalog";
 import type { InvitePatch } from "./CanvasEdit";
+import { ElementInspector } from "./ElementInspector";
 import { MusicPicker } from "./MusicPicker";
-import { speakInvite, voiceScript } from "@/lib/voice";
 import { StockPhotos } from "./StockPhotos";
+import { uploadInvitationImage } from "@/lib/uploadImage";
 import { DEFAULT_MUSIC_URL } from "@/lib/music";
+import type { WeddingPartInfo } from "@/lib/weddingEditor";
 
-type Tab = "templates" | "media" | "extras" | "text";
+type Tab = "templates" | "media" | "extras" | "text" | "element";
 
 function MediaGlyph() {
   return (
@@ -68,6 +70,8 @@ export function EditorDock({
   locale,
   labels,
   selected,
+  onSelect,
+  parts,
   hideTemplates,
   stickyClass,
   templatesPanel,
@@ -80,6 +84,8 @@ export function EditorDock({
   onChange: InvitePatch;
   locale: string;
   selected?: string | null;
+  onSelect?: (id: string | null) => void;
+  parts?: WeddingPartInfo[];
   hideTemplates?: boolean;
   stickyClass?: string;
   templatesPanel?: ReactNode;
@@ -90,6 +96,7 @@ export function EditorDock({
     media: string;
     extras: string;
     text: string;
+    element: string;
     extrasTitle: string;
     templates: string;
     upload: string;
@@ -101,9 +108,6 @@ export function EditorDock({
     musicLink: string;
     musicApply: string;
     musicPickFile: string;
-    voice: string;
-    voicePlay: string;
-    voiceFile: string;
     addLarge: string;
     addMedium: string;
     addSmall: string;
@@ -207,6 +211,7 @@ export function EditorDock({
     icon: <LayoutGrid size={20} strokeWidth={1.6} />,
   };
   const mainTabs: { id: Tab; label: string; icon: ReactNode }[] = [
+    ...(parts ? [{ id: "element" as const, label: labels.element, icon: <PenLine size={19} strokeWidth={1.6} /> }] : []),
     { id: "media", label: labels.media, icon: format === "photo" ? <ImageIcon size={18} strokeWidth={1.6} /> : <MediaGlyph /> },
     { id: "extras", label: labels.extras, icon: <ExtrasGlyph /> },
     { id: "text", label: labels.text, icon: <Type size={22} strokeWidth={1.6} /> },
@@ -216,6 +221,10 @@ export function EditorDock({
     : hideTemplates
       ? mainTabs
       : [templateTab, ...mainTabs];
+
+  useEffect(() => {
+    if (selected && parts) setTab("element");
+  }, [selected, parts]);
 
   const snippets = {
     toi: [
@@ -276,7 +285,9 @@ export function EditorDock({
                   ? labels.media
                   : tab === "extras"
                     ? labels.extrasTitle
-                    : labels.text}
+                    : tab === "element"
+                      ? labels.element
+                      : labels.text}
             </p>
             <button type="button" onClick={() => setTab(null)} className="text-ink-soft">
               <X size={16} />
@@ -339,6 +350,10 @@ export function EditorDock({
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
+                    if (format === "site3d") {
+                      void uploadInvitationImage(file).then(src => applyPhoto(src)).catch(error => window.alert(error instanceof Error ? error.message : "Не удалось загрузить фотографию"));
+                      return;
+                    }
                     fileToData(file, (src) => {
                       if (selected?.startsWith("photo-") || invitation.coverImage) applyPhoto(src);
                       else
@@ -386,7 +401,7 @@ export function EditorDock({
                   {labels.images}
                 </span>
               </div>
-              {format !== "photo" ? (
+              {format === "site3d" ? (
               <div className="space-y-1.5">
                 <p className="text-xs text-ink-soft">{labels.music}</p>
                 <MusicPicker
@@ -403,49 +418,6 @@ export function EditorDock({
                   }}
                 />
               </div>
-              ) : null}
-              {format === "videoVoice" ? (
-                <div className="space-y-2">
-                  <p className="text-xs text-ink-soft">{labels.voice}</p>
-                  <textarea
-                    rows={4}
-                    className="w-full rounded-xl border border-ink/10 px-3 py-2 text-sm"
-                    value={invitation.voiceText}
-                    placeholder={invitation.message || labels.voice}
-                    onChange={(e) => onChange({ voiceText: e.target.value })}
-                  />
-                  <div className="flex gap-2">
-                    <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs">
-                      <Mic size={14} /> {labels.voiceFile}
-                      <input
-                        type="file"
-                        accept="audio/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          const reader = new FileReader();
-                          reader.onload = () => onChange({ voiceUrl: String(reader.result ?? "") });
-                          reader.readAsDataURL(file);
-                        }}
-                      />
-                    </label>
-                    <button
-                      type="button"
-                      className="rounded-xl border px-3 py-2 text-xs"
-                      onClick={() => {
-                        if (invitation.voiceUrl) {
-                          const a = new Audio(invitation.voiceUrl);
-                          void a.play();
-                          return;
-                        }
-                        speakInvite(voiceScript(invitation, locale));
-                      }}
-                    >
-                      {labels.voicePlay}
-                    </button>
-                  </div>
-                </div>
               ) : null}
               <div className="space-y-3 pt-1">
                 {CLIPART_GROUPS.map((group) => (
@@ -677,6 +649,17 @@ export function EditorDock({
                 </details>
               ))}
             </div>
+          ) : null}
+
+          {tab === "element" && parts ? (
+            <ElementInspector
+              invitation={invitation}
+              onChange={onChange}
+              selected={selected ?? null}
+              select={onSelect ?? (() => {})}
+              parts={parts}
+              locale={locale}
+            />
           ) : null}
           </div>
         </div>

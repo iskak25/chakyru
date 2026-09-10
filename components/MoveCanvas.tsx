@@ -6,8 +6,10 @@ import {
   useContext,
   useEffect,
   useRef,
+  useMemo,
   useState,
   type ReactNode,
+  type CSSProperties,
 } from "react";
 import { Copy, Lock, RefreshCw, Trash2, Unlock } from "lucide-react";
 import type { Invitation, LayoutBox, LayoutMap } from "@/lib/types";
@@ -90,6 +92,7 @@ function BoxHandles({
 }
 
 function BoxToolbar({
+  canDuplicate = true,
   id,
   defaults,
   space,
@@ -102,6 +105,7 @@ function BoxToolbar({
   space: DragSpace;
   locked: boolean;
   nearTop: boolean;
+  canDuplicate?: boolean;
   onAct: (kind: "lock" | "delete" | "copy") => void;
 }) {
   const ctx = useContext(MoveCtx);
@@ -143,9 +147,9 @@ function BoxToolbar({
           <button type="button" aria-label="delete" className="text-[#2b7fff]" onClick={() => onAct("delete")}>
             <Trash2 size={18} />
           </button>
-          <button type="button" aria-label="duplicate" className="text-[#2b7fff]" onClick={() => onAct("copy")}>
+          {canDuplicate ? <button type="button" aria-label="duplicate" className="text-[#2b7fff]" onClick={() => onAct("copy")}>
             <Copy size={18} />
-          </button>
+          </button> : null}
         </div>
       ) : null}
     </>
@@ -153,6 +157,7 @@ function BoxToolbar({
 }
 
 export function MoveCanvas({
+  selected: controlledSelected,
   editable,
   layout,
   onLayout,
@@ -165,6 +170,7 @@ export function MoveCanvas({
   background,
 }: {
   editable?: boolean;
+  selected?: string | null;
   layout?: LayoutMap;
   onLayout?: (layout: LayoutMap) => void;
   onSelect?: (id: string | null) => void;
@@ -176,7 +182,8 @@ export function MoveCanvas({
   background?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [localSelected, setSelected] = useState<string | null>(null);
+  const selected = controlledSelected === undefined ? localSelected : controlledSelected;
   const [draft, setDraft] = useState<LayoutMap>({});
   const [dragging, setDragging] = useState(false);
   const [placing, setPlacing] = useState(false);
@@ -220,7 +227,7 @@ export function MoveCanvas({
     startAngle: number;
   } | null>(null);
 
-  const merged: LayoutMap = { ...(layout ?? {}), ...draft };
+  const merged: LayoutMap = useMemo(() => ({ ...(layout ?? {}), ...draft }), [layout, draft]);
 
   const get = useCallback(
     (id: string, fallback: LayoutBox) => merged[id] ?? fallback,
@@ -488,6 +495,8 @@ export function FreeMove({
 }
 
 export function Selectable({
+  flat,
+  style,
   id,
   children,
   className = "",
@@ -495,11 +504,13 @@ export function Selectable({
   id: string;
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
+  flat?: boolean;
 }) {
   const ctx = useContext(MoveCtx);
   const box = ctx?.get(id, FLOW_BOX) ?? FLOW_BOX;
   if (box.hidden) return null;
-  if (!ctx) return <div className={className}>{children}</div>;
+  if (!ctx) return <div className={className} style={style}>{children}</div>;
 
   const selected = ctx.editable && ctx.selected === id;
   const locked = !!box.locked;
@@ -527,8 +538,9 @@ export function Selectable({
       data-box={id}
       className={`relative overflow-visible ${ctx.editable && ctx.dragging && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${ctx.editable && !selected ? "hover:ring-1 hover:ring-[#c4a35e]/70" : ""} ${className}`}
       style={{
-        transform: `translate(${(box.x / 100) * cw}px, ${(box.y / 100) * cw}px)`,
-        width: customSize ? `${(box.w / 100) * cw}px` : undefined,
+        ...style,
+        transform: `translate(${(box.x / 100) * cw}px, ${(box.y / 100) * cw}px)${flat ? ` rotate(${box.r ?? 0}deg)` : ""}`,
+        width: customSize || box.w !== 100 ? `${(box.w / 100) * cw}px` : undefined,
         height: customSize ? `${(box.h / 100) * cw}px` : undefined,
         cursor: ctx.editable && !locked ? (selected ? "move" : "pointer") : undefined,
       }}
@@ -549,12 +561,12 @@ export function Selectable({
     >
       <div
         className={`relative h-full w-full ${selected ? "ring-2 ring-[#c4a35e]" : ""} ${locked ? "opacity-90" : ""}`}
-        style={{ transform: `rotate(${box.r ?? 0}deg)`, transformOrigin: "center center" }}
+        style={flat ? { display: "contents" } : { transform: `rotate(${box.r ?? 0}deg)`, transformOrigin: "center center" }}
       >
         {children}
         {selected && !locked ? <BoxHandles id={id} defaults={FLOW_BOX} space="flow" /> : null}
       </div>
-      {selected ? <BoxToolbar id={id} defaults={FLOW_BOX} space="flow" locked={locked} nearTop={nearTop} onAct={act} /> : null}
+      {selected ? <BoxToolbar canDuplicate={!flat} id={id} defaults={FLOW_BOX} space="flow" locked={locked} nearTop={nearTop} onAct={act} /> : null}
     </div>
   );
 }

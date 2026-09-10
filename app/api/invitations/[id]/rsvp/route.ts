@@ -11,6 +11,8 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
     name?: string;
     rsvp?: RsvpStatus;
     plusOne?: number;
+    drinks?: string;
+    note?: string;
   } | null;
   const name = body?.name?.trim() || "";
   const rsvp = body?.rsvp;
@@ -22,6 +24,8 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
     name,
     rsvp,
     plusOne: Number.isFinite(body?.plusOne) ? Math.max(0, Number(body?.plusOne)) : 0,
+    ...(typeof body?.drinks === "string" ? { drinks: body.drinks.trim().slice(0, 120) } : {}),
+    ...(typeof body?.note === "string" ? { note: body.note.trim().slice(0, 2000) } : {}),
   });
   if (!guest) return NextResponse.json({ error: "not found" }, { status: 404 });
   return NextResponse.json({ guest });

@@ -18,6 +18,8 @@ import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/l
 import { fetchTemplateAccess } from "@/lib/accessClient";
 import { confirmLastCheckout, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
+import type { WeddingPartInfo } from "@/lib/weddingEditor";
+import { getPinterestDesign } from "@/lib/pinterestTemplates";
 
 export default function EditorPage() {
   const params = useParams<{ id: string }>();
@@ -26,6 +28,7 @@ export default function EditorPage() {
   const { inv, ready, patch, undo, redo, canUndo, canRedo, saveState } = useInviteHistory(params.id);
   const [copied, setCopied] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [saving, setSaving] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
@@ -81,7 +84,6 @@ export default function EditorPage() {
       await downloadInvitation({
         format: formatOf(inv.templateId),
         names: inv.names,
-        musicUrl: inv.musicUrl,
       });
     } catch (err) {
       console.error(err);
@@ -135,11 +137,14 @@ export default function EditorPage() {
           onChange={patch}
           locale={locale}
           selected={selected}
+          onSelect={onSelect}
+          parts={isSite || getPinterestDesign(inv) ? parts : undefined}
           labels={{
             templates: t.editor.dockTemplates,
             media: t.editor.dockMedia,
             extras: t.editor.dockExtras,
             text: t.editor.dockText,
+            element: t.editor.dockElement,
             extrasTitle: t.editor.extrasTitle,
             upload: t.editor.upload,
             uploaded: t.editor.uploaded,
@@ -150,9 +155,6 @@ export default function EditorPage() {
               musicLink: t.editor.musicLink,
               musicApply: t.editor.musicApply,
               musicPickFile: t.editor.musicPickFile,
-            voice: t.editor.voice,
-            voicePlay: t.editor.voicePlay,
-            voiceFile: t.editor.voiceFile,
             addLarge: t.editor.addLarge,
             addMedium: t.editor.addMedium,
             addSmall: t.editor.addSmall,
@@ -258,7 +260,9 @@ export default function EditorPage() {
                       invitation={inv}
                       locale={locale}
                       onChange={patch}
+                      selected={selected}
                       onSelect={onSelect}
+                      onPartsChange={setParts}
                     />
                   </div>
                 </div>

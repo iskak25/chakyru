@@ -1,3 +1,4 @@
+import { isCatalogTemplate } from "../inviteFormats";
 import { getAdminDb } from "../firebaseAdmin";
 import { isFreeTemplate, pickStoredPrice, templates as seedTemplates } from "../templates";
 import type { InvitationTemplate } from "../types";
@@ -9,7 +10,7 @@ export async function loadCatalogTemplates(): Promise<InvitationTemplate[]> {
       const snap = await db.collection("catalog").doc("templates").get();
       const items = snap.data()?.items;
       if (Array.isArray(items) && items.length) {
-        return items as InvitationTemplate[];
+        return items.filter(isCatalogTemplate);
       }
     } catch {
       /* seed */
@@ -51,7 +52,7 @@ export async function patchCatalogBasePrices(prices: Record<string, number>) {
   const ref = db.collection("catalog").doc("templates");
   const snap = await ref.get();
   const existing = Array.isArray(snap.data()?.items) ? (snap.data()?.items as InvitationTemplate[]) : [];
-  const base = existing.length ? existing : seedTemplates;
+  const base = (existing.length ? existing : seedTemplates).filter(isCatalogTemplate);
   const items = firestoreSafe(
     base.map((item) => {
       const next = prices[item.id];

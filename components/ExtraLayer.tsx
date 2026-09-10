@@ -1,6 +1,7 @@
 "use client";
 
 import type { CanvasItem, Invitation, LayoutBox } from "@/lib/types";
+import { safeWeddingLink } from "@/lib/weddingEditor";
 import { deleteCanvasId } from "@/lib/canvasOps";
 import { ANIMS, animClass } from "@/lib/anim";
 import { StickerGlyph } from "@/lib/stickers";
@@ -193,16 +194,16 @@ function ExtraBody({
   if (item.kind === "button") {
     return (
       <a
-        href={item.url || "#"}
+        href={safeWeddingLink(item.url || "#")}
         target="_blank"
         rel="noreferrer"
         onClick={(e) => {
           if (onChange) e.preventDefault();
         }}
         className="flex h-full items-center justify-center rounded-full text-sm font-semibold text-white"
-        style={{ background: item.color }}
+        style={{ background: item.color, fontSize: item.fontSize }}
       >
-        {item.text || (locale === "ru" ? "Кнопка" : "Баскыч")}
+        {item.text ?? (locale === "ru" ? "Кнопка" : "Баскыч")}
       </a>
     );
   }

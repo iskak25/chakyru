@@ -1,3 +1,4 @@
+import { isCatalogTemplate } from "./inviteFormats";
 import type { Lesson } from "./lessons";
 import type { InvitationTemplate } from "./types";
 import type { PublicPricing } from "./settings";
@@ -24,7 +25,7 @@ export function peekPreview() {
 }
 
 export function setLiveTemplates(list: InvitationTemplate[]) {
-  liveTemplates = list;
+  liveTemplates = list.filter(isCatalogTemplate);
   emit();
 }
 

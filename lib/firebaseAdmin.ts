@@ -1,4 +1,5 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getStorage } from "firebase-admin/storage";
 import { getFirestore } from "firebase-admin/firestore";
 import { mergeSettings, type PublicPricing } from "./settings";
 import type { PlanId } from "./types";
@@ -158,4 +159,10 @@ export async function confirmReturnPayment(
     templateId,
     finikStatus,
   });
+}
+
+export function getAdminStorageBucket() {
+  const app = adminApp();
+  const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET?.trim();
+  return app && bucket ? getStorage(app).bucket(bucket) : null;
 }

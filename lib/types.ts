@@ -11,7 +11,7 @@ export type EventType =
   | "iftar"
   | "birthday";
 
-export type InviteFormat = "photo" | "videoMusic" | "videoVoice" | "site3d";
+export type InviteFormat = "photo" | "site3d";
 
 export type LocalizedName = { ky: string; ru: string };
 
@@ -129,6 +129,8 @@ export type Guest = {
   name: string;
   rsvp: RsvpStatus | null;
   plusOne: number;
+  drinks?: string;
+  note?: string;
 };
 
 export type Wish = {
@@ -168,6 +170,13 @@ export type CanvasItem = {
 };
 
 export type TemplateCanvas = {
+  date?: string;
+  time?: string;
+  venue?: string;
+  address?: string;
+  city?: string;
+  dressCode?: string;
+  mapUrl?: string;
   layout: LayoutMap;
   extras: CanvasItem[];
   copy: Record<string, string>;
@@ -196,8 +205,6 @@ export type Invitation = {
   music: boolean;
   musicUrl: string;
   mapUrl: string;
-  voiceText: string;
-  voiceUrl?: string;
   coverImage: string;
   layout: LayoutMap;
   extras: CanvasItem[];

@@ -11,6 +11,9 @@ import { getSiteLook } from "@/lib/siteLooks";
 import type { Site3DLabels } from "./Site3DLayouts";
 import { Site3DThumb } from "./Site3DResolve";
 import { WeddingInvitation } from "./WeddingInvitation";
+import { ReferenceWedding } from "./ReferenceWedding";
+import { referenceWedding } from "@/lib/referenceWeddings";
+import type { WeddingPartInfo } from "@/lib/weddingEditor";
 
 export type { Site3DLabels };
 
@@ -347,7 +350,9 @@ export function Site3D({
   variant = "guest",
   onReload,
   labels,
+  selected,
   onSelect,
+  onPartsChange,
   startOpen,
   framed,
 }: {
@@ -357,7 +362,9 @@ export function Site3D({
   variant?: "guest" | "editor" | "preview";
   onReload?: () => void;
   labels: Site3DLabels;
+  selected?: string | null;
   onSelect?: (id: string | null) => void;
+  onPartsChange?: (parts: WeddingPartInfo[]) => void;
   startOpen?: boolean;
   framed?: boolean;
 }) {
@@ -417,6 +424,11 @@ export function Site3D({
     hint: labels.hint,
   };
 
+  const reference = referenceWedding(invitation);
+  if (reference) {
+    return <ReferenceWedding invitation={invitation} design={reference} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
+  }
+
   if (variant === "preview") {
     return (
       <Site3DThumb look={look} labels={labels} a={a} b={b} photos={photos} heroPhoto={heroPhoto} />
@@ -443,7 +455,7 @@ export function Site3D({
       ) : null}
 
       {open && !opening ? (
-        <WeddingInvitation invitation={invitation} />
+        <WeddingInvitation invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale} />
       ) : null}
 
       {wishOpen ? (

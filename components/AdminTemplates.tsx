@@ -14,6 +14,8 @@ import { PREVIEW_INVITE, canvasFromInvite, inviteFromTemplate } from "@/lib/temp
 import { PAGE_LAYOUTS, type SitePageLayout } from "@/lib/siteLooks";
 import { useCatalog } from "@/lib/useCatalog";
 import type { EventType, Invitation, InvitationTemplate, InviteFormat, TemplateStyle } from "@/lib/types";
+import type { WeddingPartInfo } from "@/lib/weddingEditor";
+import { getPinterestDesign } from "@/lib/pinterestTemplates";
 
 const blankStyle: TemplateStyle = {
   bg: "#0F0C0A",
@@ -53,6 +55,7 @@ export function AdminTemplates() {
   const [busy, setBusy] = useState(false);
   const [styleOpen, setStyleOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
+  const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const dirty = useRef(false);
@@ -82,6 +85,7 @@ export function AdminTemplates() {
     setCanUndo(false);
     setCanRedo(false);
     setSelected(null);
+    setParts([]);
   }, [selectedId]);
 
   useEffect(() => {
@@ -252,6 +256,7 @@ export function AdminTemplates() {
     media: t.editor.dockMedia,
     extras: t.editor.dockExtras,
     text: t.editor.dockText,
+    element: t.editor.dockElement,
     extrasTitle: t.editor.extrasTitle,
     upload: t.editor.upload,
     uploaded: t.editor.uploaded,
@@ -262,9 +267,6 @@ export function AdminTemplates() {
     musicLink: t.editor.musicLink,
     musicApply: t.editor.musicApply,
     musicPickFile: t.editor.musicPickFile,
-    voice: t.editor.voice,
-    voicePlay: t.editor.voicePlay,
-    voiceFile: t.editor.voiceFile,
     addLarge: t.editor.addLarge,
     addMedium: t.editor.addMedium,
     addSmall: t.editor.addSmall,
@@ -318,6 +320,8 @@ export function AdminTemplates() {
           onChange={patchInvite}
           locale={locale}
           selected={selected}
+          onSelect={onSelect}
+          parts={draft?.format === "site3d" || (invite && getPinterestDesign(invite)) ? parts : undefined}
           stickyClass="relative sticky top-48 z-30 flex h-[calc(100vh-12rem)] shrink-0 self-start"
           labels={dockLabels}
           templatesPanel={
@@ -379,7 +383,9 @@ export function AdminTemplates() {
                     locale={locale}
                     compact
                     onChange={patchInvite}
+                    selected={selected}
                     onSelect={onSelect}
+                    onPartsChange={setParts}
                   />
                 </PhoneFrame>
                 <StepArrow dir="right" onClick={redo} disabled={!canRedo} label={`${t.editor.redo} · Ctrl+Y`} />
