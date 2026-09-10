@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Download } from "lucide-react";
 import { ColorBar } from "@/components/ExtraLayer";
 import { EditorDock } from "@/components/EditorDock";
 import { FormatInvite } from "@/components/FormatInvite";
+import { InvitationSetupWizard } from "@/components/InvitationSetupWizard";
 import { PhoneFrame } from "@/components/InviteCard";
 import { SiteShell } from "@/components/SiteShell";
 import { StepArrow } from "@/components/StepArrow";
@@ -21,9 +22,10 @@ import { getUser } from "@/lib/store";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
 
-export default function EditorPage() {
+function EditorPageInner() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { locale, t } = useI18n();
   const { inv, ready, patch, undo, redo, canUndo, canRedo, saveState } = useInviteHistory(params.id);
   const [copied, setCopied] = useState(false);
@@ -31,6 +33,12 @@ export default function EditorPage() {
   const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [saving, setSaving] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [showSetup, setShowSetup] = useState(searchParams.get("setup") === "1");
+
+  function closeSetup() {
+    setShowSetup(false);
+    router.replace(`/create/${params.id}`);
+  }
 
   useEffect(() => {
     if (ready && !inv) router.replace("/templates");
@@ -130,6 +138,16 @@ export default function EditorPage() {
 
   return (
     <SiteShell>
+      {showSetup ? (
+        <InvitationSetupWizard
+          invitation={inv}
+          onComplete={(overrides) => {
+            patch(overrides);
+            closeSetup();
+          }}
+          onSkip={closeSetup}
+        />
+      ) : null}
       <div className="editor-page flex min-h-[calc(100vh-4rem)] pb-20 lg:pb-0">
         <EditorDock
           invitation={inv}
@@ -299,5 +317,13 @@ export default function EditorPage() {
         </div>
       </div>
     </SiteShell>
+  );
+}
+
+export default function EditorPage() {
+  return (
+    <Suspense>
+      <EditorPageInner />
+    </Suspense>
   );
 }

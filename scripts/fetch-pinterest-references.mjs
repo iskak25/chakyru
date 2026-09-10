@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const inputs = [
+const inputs = process.argv.includes("--baby") ? [["baby", "C:/Users/user/Desktop/референцы/жентек той.txt"]] : process.argv.includes("--bachelorette") ? [["bachelorette", "C:/Users/user/Desktop/референцы/девичник.txt"]] : [
   ["kyz", "C:/Users/user/Desktop/референцы/кыз_узатуу_3d.txt"],
   ["photo", "C:/Users/user/Desktop/референцы/свадибные_jpg.txt"],
 ];
@@ -28,4 +28,6 @@ for (const [group, file] of inputs) {
     console.log(JSON.stringify(record));
   }
 }
-await fs.writeFile(path.join(folder, "sources.json"), JSON.stringify(records, null, 2) + "\n");
+const saved = JSON.parse(await fs.readFile(path.join(folder, "sources.json"), "utf8").catch(() => "[]"));
+const merged = [...new Map([...saved, ...records].map(record => [record.id, record])).values()];
+await fs.writeFile(path.join(folder, "sources.json"), JSON.stringify(merged, null, 2) + "\n");

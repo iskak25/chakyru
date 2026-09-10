@@ -10,6 +10,8 @@ import { Site3D } from "./Site3D";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
 import { PinterestInvite } from "./PinterestInvite";
+import { ThemedSiteInvite } from "./ThemedSiteInvite";
+import { FamilySiteInvite } from "./FamilySiteInvite";
 
 export function MediaStage({
   invitation,
@@ -57,6 +59,8 @@ export function FormatInvite({
   useCatalog();
   const format = formatOf(invitation.templateId);
   const pinterest = getPinterestDesign(invitation);
+  if (pinterest?.eventType === "jentek" || pinterest?.eventType === "tushoo") return <FamilySiteInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} startOpen={startOpen} />;
+  if (pinterest?.themed) return <ThemedSiteInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} startOpen={startOpen} />;
   if (pinterest) return <PinterestInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
 
   if (format === "site3d") {

@@ -11,7 +11,7 @@ import { Reveal } from "../ui/Reveal";
 const SHOWCASE_ID = "47cbb465-dc98-482a-b025-a0f4b04688fd";
 
 function loadShowcase(): Invitation {
-  return getInvitation(SHOWCASE_ID) ?? { ...demoInvitation, templateId: "ak-shumkar" };
+  return getInvitation(SHOWCASE_ID) ?? { ...demoInvitation, templateId: "baxmal" };
 }
 
 export function Showcase() {

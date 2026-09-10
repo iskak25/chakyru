@@ -259,7 +259,7 @@ export function grantLocalTemplate(templateId: string, plan: PlanId = "standard"
 
 export function startInvitation(
   templateId: string,
-): { invitation: Invitation } | { href: string } {
+): { invitation: Invitation; created: boolean } | { href: string } {
   const user = getUser();
   if (!user) return { href: createStartHref(templateId) };
   if (!canEditTemplate(user, templateId)) {
@@ -269,13 +269,13 @@ export function startInvitation(
     return { href: pricingHref(templateId) };
   }
   try {
-    return { invitation: createInvitation(templateId) };
+    return { invitation: createInvitation(templateId), created: true };
   } catch {
     return { href: pricingHref(templateId) };
   }
 }
 
-export function openPaidInvitation(templateId: string): { invitation: Invitation } | { href: string } {
+export function openPaidInvitation(templateId: string): { invitation: Invitation; created: boolean } | { href: string } {
   const user = getUser();
   if (!user) return { href: createStartHref(templateId) };
   if (user.auth !== "google") {
@@ -290,9 +290,9 @@ export function openPaidInvitation(templateId: string): { invitation: Invitation
       inv.templateId === templateId &&
       ownsInvitation(host, inv),
   );
-  if (mine) return { invitation: mine };
+  if (mine) return { invitation: mine, created: false };
   try {
-    return { invitation: createInvitation(templateId, { force: true }) };
+    return { invitation: createInvitation(templateId, { force: true }), created: true };
   } catch {
     return startInvitation(templateId);
   }

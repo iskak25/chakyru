@@ -9,7 +9,10 @@ export type EventType =
   | "beshik"
   | "anniversary"
   | "iftar"
-  | "birthday";
+  | "birthday"
+  | "bachelorette"
+  | "jentek"
+  | "tushoo";
 
 export type InviteFormat = "photo" | "site3d";
 

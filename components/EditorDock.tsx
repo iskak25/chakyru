@@ -401,7 +401,6 @@ export function EditorDock({
                   {labels.images}
                 </span>
               </div>
-              {format === "site3d" ? (
               <div className="space-y-1.5">
                 <p className="text-xs text-ink-soft">{labels.music}</p>
                 <MusicPicker
@@ -418,7 +417,6 @@ export function EditorDock({
                   }}
                 />
               </div>
-              ) : null}
               <div className="space-y-3 pt-1">
                 {CLIPART_GROUPS.map((group) => (
                   <div key={group.id}>

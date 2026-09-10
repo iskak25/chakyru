@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { addWish } from "@/lib/store";
 import type { Invitation } from "@/lib/types";
 import type { InvitePatch } from "./CanvasEdit";
@@ -8,6 +9,7 @@ import { effectiveMusicUrl, youtubeId } from "@/lib/music";
 import { resolveInviteFamily } from "@/lib/inviteFamilies";
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { getSiteLook } from "@/lib/siteLooks";
+import { InviteAudio } from "./InviteAudio";
 import type { Site3DLabels } from "./Site3DLayouts";
 import { Site3DThumb } from "./Site3DResolve";
 import { WeddingInvitation } from "./WeddingInvitation";
@@ -456,6 +458,22 @@ export function Site3D({
 
       {open && !opening ? (
         <WeddingInvitation invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale} />
+      ) : null}
+
+      {musicSrc ? (
+        <>
+          <InviteAudio src={musicSrc} audioRef={audioRef} playing={playing} />
+          {open && !opening ? (
+            <button
+              type="button"
+              onClick={() => setPlaying((p) => !p)}
+              aria-label={playing ? (locale === "ru" ? "Выключить музыку" : "Музыканы өчүрүү") : (locale === "ru" ? "Включить музыку" : "Музыканы күйгүзүү")}
+              className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
+            >
+              {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
+            </button>
+          ) : null}
+        </>
       ) : null}
 
       {wishOpen ? (

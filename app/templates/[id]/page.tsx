@@ -23,6 +23,11 @@ export default function TemplatePreviewPage() {
   const template = templates.find((item) => item.id === id);
   const invitation = useMemo(() => (template ? previewInvitation(template.id) : null), [template]);
   const [access, setAccess] = useState<TemplateAccessResponse | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,7 +44,10 @@ export default function TemplatePreviewPage() {
     };
   }, [id]);
 
-  const canEdit = Boolean(
+  // getUser() reads localStorage, which is unavailable during SSR — gate on
+  // `mounted` so the first client render matches the server render exactly
+  // and React doesn't report a hydration mismatch.
+  const canEdit = mounted && Boolean(
     access?.allowed || canEditTemplate(getUser(), id) || (template && getUser() && template.priceSom <= 0),
   );
   const displayPrice = access?.price ?? template?.priceSom ?? 0;
@@ -49,7 +57,7 @@ export default function TemplatePreviewPage() {
     const latest = await fetchTemplateAccess(template.id);
     if (latest?.allowed || canEditTemplate(getUser(), template.id)) {
       const started = latest?.allowed ? openPaidInvitation(template.id) : startInvitation(template.id);
-      if ("invitation" in started) router.push(`/create/${started.invitation.id}`);
+      if ("invitation" in started) router.push(`/create/${started.invitation.id}?setup=1`);
       else router.push(started.href);
       return;
     }

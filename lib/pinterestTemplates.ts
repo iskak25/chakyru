@@ -1,11 +1,12 @@
-import type { Invitation, InvitationTemplate, InviteFormat } from "./types";
+import type { EventType, Invitation, InvitationTemplate, InviteFormat } from "./types";
 import type { ReferenceCrop } from "./referenceWeddings";
 
-export type PinterestStyle = "ethno" | "burgundy" | "goldBride" | "pearl" | "blue" | "silkCard" | "nikahCard" | "monoCard" | "newspaper";
+export type PinterestStyle = "ethno" | "burgundy" | "goldBride" | "pearl" | "blue" | "silkCard" | "nikahCard" | "monoCard" | "newspaper" | "glam" | "blushParty" | "silkSite" | "nikahSite" | "monoSite" | "newspaperSite" | "jentekCradle" | "tushooGarden";
 export type PinterestDesign = {
   key: PinterestStyle; id: string; pin: string; title: string; format: InviteFormat;
   paper: string; ink: string; accent: string; names: string; date: string; time: string;
   venue: string; address: string; photos: Record<string, ReferenceCrop>;
+  themed?: boolean; eventType?: EventType;
 };
 const raw = (pin: string, width: number, height: number, x: number, y: number, w: number, h: number): ReferenceCrop => ({ source: `/images/pinterest-references/${pin}.jpg`, width, height, x, y, w, h });
 const clean = (file: string, width: number, height: number): ReferenceCrop => ({ source: `/images/pinterest-references/${file}-clean.png`, width, height, x: 0, y: 0, w: width, h: height });
@@ -30,11 +31,25 @@ export const pinterestDesigns: PinterestDesign[] = [
   { key: "monoCard", id: "pin-jpg-monochrome", pin: "1120059369853155022", title: "JPG — Вместе за руку", format: "photo", paper: "#a4a4a4", ink: "#ffffff", accent: "#ffffff", names: "Malek & Rand", date: "2026-07-11", time: "20:30", venue: "ALSAKHRAH HALL", address: "", photos: { hero: clean("mono",941,1672) } },
   { key: "newspaper", id: "pin-jpg-newspaper", pin: "1146869861388231089", title: "JPG — Свадебная газета", format: "photo", paper: "#eeefec", ink: "#161714", accent: "#383a36", names: "Warner & Spencer", date: "2026-11-23", time: "10:00", venue: "", address: "123 Anywhere St, Any City", photos: { hero: raw("1146869861388231089",735,1029,326,252,408,616) } },
 ];
-export function getPinterestDesign(inv: Pick<Invitation, "templateId" | "copy">) {
-  return pinterestDesigns.find(d => d.id === inv.templateId || d.key === inv.copy?.["pinterest.design"]);
+function siteVersion(sourceKey: PinterestStyle, key: PinterestStyle, id: string, title: string): PinterestDesign {
+  const source = pinterestDesigns.find(d => d.key === sourceKey)!;
+  return { ...source, key, id, title, format:"site3d", themed:true, eventType:"wedding", venue:source.venue || "Загородный клуб", address:source.address || "Бишкек", ...(key === "monoSite" ? { paper:"#f2f1ee", ink:"#20201f", accent:"#343434" } : {}) };
 }
-export const pinterestTemplates: InvitationTemplate[] = pinterestDesigns.map(d => ({
-  id:d.id, name:{ru:d.title,ky:d.title}, designer:"Chakyru Studio", format:d.format, priceSom:d.format === "photo" ? 250 : 590, eventTypes:[d.format === "photo" ? "wedding" : "kyz"],
+export const themedSiteDesigns: PinterestDesign[] = [
+  { key:"jentekCradle", id:"theme-jentek-cradle", pin:"685884218295084312", title:"Жентек той — Алтын бешик", format:"site3d", themed:true, eventType:"jentek", paper:"#fbf6ec", ink:"#594434", accent:"#946b37", names:"Барсбек", date:"2027-05-15", time:"15:00", venue:"Ресторан «Аалам»", address:"Бишкек", photos:{hero:clean("jentek",1024,1536)} },
+  { key:"tushooGarden", id:"theme-tushoo-garden", pin:"1122170432185623344", title:"Тушоо той — Первые шаги", format:"site3d", themed:true, eventType:"tushoo", paper:"#fbfcf6", ink:"#354c3e", accent:"#5e7d60", names:"Арууке", date:"2027-06-12", time:"12:00", venue:"Ресторан «Бакча»", address:"Бишкек", photos:{hero:clean("tushoo",1024,1536)} },
+  { key:"glam", id:"theme-bachelorette-glam", pin:"836754805815479181", title:"Девичник — Glam & Fabulous", format:"site3d", themed:true, eventType:"bachelorette", paper:"#100d10", ink:"#f9e8ee", accent:"#da88ab", names:"Алина", date:"2027-04-25", time:"19:00", venue:"Rose Lounge", address:"Бишкек", photos:{hero:clean("glam",1060,1484)} },
+  { key:"blushParty", id:"theme-bachelorette-blush", pin:"628533691790847296", title:"Девичник — Розовые секреты", format:"site3d", themed:true, eventType:"bachelorette", paper:"#fff5f2", ink:"#765452", accent:"#ce8596", names:"Милана", date:"2027-04-25", time:"18:00", venue:"Секретное место", address:"Встречаемся на 8 этаже", photos:{hero:clean("blush",1024,1536)} },
+  siteVersion("silkCard","silkSite","theme-wedding-silk","Свадьба — Оливковый шёлк"),
+  siteVersion("nikahCard","nikahSite","theme-wedding-nikah","Никах — Прикосновение"),
+  siteVersion("monoCard","monoSite","theme-wedding-monochrome","Свадьба — Вместе за руку"),
+  siteVersion("newspaper","newspaperSite","theme-wedding-newspaper","Свадьба — Главная новость"),
+];
+export function getPinterestDesign(inv: Pick<Invitation, "templateId" | "copy">) {
+  return [...pinterestDesigns,...themedSiteDesigns].find(d => d.id === inv.templateId || d.key === inv.copy?.["pinterest.design"]);
+}
+export const pinterestTemplates: InvitationTemplate[] = [...pinterestDesigns,...themedSiteDesigns].map(d => ({
+  id:d.id, name:{ru:d.title,ky:d.title}, designer:"Chakyru Studio", format:d.format, priceSom:d.format === "photo" ? 250 : 590, eventTypes:[d.eventType || (d.format === "photo" ? "wedding" : "kyz")],
   style:{bg:d.paper,panel:d.paper,pageBg:d.paper,text:d.ink,accent:d.accent,muted:d.accent,ornament:d.accent,pageLayout:"classic"},
   canvas:{names:d.names,date:d.date,time:d.time,venue:d.venue,address:d.address,city:"",message:"",dressCode:"",mapUrl:"",coverImage:"",musicUrl:"",layout:{},extras:[],gallery:{},blockColors:{},copy:{"pinterest.design":d.key}},
 }));

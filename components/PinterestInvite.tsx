@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
-import { Heart, MapPin } from "lucide-react";
+import { Heart, MapPin, Volume2, VolumeX } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import type { PinterestDesign } from "@/lib/pinterestTemplates";
+import { effectiveMusicUrl } from "@/lib/music";
 import { safeWeddingLink, weddingStyle, type WeddingPartInfo } from "@/lib/weddingEditor";
+import { InviteAudio } from "./InviteAudio";
 import { WeddingEditor, WeddingPart } from "./WeddingEditor";
 import type { InvitePatch } from "./CanvasEdit";
 import css from "./PinterestInvite.module.css";
@@ -17,23 +19,23 @@ function eventDate(inv: Invitation) {
   const value = new Date(`${inv.date}T12:00:00`);
   return Number.isNaN(value.getTime()) ? null : value;
 }
-function Calendar({ invitation }: { invitation: Invitation }) {
+export function PinterestCalendar({ invitation, locale = "ru" }: { invitation: Invitation; locale?: string }) {
   const date = eventDate(invitation);
   if (!date) return null;
   const offset = (new Date(date.getFullYear(), date.getMonth(), 1).getDay() + 6) % 7;
   const days = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   return <WeddingPart id="calendar" label="Календарь" kind="date" className={css.calendar}>
-    <div className={css.month}>{date.toLocaleDateString("ru-RU", { month:"long", year:"numeric" })}</div>
-    <div className={css.days}>{["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"].map(d => <small key={d}>{d}</small>)}{Array.from({length:offset},(_,i) => <span key={`blank-${i}`} />)}{Array.from({length:days},(_,i) => <span key={i} className={i+1===date.getDate()?css.today:""}>{i+1}</span>)}</div>
+    <div className={css.month}>{date.toLocaleDateString(locale === "ky" ? "ky-KG" : "ru-RU", { month:"long", year:"numeric" })}</div>
+    <div className={css.days}>{(locale === "ky" ? ["ДҮЙ","ШЕЙ","ШАР","БЕЙ","ЖУМ","ИШЕ","ЖЕК"] : ["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"]).map(d => <small key={d}>{d}</small>)}{Array.from({length:offset},(_,i) => <span key={`blank-${i}`} />)}{Array.from({length:days},(_,i) => <span key={i} className={i+1===date.getDate()?css.today:""}>{i+1}</span>)}</div>
   </WeddingPart>;
 }
-function Timer({ invitation }: { invitation: Invitation }) {
+export function PinterestTimer({ invitation, locale = "ky" }: { invitation: Invitation; locale?: string }) {
   const [now,setNow] = useState<number|null>(null);
   useEffect(() => { const timer=setInterval(() => setNow(Date.now()),1000); return () => clearInterval(timer); },[]);
   const target=Date.parse(`${invitation.date}T${invitation.time || "17:00"}:00`);
   const diff=now===null || !Number.isFinite(target)?0:Math.max(0,target-now);
   const values=[Math.floor(diff/86400000),Math.floor(diff/3600000)%24,Math.floor(diff/60000)%60,Math.floor(diff/1000)%60];
-  return <WeddingPart id="countdown" label="Обратный отсчёт" kind="date" className={css.timer}>{values.map((v,i)=><div key={i}><strong>{now===null?"—":String(v).padStart(2,"0")}</strong><small>{["КҮН","СААТ","МИНУТ","СЕКУНД"][i]}</small></div>)}</WeddingPart>;
+  return <WeddingPart id="countdown" label="Обратный отсчёт" kind="date" className={css.timer}>{values.map((v,i)=><div key={i}><strong>{now===null?"—":String(v).padStart(2,"0")}</strong><small>{(locale === "ru" ? ["ДНЕЙ","ЧАСОВ","МИНУТ","СЕКУНД"] : ["КҮН","СААТ","МИНУТ","СЕКУНД"])[i]}</small></div>)}</WeddingPart>;
 }
 
 export function PinterestInvite({ invitation: inv, design, locale, onChange, selected, onSelect, onPartsChange }: Props) {
@@ -43,6 +45,8 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
   const formId=useId();
   const [formState,setFormState]=useState<"idle"|"sending"|"sent"|"error">("idle");
   const ru=key==="ethno" || key==="blue";
+  const musicSrc=effectiveMusicUrl(inv.musicUrl, inv.music);
+  const [playing,setPlaying]=useState(false);
   const text=(id:string,value:string,className="",field?:WeddingPartInfo["field"]) => <Copy id={id} text={value} className={className} field={field} />;
   const title=(id:string,value:string,script=false) => text(`${id}-title`,value,`${css.title} ${script?css.script:""}`);
   const section=(id:string,children:ReactNode,className="") => <WeddingPart id={`section-${id}`} label={`Блок: ${id}`} kind="block" className={`${css.section} ${className}`}>{children}</WeddingPart>;
@@ -59,8 +63,8 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
   const map=() => <WeddingPart id="map-button" label="Карта" kind="widget"><a href={mapHref} target="_blank" rel="noopener noreferrer" className={css.button} onClick={e=>{if(onChange)e.preventDefault();}}>{text("map-label",ru?"ПОСМОТРЕТЬ НА КАРТЕ":"КАРТАНЫ КӨРУ")}</a></WeddingPart>;
   const location=() => section("location",<>{title("location",key==="blue"?"LOCATION":ru?"Место проведения":"Мекен-жайымыз",key!=="blue")}{text("venue",design.venue,css.venue,"venue")}{text("address",design.address,css.body,"address")}{map()}</>,css.location);
   const intro=() => section("intro",<>{title("intro",ru?"Дорогие друзья и родные!":"Құрметті қонақтар!",key!=="blue")}{ornament("intro-ornament")}{text("message",ru?`Приглашаем вас на кыз узатуу нашей прекрасной дочери ${inv.names}.\n\nДля нашей семьи это важное и счастливое событие — мы провожаем нашу дочь во взрослую жизнь.\n\nИ хотим провести этот торжественный момент в кругу близких людей!`:`АҒАЙЫН-ТУЫС, БАУЫРЛАР, ҚҰДА-ЖЕКЖАТ, НАҒАШЫ-ЖИЕН, ДОСТАР, ӘРІПТЕСТЕР!\n\nСіздерді аяулы қызымыздың ұзату тойына арналған ақ дастарханымыздың қадірлі қонағы болуға шақырамыз!`,css.body,"message")}</>,css.intro);
-  const calendar=() => section("calendar",<>{title("date",ru?"Торжество состоится":"Той салтанаты")}{datePart("calendar-date")}<WeddingPart id="event-time" label="Время мероприятия" kind="date" className={css.time}>{ru?"Начало в":"Сағат"} {inv.time}</WeddingPart><Calendar invitation={inv}/></>);
-  const countdown=() => section("timer",<>{title("timer",ru?"До торжества осталось:":"Той салтанатына дейін:")}<Timer invitation={inv}/></>,css.timerSection);
+  const calendar=() => section("calendar",<>{title("date",ru?"Торжество состоится":"Той салтанаты")}{datePart("calendar-date")}<WeddingPart id="event-time" label="Время мероприятия" kind="date" className={css.time}>{ru?"Начало в":"Сағат"} {inv.time}</WeddingPart><PinterestCalendar invitation={inv}/></>);
+  const countdown=() => section("timer",<>{title("timer",ru?"До торжества осталось:":"Той салтанатына дейін:")}<PinterestTimer invitation={inv}/></>,css.timerSection);
   const program=() => section("program",<>{title("program",key==="blue"?"TIMING":"Той бағдарламасы")}<div className={css.programGrid}>{[ ["18:00","Қонақтарды қарсы алу"],["19:00","Тойдың басталуы"],["20:00","Дастарқанға жайғасу"],["22:00","Шығарып салу"] ].map(([time,label],i)=><WeddingPart id={`program-row-${i}`} label={`Программа ${time}`} kind="block" key={i} className={css.programItem}>{text(`program-time-${i}`,time,css.programTime)}{text(`program-text-${i}`,label,css.programText)}</WeddingPart>)}</div></>,css.program);
   const rsvp=() => section("rsvp",<>{title("rsvp",ru?"Анкета гостя":"Сауалнама",key!=="blue")}{text("rsvp-hint",ru?"Будем рады видеть вас на нашем празднике. Подтвердите, пожалуйста, присутствие.":"Жұбыңызбен келетін болсаңыз, есімдеріңізді бірге жазуыңызды өтінеміз!",css.body)}
     <form id={formId} className={css.form} onSubmit={async e=>{
@@ -106,7 +110,19 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
   else content=<>
     {section("hero",<>{text("hero-subtitle","QYZ UZATUU",css.heroSubtitle)}{datePart()}{image("hero")}</>,css.blueHero)}{intro()}{location()}{program()}{section("dress",<>{title("dress","DRESS CODE")}{text("dress-subtitle","Дресс-код",css.subtitle)}{text("dress-description","Пожалуйста, выбирайте наряды в любой понравившейся вам цветовой гамме — главное, чтобы ваш образ был выдержан в элегантном и изысканном стиле.",css.body,"dressCode")}{image("flowers")}</>,css.dark)}{section("details",<>{title("details","DETAILS")}{text("details-subtitle","Пожелания",css.subtitle)}{text("details-gifts","Если хотите подарить нам ценный и нужный подарок, мы будем очень благодарны за вклад в будущую жизнь нашей семьи.",css.body)}{text("details-flowers","Ваше присутствие и тёплые пожелания — лучший подарок для нас.",css.body)}</>,css.dark)}{rsvp()}{countdown()}{section("thanks",<Heart className={css.heart}/>) }
   </>;
-  return <div className={`${css.root} ${photo?css.photoRoot:css.siteRoot} ${css[key]}`} style={{"--pin-paper":inv.blockColors?.page || design.paper,"--pin-ink":design.ink,"--pin-accent":design.accent} as CSSProperties} data-pinterest-design={key}>
+  return <div className={`${css.root} ${photo?css.photoRoot:css.siteRoot} ${css[key]}`} style={{"--pin-paper":inv.blockColors?.page || design.paper,"--pin-ink":design.ink,"--pin-accent":design.accent} as CSSProperties} data-pinterest-design={key} data-invitation-card={photo ? "" : undefined}>
     <WeddingEditor key={design.key} invitation={inv} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale}>{content}</WeddingEditor>
+    {musicSrc ? <>
+      <InviteAudio src={musicSrc} playing={playing} />
+      <button
+        type="button"
+        data-export-hide
+        onClick={() => setPlaying(p => !p)}
+        aria-label={playing ? (ru ? "Выключить музыку" : "Музыканы өчүрүү") : (ru ? "Включить музыку" : "Музыканы күйгүзүү")}
+        className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
+      >
+        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
+      </button>
+    </> : null}
   </div>;
 }

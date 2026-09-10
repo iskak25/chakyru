@@ -1,0 +1,16 @@
+[
+  {
+    "theme": "jentek",
+    "pin": "685884218295084312",
+    "prompt": "Use case: stylized-concept. Asset type: portrait 3D illustration for a Kyrgyz baby celebration invitation website, 1024x1536. Reference image: mood and cultural ornament inspiration only. Create an original premium soft 3D clay and fabric scene: caring mother wearing modest cream and muted blue traditional clothing and white headscarf, beside a carved wooden Kyrgyz beshik cradle with a comfortably swaddled baby. Warm ivory paper studio backdrop, honey gold carved detailing, soft realistic shadows, tactile linen. Composition: mother and cradle entirely in bottom 42% of image, full figures and cradle not cut off; upper 58% largely blank warm ivory for live HTML text, subtle gold ornament at top corners only. No lettering, numbers, logos, watermark or interface. Tender family mood, sophisticated sculpted dimensional children's illustration, not photograph.",
+    "mode": "built-in imagegen",
+    "asset": "public/images/pinterest-references/jentek-clean.png"
+  },
+  {
+    "theme": "tushoo",
+    "pin": "1122170432185623344",
+    "prompt": "Use case: stylized-concept. Asset type: portrait 3D illustration for a Kyrgyz first steps celebration invitation website, 1024x1536. Reference image: floral cream green gold palette and toddler character inspiration only. Create original premium soft 3D storybook scene: smiling toddler girl taking a small first step, wearing an ivory dress with delicate gold traditional embroidery and comfortable tiny shoes. A little cream and sage green flower garden under her feet, delicate branches framing bottom corners, a few soft ivory flowers at upper corners. Matte clay and embroidered fabric materials, dimensional soft studio shadows. Composition: toddler full body in bottom 42% with feet visible, upper 58% mostly blank ivory for editable website text. No lettering, numbers, logos, watermarks or UI. No ribbons around legs. Warm joyful family mood, refined crafted 3D sculpture.",
+    "mode": "built-in imagegen",
+    "asset": "public/images/pinterest-references/tushoo-clean.png"
+  }
+]

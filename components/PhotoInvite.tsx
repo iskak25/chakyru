@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 import { ExtraLayer } from "./ExtraLayer";
 import { CanvasDateTime, CanvasText, PhotoLayer, type InvitePatch } from "./CanvasEdit";
 import { Field } from "./SiteEdit";
+import { InviteAudio } from "./InviteAudio";
 import { MoveCanvas } from "./MoveCanvas";
 import { addHour, getPhotoLayout, photoDate, splitNames } from "@/lib/photoLooks";
+import { effectiveMusicUrl } from "@/lib/music";
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import type { Invitation } from "@/lib/types";
 const SWATCHES = ["#f7f3ec", "#efe4d2", "#e8d5c4", "#d8c8b0", "#c5cdd4", "#9aa8b4", "#7a8a96", "#8a9a88", "#6a7358", "#4a5340"];
@@ -43,6 +47,8 @@ export function PhotoInvite({
   const time = invitation.time || "18:00";
   const venue = invitation.venue || "«Ала-Тоо»";
   const city = [invitation.city, invitation.address].filter(Boolean).join(" · ") || "Бишкек";
+  const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music);
+  const [playing, setPlaying] = useState(false);
 
   const frame = compact ? "h-full" : "min-h-full";
 
@@ -116,6 +122,20 @@ export function PhotoInvite({
         ) : null}
         <ExtraLayer invitation={invitation} onChange={onChange} locale={locale} />
       </MoveCanvas>
+      {musicSrc ? (
+        <>
+          <InviteAudio src={musicSrc} playing={playing} />
+          <button
+            type="button"
+            data-export-hide
+            onClick={() => setPlaying((p) => !p)}
+            aria-label={playing ? (ru ? "Выключить музыку" : "Музыканы өчүрүү") : (ru ? "Включить музыку" : "Музыканы күйгүзүү")}
+            className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
+          >
+            {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+        </>
+      ) : null}
     </div>
   );
 }
@@ -146,7 +166,7 @@ function Splash({
       <Cover src={cover} />
       <PhotoLayer onChange={onChange} />
       <div className="relative z-10">
-        <Field invitation={invitation} onChange={onChange} id="weddingDay" fallback="Wedding day" className="font-script text-[28px] leading-none" />
+        <Field invitation={invitation} onChange={onChange} id="weddingDay" fallback={ru ? "День свадьбы" : "Той күнү"} className="font-script text-[28px] leading-none" />
         <div className="mt-6 font-sans text-[42px] font-light leading-[0.95] tracking-[0.08em]">
           <p>{when.day}</p>
           <p className="text-[18px] opacity-70">.</p>
@@ -273,7 +293,7 @@ function Engage({
           className="text-[10px] uppercase tracking-[0.12em] text-white/80"
         />
         <p className="pt-1 text-[12px] tracking-[0.2em]">{when.dottedFull}</p>
-        <Field invitation={invitation} onChange={onChange} id="saveTheDate" fallback="SAVE THE DATE" className="font-serif pt-2 text-[16px] uppercase tracking-[0.14em]" />
+        <Field invitation={invitation} onChange={onChange} id="saveTheDate" fallback={ru ? "СОХРАНИТЕ ДАТУ" : "КҮНДҮ ЭСТЕ САКТАҢЫЗ"} className="font-serif pt-2 text-[16px] uppercase tracking-[0.14em]" />
       </div>
     </div>
   );

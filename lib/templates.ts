@@ -12,6 +12,9 @@ export const eventTypes: EventType[] = [
   "anniversary",
   "iftar",
   "birthday",
+  "bachelorette",
+  "jentek",
+  "tushoo",
 ];
 
 export const formats: InviteFormat[] = ["site3d", "photo"];

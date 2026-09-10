@@ -76,13 +76,14 @@ const PLACEHOLDER =
 
 async function nodeToJpeg(node: HTMLElement): Promise<string> {
   const { toJpeg } = await import("html-to-image");
+  await document.fonts.ready;
   const restore = flattenComputedColors(node);
   const w = Math.max(1, node.scrollWidth || node.offsetWidth);
   const h = Math.max(1, node.scrollHeight || node.offsetHeight);
   const base = {
     quality: 0.95,
     cacheBust: true,
-    skipFonts: true,
+    preferredFontFormat: "woff2",
     backgroundColor: "#0f0c0a",
     width: w,
     height: h,
@@ -116,7 +117,9 @@ export async function downloadInvitation(opts: {
 }) {
   const node = document.getElementById(EXPORT_ID);
   if (!(node instanceof HTMLElement)) throw new Error("preview");
-  const jpg = await nodeToJpeg(node);
+  // Export the card at its own aspect ratio, without the taller phone frame.
+  const card = node.querySelector<HTMLElement>("[data-invitation-card]");
+  const jpg = await nodeToJpeg(card || node);
   const base = fileBase(opts.names);
   saveBlob(dataUrlToBlob(jpg), `${base}.jpg`);
 }

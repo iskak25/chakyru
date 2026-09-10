@@ -19,7 +19,6 @@ export function InviteAudio({
     if (yt) return;
     const el = audioRef?.current ?? inner.current;
     if (!el) return;
-    el.loop = true;
     if (playing) void el.play().catch(() => {});
     else el.pause();
   }, [playing, src, yt, audioRef]);

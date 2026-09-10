@@ -21,7 +21,7 @@ import { isAdmin } from "@/lib/auth";
 import type { User } from "@/lib/types";
 import { Logo } from "@/components/Logo";
 
-const APP_NAV = [
+export const APP_NAV = [
   { href: "/", key: "home", icon: Home },
   { href: "/templates", key: "templates", icon: LayoutTemplate },
   { href: "/dashboard", key: "mine", icon: Heart },
@@ -29,7 +29,7 @@ const APP_NAV = [
   { href: "/learn", key: "learn", icon: Music2 },
 ] as const;
 
-function navLabel(t: ReturnType<typeof useI18n>["t"], key: (typeof APP_NAV)[number]["key"]) {
+export function navLabel(t: ReturnType<typeof useI18n>["t"], key: (typeof APP_NAV)[number]["key"]) {
   if (key === "home") return t.nav.studio;
   if (key === "templates") return t.nav.templates;
   if (key === "mine") return t.nav.mine;

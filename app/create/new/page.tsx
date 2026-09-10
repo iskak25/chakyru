@@ -30,8 +30,9 @@ function CreateNewInner() {
         return;
       }
       const started = access?.allowed ? openPaidInvitation(template) : startInvitation(template);
-      if ("invitation" in started) router.replace(`/create/${started.invitation.id}`);
-      else router.replace(started.href);
+      if ("invitation" in started) {
+        router.replace(started.created ? `/create/${started.invitation.id}?setup=1` : `/create/${started.invitation.id}`);
+      } else router.replace(started.href);
     })();
     return () => {
       cancelled = true;
