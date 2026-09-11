@@ -8,6 +8,7 @@ import { getTemplatePhotos } from "@/lib/templatePhotos";
 import type { InvitationTemplate } from "@/lib/types";
 import { referenceWedding } from "@/lib/referenceWeddings";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
+import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
 
 export function TemplateCard({
   template,
@@ -25,6 +26,7 @@ export function TemplateCard({
   const reference = referenceWedding({ templateId: template.id, copy: template.canvas?.copy });
   const pinterest = getPinterestDesign({ templateId: template.id, copy: template.canvas?.copy });
   const crop = pinterest?.photos.hero || reference?.photos.hero;
+  const restored = restoredTemplateImage(crop);
   const event = t.events[template.eventTypes[0] ?? "wedding"];
 
   const body = (
@@ -36,16 +38,16 @@ export function TemplateCard({
     >
       <div className={`relative overflow-hidden ${featured ? "h-full min-h-[420px]" : "aspect-[4/5]"}`}>
         <img
-          src={crop?.source || photo}
+          src={restored?.source || templateImageSource(crop?.source || photo)}
           alt=""
           className={`h-full w-full object-cover transition duration-700 ${crop ? "" : "group-hover:scale-[1.04]"}`}
-          style={crop ? { position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%`, objectFit: "fill", transitionTimingFunction: "var(--ease-premium)" } : { transitionTimingFunction: "var(--ease-premium)" }}
+          style={crop && !restored ? { position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%`, objectFit: "fill", transitionTimingFunction: "var(--ease-premium)" } : { transitionTimingFunction: "var(--ease-premium)" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
         <button
           type="button"
           className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-ink/70 opacity-100 transition sm:right-4 sm:top-4 sm:h-9 sm:w-9 sm:opacity-0 sm:group-hover:opacity-100"
-          aria-label="Favorite"
+          aria-label={locale === "ru" ? "В избранное" : "Тандалмаларга"}
           onClick={(e) => e.preventDefault()}
         >
           <Heart size={15} />

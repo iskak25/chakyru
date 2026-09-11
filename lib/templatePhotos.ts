@@ -1,3 +1,5 @@
+import { templateImageSource } from "./templateImageSources";
+
 export type TemplatePhotoSet = {
   hero: string;
   c0: string;
@@ -66,8 +68,9 @@ const SETS: Record<string, TemplatePhotoSet> = {
   "iftar-table": { hero: "/images/templates/iftar-table/hero.jpg", c0: "/images/templates/iftar-table/c0.jpg", c1: "/images/templates/iftar-table/c1.jpg", c2: "", venue: "" },
 };
 
+const resolvedSets = Object.fromEntries(Object.entries(SETS).map(([id, photos]) => [id, Object.fromEntries(Object.entries(photos).map(([slot, source]) => [slot, templateImageSource(source)])) as TemplatePhotoSet]));
 export function getTemplatePhotos(templateId: string): TemplatePhotoSet {
-  return SETS[templateId] ?? SETS.klassika!;
+  return resolvedSets[templateId] ?? resolvedSets.klassika!;
 }
 
 export function allTemplatePhotoSets() {

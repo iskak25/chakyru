@@ -1,5 +1,8 @@
 "use client";
 
+import type { ComponentProps } from "react";
+import { InvitationLanguageProvider } from "./InvitationLanguage";
+
 import { formatOf } from "@/lib/templates";
 import { useCatalog } from "@/lib/useCatalog";
 import { useI18n } from "@/lib/locale";
@@ -32,7 +35,7 @@ export function MediaStage({
   );
 }
 
-export function FormatInvite({
+function FormatInviteContent({
   invitation,
   locale,
   compact,
@@ -95,4 +98,8 @@ export function FormatInvite({
       />
     </div>
   );
+}
+
+export function FormatInvite(props: ComponentProps<typeof FormatInviteContent>) {
+  return <InvitationLanguageProvider locale={props.locale}><FormatInviteContent {...props}/></InvitationLanguageProvider>;
 }

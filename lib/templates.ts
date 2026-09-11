@@ -2,6 +2,7 @@ import { isCatalogTemplate } from "./inviteFormats";
 import { peekPreview, peekTemplates } from "./catalogStore";
 import { referenceWeddingTemplates } from "./referenceWeddings";
 import { pinterestTemplates } from "./pinterestTemplates";
+import { invitationText } from "./inviteTranslations";
 import type { EventType, InvitationTemplate, InviteFormat, TemplateStyle } from "./types";
 
 export const eventTypes: EventType[] = [
@@ -174,8 +175,8 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
       ...seed,
       ...liveItem,
       name: {
-        ky: liveItem.name?.ky || seed.name.ky,
-        ru: liveItem.name?.ru || seed.name.ru,
+        ky: invitationText(liveItem.name?.ky || seed.name.ky, "ky"),
+        ru: invitationText(liveItem.name?.ru || seed.name.ru, "ru"),
       },
       style: { ...seed.style, ...liveItem.style },
       format: liveItem.format || seed.format,

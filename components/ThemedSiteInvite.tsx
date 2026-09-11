@@ -7,6 +7,7 @@ import type { PinterestDesign } from "@/lib/pinterestTemplates";
 import { safeWeddingLink, weddingStyle, type WeddingPartInfo } from "@/lib/weddingEditor";
 import { WeddingEditor, WeddingPart } from "./WeddingEditor";
 import { PinterestCalendar, PinterestTimer } from "./PinterestInvite";
+import { invitationText, invitationDateLocale } from "@/lib/inviteTranslations";
 import type { InvitePatch } from "./CanvasEdit";
 import css from "./ThemedSiteInvite.module.css";
 
@@ -17,6 +18,7 @@ function after(time:string,minutes:number) {
   return `${String(Math.floor(value/60)).padStart(2,"0")}:${String(value%60).padStart(2,"0")}`;
 }
 export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected,onSelect,onPartsChange,startOpen}:Props) {
+  const tr = (value: string) => invitationText(value, locale);
   const [expanded,setExpanded]=useState(false);
   const [reply,setReply]=useState<"idle"|"sending"|"sent"|"error">("idle");
   const detailsId=useId(), formId=useId();
@@ -24,7 +26,7 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
   const girls=design.eventType==="bachelorette", glam=design.key==="glam", paper=design.key==="newspaperSite", nikah=design.key==="nikahSite";
   const date=new Date(`${inv.date}T12:00:00`);
   const validDate=!Number.isNaN(date.getTime());
-  const formatted=validDate?date.toLocaleDateString("ru-RU",{day:"numeric",month:"long",year:"numeric"}):inv.date;
+  const formatted=validDate?date.toLocaleDateString(invitationDateLocale(locale),{day:"numeric",month:"long",year:"numeric"}):inv.date;
   const text=(id:string,fallback:string,className="",field?:WeddingPartInfo["field"]) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} className={className} field={field}/>;
   const section=(id:string,children:ReactNode,className="") => <WeddingPart id={`section-${id}`} label={`Блок: ${id}`} kind="block" className={`${css.section} ${className}`}>{children}</WeddingPart>;
   const title=(id:string,fallback:string) => text(`${id}-title`,fallback,css.title);
@@ -58,8 +60,8 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
 
       <div id={detailsId} hidden={!opened} className={css.details}>
         {section("intro",<>{text("intro-overline",paper?"СПЕЦИАЛЬНЫЙ ВЫПУСК":girls?"THIS ONE IS FOR THE GIRLS":"ВЫ ПРИГЛАШЕНЫ",css.overline)}{title("intro",girls?"Мои любимые девочки!":paper?"Главная новость этого года":"Дорогие родные и друзья!")}{text("message",intro,css.body,"message")}<WeddingPart id="intro-decoration" label="Декоративное сердце" kind="decoration" className={css.smallHeart}><Heart fill="currentColor" strokeWidth={0}/></WeddingPart></>,css.intro)}
-        {section("calendar",<>{title("calendar",girls?"Этот вечер — наш":"Сохраните нашу дату")}<PinterestCalendar invitation={inv}/><WeddingPart id="calendar-time" label="Время начала" kind="date" className={css.arrival}>Начало в {inv.time}</WeddingPart></>,css.calendarSection)}
-        {section("countdown",<>{text("timer-label",girls?"ДО НАШЕЙ ВСТРЕЧИ":"ДО СЧАСТЛИВОГО ДНЯ",css.overline)}<PinterestTimer invitation={inv}/></>,css.countdown)}
+        {section("calendar",<>{title("calendar",girls?"Этот вечер — наш":"Сохраните нашу дату")}<PinterestCalendar invitation={inv} locale={locale}/><WeddingPart id="calendar-time" label="Время начала" kind="date" className={css.arrival}>{tr("Начало в")} {inv.time}</WeddingPart></>,css.calendarSection)}
+        {section("countdown",<>{text("timer-label",girls?"ДО НАШЕЙ ВСТРЕЧИ":"ДО СЧАСТЛИВОГО ДНЯ",css.overline)}<PinterestTimer invitation={inv} locale={locale}/></>,css.countdown)}
         {section("location",<>{text("location-overline","МЕСТО ВСТРЕЧИ",css.overline)}{title("location",girls?"Встречаемся здесь":"Место проведения")}{text("venue",design.venue,css.venue,"venue")}{text("address",design.address,css.body,"address")}<WeddingPart id="map-button" label="Кнопка карты" kind="widget"><a href={mapHref} target="_blank" rel="noopener noreferrer" className={css.button} onClick={e=>{if(onChange)e.preventDefault();}}><MapPin size={16}/>{text("map-label","Открыть карту")}</a></WeddingPart>{girls?text("location-note","Если задерживаешься — напиши нам. Мы тебя дождёмся!",css.caption):null}</>,css.location)}
         {section("program",<>{text("program-overline",girls?"ПЛАН НА ВЕЧЕР":"НАШ ДЕНЬ",css.overline)}{title("program",girls?"Немного прекрасного безумия":"Программа торжества")}<div className={css.timeline}>{schedule.map(([offset,label,note,Icon],i)=>{
           const Mark=Icon as typeof Heart;
@@ -75,12 +77,12 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
             setReply("sending");
             try{const result=await fetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:String(data.get("attendance")||"yes"),plusOne:Math.max(0,Number(data.get("guests")||1)-1),note:String(data.get("note")||"")})});if(!result.ok)throw Error("send");setReply("sent");}catch{setReply("error");}
           }}>
-            <label>{text("rsvp-name-label",girls?"Твоё имя":"Ваше имя",css.formLabel)}<WeddingPart id="rsvp-name" label="Поле имени" kind="widget" fallback="Имя и фамилия"><input name="name" aria-label="Имя гостя" required autoComplete="name" maxLength={120} placeholder={weddingStyle(inv,"rsvp-name","placeholder")||"Имя и фамилия"}/></WeddingPart></label>
+            <label>{text("rsvp-name-label",girls?"Твоё имя":"Ваше имя",css.formLabel)}<WeddingPart id="rsvp-name" label="Поле имени" kind="widget" fallback="Имя и фамилия"><input name="name" aria-label={tr("Имя гостя")} required autoComplete="name" maxLength={120} placeholder={tr(weddingStyle(inv,"rsvp-name","placeholder")||tr("Имя и фамилия"))}/></WeddingPart></label>
             <WeddingPart id="rsvp-attendance" label="Присутствие" kind="widget"><fieldset><legend>{text("attendance-label","Подтверждение участия",css.formLabel)}</legend>{["yes","no"].map((value,i)=><label key={value} className={css.radio}><input name="attendance" type="radio" value={value} defaultChecked={i===0}/>{text(`attendance-${value}`,i===0?(girls?"Конечно, буду!":"С радостью приду"):(girls?"В этот раз не смогу":"К сожалению, не смогу"))}</label>)}</fieldset></WeddingPart>
-            {!girls?<label>{text("guests-label","Количество гостей",css.formLabel)}<WeddingPart id="rsvp-guests" label="Число гостей" kind="widget"><input name="guests" aria-label="Количество гостей" type="number" defaultValue="1" min="1" max="20" required/></WeddingPart></label>:null}
-            <label>{text("note-label",girls?"Пожелания по меню":"Ваши пожелания",css.formLabel)}<WeddingPart id="rsvp-note" label="Поле пожеланий" kind="widget" fallback="Можно оставить пустым"><textarea name="note" aria-label="Пожелания" maxLength={2000} rows={3} placeholder={weddingStyle(inv,"rsvp-note","placeholder")||"Можно оставить пустым"}/></WeddingPart></label>
+            {!girls?<label>{text("guests-label","Количество гостей",css.formLabel)}<WeddingPart id="rsvp-guests" label="Число гостей" kind="widget"><input name="guests" aria-label={tr("Количество гостей")} type="number" defaultValue="1" min="1" max="20" required/></WeddingPart></label>:null}
+            <label>{text("note-label",girls?"Пожелания по меню":"Ваши пожелания",css.formLabel)}<WeddingPart id="rsvp-note" label="Поле пожеланий" kind="widget" fallback="Можно оставить пустым"><textarea name="note" aria-label={tr("Пожелания")} maxLength={2000} rows={3} placeholder={tr(weddingStyle(inv,"rsvp-note","placeholder")||tr("Можно оставить пустым"))}/></WeddingPart></label>
             <WeddingPart id="rsvp-submit" label="Отправить ответ" kind="widget"><button className={css.button} type="submit" disabled={!!onChange||reply==="sending"||reply==="sent"}>{text("submit-label",girls?"Отправить ответ ♡":"Подтвердить участие")}</button></WeddingPart>
-            {reply==="sent"?<p role="status">{inv.id==="demo"||inv.id.startsWith("preview")?"Это предпросмотр. Ответ не отправлен.":"Спасибо! Ваш ответ отправлен."}</p>:null}{reply==="error"?<p role="alert">Не удалось отправить ответ. Попробуйте ещё раз.</p>:null}
+            {reply==="sent"?<p role="status">{inv.id==="demo"||inv.id.startsWith("preview")?tr("Это предпросмотр. Ответ не отправлен."):tr("Спасибо! Ваш ответ отправлен.")}</p>:null}{reply==="error"?<p role="alert">{tr("Не удалось отправить ответ. Попробуйте ещё раз.")}</p>:null}
           </form>
         </>,css.rsvp)}
         {section("footer",<>{text("footer-heading",girls?"До встречи, девочки!":"С любовью к вам",css.script)}{names("footer-names")}<Heart className={css.footerHeart} fill="currentColor" strokeWidth={0}/><WeddingPart id="footer-date" label="Дата" kind="date" className={css.caption}>{formatted}</WeddingPart></>,css.footer)}

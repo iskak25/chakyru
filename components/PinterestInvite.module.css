@@ -157,9 +157,9 @@
 .cardMap { position:absolute; bottom:5%; right:8%; font:2.5cqw var(--font-manrope),sans-serif; }
 .cardMap svg { width:7cqw; height:7cqw; margin:auto; }
 .newspaper.card { aspect-ratio:735/1029; background:radial-gradient(ellipse at 10% 20%,#fff9,transparent 70%),#e8e9e6; font-family:var(--font-cormorant),serif; color:#111; }
-.saveWord { position:absolute; top:8%; left:2%; font:23cqw/.9 var(--font-cormorant),serif; letter-spacing:-.04em; }
-.theWord { position:absolute; top:24%; left:22%; font:9cqw/1 var(--font-vibes),cursive; }
-.dateWord { position:absolute; top:30%; left:9%; font:13.7cqw/1 var(--font-cormorant),serif; }
+.saveWord { position:absolute; top:10%; left:3%; max-width:58%; font:10cqw/1 var(--font-cormorant),serif; letter-spacing:-.04em; }
+.theWord { position:absolute; top:24%; left:4%; max-width:36%; font:6cqw/1 var(--font-ceremonial),cursive; }
+.dateWord { position:absolute; top:33%; left:4%; max-width:36%; font:7.6cqw/1 var(--font-cormorant),serif; }
 .newspaper .names { top:5.4%; left:62%; right:3%; font:600 3cqw var(--font-manrope),sans-serif; text-align:right; }
 .newspaper .names i { font:inherit; margin:0 .2em; }
 .newspaperPhoto { position:absolute; left:44.4%; top:24.4%; width:55.6%; height:60.1%; }

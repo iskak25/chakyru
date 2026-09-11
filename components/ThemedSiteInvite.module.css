@@ -59,7 +59,7 @@
 .footer .names { margin-top:28px; font-size:36px; }
 .footerHeart { width:22px; height:22px; margin:25px auto; color:var(--theme-accent); }
 .glam .heroCopy { inset:13% 18% 22% 25%; color:#e99dbb; }
-.glam .heroHeading { font-size:11cqw; line-height:.85; }
+.glam .heroHeading { font-size:8.5cqw; line-height:1.1; text-wrap:balance; }
 .glam .heroCopy .names { font-family:var(--font-ceremonial),cursive; font-size:13cqw; }
 .glam .heroCopy .overline { color:#fff; font-size:2cqw; }
 .glam .heroCopy .script { font-size:6cqw; margin-top:17px; }
@@ -73,7 +73,7 @@
 .glam .button { font-weight:600; color:#201218; }
 .blushParty .heroCopy { inset:5% 9% 56%; justify-content:flex-start; }
 .blushParty .heroCopy .overline { font-size:9px; margin:5px auto 17px; }
-.blushParty .heroHeading { font:13cqw/1 var(--font-ceremonial),cursive; margin-bottom:8px; }
+.blushParty .heroHeading { font:9cqw/1.05 var(--font-ceremonial),cursive; margin-bottom:8px; }
 .blushParty .heroCopy .names { font:9cqw var(--font-ceremonial),cursive; }
 .blushParty .heroCopy .script { font:2.4cqw var(--font-manrope),sans-serif; margin-top:15px; }
 .blushParty .heroDate { font-size:4cqw; margin:13px auto 0; }

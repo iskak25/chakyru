@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "jobs": [
+    {
+      "id": "mountains",
+      "prompt": "Create a high-resolution production texture atlas for the attached mountain wedding invitation. Exactly 2 equal columns and 3 equal rows, six independent square cells, 2048x3072. No text, lettering, watermarks, phone frames or interface. Reconstruct the tiny supporting photos with crisp natural photographic detail; preserve warm ivory, golden meadow, brown and charcoal palette. Same adult couple throughout: woman long dark hair sleeveless flowing ivory dress, man dark hair white open collar shirt beige trousers. Left to right top to bottom: 1) contact sheet wedding photographs in golden grass beneath jagged mountains, four natural romantic poses; 2) close portrait of elegant wedding table with ivory roses, white plates, gold cutlery and crystal glasses; 3) fashion contact sheet four adult models side by side full length, taupe mens suit, brown floor length evening gown, charcoal mens suit, black evening outfit; 4) couple walking hand in hand through golden meadow with jagged mountain backdrop, smiling at one another, wide framing; 5) same couple embracing under mountains, subjects fit in central wide horizontal band; 6) warm elegant restaurant interior with large windows, chandeliers, set banquet tables and floral decor, wide framing. Each cell independent and filled to edges. No letters anywhere, no blank cells."
+    },
+    {
+      "id": "tuscany-hero",
+      "prompt": "Extract and reconstruct ONLY the TOP LEFT wedding photograph of this atlas into a single sharp high-resolution portrait photograph, 1024x1536. Preserve subjects, pose, outfits, composition, light, colors and mood exactly. Fill entire image naturally. No collage, no border, no text, no other cells. Restore detailed natural photographic texture. Bride and groom from behind walking hand in hand in Tuscan cypress countryside, warm sepia."
+    }
+  ]
+}

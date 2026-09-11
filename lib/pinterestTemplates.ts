@@ -48,8 +48,16 @@ export const themedSiteDesigns: PinterestDesign[] = [
 export function getPinterestDesign(inv: Pick<Invitation, "templateId" | "copy">) {
   return [...pinterestDesigns,...themedSiteDesigns].find(d => d.id === inv.templateId || d.key === inv.copy?.["pinterest.design"]);
 }
+const localizedTitles: Record<PinterestStyle, [string, string]> = {
+  ethno:["Кыз узатуу — Этно","Кыз узатуу — Улуттук"], burgundy:["Кыз узатуу — Камилла","Кыз узатуу — Камилла"],
+  goldBride:["Кыз узатуу — Золотой орнамент","Кыз узатуу — Алтын оймо"], pearl:["Кыз узатуу — Шёлк и жемчуг","Кыз узатуу — Жибек жана бермет"], blue:["Кыз узатуу — Синие орхидеи","Кыз узатуу — Көк орхидеялар"],
+  silkCard:["Фото — Шёлк и олива","Сүрөт — Жибек жана зайтун"], nikahCard:["Фото — Никах","Сүрөт — Нике"], monoCard:["Фото — Вместе за руку","Сүрөт — Кол кармашып"], newspaper:["Фото — Свадебная газета","Сүрөт — Үйлөнүү той гезити"],
+  glam:["Девичник — Блеск и красота","Кыздар кечеси — Жаркын сулуулук"], blushParty:["Девичник — Розовые секреты","Кыздар кечеси — Күлгүн сырлар"],
+  silkSite:["Свадьба — Оливковый шёлк","Үйлөнүү той — Зайтун түстүү жибек"], nikahSite:["Никах — Прикосновение","Нике — Назик сезим"], monoSite:["Свадьба — Вместе за руку","Үйлөнүү той — Кол кармашып"], newspaperSite:["Свадьба — Главная новость","Үйлөнүү той — Башкы жаңылык"],
+  jentekCradle:["Жентек той — Алтын бешик","Жентек той — Алтын бешик"], tushooGarden:["Тушоо той — Первые шаги","Тушоо той — Алгачкы кадамдар"],
+};
 export const pinterestTemplates: InvitationTemplate[] = [...pinterestDesigns,...themedSiteDesigns].map(d => ({
-  id:d.id, name:{ru:d.title,ky:d.title}, designer:"Chakyru Studio", format:d.format, priceSom:d.format === "photo" ? 250 : 590, eventTypes:[d.eventType || (d.format === "photo" ? "wedding" : "kyz")],
+  id:d.id, name:{ru:localizedTitles[d.key][0],ky:localizedTitles[d.key][1]}, designer:"Chakyru Studio", format:d.format, priceSom:d.format === "photo" ? 250 : 590, eventTypes:[d.eventType || (d.format === "photo" ? "wedding" : "kyz")],
   style:{bg:d.paper,panel:d.paper,pageBg:d.paper,text:d.ink,accent:d.accent,muted:d.accent,ornament:d.accent,pageLayout:"classic"},
   canvas:{names:d.names,date:d.date,time:d.time,venue:d.venue,address:d.address,city:"",message:"",dressCode:"",mapUrl:"",coverImage:"",musicUrl:"",layout:{},extras:[],gallery:{},blockColors:{},copy:{"pinterest.design":d.key}},
 }));

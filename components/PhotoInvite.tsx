@@ -439,7 +439,7 @@ function Marble({
             />
           </div>
           <div>
-            <p className="font-serif text-[13px]">{ru ? "Свадебный банкет" : "Банкет"}</p>
+            <p className="font-serif text-[13px]">{ru ? "Свадебный банкет" : "Той дасторкону"}</p>
             <p className="mt-2 font-serif text-[22px]">{addHour(time, 2)}</p>
             <CanvasText
               value={[invitation.city, invitation.address].filter(Boolean).join(", ")}

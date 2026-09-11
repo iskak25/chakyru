@@ -1,0 +1,491 @@
+{
+  "jobs": [
+    {
+      "id": "rose",
+      "ref": "wedding-references/rose.jpg",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "hero",
+          255,
+          397,
+          "Portrait ratio 255:397. Reconstruct upper-left photo: tender bride with brown updo and white lace dress holding ivory bouquet, dark-haired groom in black suit leaning his forehead against hers. Warm natural light, pale muted romantic palette. No wavy white overlay."
+        ],
+        [
+          "venue",
+          244,
+          195,
+          "Ratio 244:195. Reconstruct center-column venue photo: long dark-roof country hotel beyond reflective pond, green trees, daylight."
+        ],
+        [
+          "hands",
+          255,
+          220,
+          "Ratio 255:220. Reconstruct left middle close-up bride and groom hands and wedding rings, ivory white rose bridal bouquet, soft neutral wedding photography."
+        ],
+        [
+          "flowers",
+          255,
+          166,
+          "Ratio 255:166. Reconstruct lower-left floral decoration, large ivory roses and pale pink flowers with dusty mauve and gray-green leaves; refined watercolor on solid #faf5ef cream. Entire cluster within central horizontal rectangle."
+        ],
+        [
+          "footer",
+          251,
+          124,
+          "Ratio 251:124. Reconstruct lower-right floral decoration, blush ivory roses, dusty mauve leaves, fine watercolor on solid #faf5ef cream. Wide low floral spray entirely within central horizontal rectangle."
+        ],
+        [
+          "unused",
+          1,
+          1,
+          "Uniform solid cream #faf5ef, no objects."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 3072 pixels, 2 equal columns and 3 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Portrait ratio 255:397. Reconstruct upper-left photo: tender bride with brown updo and white lace dress holding ivory bouquet, dark-haired groom in black suit leaning his forehead against hers. Warm natural light, pale muted romantic palette. No wavy white overlay.\n2. Ratio 255:220. Reconstruct left middle close-up bride and groom hands and wedding rings, ivory white rose bridal bouquet, soft neutral wedding photography.\n3. Ratio 255:166. Reconstruct lower-left floral decoration, large ivory roses and pale pink flowers with dusty mauve and gray-green leaves; refined watercolor on solid #faf5ef cream. Entire cluster within central horizontal rectangle.\n4. Ratio 244:195. Reconstruct center-column venue photo: long dark-roof country hotel beyond reflective pond, green trees, daylight.\n5. Ratio 251:124. Reconstruct lower-right floral decoration, blush ivory roses, dusty mauve leaves, fine watercolor on solid #faf5ef cream. Wide low floral spray entirely within central horizontal rectangle.\n6. Uniform solid cream #faf5ef, no objects.",
+      "generated": "C:/Users/user/.codex/generated_images/01a08747-2298-73c2-bc23-cc87b7c37841/exec-3c11b5dd-f7a0-4faa-9bbb-4dd0a031f807.png",
+      "rowBounds": [
+        0,
+        576,
+        1065,
+        1536
+      ]
+    },
+    {
+      "id": "tuscany",
+      "ref": "wedding-references/tuscany.jpg",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "hero",
+          147,
+          199,
+          "Ratio 147:199. Reconstruct center-left sepia wedding photo of bride and groom from behind, walking hand in hand, Tuscan hills and cypress trees beyond. Warm faded analog brown tones, detailed not blurry."
+        ],
+        [
+          "story",
+          79,
+          108,
+          "Ratio 79:108. Reconstruct small polaroid photo near top middle: affectionate bride and groom close together on Tuscan hillside in warm sepia light. Photograph only without polaroid frame."
+        ],
+        [
+          "villa",
+          148,
+          59,
+          "Ratio 148:59. Reconstruct thin sepia architectural line drawing of elegant Tuscan villa, on solid cream #f1e8db. Entire villa inside center wide rectangle."
+        ],
+        [
+          "landscape",
+          144,
+          90,
+          "Ratio 144:90. Fine detailed sepia line illustration of rolling Tuscan countryside with cypress trees on solid #f1e8db paper. All scenery within center horizontal rectangle."
+        ],
+        [
+          "hotel",
+          150,
+          137,
+          "Ratio 150:137. Reconstruct small lower-middle photograph of Italian villa terrace, chairs and dining tables under a huge pine tree at dusk, warm glowing lights, brown sepia palette."
+        ],
+        [
+          "fashion",
+          101,
+          174,
+          "Ratio 101:174. Reconstruct delicate sepia outline fashion illustration of a floor-length evening dress and men's jacket side by side on #f1e8db cream paper. Both complete garments fit central portrait rectangle."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 3072 pixels, 2 equal columns and 3 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 147:199. Reconstruct center-left sepia wedding photo of bride and groom from behind, walking hand in hand, Tuscan hills and cypress trees beyond. Warm faded analog brown tones, detailed not blurry.\n2. Ratio 79:108. Reconstruct small polaroid photo near top middle: affectionate bride and groom close together on Tuscan hillside in warm sepia light. Photograph only without polaroid frame.\n3. Ratio 148:59. Reconstruct thin sepia architectural line drawing of elegant Tuscan villa, on solid cream #f1e8db. Entire villa inside center wide rectangle.\n4. Ratio 144:90. Fine detailed sepia line illustration of rolling Tuscan countryside with cypress trees on solid #f1e8db paper. All scenery within center horizontal rectangle.\n5. Ratio 150:137. Reconstruct small lower-middle photograph of Italian villa terrace, chairs and dining tables under a huge pine tree at dusk, warm glowing lights, brown sepia palette.\n6. Ratio 101:174. Reconstruct delicate sepia outline fashion illustration of a floor-length evening dress and men's jacket side by side on #f1e8db cream paper. Both complete garments fit central portrait rectangle.",
+      "generated": "C:/Users/user/.codex/generated_images/01a08747-2298-73c2-bc23-cc87b7c37841/exec-d408d907-232b-4c90-91d4-ac436ff67051.png",
+      "rowBounds": [
+        0,
+        554,
+        981,
+        1536
+      ]
+    },
+    {
+      "id": "burgundy",
+      "ref": "wedding-references/burgundy.jpg",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "hero",
+          147,
+          167,
+          "Ratio 147:167. Reconstruct upper-left romantic bride in fitted white gown kissing groom in black suit, dark wine-red background; elegant warm cinematic wedding photograph."
+        ],
+        [
+          "doors",
+          227,
+          170,
+          "Ratio 227:170. Reconstruct close-up symmetrical dark mahogany double doors with two ornate antique brass handles, rich wood grain, warm dim lighting."
+        ],
+        [
+          "venue",
+          191,
+          185,
+          "Ratio 191:185. Reconstruct upper-right photograph moody candlelit wedding banquet, deep burgundy tablecloths, chairs, gleaming crystal, warm candlelight."
+        ],
+        [
+          "birds",
+          164,
+          96,
+          "Ratio 164:96. Reconstruct lower-left delicate antique brown line engraving of TWO lovebirds together amidst foliage on solid ivory #efeedb. Entire birds and branches fit center horizontal rectangle."
+        ],
+        [
+          "envelope",
+          189,
+          238,
+          "Ratio 189:238. Reconstruct bottom-right burgundy paper envelope opened with a completely BLANK cream card peeking out. Elegant paper texture, solid #efeedb background. No text or number on card."
+        ],
+        [
+          "unused",
+          1,
+          1,
+          "Uniform solid ivory #efeedb."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 3072 pixels, 2 equal columns and 3 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 147:167. Reconstruct upper-left romantic bride in fitted white gown kissing groom in black suit, dark wine-red background; elegant warm cinematic wedding photograph.\n2. Ratio 227:170. Reconstruct close-up symmetrical dark mahogany double doors with two ornate antique brass handles, rich wood grain, warm dim lighting.\n3. Ratio 191:185. Reconstruct upper-right photograph moody candlelit wedding banquet, deep burgundy tablecloths, chairs, gleaming crystal, warm candlelight.\n4. Ratio 164:96. Reconstruct lower-left delicate antique brown line engraving of TWO lovebirds together amidst foliage on solid ivory #efeedb. Entire birds and branches fit center horizontal rectangle.\n5. Ratio 189:238. Reconstruct bottom-right burgundy paper envelope opened with a completely BLANK cream card peeking out. Elegant paper texture, solid #efeedb background. No text or number on card.\n6. Uniform solid ivory #efeedb.",
+      "generated": "C:/Users/user/.codex/generated_images/01a08747-2298-73c2-bc23-cc87b7c37841/exec-9a6c6343-8b17-40f7-bdbb-d0dd036b040c.png",
+      "rowBounds": [
+        0,
+        491,
+        991,
+        1536
+      ]
+    },
+    {
+      "id": "sage",
+      "ref": "template-originals/sage.jpg",
+      "cols": 2,
+      "rows": 2,
+      "tiles": [
+        [
+          "hero",
+          287,
+          271,
+          "Ratio 287:271. Reconstruct upper-left photograph, bride long white flowing dress and dark-suited groom seen from behind holding hands walking through ornate light cream historic room, tall window, wooden parquet, plants. No words or heart overlays."
+        ],
+        [
+          "hands",
+          251,
+          147,
+          "Ratio 251:147. Reconstruct upper-right intimate close-up groom's hand from black suit sleeve touching bride's hand from sheer white ruffled sleeve, soft bright white background. Remove all countdown digits."
+        ],
+        [
+          "couple",
+          283,
+          266,
+          "Ratio 283:266. Reconstruct lower-left photograph bride and groom dancing by ornate curved balustrade in cream palace, bride long veil, groom dark suit raising one hand to twirl her, tall arched window."
+        ],
+        [
+          "footer",
+          285,
+          170,
+          "Ratio 285:170. Reconstruct bottom-right overhead photograph of bride in flowing white dress and groom in black suit walking together across rich deep green lawn. Both whole figures centered in wide rectangle. No white overlays."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 2048 pixels, 2 equal columns and 2 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 287:271. Reconstruct upper-left photograph, bride long white flowing dress and dark-suited groom seen from behind holding hands walking through ornate light cream historic room, tall window, wooden parquet, plants. No words or heart overlays.\n2. Ratio 283:266. Reconstruct lower-left photograph bride and groom dancing by ornate curved balustrade in cream palace, bride long veil, groom dark suit raising one hand to twirl her, tall arched window.\n3. Ratio 251:147. Reconstruct upper-right intimate close-up groom's hand from black suit sleeve touching bride's hand from sheer white ruffled sleeve, soft bright white background. Remove all countdown digits.\n4. Ratio 285:170. Reconstruct bottom-right overhead photograph of bride in flowing white dress and groom in black suit walking together across rich deep green lawn. Both whole figures centered in wide rectangle. No white overlays.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-7760a4e8-23cc-4085-8a9b-17c680750b14.png",
+      "rowBounds": [
+        0,
+        612,
+        1254
+      ]
+    },
+    {
+      "id": "winter",
+      "ref": "wedding-references/winter.jpg",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "hero",
+          182,
+          188,
+          "Ratio 182:188. Reconstruct upper-left photo bride in long white veil holding bouquet and groom in black tuxedo in snowy pine forest, soft icy blue light, high detail."
+        ],
+        [
+          "chandelier",
+          153,
+          151,
+          "Ratio 153:151. Reconstruct ornate hanging clear crystal chandelier on pure white background. Delicate sparkling glass, whole chandelier centered."
+        ],
+        [
+          "venue",
+          181,
+          130,
+          "Ratio 181:130. Reconstruct winter wedding ceremony in snowy forest, luminous glass/crystal gazebo structure, snow-covered evergreens, elegant icy blue palette."
+        ],
+        [
+          "flowers",
+          736,
+          118,
+          "EXTREMELY WIDE ratio 736:118. Arrange a low horizontal border of white roses and slate-blue blossoms across center of pure white cell, all flowers contained in a central strip only 16% of square height! Rest plain white. Reconstruct the bottom flower border from reference."
+        ],
+        [
+          "arch",
+          181,
+          245,
+          "Ratio 181:245. Reconstruct lower-right dreamlike icy cathedral/vaulted doorway looking into snowy forest, delicate crystalline architectural arch, white and muted blue, glowing mist. No lettering or dates."
+        ],
+        [
+          "bow",
+          174,
+          114,
+          "Ratio 174:114. Reconstruct upper-center pale powder-blue silk ribbon bow with draped pearl garlands, on pure white background, entire bow and pearls centered within horizontal rectangle."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 3072 pixels, 2 equal columns and 3 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 182:188. Reconstruct upper-left photo bride in long white veil holding bouquet and groom in black tuxedo in snowy pine forest, soft icy blue light, high detail.\n2. Ratio 153:151. Reconstruct ornate hanging clear crystal chandelier on pure white background. Delicate sparkling glass, whole chandelier centered.\n3. Ratio 181:130. Reconstruct winter wedding ceremony in snowy forest, luminous glass/crystal gazebo structure, snow-covered evergreens, elegant icy blue palette.\n4. EXTREMELY WIDE ratio 736:118. Arrange a low horizontal border of white roses and slate-blue blossoms across center of pure white cell, all flowers contained in a central strip only 16% of square height! Rest plain white. Reconstruct the bottom flower border from reference.\n5. Ratio 181:245. Reconstruct lower-right dreamlike icy cathedral/vaulted doorway looking into snowy forest, delicate crystalline architectural arch, white and muted blue, glowing mist. No lettering or dates.\n6. Ratio 174:114. Reconstruct upper-center pale powder-blue silk ribbon bow with draped pearl garlands, on pure white background, entire bow and pearls centered within horizontal rectangle.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-8e06a500-5182-43a6-b866-cc59a2958835.png"
+    },
+    {
+      "id": "calligraphy",
+      "ref": "wedding-references/calligraphy.jpg",
+      "cols": 2,
+      "rows": 1,
+      "tiles": [
+        [
+          "hero",
+          304,
+          396,
+          "Ratio 304:396. Reconstruct large left photo: young couple embracing outdoors at sunset, man on LEFT in white collared shirt with short dark hair, woman on RIGHT long wavy brown hair in white long-sleeved feather-cuff dress. Sun glows between their faces, warm natural golden light. Preserve back/side pose. No text, no white gradient overlay."
+        ],
+        [
+          "flowers",
+          156,
+          57,
+          "Ratio 156:57. Reconstruct ivory and pale blush petals/white hydrangea flower macro from right column, soft creamy natural tones. Flower texture fills entire cell, no pill mask."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 1024 pixels, 2 equal columns and 1 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 304:396. Reconstruct large left photo: young couple embracing outdoors at sunset, man on LEFT in white collared shirt with short dark hair, woman on RIGHT long wavy brown hair in white long-sleeved feather-cuff dress. Sun glows between their faces, warm natural golden light. Preserve back/side pose. No text, no white gradient overlay.\n2. Ratio 156:57. Reconstruct ivory and pale blush petals/white hydrangea flower macro from right column, soft creamy natural tones. Flower texture fills entire cell, no pill mask.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-c9417be3-e111-4324-8b62-ea0a85ea8022.png"
+    },
+    {
+      "id": "silk",
+      "ref": "template-originals/silk.jpg",
+      "cols": 2,
+      "rows": 2,
+      "tiles": [
+        [
+          "hero",
+          289,
+          392,
+          "Ratio 289:392. Reconstruct phone's black and white photograph only: laughing long-haired woman in light top and jeans sitting embraced from behind by smiling short-haired man in textured gray sweater. Candid affectionate studio portrait, plain light gray background, sharp details. No phone frame, text or white overlay."
+        ],
+        [
+          "couple",
+          244,
+          383,
+          "Ratio 244:383. Reconstruct top-right black and white studio portrait same couple standing back to back, woman long hair light long-sleeve top and jeans, taller man gray ribbed sweater looking upward. Plain light gray studio background, flowing white silk along lower edge only."
+        ],
+        [
+          "flowers",
+          241,
+          181,
+          "Ratio 241:181. Reconstruct middle-right still life of sculptural billowing white silk with three white calla lilies, yellow stamens and fresh green stems, pure white background, detailed fabric folds."
+        ],
+        [
+          "bottom",
+          291,
+          113,
+          "Ratio 291:113. Reconstruct lower-left low wide white silk ribbon with white calla lilies on both sides and a few small pearls at center, pure white background, all artwork within center horizontal rectangle."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 2048 pixels, 2 equal columns and 2 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 289:392. Reconstruct phone's black and white photograph only: laughing long-haired woman in light top and jeans sitting embraced from behind by smiling short-haired man in textured gray sweater. Candid affectionate studio portrait, plain light gray background, sharp details. No phone frame, text or white overlay.\n2. Ratio 244:383. Reconstruct top-right black and white studio portrait same couple standing back to back, woman long hair light long-sleeve top and jeans, taller man gray ribbed sweater looking upward. Plain light gray studio background, flowing white silk along lower edge only.\n3. Ratio 241:181. Reconstruct middle-right still life of sculptural billowing white silk with three white calla lilies, yellow stamens and fresh green stems, pure white background, detailed fabric folds.\n4. Ratio 291:113. Reconstruct lower-left low wide white silk ribbon with white calla lilies on both sides and a few small pearls at center, pure white background, all artwork within center horizontal rectangle.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-3947908e-38b7-4f32-97ec-2dc48533c9b6.png",
+      "rowBounds": [
+        0,
+        738,
+        1254
+      ]
+    },
+    {
+      "id": "kyz-gold-bride",
+      "ref": "template-originals/859061697710284875.jpg",
+      "cols": 2,
+      "rows": 1,
+      "tiles": [
+        [
+          "hero",
+          218,
+          252,
+          "Ratio 218:252. Reconstruct phone photograph only: smiling Central Asian young woman wearing red traditional embroidered cap, rich red jacket with cream geometric embroidery, high-neck white blouse, ornate silver jewelry with red stones. She covers LEFT half of face with raised hand displaying connected rings/bracelet. Beige warm studio background. No white fade, no letters."
+        ],
+        [
+          "footer",
+          216,
+          228,
+          "Ratio 216:228. Reconstruct lower-right photograph same woman same red embroidered costume and cap, looking downward smiling gently, touching edge of red jacket near shoulder. Warm beige studio background, realistic fine embroidery. No arch mask."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 1024 pixels, 2 equal columns and 1 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 218:252. Reconstruct phone photograph only: smiling Central Asian young woman wearing red traditional embroidered cap, rich red jacket with cream geometric embroidery, high-neck white blouse, ornate silver jewelry with red stones. She covers LEFT half of face with raised hand displaying connected rings/bracelet. Beige warm studio background. No white fade, no letters.\n2. Ratio 216:228. Reconstruct lower-right photograph same woman same red embroidered costume and cap, looking downward smiling gently, touching edge of red jacket near shoulder. Warm beige studio background, realistic fine embroidery. No arch mask.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-976447aa-92fa-47db-b798-c57ab1c9acc0.png"
+    },
+    {
+      "id": "kyz-burgundy",
+      "ref": "template-originals/1065945805577372353.jpg",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "hero",
+          115,
+          182,
+          "Ratio 115:182. Reconstruct first panel's intimate close-up of bride's graceful hand wearing ornate silver connected ring and wide bracelet with red carnelian stones, beside silver hanging headdress chains and rich burgundy embroidered traditional garment. Preserve pose and material details; no circle mask."
+        ],
+        [
+          "bride",
+          160,
+          153,
+          "Ratio 160:153. Reconstruct lower-left photograph: close crop of bride in white lace sleeves and pale gold embroidered vest, holding long dark braid with both hands. Face outside frame, natural cream warm tones. No circle mask."
+        ],
+        [
+          "hat",
+          128,
+          146,
+          "Ratio 128:146. Reconstruct top-middle photograph of hands holding tall ivory ceremonial bridal headdress with fine silver embroidery, oval ornaments and dangling pendants beside bright window and sheer white curtain. Whole hat centered. No circle."
+        ],
+        [
+          "hands",
+          104,
+          141,
+          "Ratio 104:141. Reconstruct middle photograph of hands braiding bride's long dark braid, traditional silver connected rings bracelet with pale blue stones, white sleeve, warm burgundy textile and fur background. Anatomically correct hands. No circle."
+        ],
+        [
+          "yurt",
+          141,
+          131,
+          "Ratio 141:131. Reconstruct upward view inside traditional yurt through circular red wooden roof ribs to blue sky, central hanging ornament and small horse-shaped decorations, embroidered felt wall textiles. Clear photo. No circle mask."
+        ],
+        [
+          "unused",
+          1,
+          1,
+          "Uniform solid cream #f5eadd."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 3072 pixels, 2 equal columns and 3 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 115:182. Reconstruct first panel's intimate close-up of bride's graceful hand wearing ornate silver connected ring and wide bracelet with red carnelian stones, beside silver hanging headdress chains and rich burgundy embroidered traditional garment. Preserve pose and material details; no circle mask.\n2. Ratio 160:153. Reconstruct lower-left photograph: close crop of bride in white lace sleeves and pale gold embroidered vest, holding long dark braid with both hands. Face outside frame, natural cream warm tones. No circle mask.\n3. Ratio 128:146. Reconstruct top-middle photograph of hands holding tall ivory ceremonial bridal headdress with fine silver embroidery, oval ornaments and dangling pendants beside bright window and sheer white curtain. Whole hat centered. No circle.\n4. Ratio 104:141. Reconstruct middle photograph of hands braiding bride's long dark braid, traditional silver connected rings bracelet with pale blue stones, white sleeve, warm burgundy textile and fur background. Anatomically correct hands. No circle.\n5. Ratio 141:131. Reconstruct upward view inside traditional yurt through circular red wooden roof ribs to blue sky, central hanging ornament and small horse-shaped decorations, embroidered felt wall textiles. Clear photo. No circle mask.\n6. Uniform solid cream #f5eadd.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-afeb8359-53ba-40a4-a4f3-e11ea492fa2a.png"
+    },
+    {
+      "id": "kyz-ethno",
+      "ref": "template-originals/720998221637252803.jpg",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "hero",
+          275,
+          400,
+          "Ratio 275:400. Reconstruct left photograph: elegant bride's hand beside silver dangling headdress jewelry, ornate silver connected rings and bracelet with vivid red carnelian stones on fingers and wrist, dark burgundy traditional embroidered garment. Sharp filigree and natural skin texture. No words or phone frame."
+        ],
+        [
+          "hands",
+          283,
+          160,
+          "Ratio 283:160. Reconstruct right-top photograph close-up of hands braiding a woman's long dark braid, silver ring bracelet with pale blue stones, white blouse sleeve, deep red cap and fur-trimmed traditional vest. No countdown, no text."
+        ],
+        [
+          "women",
+          236,
+          217,
+          "Ratio 236:217. Reconstruct dress-code photo contact sheet: six Central Asian adult women in elegant traditional embroidered formal costumes and ornamental caps, 3 columns by 2 rows, sage/teal, burgundy, brown and cream garments, neutral studio backgrounds. Entire six-portrait contact sheet fit in centered rectangle, no labels."
+        ],
+        [
+          "men",
+          234,
+          99,
+          "Ratio 234:99. Reconstruct dress-code contact sheet three Central Asian adult men side by side wearing formal traditional embroidered coats and caps in dark brown, tan and charcoal. Whole 3-portrait strip fits centered horizontal rectangle, neutral backgrounds, no labels."
+        ],
+        [
+          "flower",
+          137,
+          111,
+          "Ratio 137:111. Reconstruct delicate translucent watercolor leaves in muted mauve gray and blush pink, fine gold stems, airy cluster on solid #fffdf8. Whole cluster centered."
+        ],
+        [
+          "unused",
+          1,
+          1,
+          "Uniform solid cream #fffdf8."
+        ]
+      ],
+      "prompt": "Create a production high-resolution image texture atlas, exactly 2048 by 3072 pixels, 2 equal columns and 3 equal rows. Every cell is exactly square, edge-to-edge, no gaps, no borders, no labels. Read the attached invitation screenshot ONLY as the visual reference for the photographs and decorative artwork, never reproduce the invitation layout. Reconstruct its tiny images as sharp, natural, detailed standalone imagery. Preserve the reference subjects, poses, palette, clothing, materials and mood. No writing, names, dates, lettering, watermarks, logos, phone frames, UI, countdowns or calendar anywhere. Each cell must remain independent: do not blend or let objects cross into neighboring cells. Photos fill their square cell with natural background, not white margin; ornamental illustrations use the stated solid paper background. The application center-crops each square to the specified aspect ratio: ALL important subject details must fit inside that centered aspect-ratio rectangle, while background extends to square edges. Anatomically correct hands, realistic fabric, clean fine details, no pixelation. Cell order left-to-right, top-to-bottom:\n1. Ratio 275:400. Reconstruct left photograph: elegant bride's hand beside silver dangling headdress jewelry, ornate silver connected rings and bracelet with vivid red carnelian stones on fingers and wrist, dark burgundy traditional embroidered garment. Sharp filigree and natural skin texture. No words or phone frame.\n2. Ratio 283:160. Reconstruct right-top photograph close-up of hands braiding a woman's long dark braid, silver ring bracelet with pale blue stones, white blouse sleeve, deep red cap and fur-trimmed traditional vest. No countdown, no text.\n3. Ratio 236:217. Reconstruct dress-code photo contact sheet: six Central Asian adult women in elegant traditional embroidered formal costumes and ornamental caps, 3 columns by 2 rows, sage/teal, burgundy, brown and cream garments, neutral studio backgrounds. Entire six-portrait contact sheet fit in centered rectangle, no labels.\n4. Ratio 234:99. Reconstruct dress-code contact sheet three Central Asian adult men side by side wearing formal traditional embroidered coats and caps in dark brown, tan and charcoal. Whole 3-portrait strip fits centered horizontal rectangle, neutral backgrounds, no labels.\n5. Ratio 137:111. Reconstruct delicate translucent watercolor leaves in muted mauve gray and blush pink, fine gold stems, airy cluster on solid #fffdf8. Whole cluster centered.\n6. Uniform solid cream #fffdf8.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-8bbe0ab1-eef8-418c-b2a0-73f7cfc380ec.png",
+      "rowBounds": [
+        0,
+        581,
+        1056,
+        1536
+      ]
+    },
+    {
+      "id": "newspaper",
+      "ref": "template-originals/1146869861388231089.jpg",
+      "cols": 1,
+      "rows": 1,
+      "tiles": [
+        [
+          "hero",
+          408,
+          616,
+          ""
+        ]
+      ],
+      "prompt": "Restore and reconstruct ONLY the black-and-white wedding photograph in the attached invitation reference as a standalone high-resolution 1024x1536 portrait photograph. Bride on LEFT in a long flowing off-shoulder white wedding gown holding bouquet in left hand, groom on RIGHT in black suit, both seen from behind, holding hands, walking through elegant historic art gallery with framed paintings, arched doorway and parquet floor. Match original composition, pose, gray tones and romantic documentary mood. Extend photo naturally to frame edges; sharp detailed fabric, hair, paintings and wood floor, clean natural photographic texture. No invitation layout, no text, no letters, no lines, no watermark, no borders. Preserve photographic scene rather than redesigning it. Reference is low-resolution so carefully reconstruct plausible fine details.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-98f43fc7-88b5-4dd3-a852-d0aab3669750.png"
+    },
+    {
+      "id": "mountains",
+      "cols": 2,
+      "rows": 3,
+      "tiles": [
+        [
+          "collage",
+          218,
+          172
+        ],
+        [
+          "table",
+          81,
+          145
+        ],
+        [
+          "fashion",
+          214,
+          114
+        ],
+        [
+          "couple",
+          215,
+          171
+        ],
+        [
+          "footer",
+          215,
+          83
+        ],
+        [
+          "venue",
+          119,
+          31
+        ]
+      ],
+      "prompt": "Create a high-resolution production texture atlas for the attached mountain wedding invitation. Exactly 2 equal columns and 3 equal rows, six independent square cells, 2048x3072. No text, lettering, watermarks, phone frames or interface. Reconstruct the tiny supporting photos with crisp natural photographic detail; preserve warm ivory, golden meadow, brown and charcoal palette. Same adult couple throughout: woman long dark hair sleeveless flowing ivory dress, man dark hair white open collar shirt beige trousers. Left to right top to bottom: 1) contact sheet wedding photographs in golden grass beneath jagged mountains, four natural romantic poses; 2) close portrait of elegant wedding table with ivory roses, white plates, gold cutlery and crystal glasses; 3) fashion contact sheet four adult models side by side full length, taupe mens suit, brown floor length evening gown, charcoal mens suit, black evening outfit; 4) couple walking hand in hand through golden meadow with jagged mountain backdrop, smiling at one another, wide framing; 5) same couple embracing under mountains, subjects fit in central wide horizontal band; 6) warm elegant restaurant interior with large windows, chandeliers, set banquet tables and floral decor, wide framing. Each cell independent and filled to edges. No letters anywhere, no blank cells.",
+      "generated": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-23f104b4-27f2-419a-9e19-02eabf703d96.png",
+      "rowBounds": [
+        0,
+        530,
+        1014,
+        1536
+      ]
+    }
+  ],
+  "heroOverrides": {
+    "rose": "C:/Users/user/.codex/generated_images/01a08747-2298-73c2-bc23-cc87b7c37841/exec-182ed4ae-cd6d-4b71-a865-462cb369e31d.png",
+    "tuscany": "C:\\Users\\user\\.codex\\generated_images\\01a0908a-334f-77f0-8b33-7a1d609e6319\\exec-b589e912-d93f-4138-867e-d8aec687737a.png"
+  }
+}

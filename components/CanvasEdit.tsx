@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
+import { invitationText } from "@/lib/inviteTranslations";
+import { useInvitationLanguage } from "./InvitationLanguage";
 
 export type InvitePatch = (partial: Partial<Invitation>) => void;
 
@@ -24,10 +26,13 @@ export function CanvasText({
   style?: React.CSSProperties;
   multiline?: boolean;
 }) {
+  const locale = useInvitationLanguage();
+  const displayedValue = locale ? invitationText(value, locale) : value;
+  const displayedPlaceholder = locale ? invitationText(placeholder, locale) : placeholder;
   if (!onChange) {
     return (
       <p className={className} style={style}>
-        {value || placeholder}
+        {displayedValue || displayedPlaceholder}
       </p>
     );
   }
@@ -35,8 +40,8 @@ export function CanvasText({
   const shared = {
     className: `${editRing} relative z-20 w-full text-center font-[inherit] ${className}`,
     style,
-    value,
-    placeholder,
+    value: displayedValue,
+    placeholder: displayedPlaceholder,
     onChange: (
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => onChange(e.target.value),

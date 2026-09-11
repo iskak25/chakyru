@@ -1,0 +1,229 @@
+{
+  "generatedPreserved": [
+    {
+      "file": "public\\images\\wedding-references\\mountains-hero-clean.png",
+      "hash": "6b02f8690ff30ce8e8e1bed88922b37dfd040e83c6ce5213b596ecdbfa6f3b7c"
+    },
+    {
+      "file": "public\\images\\wedding-references\\stars-hero-clean.png",
+      "hash": "513f928c3e41b7d31de4ca8a88de9f67f040ded47a52f1b2789aa107d847b49f"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\blush-clean.png",
+      "hash": "b6de5aad1d75b8ce3010ee95a77c610f04f14a92eb9f374feb0a724cd06aed57"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\glam-clean.png",
+      "hash": "784fcc2dda449b24f2c4a2097aaa15accff480f4ca7f0d6ef251f5c97dd27583"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\gold-clean.png",
+      "hash": "4f50674fb81a0a0711b5fd6947424515921c5e00058091cdb04d1a4943afac63"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\hands-clean.png",
+      "hash": "ba5b8d8b79d283787b17bc6c203a5d699d7ae7d8ffb1653b9589e8128f47b1c1"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\jentek-clean.png",
+      "hash": "460019fc1473451ed936ce63e11d4afc46049862cb64c3c12c06f4a33e55e893"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\mono-clean.png",
+      "hash": "bf0b85522b50061e781eeb4f739f3ef789a3ce2b6046f4f7a4f3c72e10d1b7f1"
+    },
+    {
+      "file": "public\\images\\pinterest-references\\tushoo-clean.png",
+      "hash": "8ae1a3e1e9944c58c404de6d4946425d4d35a8cbb1243786313c5b40af168e10"
+    }
+  ],
+  "images": [
+    {
+      "file": "/images/pinterest-references/720998221637252803.jpg",
+      "url": "https://i.pinimg.com/originals/f6/93/b2/f693b25e0f4d1f5ed28c69f1051b91e2.jpg",
+      "target": "/images/template-originals/720998221637252803.jpg",
+      "before": [
+        736,
+        1308
+      ],
+      "after": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "file": "/images/pinterest-references/859061697710284875.jpg",
+      "url": "https://i.pinimg.com/originals/dd/59/82/dd5982986136aab0c1553175794d0878.jpg",
+      "target": "/images/template-originals/859061697710284875.jpg",
+      "before": [
+        736,
+        1308
+      ],
+      "after": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "file": "/images/pinterest-references/1065945805577372353.jpg",
+      "url": "https://i.pinimg.com/originals/bc/7f/fe/bc7ffe18dc5bfeb2e6ad08f02747a68e.jpg",
+      "target": "/images/template-originals/1065945805577372353.jpg",
+      "before": [
+        736,
+        1308
+      ],
+      "after": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "file": "/images/pinterest-references/159455643066435049.jpg",
+      "url": "https://i.pinimg.com/originals/9a/4a/a3/9a4aa3275e7679982b0ab4767769a9c9.jpg",
+      "target": "/images/template-originals/159455643066435049.jpg",
+      "before": [
+        736,
+        1308
+      ],
+      "after": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "file": "/images/pinterest-references/1132514637566318009.jpg",
+      "url": "https://i.pinimg.com/originals/c1/7b/41/c17b41c7313e149f34b6b5d3f1d7f816.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/pinterest-references/8162843071272656.jpg",
+      "url": "https://i.pinimg.com/originals/19/6e/6d/196e6d74d689a8f7dc712f6ec4a324a8.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/pinterest-references/1101130177700426062.jpg",
+      "url": "https://i.pinimg.com/originals/72/75/f7/7275f7182ea163c80e63df222eb98d81.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/pinterest-references/1120059369853155022.jpg",
+      "url": "https://i.pinimg.com/originals/0d/b5/b7/0db5b7557e4dc079273b62837f32d78f.jpg",
+      "unchanged": "Original has no additional resolution"
+    },
+    {
+      "file": "/images/pinterest-references/628533691790847296.jpg",
+      "url": "https://i.pinimg.com/originals/fd/01/60/fd01608cfb55a92c4015ec1165f91e9f.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/pinterest-references/836754805815479181.jpg",
+      "url": "https://i.pinimg.com/originals/70/92/9f/70929f007efd45e95abe3b250bf3a6f7.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/pinterest-references/1122170432185623344.jpg",
+      "url": "https://i.pinimg.com/originals/8e/03/81/8e03818e484e6c0205bfb6e5402062a2.jpg",
+      "target": "/images/template-originals/1122170432185623344.jpg",
+      "before": [
+        735,
+        1039
+      ],
+      "after": [
+        816,
+        1153
+      ]
+    },
+    {
+      "file": "/images/pinterest-references/1146869861388231089.jpg",
+      "url": "https://i.pinimg.com/originals/3e/b2/a4/3eb2a4aff9281069e58595157637ad16.jpg",
+      "target": "/images/template-originals/1146869861388231089.jpg",
+      "before": [
+        735,
+        1029
+      ],
+      "after": [
+        1217,
+        1703
+      ]
+    },
+    {
+      "file": "/images/wedding-references/winter.jpg",
+      "url": "https://i.pinimg.com/originals/3a/df/81/3adf81a0e3c7fbdf34f8623d3e70e0d5.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/wedding-references/mountains.jpg",
+      "url": "https://i.pinimg.com/originals/4f/a7/fe/4fa7fea3d9ccfb9ebe56f4fc75de78c3.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/wedding-references/silk.jpg",
+      "url": "https://i.pinimg.com/originals/1a/9c/9b/1a9c9bd5e98c3138757dda651784f3ea.jpg",
+      "target": "/images/template-originals/silk.jpg",
+      "before": [
+        736,
+        1308
+      ],
+      "after": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "file": "/images/pinterest-references/685884218295084312.jpg",
+      "url": "https://i.pinimg.com/originals/3c/eb/77/3ceb77745a6f5cec495fbbb5698995a1.jpg",
+      "target": "/images/template-originals/685884218295084312.jpg",
+      "before": [
+        736,
+        981
+      ],
+      "after": [
+        1440,
+        1920
+      ]
+    },
+    {
+      "file": "/images/wedding-references/stars.jpg",
+      "url": "https://i.pinimg.com/originals/ea/d3/4e/ead34eef3a7e815af7bccb685d1682c3.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/wedding-references/burgundy.jpg",
+      "url": "https://i.pinimg.com/originals/b0/da/fb/b0dafbe66aec588bc421884d7b2ee266.jpg",
+      "unchanged": "HTTP 403"
+    },
+    {
+      "file": "/images/wedding-references/rose.jpg",
+      "url": "https://i.pinimg.com/originals/92/31/53/923153a7a5670bca9d2fe1b0be3587a1.jpg",
+      "unchanged": "Original has no additional resolution"
+    },
+    {
+      "file": "/images/wedding-references/sage.jpg",
+      "url": "https://i.pinimg.com/originals/85/a8/17/85a817a7d1bbcfe0ce60b81448b05d35.jpg",
+      "target": "/images/template-originals/sage.jpg",
+      "before": [
+        736,
+        1308
+      ],
+      "after": [
+        1080,
+        1920
+      ]
+    },
+    {
+      "file": "/images/templates/mauve/hero.jpg",
+      "url": "https://i.pinimg.com/originals/f5/cc/fa/f5ccfa9943f99299916365e3d67bd159.jpg",
+      "unchanged": "fetch failed"
+    },
+    {
+      "file": "/images/templates/jipek/hero.jpg",
+      "url": "https://i.pinimg.com/originals/ae/ca/ab/aecaab65bd5d5b3a76d4802260ac73f7.jpg",
+      "unchanged": "fetch failed"
+    },
+    {
+      "file": "/images/templates/ivory/hero.jpg",
+      "url": "https://i.pinimg.com/originals/ac/1d/1a/ac1d1ac986e4071fcd9c771becbd5834.jpg",
+      "unchanged": "fetch failed"
+    }
+  ]
+}

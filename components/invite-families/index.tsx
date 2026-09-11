@@ -1,5 +1,7 @@
 "use client";
 
+import { useInvitationLanguage } from "../InvitationLanguage";
+import { invitationText } from "@/lib/inviteTranslations";
 import type { InviteFamily } from "@/lib/inviteFamilies";
 import type { LayoutKit } from "../Site3DLayouts";
 import { BlushFamily } from "./Blush";
@@ -49,12 +51,14 @@ export function FamilyThumb({
   b: string;
   heroPhoto: string;
 }) {
+  const locale = useInvitationLanguage() || "ky";
+  const tr = (value: string) => invitationText(value, locale);
   if (family === "luxury") {
     return (
       <div className="relative h-full overflow-hidden bg-[#120e0c] text-[#c4a35e]">
         <img src={heroPhoto} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35" />
         <div className="relative flex h-full flex-col items-center justify-end px-4 pb-8 text-center">
-          <p className="text-[8px] uppercase tracking-[0.28em]">Invitation</p>
+          <p className="text-[8px] uppercase tracking-[0.28em]">{tr("Приглашение")}</p>
           <p className="font-lux mt-2 text-[22px] leading-tight text-[#f7efe3]">{a}</p>
           <p className="font-lux text-[22px] leading-tight text-[#f7efe3]">{b}</p>
         </div>
@@ -64,7 +68,7 @@ export function FamilyThumb({
   if (family === "modern") {
     return (
       <div className="flex h-full flex-col justify-end bg-white px-4 pb-7 text-black">
-        <p className="mb-auto pt-8 text-[8px] uppercase tracking-[0.2em] text-black/40">Save the date</p>
+        <p className="mb-auto pt-8 text-[8px] uppercase tracking-[0.2em] text-black/40">{tr("Сохраните дату")}</p>
         <p className="font-mod text-[30px] uppercase leading-[0.82]">{a}</p>
         <p className="font-mod my-1 text-[14px] tracking-[0.3em] text-black/30">/</p>
         <p className="font-mod text-[30px] uppercase leading-[0.82]">{b}</p>
@@ -134,7 +138,7 @@ export function FamilyThumb({
       <div className="relative h-full overflow-hidden bg-[#f4f4f2]">
         <img src={heroPhoto} alt="" className="h-[56%] w-full object-cover grayscale" />
         <div className="px-3 pt-4 text-center">
-          <p className="text-[8px] uppercase tracking-[0.22em] text-[#7a7a7a]">Save the date</p>
+          <p className="text-[8px] uppercase tracking-[0.22em] text-[#7a7a7a]">{tr("Сохраните дату")}</p>
           <p className="font-mod mt-1 text-[18px] uppercase leading-tight text-[#1a1a1a]">
             {a} & {b}
           </p>
@@ -171,7 +175,7 @@ export function FamilyThumb({
   if (family === "meadow") {
     return (
       <div className="relative flex h-full flex-col items-center justify-center overflow-hidden bg-[#f7f3ec] px-3 text-center">
-        <p className="font-lux text-[16px] uppercase text-[#2c261c]">We</p>
+        <p className="font-lux text-[16px] uppercase text-[#2c261c]">{tr("Мы")}</p>
         <p className="font-lux mt-1 text-[20px] leading-tight text-[#2c261c]">
           {a} & {b}
         </p>
@@ -229,7 +233,7 @@ export function FamilyThumb({
   }
   return (
     <div className="flex h-full flex-col items-center justify-center bg-[#f7f1e8] px-4 text-center">
-      <p className="text-[9px] uppercase tracking-[0.24em] text-[#8b5e34]">Save the date</p>
+      <p className="text-[9px] uppercase tracking-[0.24em] text-[#8b5e34]">{tr("Сохраните дату")}</p>
       <p className="font-ele-script mt-3 text-[24px] leading-tight text-[#4a3424]">
         {a} & {b}
       </p>

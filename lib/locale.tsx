@@ -6,12 +6,28 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import { getDict, type Dictionary } from "./i18n";
 import type { Locale } from "./types";
 
 const KEY = "chakyru-locale";
+const LOCALE_EVENT = "chakyru-locale-change";
+let memoryLocale: Locale = "ky";
+function readLocale(): Locale {
+  try {
+    const value = localStorage.getItem(KEY);
+    return value === "ru" || value === "ky" ? value : memoryLocale;
+  } catch { return memoryLocale; }
+}
+function subscribeLocale(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(LOCALE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(LOCALE_EVENT, onChange);
+  };
+}
 
 type LocaleContextValue = {
   locale: Locale;
@@ -22,17 +38,16 @@ type LocaleContextValue = {
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("ky");
+  const locale = useSyncExternalStore(subscribeLocale, readLocale, () => "ky" as Locale);
 
   useEffect(() => {
-    const saved = localStorage.getItem(KEY) as Locale | null;
-    if (saved === "ky" || saved === "ru") setLocaleState(saved);
-  }, []);
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
-    localStorage.setItem(KEY, next);
-    document.documentElement.lang = next;
+    memoryLocale = next;
+    try { localStorage.setItem(KEY, next); } catch { /* Keep the current choice when browser storage is unavailable. */ }
+    window.dispatchEvent(new Event(LOCALE_EVENT));
   }, []);
 
   const value = useMemo(

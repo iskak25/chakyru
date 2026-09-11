@@ -1,0 +1,308 @@
+{
+  "/images/wedding-references/rose.jpg|29,109,255,397": {
+    "source": "/images/template-restored/rose-hero.webp",
+    "width": 1024,
+    "height": 1536,
+    "fit": "cover"
+  },
+  "/images/wedding-references/rose.jpg|305,1058,244,195": {
+    "source": "/images/template-restored/rose-venue.webp",
+    "width": 508,
+    "height": 572,
+    "fit": "cover"
+  },
+  "/images/wedding-references/rose.jpg|29,946,255,220": {
+    "source": "/images/template-restored/rose-hands.webp",
+    "width": 508,
+    "height": 485,
+    "fit": "cover"
+  },
+  "/images/wedding-references/rose.jpg|29,1348,255,166": {
+    "source": "/images/template-restored/rose-flowers.webp",
+    "width": 508,
+    "height": 485,
+    "fit": "contain"
+  },
+  "/images/wedding-references/rose.jpg|568,1389,251,124": {
+    "source": "/images/template-restored/rose-footer.webp",
+    "width": 508,
+    "height": 467,
+    "fit": "contain"
+  },
+  "/images/wedding-references/tuscany.jpg|212,345,147,199": {
+    "source": "/images/template-restored/tuscany-hero.webp",
+    "width": 1024,
+    "height": 1536,
+    "fit": "cover"
+  },
+  "/images/wedding-references/tuscany.jpg|390,130,79,108": {
+    "source": "/images/template-restored/tuscany-story.webp",
+    "width": 508,
+    "height": 550,
+    "fit": "cover"
+  },
+  "/images/wedding-references/tuscany.jpg|386,389,148,59": {
+    "source": "/images/template-restored/tuscany-villa.webp",
+    "width": 508,
+    "height": 423,
+    "fit": "contain"
+  },
+  "/images/wedding-references/tuscany.jpg|213,889,144,90": {
+    "source": "/images/template-restored/tuscany-landscape.webp",
+    "width": 508,
+    "height": 423,
+    "fit": "contain"
+  },
+  "/images/wedding-references/tuscany.jpg|385,799,150,137": {
+    "source": "/images/template-restored/tuscany-hotel.webp",
+    "width": 508,
+    "height": 551,
+    "fit": "cover"
+  },
+  "/images/wedding-references/tuscany.jpg|583,286,101,174": {
+    "source": "/images/template-restored/tuscany-fashion.webp",
+    "width": 508,
+    "height": 551,
+    "fit": "contain"
+  },
+  "/images/wedding-references/burgundy.jpg|147,147,147,167": {
+    "source": "/images/template-restored/burgundy-hero.webp",
+    "width": 508,
+    "height": 487,
+    "fit": "cover"
+  },
+  "/images/wedding-references/burgundy.jpg|107,409,227,170": {
+    "source": "/images/template-restored/burgundy-doors.webp",
+    "width": 508,
+    "height": 487,
+    "fit": "cover"
+  },
+  "/images/wedding-references/burgundy.jpg|420,0,191,185": {
+    "source": "/images/template-restored/burgundy-venue.webp",
+    "width": 508,
+    "height": 496,
+    "fit": "cover"
+  },
+  "/images/wedding-references/burgundy.jpg|140,890,164,96": {
+    "source": "/images/template-restored/burgundy-birds.webp",
+    "width": 508,
+    "height": 496,
+    "fit": "contain"
+  },
+  "/images/wedding-references/burgundy.jpg|421,891,189,238": {
+    "source": "/images/template-restored/burgundy-envelope.webp",
+    "width": 508,
+    "height": 541,
+    "fit": "contain"
+  },
+  "/images/wedding-references/sage.jpg|79,177,287,271": {
+    "source": "/images/template-restored/sage-hero.webp",
+    "width": 623,
+    "height": 608,
+    "fit": "cover"
+  },
+  "/images/wedding-references/sage.jpg|426,461,251,147": {
+    "source": "/images/template-restored/sage-hands.webp",
+    "width": 623,
+    "height": 608,
+    "fit": "cover"
+  },
+  "/images/wedding-references/sage.jpg|81,775,283,266": {
+    "source": "/images/template-restored/sage-couple.webp",
+    "width": 623,
+    "height": 638,
+    "fit": "cover"
+  },
+  "/images/wedding-references/sage.jpg|411,1138,285,170": {
+    "source": "/images/template-restored/sage-footer.webp",
+    "width": 623,
+    "height": 638,
+    "fit": "cover"
+  },
+  "/images/wedding-references/winter.jpg|57,244,182,188": {
+    "source": "/images/template-restored/winter-hero.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/wedding-references/winter.jpg|73,612,153,151": {
+    "source": "/images/template-restored/winter-chandelier.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "contain"
+  },
+  "/images/wedding-references/winter.jpg|57,823,181,130": {
+    "source": "/images/template-restored/winter-venue.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/wedding-references/winter.jpg|0,986,736,118": {
+    "source": "/images/template-restored/winter-flowers.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "contain"
+  },
+  "/images/wedding-references/winter.jpg|493,676,181,245": {
+    "source": "/images/template-restored/winter-arch.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/wedding-references/winter.jpg|278,192,174,114": {
+    "source": "/images/template-restored/winter-bow.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "contain"
+  },
+  "/images/wedding-references/calligraphy.jpg|68,180,304,396": {
+    "source": "/images/template-restored/calligraphy-hero.webp",
+    "width": 883,
+    "height": 887,
+    "fit": "cover"
+  },
+  "/images/wedding-references/calligraphy.jpg|522,376,156,57": {
+    "source": "/images/template-restored/calligraphy-flowers.webp",
+    "width": 883,
+    "height": 887,
+    "fit": "contain"
+  },
+  "/images/wedding-references/silk.jpg|79,498,289,392": {
+    "source": "/images/template-restored/silk-hero.webp",
+    "width": 623,
+    "height": 734,
+    "fit": "cover"
+  },
+  "/images/wedding-references/silk.jpg|436,0,244,383": {
+    "source": "/images/template-restored/silk-couple.webp",
+    "width": 623,
+    "height": 734,
+    "fit": "cover"
+  },
+  "/images/wedding-references/silk.jpg|438,591,241,181": {
+    "source": "/images/template-restored/silk-flowers.webp",
+    "width": 623,
+    "height": 512,
+    "fit": "contain"
+  },
+  "/images/wedding-references/silk.jpg|76,1194,291,113": {
+    "source": "/images/template-restored/silk-bottom.webp",
+    "width": 623,
+    "height": 512,
+    "fit": "contain"
+  },
+  "/images/pinterest-references/859061697710284875.jpg|23,225,218,252": {
+    "source": "/images/template-restored/kyz-gold-bride-hero.webp",
+    "width": 883,
+    "height": 887,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/859061697710284875.jpg|494,872,216,228": {
+    "source": "/images/template-restored/kyz-gold-bride-footer.webp",
+    "width": 883,
+    "height": 887,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/1065945805577372353.jpg|119,319,115,182": {
+    "source": "/images/template-restored/kyz-burgundy-hero.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/1065945805577372353.jpg|41,610,160,153": {
+    "source": "/images/template-restored/kyz-burgundy-bride.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/1065945805577372353.jpg|356,213,128,146": {
+    "source": "/images/template-restored/kyz-burgundy-hat.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/1065945805577372353.jpg|252,454,104,141": {
+    "source": "/images/template-restored/kyz-burgundy-hands.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/1065945805577372353.jpg|503,320,141,131": {
+    "source": "/images/template-restored/kyz-burgundy-yurt.webp",
+    "width": 508,
+    "height": 508,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/720998221637252803.jpg|60,215,275,400": {
+    "source": "/images/template-restored/kyz-ethno-hero.webp",
+    "width": 508,
+    "height": 577,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/720998221637252803.jpg|416,312,283,160": {
+    "source": "/images/template-restored/kyz-ethno-hands.webp",
+    "width": 508,
+    "height": 577,
+    "fit": "cover"
+  },
+  "/images/pinterest-references/720998221637252803.jpg|441,886,236,217": {
+    "source": "/images/template-restored/kyz-ethno-women.webp",
+    "width": 508,
+    "height": 471,
+    "fit": "contain"
+  },
+  "/images/pinterest-references/720998221637252803.jpg|442,1149,234,99": {
+    "source": "/images/template-restored/kyz-ethno-men.webp",
+    "width": 508,
+    "height": 471,
+    "fit": "contain"
+  },
+  "/images/pinterest-references/720998221637252803.jpg|200,824,137,111": {
+    "source": "/images/template-restored/kyz-ethno-flower.webp",
+    "width": 508,
+    "height": 476,
+    "fit": "contain"
+  },
+  "/images/pinterest-references/1146869861388231089.jpg|326,252,408,616": {
+    "source": "/images/template-restored/newspaper-hero.webp",
+    "width": 1024,
+    "height": 1536,
+    "fit": "cover"
+  },
+  "/images/wedding-references/mountains.jpg|97,674,218,172": {
+    "source": "/images/template-restored/mountains-collage.webp",
+    "width": 508,
+    "height": 526,
+    "fit": "contain"
+  },
+  "/images/wedding-references/mountains.jpg|422,163,81,145": {
+    "source": "/images/template-restored/mountains-table.webp",
+    "width": 508,
+    "height": 526,
+    "fit": "cover"
+  },
+  "/images/wedding-references/mountains.jpg|422,454,214,114": {
+    "source": "/images/template-restored/mountains-fashion.webp",
+    "width": 508,
+    "height": 480,
+    "fit": "contain"
+  },
+  "/images/wedding-references/mountains.jpg|422,740,215,171": {
+    "source": "/images/template-restored/mountains-couple.webp",
+    "width": 508,
+    "height": 480,
+    "fit": "cover"
+  },
+  "/images/wedding-references/mountains.jpg|422,1112,215,83": {
+    "source": "/images/template-restored/mountains-footer.webp",
+    "width": 508,
+    "height": 518,
+    "fit": "cover"
+  },
+  "/images/wedding-references/mountains.jpg|174,926,119,31": {
+    "source": "/images/template-restored/mountains-venue.webp",
+    "width": 508,
+    "height": 518,
+    "fit": "cover"
+  }
+}

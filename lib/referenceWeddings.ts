@@ -44,8 +44,9 @@ export function referenceWedding(inv: Pick<Invitation, "templateId" | "copy">) {
   const key = inv.copy?.["reference.design"] || inv.templateId.replace(/^reference-/, "");
   return referenceWeddings.find(item => item.id === key);
 }
+const kyrgyzTitles: Record<ReferenceDesign, string> = { silk:"Ак жибек",calligraphy:"Назик каллиграфия",winter:"Кышкы керемет",mountains:"Тоодогу үйлөнүү той",sage:"Шалфей жана жүрөктөр",rose:"Назик роза",burgundy:"Кочкул кызыл баркыт",tuscany:"Тоскана",stars:"Жылдыздар астында" };
 export const referenceWeddingTemplates: InvitationTemplate[] = referenceWeddings.map(design => ({
-  id: `reference-${design.id}`, name: { ru: design.title, ky: design.title }, designer: "Chakyru Studio", format: "site3d", priceSom: 590, eventTypes: ["wedding"],
+  id: `reference-${design.id}`, name: { ru: design.title, ky: kyrgyzTitles[design.id] }, designer: "Chakyru Studio", format: "site3d", priceSom: 590, eventTypes: ["wedding"],
   style: { bg: design.paper, panel: design.paper, pageBg: design.paper, accent: design.accent, text: design.ink, muted: design.accent, ornament: design.accent, pageLayout: "classic" },
   canvas: { names: design.names, date: design.date, time: "17:00", venue: design.venue, address: design.address, city: "", message: "", dressCode: "", mapUrl: "", coverImage: "", musicUrl: "", layout: {}, extras: [], gallery: {}, blockColors: {}, copy: { "reference.design": design.id } },
 }));

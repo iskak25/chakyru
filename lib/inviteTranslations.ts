@@ -1,8 +1,11 @@
 import entries from "./inviteTranslations.json";
+import themeEntries from "./inviteThemeTranslations.json";
+import detailEntries from "./inviteDetailTranslations.json";
+import titleEntries from "./inviteTitleTranslations.json";
 
 const normalize = (value: string) => value.replaceAll("\\n", "\n").replace(/\s+/g, " ").trim().toLocaleLowerCase();
 const translations = new Map<string, { ru: string; ky: string }>();
-for (const [ru, ky, ...aliases] of entries) {
+for (const [ru, ky, ...aliases] of [...entries, ...themeEntries, ...detailEntries, ...titleEntries]) {
   for (const value of [ru, ky, ...aliases]) translations.set(normalize(value), { ru, ky });
 }
 

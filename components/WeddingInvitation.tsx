@@ -16,6 +16,7 @@ import {
   Utensils,
 } from "lucide-react";
 import type { Invitation } from "@/lib/types";
+import { invitationText, invitationDateLocale } from "@/lib/inviteTranslations";
 import type { InvitePatch } from "./CanvasEdit";
 import { WeddingEditor, WeddingPart } from "./WeddingEditor";
 import { safeWeddingLink, weddingProgram, type WeddingPartInfo } from "@/lib/weddingEditor";
@@ -139,6 +140,7 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
   const phoneBride = invitation.copy?.["phone-bride"] ?? "+996 709 987 654";
   const [attendance, setAttendance] = useState("yes");
   const [drink, setDrink] = useState("");
+  const tr = (value: string) => invitationText(value, locale);
   const [guests, setGuests] = useState("1");
 
   const heroPhoto = invitation.gallery?.hero || invitation.coverImage || "/images/hero.jpg";
@@ -185,7 +187,7 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
                 fontStyle: "italic",
               }} fallback={"Айбек & Айгүл"} field="names"></WeddingPart>
 
-            <WeddingPart id="event-date" label={"Дата и время"} kind="date" className="mt-7 font-serif text-[14px] tracking-[0.2em]" >{invitation.date ? new Date(invitation.date).toLocaleDateString('ky-KG', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('.').join(' · ') : "28 · 08 · 2026"}</WeddingPart>
+            <WeddingPart id="event-date" label={"Дата и время"} kind="date" className="mt-7 font-serif text-[14px] tracking-[0.2em]" >{invitation.date ? new Date(invitation.date).toLocaleDateString(invitationDateLocale(locale), { year: 'numeric', month: '2-digit', day: '2-digit' }).split('.').join(' · ') : "28 · 08 · 2026"}</WeddingPart>
 
             <WeddingPart id="text-4" label={"БИЗДИН ӨЗГӨЧӨ КҮНГӨ\nЧАКЫРАБЫЗ!"} kind="text" className="mt-3 text-[8px] tracking-[0.25em] text-[#6d6257]" fallback={"БИЗДИН ӨЗГӨЧӨ КҮНГӨ\nЧАКЫРАБЫЗ!"} ></WeddingPart>
 
@@ -368,7 +370,7 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
               </span><WeddingPart id="text-20" label={"Тилекке каршы, келе албайм"} kind="text" className="font-serif text-[11px]" fallback={"Тилекке каршы, келе албайм"} ></WeddingPart></Action></WeddingPart>
           </div><WeddingPart id="form-22" label={"Поле формы"} kind="widget" className="mt-6 block" fallback={"Мисалы: Эрланбек Темирбеков"} ><label className="contents"><WeddingPart id="text-23" label={"Сиздин аты-жөнүңүз жана фамилияңыз"} kind="text" className="mb-2 block font-serif text-[10px]" fallback={"Сиздин аты-жөнүңүз жана фамилияңыз"} ></WeddingPart><input
               type="text"
-              placeholder={invitation.copy?.["$placeholder:form-22"] ?? "Мисалы: Эрланбек Темирбеков"}
+              placeholder={tr(invitation.copy?.["$placeholder:form-22"] ?? tr("Мисалы: Эрланбек Темирбеков"))}
               className="
                 h-[43px] w-full rounded-[7px]
                 border border-[#c6ad8e]/50
@@ -391,14 +393,14 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
                 outline-none
               "
             >
-              <option value="1">1 конок</option>
-              <option value="2">2 конок</option>
-              <option value="3">3 конок</option>
-              <option value="4">4 конок</option>
-              <option value="5">5 конок</option>
+              <option value="1">{tr("1 конок")}</option>
+              <option value="2">{tr("2 конок")}</option>
+              <option value="3">{tr("3 конок")}</option>
+              <option value="4">{tr("4 конок")}</option>
+              <option value="5">{tr("5 конок")}</option>
             </select></label></WeddingPart><WeddingPart id="form-26" label={"Поле формы"} kind="widget" className="mt-5 block" ><label className="contents"><WeddingPart id="text-27" label={"Сиздун каалоо-тилектериңиз"} kind="text" className="mb-2 block font-serif text-[10px]" fallback={"Сиздун каалоо-тилектериңиз"} ></WeddingPart><textarea
               rows={4}
-              placeholder="Бизге каалоо-тилектериңизди жазыңыз..."
+              placeholder={tr("Бизге каалоо-тилектериңизди жазыңыз...")}
               className="
                 w-full resize-none rounded-[7px]
                 border border-[#c6ad8e]/50

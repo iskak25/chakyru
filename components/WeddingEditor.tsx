@@ -10,6 +10,7 @@ import { ExtraLayer } from "./ExtraLayer";
 import type { InvitePatch } from "./CanvasEdit";
 import type { ReferenceCrop } from "@/lib/referenceWeddings";
 import { invitationText } from "@/lib/inviteTranslations";
+import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
 
 type EditorContext = {
   locale: string;
@@ -71,6 +72,7 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
     fontFamily: weddingStyle(invitation, id, "fontFamily") || style?.fontFamily,
   };
   const rawValue = weddingValue(invitation, { id, label, kind, fallback, field, slot });
+  const restored = restoredTemplateImage(crop);
   const value = kind === "text" ? invitationText(rawValue, locale) : rawValue;
   return (
     <Selectable flat id={id} className={onChange ? className.replaceAll("overflow-hidden", "overflow-visible") : className} style={partStyle}>
@@ -82,8 +84,8 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
           onChange={next => onChange(weddingTextPatch(invitation, { id, label, kind, fallback, field, slot }, next))}
         />
       ) : renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{id === "names" ? value.replace(/\s*&\s*/g, "\n&\n") : value}</p> : kind === "image" ? (
-        crop && !invitation.gallery?.[slot || id] ? <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: "inherit" }}>
-          <img src={crop.source} alt={label} draggable={false} style={{ position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%` }} />
+        restored && !invitation.gallery?.[slot || id] ? <img src={restored.source} width={restored.width} height={restored.height} alt={translatedLabel} draggable={false} className="absolute inset-0 h-full w-full" style={{ objectFit: restored.fit, objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} /> : crop && !invitation.gallery?.[slot || id] ? <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: "inherit" }}>
+          <img src={templateImageSource(crop.source)} alt={translatedLabel} draggable={false} style={{ position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%` }} />
         </div> : <img src={invitation.gallery?.[slot || id] ?? fallback ?? ""} alt={label} className="h-full w-full object-cover" style={{ objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} />
       ) : children}
     </Selectable>

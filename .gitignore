@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/tmp/template-locale-audit.json
+/tmp/template-locale-unknown.txt
 
 # next.js
 /.next/
