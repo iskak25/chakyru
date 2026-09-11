@@ -31,6 +31,12 @@ if(process.argv.includes("--http")){
     const r=await fetch(`${process.env.PREVIEW_URL||"http://localhost:3000"}/templates/${d.id}`);
     assert.equal(r.status,200,d.id);
     const html=await r.text();
+    if(d.format === "site3d") {
+      assert.ok(html.includes('data-envelope-intro='),`${d.id}: missing envelope intro`);
+      assert.ok(!html.includes('name="attendance"'),`${d.id}: form visible before opening`);
+      console.log(`PASS: ${d.id}, HTTP 200, envelope intro`);
+      continue;
+    }
     assert.ok(html.includes(`data-pinterest-design="${d.key}"`),`${d.id}: missing render`);
     const ids=[...html.matchAll(/data-box="([^"]+)"/g)].map(m=>m[1]);
     assert.equal(new Set(ids).size,ids.length,`${d.id}: duplicate element IDs`);

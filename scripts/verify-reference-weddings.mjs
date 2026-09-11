@@ -49,11 +49,11 @@ if (process.argv.includes("--http")) {
     const response = await fetch(`${base}/templates/reference-${design.id}`);
     assert.equal(response.status, 200, design.id);
     const html = await response.text();
-    assert.ok(html.includes(`data-reference-design="${design.id}"`), `${design.id}: missing rendered design`);
+    assert.ok(html.includes('data-envelope-intro='), `${design.id}: missing envelope intro`);
     assert.ok(!html.includes("data-wedding-inspector"), `${design.id}: duplicate inspector`);
     const ids = [...html.matchAll(/data-box="([^"]+)"/g)].map(m => m[1]);
     assert.equal(new Set(ids).size, ids.length, `${design.id}: duplicate editable IDs`);
-    assert.ok(html.includes("name=\"attendance\""), `${design.id}: missing attendance form`);
-    console.log(`PASS: ${design.id} HTTP 200, SSR, editable IDs and guest form`);
+    assert.ok(!html.includes("name=\"attendance\""), `${design.id}: form visible before opening`);
+    console.log(`PASS: ${design.id} HTTP 200, envelope SSR, invitation hidden before opening`);
   }
 }

@@ -1,4 +1,5 @@
 import type { AnimKind } from "./anim";
+import type { EnvelopeConfig } from "./envelopes";
 
 export type Locale = "ky" | "ru";
 
@@ -74,6 +75,7 @@ export type InvitationTemplate = {
   name: LocalizedName;
   designer: string;
   format: InviteFormat;
+  envelope?: EnvelopeConfig;
   /** Current catalog price (basePrice). Changing this never rewrites old purchases. */
   priceSom: number;
   eventTypes: EventType[];

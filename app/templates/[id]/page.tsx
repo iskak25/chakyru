@@ -97,7 +97,6 @@ export default function TemplatePreviewPage() {
             data={invitation}
             locale={locale}
             interactive
-            startOpen
           />
         </div>
 

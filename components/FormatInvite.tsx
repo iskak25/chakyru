@@ -3,7 +3,9 @@
 import type { ComponentProps } from "react";
 import { InvitationLanguageProvider } from "./InvitationLanguage";
 
-import { formatOf } from "@/lib/templates";
+import { formatOf, getTemplate } from "@/lib/templates";
+import { envelopeForTemplate, shouldShowEnvelope } from "@/lib/envelopes";
+import { EnvelopeIntro } from "./EnvelopeIntro";
 import { useCatalog } from "@/lib/useCatalog";
 import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
@@ -101,5 +103,12 @@ function FormatInviteContent({
 }
 
 export function FormatInvite(props: ComponentProps<typeof FormatInviteContent>) {
-  return <InvitationLanguageProvider locale={props.locale}><FormatInviteContent {...props}/></InvitationLanguageProvider>;
+  useCatalog();
+  const template = getTemplate(props.invitation.templateId);
+  const intro = shouldShowEnvelope(template, { interactive: props.interactive, startOpen: props.startOpen, editing: !!props.onChange });
+  return <InvitationLanguageProvider locale={props.locale}>{intro ? (
+    <EnvelopeIntro key={`${props.invitation.id}:${props.invitation.templateId}`} variant={envelopeForTemplate(template).variant} names={props.invitation.names} date={props.invitation.date} locale={props.locale}>
+      <FormatInviteContent {...props} startOpen />
+    </EnvelopeIntro>
+  ) : <FormatInviteContent {...props}/>}</InvitationLanguageProvider>;
 }

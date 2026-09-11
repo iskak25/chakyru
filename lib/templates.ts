@@ -1,4 +1,5 @@
 import { isCatalogTemplate } from "./inviteFormats";
+import { withEnvelope } from "./envelopes";
 import { peekPreview, peekTemplates } from "./catalogStore";
 import { referenceWeddingTemplates } from "./referenceWeddings";
 import { pinterestTemplates } from "./pinterestTemplates";
@@ -159,7 +160,7 @@ export function pickStoredPrice(live: number | undefined, seed: number, template
   return live;
 }
 
-export const templates = applyCatalogPrices(seedTemplates);
+export const templates = applyCatalogPrices(seedTemplates).map(withEnvelope);
 
 export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): InvitationTemplate[] {
   if (!live?.length) {
@@ -168,7 +169,7 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
   const seedById = new Map(templates.map((item) => [item.id, item]));
   const merged = live.filter(isCatalogTemplate).map((item) => {
     const seed = seedById.get(item.id);
-    if (!seed) return item;
+    if (!seed) return withEnvelope(item);
     const { priceTenge: _tenge, ...liveItem } = item as InvitationTemplate & { priceTenge?: number };
     const picked = pickStoredPrice(liveItem.priceSom, seed.priceSom, item.id, seed.format);
     return {
@@ -185,7 +186,7 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
   });
   const seen = new Set(merged.map((item) => item.id));
   const result = [...merged, ...templates.filter((item) => !seen.has(item.id))];
-  return result;
+  return result.map(withEnvelope);
 }
 
 export function getTemplate(id: string) {
