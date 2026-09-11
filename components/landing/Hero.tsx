@@ -10,7 +10,7 @@ const HERO_BG =
 
 export function Hero() {
   const { t, locale } = useI18n();
-  const copy = t.creativeAds.home;
+  const copy = t.hero;
 
   return (
     <section className="relative min-h-[100svh] overflow-hidden">
@@ -20,21 +20,26 @@ export function Hero() {
 
       <div className="relative mx-auto grid min-h-[100svh] max-w-[1400px] grid-rows-[auto_1fr] items-start gap-8 px-5 pb-10 pt-28 sm:gap-10 sm:px-10 sm:pb-16 sm:pt-28 lg:grid-cols-[0.95fr_1.05fr] lg:grid-rows-none lg:items-center lg:gap-6 lg:px-14 lg:pb-20 lg:pt-24">
         <div className="max-w-[28rem]">
-          <h1 className="whitespace-pre-line font-serif text-[clamp(2.2rem,11vw,2.9rem)] font-normal leading-[0.98] tracking-[-0.03em] text-black sm:text-[58px] lg:text-[68px]">
+          <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-[#8a7a68]">
+            {copy.kicker}
+          </p>
+          <h1 className="mt-3 font-serif text-[clamp(2.2rem,11vw,2.9rem)] font-normal leading-[0.98] tracking-[-0.03em] text-black sm:text-[58px] lg:text-[68px]">
             {copy.title}
+            <br />
+            <span className="text-[#a88e6e]">{copy.titleAccent}</span>
           </h1>
           <p className="mt-5 max-w-[30ch] text-[15px] leading-[1.55] text-[#1a1a1a] sm:mt-6 sm:text-[17px] sm:leading-[1.7]">
-            {copy.subtitle}
+            {copy.desc}
           </p>
           <Link
             href="/templates"
             className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-full bg-black px-7 text-[15px] font-medium text-white shadow-[0_10px_28px_rgba(0,0,0,0.18)] transition hover:bg-[#1a1a1a]"
           >
-            {copy.start}
+            {copy.cta}
             <ArrowRight size={16} strokeWidth={2} />
           </Link>
           <p className="mt-5 max-w-[32ch] text-[13px] leading-[1.7] text-[#1a1a1a]/70 sm:text-[14px]">
-            {copy.detail}
+            {copy.stat1} · {copy.stat2} · {copy.stat3}
           </p>
         </div>
 

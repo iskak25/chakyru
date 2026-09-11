@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /create/
+Disallow: /pay/
+Disallow: /login
+Disallow: /creativeads/
+
+Sitemap: https://toichakyru.com/sitemap.xml
