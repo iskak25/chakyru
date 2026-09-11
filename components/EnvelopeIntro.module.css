@@ -9,7 +9,7 @@
 .heading h1 { margin:14px 0 8px; font:400 clamp(30px,6vw,48px)/1.12 var(--font-cormorant),Georgia,serif; }
 .heading p { margin:0; font-size:11px; letter-spacing:.02em; opacity:.8; }
 .center { position:absolute; inset:0; display:grid; place-items:center; padding:24px; }
-.trigger { display:block; position:relative; width:min(520px,calc(100vw - 48px),70dvh); aspect-ratio:1.48; padding:0; border:0; background:none; color:inherit; cursor:pointer; perspective:1400px; -webkit-tap-highlight-color:transparent; transform:translateY(4dvh); outline-offset:18px; border-radius:8px; }
+.trigger { display:block; position:relative; width:min(520px,calc(100vw - 48px),60dvh); aspect-ratio:1.48; padding:0; border:0; background:none; color:inherit; cursor:pointer; perspective:1400px; -webkit-tap-highlight-color:transparent; transform:translateY(4dvh); outline-offset:18px; border-radius:8px; }
 .trigger:focus-visible { outline:2px solid var(--env-foil); }
 .trigger[aria-disabled="true"] { cursor:default; }
 .envelope { display:block; position:absolute; inset:0; filter:drop-shadow(0 22px 22px #00000025); }
@@ -53,6 +53,6 @@
 @keyframes copyFade { to { opacity:0; transform:translateY(-5px); } }
 @keyframes sceneFade { to { opacity:0; } }
 @keyframes contentEnter { from { opacity:0; } to { opacity:1; } }
-@media (max-height:540px) { .heading { top:max(4dvh,env(safe-area-inset-top)); } .eyebrow,.heading p,.footerDate { display:none; } .heading h1 { font-size:25px; margin:0; } .footer { bottom:max(4dvh,env(safe-area-inset-bottom)); } .trigger { width:min(440px,calc(100vw - 40px),65dvh); } }
+@media (max-height:540px) { .heading { top:max(4dvh,env(safe-area-inset-top)); } .eyebrow,.heading p,.footerDate { display:none; } .heading h1 { font-size:25px; margin:0; } .footer { bottom:max(4dvh,env(safe-area-inset-bottom)); } .trigger { width:min(440px,calc(100vw - 40px),58dvh); } }
 @media (prefers-reduced-motion:reduce) { .scene *, .contentEntering { animation:none !important; } .scene[data-stage="revealing"] { animation:sceneFade 140ms linear both; } }
 .scene[data-reduced="true"] *, .scene[data-reduced="true"] ~ * { animation:none !important; }

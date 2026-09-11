@@ -6,6 +6,11 @@ const firebaseAuthHost =
 const nextConfig: NextConfig = {
   transpilePackages: ["@stagewise/toolbar"],
   serverExternalPackages: ["firebase-admin"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "images.unsplash.com" },
+    ],
+  },
   async redirects() {
     return [{ source: "/designers", destination: "/", permanent: false }];
   },

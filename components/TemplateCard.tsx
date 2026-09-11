@@ -14,10 +14,12 @@ export function TemplateCard({
   template,
   onUse,
   featured = false,
+  eager = false,
 }: {
   template: InvitationTemplate;
   onUse?: (id: string) => void;
   featured?: boolean;
+  eager?: boolean;
 }) {
   const { locale, t } = useI18n();
   const price = formatPrice(locale, template.priceSom);
@@ -40,6 +42,8 @@ export function TemplateCard({
         <img
           src={restored?.source || templateImageSource(crop?.source || photo)}
           alt=""
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
           className={`h-full w-full object-cover transition duration-700 ${crop ? "" : "group-hover:scale-[1.04]"}`}
           style={crop && !restored ? { position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%`, objectFit: "fill", transitionTimingFunction: "var(--ease-premium)" } : { transitionTimingFunction: "var(--ease-premium)" }}
         />

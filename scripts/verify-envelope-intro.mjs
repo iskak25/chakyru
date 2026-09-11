@@ -64,12 +64,19 @@ for (const template of templates) {
 }
 assert.equal(sites, 23); assert.equal(photos, 9); assert.ok(variants.size >= 9);
 assert.ok(mergeCatalogTemplates(templates.map(({ envelope, ...old }) => old)).filter(t => t.format === "site3d").every(t => t.envelope.enabled));
+const { setPreviewTemplate } = load("lib/catalogStore.ts");
+const disabled = { ...templates.find(t => t.id === "baxmal"), envelope: { enabled: false, variant: "burgundy" } };
+setPreviewTemplate(disabled);
+const disabledHtml = render(inviteFromTemplate(disabled));
+assert.ok(!disabledHtml.includes('data-envelope-intro=') && !disabledHtml.includes('kyrgyz-envelope-stage'), "disabled intro must not fall back to old cover");
+assert.ok(disabledHtml.includes('data-box='));
+setPreviewTemplate(null);
 console.log(`PASS: ${sites} 3D intros, ${photos} unchanged photo templates, ${variants.size} palettes, editor/export bypass, guest forms and clone metadata.`);
 
 // Geometry of the CSS scene through the complete card extraction, including small landscape screens.
 for (const width of [320, 360, 375, 390, 412, 430, 768, 1440]) for (const height of [360, 568, 667, 844, 900]) {
   const small = height <= 540;
-  const envelopeWidth = Math.min(small ? 440 : 520, width - (small ? 40 : 48), (small ? .65 : .7) * height);
+  const envelopeWidth = Math.min(small ? 440 : 520, width - (small ? 40 : 48), (small ? .58 : .6) * height);
   const h = envelopeWidth / 1.48;
   const topAtExtraction = height * .54 - h * .5 + h * .07 - h * .89 * .88;
   assert.ok(topAtExtraction >= 0, `${width}x${height}: extracted card clipped above viewport`);

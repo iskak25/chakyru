@@ -122,7 +122,7 @@ export default function TemplatesPage() {
                       : ""
                 }
               >
-                <TemplateCard template={tpl} featured={featured && index === 0} />
+                <TemplateCard template={tpl} featured={featured && index === 0} eager={index < 4} />
               </div>
             );
           })}
