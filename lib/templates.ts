@@ -3,6 +3,7 @@ import { withEnvelope } from "./envelopes";
 import { peekPreview, peekTemplates } from "./catalogStore";
 import { referenceWeddingTemplates } from "./referenceWeddings";
 import { pinterestTemplates } from "./pinterestTemplates";
+import { anniversaryTemplates } from "./anniversaryTemplates";
 import { invitationText } from "./inviteTranslations";
 import type { EventType, InvitationTemplate, InviteFormat, TemplateStyle } from "./types";
 
@@ -33,6 +34,7 @@ function style(
 }
 
 const seedTemplates: InvitationTemplate[] = [
+  ...anniversaryTemplates,
   ...pinterestTemplates,
   ...referenceWeddingTemplates,
   {

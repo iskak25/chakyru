@@ -62,7 +62,7 @@ for (const template of templates) {
   }
   assert.equal(JSON.stringify(inv), before, `${template.id}: invitation data mutated`);
 }
-assert.equal(sites, 23); assert.equal(photos, 9); assert.ok(variants.size >= 9);
+assert.equal(sites, 25); assert.equal(photos, 9); assert.ok(variants.size >= 9);
 assert.ok(mergeCatalogTemplates(templates.map(({ envelope, ...old }) => old)).filter(t => t.format === "site3d").every(t => t.envelope.enabled));
 const { setPreviewTemplate } = load("lib/catalogStore.ts");
 const disabled = { ...templates.find(t => t.id === "baxmal"), envelope: { enabled: false, variant: "burgundy" } };
@@ -91,5 +91,5 @@ if (process.argv.includes("--http")) {
     const html = await response.text();
     assert.equal(html.includes("data-envelope-intro="), template.format === "site3d", `${template.id}: route gate`);
   }
-  console.log("PASS: all 32 preview routes return the correct initial experience.");
+  console.log(`PASS: all ${templates.length} preview routes return the correct initial experience.`);
 }

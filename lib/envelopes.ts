@@ -27,12 +27,14 @@ const pinterestVariants: Record<string, EnvelopeVariant> = {
   silkSite: "sage", nikahSite: "ivory", monoSite: "blackGold", newspaperSite: "blackGold",
   glam: "blackGold", blushParty: "blush", jentekCradle: "ethnoCream", tushooGarden: "sage",
 };
+const anniversaryVariants: Record<string, EnvelopeVariant> = { monochrome: "blackGold", evening: "midnight" };
 
 export function envelopeForTemplate(template: InvitationTemplate): EnvelopeConfig {
   if (template.format !== "site3d") return { enabled: false, variant: "cream" };
   if (template.envelope && Object.hasOwn(envelopeVariants, template.envelope.variant)) return template.envelope;
   const copy = template.canvas?.copy;
   const variant = referenceVariants[copy?.["reference.design"] || ""] || pinterestVariants[copy?.["pinterest.design"] || ""]
+    || anniversaryVariants[copy?.["anniversary.design"] || ""]
     || (template.style.pageLayout === "velvet" ? "burgundy" : template.eventTypes.includes("kyz") ? "ethnoCream" : "cream");
   return { enabled: true, variant };
 }

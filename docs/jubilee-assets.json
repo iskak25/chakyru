@@ -1,0 +1,19 @@
+{
+  "tool": "image_gen",
+  "references": [
+    "https://ru.pinterest.com/pin/888053620453990993/",
+    "https://ru.pinterest.com/pin/904379168931416233/"
+  ],
+  "jobs": [
+    {
+      "id": "portrait",
+      "output": "public/images/anniversary/portrait.webp",
+      "prompt": "Photorealistic editorial studio portrait for a milestone birthday invitation. A distinguished smiling Central Asian Kyrgyz man about 50 years old, salt-and-pepper short hair, natural realistic skin, wearing an open black jacket over a white crew-neck shirt. Waist-up portrait, centered in the lower two thirds, head fully visible, ample completely black negative space above his head for a large editable age number. Seamless deep black studio background, monochrome black and white photograph, soft cinematic side light, premium fine art portrait, warm approachable expression. Portrait 2:3 composition. No text, no numbers, no logos, no border, no watermark. High resolution detailed photograph."
+    },
+    {
+      "id": "celebration",
+      "output": "public/images/anniversary/celebration.webp",
+      "prompt": "Photorealistic editorial photograph for an elegant adult milestone birthday invitation. Close up of adult friends' hands gently raising three fine crystal champagne flutes for a toast at an intimate evening celebration, champagne pale gold, no bottle, warm small chandelier lights and soft bokeh in background. Hands and glasses in lower half, upper third dark softly out of focus with generous space for editable invitation text. Sophisticated dark navy and warm ivory palette, subtle gold light, authentic natural hands and believable fingers, shallow depth of field, film photography, premium understated celebration, vertical portrait 2:3 composition. No faces, no words, no numbers, no logos, no watermark."
+    }
+  ]
+}

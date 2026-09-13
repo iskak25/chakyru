@@ -9,6 +9,11 @@ import type { InvitationTemplate } from "@/lib/types";
 import { referenceWedding } from "@/lib/referenceWeddings";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
 import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
+import { TemplatePaperPreview } from "@/components/TemplatePaperPreview";
+import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
+import { inviteFromTemplate } from "@/lib/templateCanvas";
+import { AnniversaryHero } from "./AnniversaryHero";
+import anniversaryCss from "./AnniversaryInvite.module.css";
 
 export function TemplateCard({
   template,
@@ -24,11 +29,12 @@ export function TemplateCard({
   const { locale, t } = useI18n();
   const price = formatPrice(locale, template.priceSom);
   const name = template.name[locale];
-  const photo = getTemplatePhotos(template.id).hero;
+  const photo = template.canvas?.gallery?.hero || template.canvas?.coverImage || getTemplatePhotos(template.id).hero;
   const reference = referenceWedding({ templateId: template.id, copy: template.canvas?.copy });
   const pinterest = getPinterestDesign({ templateId: template.id, copy: template.canvas?.copy });
   const crop = pinterest?.photos.hero || reference?.photos.hero;
   const restored = restoredTemplateImage(crop);
+  const anniversary = getAnniversaryDesign({ templateId: template.id, copy: template.canvas?.copy });
   const event = t.events[template.eventTypes[0] ?? "wedding"];
 
   const body = (
@@ -39,14 +45,16 @@ export function TemplateCard({
       style={{ boxShadow: "var(--shadow-soft)", transitionTimingFunction: "var(--ease-premium)" }}
     >
       <div className={`relative overflow-hidden ${featured ? "h-full min-h-[420px]" : "aspect-[4/5]"}`}>
-        <img
+        {anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
+          <TemplatePaperPreview template={template} locale={locale} eager={eager} />
+        ) : <img
           src={restored?.source || templateImageSource(crop?.source || photo)}
           alt=""
           loading={eager ? "eager" : "lazy"}
           decoding="async"
           className={`h-full w-full object-cover transition duration-700 ${crop ? "" : "group-hover:scale-[1.04]"}`}
           style={crop && !restored ? { position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%`, objectFit: "fill", transitionTimingFunction: "var(--ease-premium)" } : { transitionTimingFunction: "var(--ease-premium)" }}
-        />
+        />}
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
         <button
           type="button"

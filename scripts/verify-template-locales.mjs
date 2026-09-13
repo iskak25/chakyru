@@ -34,6 +34,8 @@ const {FormatInvite}=load("components/FormatInvite.tsx");
 const {templates}=load("lib/templates.ts");
 const {inviteFromTemplate}=load("lib/templateCanvas.ts");
 const {invitationText}=load("lib/inviteTranslations.ts");
+const {getAnniversaryDesign}=load("lib/anniversaryTemplates.ts");
+const {TemplateCard}=load("components/TemplateCard.tsx");
 const records=[];
 for(const locale of ["ru","ky"]) {
   currentLocale=locale;
@@ -41,6 +43,23 @@ for(const locale of ["ru","ky"]) {
     const inv=inviteFromTemplate(template);
     const html=renderToStaticMarkup(React.createElement(FormatInvite,{invitation:inv,locale,startOpen:true}));
     assert.ok(html.length>300,`${template.id}: empty ${locale} render`);
+    const anniversary=getAnniversaryDesign(inv);
+    if(anniversary) {
+      assert.ok(html.includes(`data-anniversary-design="${anniversary.key}"`));
+      assert.ok(html.includes(anniversary.hero));
+      assert.ok(fs.existsSync(path.join("public",anniversary.hero)));
+      assert.ok(!html.includes("Дата свадьбы")&&!html.includes("Свадьба"));
+      const custom={...inv,names:"Тестовое имя",gallery:{hero:"/custom-jubilee.webp"},copy:{...inv.copy,"jubilee-age":"70"}};
+      const changed=renderToStaticMarkup(React.createElement(FormatInvite,{invitation:custom,locale,startOpen:true}));
+      assert.ok(changed.includes('/custom-jubilee.webp')&&!changed.includes(anniversary.hero));
+      assert.match(changed,/data-wedding-text="jubilee-age">70</);
+      assert.ok(changed.includes("Тестовое имя"));
+      const card=renderToStaticMarkup(React.createElement(TemplateCard,{template}));
+      assert.ok(card.includes(anniversary.hero)&&card.includes("50"));
+      assert.equal(getAnniversaryDesign({...inv,templateId:"admin-clone"}).id,template.id);
+      const partIds=[...html.matchAll(/data-box="([^"]+)"/g)].map(m=>m[1]);
+      assert.equal(new Set(partIds).size,partIds.length,`${template.id}: duplicate editable IDs`);
+    }
     if(process.argv.includes("--images")) {
       const restored=load("lib/templateImageSources.ts").restoredTemplateImage;
       const design=load("lib/referenceWeddings.ts").referenceWedding(inv)||load("lib/pinterestTemplates.ts").getPinterestDesign(inv);

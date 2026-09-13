@@ -17,6 +17,8 @@ import { getPinterestDesign } from "@/lib/pinterestTemplates";
 import { PinterestInvite } from "./PinterestInvite";
 import { ThemedSiteInvite } from "./ThemedSiteInvite";
 import { FamilySiteInvite } from "./FamilySiteInvite";
+import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
+import { AnniversaryInvite } from "./AnniversaryInvite";
 
 export function MediaStage({
   invitation,
@@ -64,6 +66,8 @@ function FormatInviteContent({
   useCatalog();
   const format = formatOf(invitation.templateId);
   const pinterest = getPinterestDesign(invitation);
+  const anniversary = getAnniversaryDesign(invitation);
+  if (anniversary) return <AnniversaryInvite invitation={invitation} design={anniversary} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (pinterest?.eventType === "jentek" || pinterest?.eventType === "tushoo") return <FamilySiteInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} startOpen={startOpen} />;
   if (pinterest?.themed) return <ThemedSiteInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} startOpen={startOpen} />;
   if (pinterest) return <PinterestInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
