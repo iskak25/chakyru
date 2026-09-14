@@ -1,5 +1,7 @@
 "use client";
 
+import { invitationMapUrl } from "@/lib/defaultVenue";
+
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 import { Heart, MapPin, Volume2, VolumeX } from "lucide-react";
 import type { Invitation } from "@/lib/types";
@@ -61,7 +63,7 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
   }} />;
   const datePart=(id="event-date",className="") => <WeddingPart id={id} label="Дата и время" kind="date" className={`${css.date} ${className}`}>{dotted}</WeddingPart>;
   const ornament=(id:string) => <WeddingPart id={id} label="Орнамент" kind="decoration" className={css.ornament}><span aria-hidden="true">❧</span></WeddingPart>;
-  const mapHref=safeWeddingLink(inv.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${inv.venue} ${inv.address} ${inv.city}`)}`);
+  const mapHref=safeWeddingLink(invitationMapUrl(inv));
   const map=() => <WeddingPart id="map-button" label="Карта" kind="widget"><a href={mapHref} target="_blank" rel="noopener noreferrer" className={css.button} onClick={e=>{if(onChange)e.preventDefault();}}>{text("map-label",ru?"ПОСМОТРЕТЬ НА КАРТЕ":"КАРТАНЫ КӨРУ")}</a></WeddingPart>;
   const location=() => section("location",<>{title("location",key==="blue"?"LOCATION":ru?"Место проведения":"Мекен-жайымыз",key!=="blue")}{text("venue",design.venue,css.venue,"venue")}{text("address",design.address,css.body,"address")}{map()}</>,css.location);
   const intro=() => section("intro",<>{title("intro",tr("Дорогие родные и друзья!"),key!=="blue")}{ornament("intro-ornament")}{text("message",ru?`Наша дочь ${inv.names} начинает новую главу своей жизни.\n\nПриглашаем вас на её кыз узатуу. Будем рады провести этот счастливый день в кругу близких людей!`:`Кызыбыз ${inv.names} турмуш жолуна аттанууда.\n\nСиздерди кыз узатуу тоюна чакырабыз. Бул бактылуу күндүн кубанычын жакындарыбыз менен бирге бөлүшкүбүз келет!`,css.body,"message")}</>,css.intro);

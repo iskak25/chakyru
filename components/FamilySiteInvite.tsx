@@ -1,5 +1,7 @@
 "use client";
 
+import { invitationMapUrl } from "@/lib/defaultVenue";
+
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
 import { ArrowDown, Baby, Camera, Footprints, Heart, MapPin, Sparkles, Utensils } from "lucide-react";
 import type { Invitation } from "@/lib/types";
@@ -32,7 +34,7 @@ export function FamilySiteInvite({invitation:inv,design,locale,onChange,selected
   const text=(id:string,fallback:string,className="",field?:WeddingPartInfo["field"]) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} className={className} field={field}/>;
   const section=(id:string,label:string,children:ReactNode,className="") => <WeddingPart id={`section-${id}`} label={label} kind="block" className={`${css.section} ${className}`}>{children}</WeddingPart>;
   const title=(id:string,value:string)=>text(`${id}-title`,value,css.title);
-  const mapHref=safeWeddingLink(inv.mapUrl||`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${inv.venue} ${inv.address} ${inv.city}`)}`);
+  const mapHref=safeWeddingLink(invitationMapUrl(inv));
   const program=[
     {offset:0,title:tr("Встреча родных и друзей","Конокторду тосуу"),note:tr("Объятия и радость встречи","Жакындарыбыз менен жылуу жолугушуу"),Icon:Heart},
     {offset:30,title:steps?tr("Первые шаги","Тушоо кесүү"):tr("Знакомство с малышом","Бөбөк менен таанышуу"),note:steps?tr("Тушоо кесүү и добрые пожелания","Алгачкы кадамдар, ак тилектер"):tr("Добрые слова для нашей семьи","Үй-бүлөбүзгө жылуу каалоолор"),Icon:Mark},

@@ -1,5 +1,7 @@
 "use client";
 
+import { invitationMapUrl } from "@/lib/defaultVenue";
+
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
 import { ArrowDown, Camera, Gem, Heart, MapPin, Music2, Sparkles, Utensils, Wine } from "lucide-react";
 import type { Invitation } from "@/lib/types";
@@ -41,7 +43,7 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
   const swatches=glam?["#151115","#e796b4","#ddc0a1"]:girls?["#efd1d5","#d79aa9","#fff4ef"]:design.key==="silkSite"?["#ede6d5","#b4b79a","#a58446"]:nikah?["#f5f1e9","#ddc8a1","#a58244"]:["#fff","#a9a6a1","#232323"];
   const intro=girls?(glam?"Один вечер. Самые близкие подруги. И повод сиять чуть ярче обычного.\n\nСобираемся на мой девичник: красивые наряды, любимая музыка, фотографии и разговоры до утра.":"Девочки, совсем скоро я скажу «да»!\n\nА пока хочу провести один особенный вечер с вами. Будем смеяться, делиться секретами, поднимать бокалы и создавать воспоминания."):nikah?"С радостью приглашаем вас разделить с нами день нашего никаха.\n\nПусть начало нашей семейной истории будет согрето молитвами, добрыми пожеланиями и присутствием самых близких.":"В нашей истории начинается новая глава.\n\nПриглашаем вас разделить с нами день, когда мы станем семьёй. Будем рады видеть рядом самых дорогих людей.";
   const schedule=girls?[[0,"Собираемся","Объятия и первый тост",Wine],[30,"Ловим момент","Фотографии с подругами",Camera],[60,"Ужин и секреты","Разговоры обо всём на свете",Utensils],[120,"Танцуем!","Наш плейлист и наше настроение",Music2]]:nikah?[[0,"Встреча гостей","Рады видеть каждого из вас",Heart],[30,"Никах","Начало нашей семейной истории",Gem],[60,"Праздничный стол","Тёплые слова и семейный обед",Utensils],[150,"Фотографии","Память об этом светлом дне",Camera]]:[[0,"Встреча гостей","Welcome и первые объятия",Wine],[30,"Церемония","Наше самое важное «да»",Gem],[60,"Праздничный ужин","Поздравления и любимые люди",Utensils],[180,"Танцы под звёздами","Пусть этот вечер запомнится",Music2]];
-  const mapHref=safeWeddingLink(inv.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${inv.venue} ${inv.address} ${inv.city}`)}`);
+  const mapHref=safeWeddingLink(invitationMapUrl(inv));
 
   return <div className={`${css.root} ${css[design.key]}`} data-pinterest-design={design.key} data-themed-site style={{"--theme-paper":inv.blockColors?.page || design.paper,"--theme-ink":design.ink,"--theme-accent":design.accent} as CSSProperties}>
     <WeddingEditor key={design.key} invitation={inv} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale}>

@@ -4,6 +4,7 @@ import type { Guest, Invitation, PlanId, RsvpStatus, User, Wish } from "./types"
 import { canCreateInvitation, canEditTemplate, normalizeUser, ownsInvitation } from "./auth";
 import { getTemplate } from "./templates";
 import { DEFAULT_MUSIC_URL } from "./music";
+import { DEFAULT_VENUE } from "./defaultVenue";
 
 const INV_KEY = "chakyru-invitations";
 const USER_KEY = "chakyru-user";
@@ -20,8 +21,8 @@ export const demoInvitation: Invitation = {
   hosts: "Асанакуновдордун үй-бүлөсү",
   date: "2012-12-12",
   time: "17:00",
-  venue: "«Ала-Тоо»",
-  address: "Ресторанный комплекс",
+  venue: DEFAULT_VENUE.venue,
+  address: DEFAULT_VENUE.address,
   city: "Бишкек",
   message:
     "Сиздерди биз менен бирге үй-бүлө боло турган кубанычтуу күнүбүздү бөлүшүүгө чакырабыз!\n\nБул сыйкырдуу күнү биз бири-бирибизге «Ооба» деп, эң жакын адамдарыбыздын ортосунда жүрөгүбүздү жана тагдырыбызды бириктиребиз.",
@@ -29,7 +30,7 @@ export const demoInvitation: Invitation = {
   adultsOnly: true,
   music: true,
   musicUrl: "https://www.youtube.com/watch?v=sadyraliev-eki-zhas",
-  mapUrl: "https://go.2gis.com/41Efw",
+  mapUrl: DEFAULT_VENUE.mapUrl,
   coverImage: "",
   layout: {},
   extras: [],
@@ -78,12 +79,6 @@ function normalize(inv: Invitation): Invitation {
     gallery: inv.gallery ?? {},
     ownerId: inv.ownerId,
   };
-  if (base.venue === "President city hall") {
-    base.venue = "«Ала-Тоо»";
-    if (!base.address || base.address === "Банкетный зал") {
-      base.address = "Ресторанный комплекс";
-    }
-  }
   if (getTemplate(base.templateId).format === "photo") {
     base.music = false;
     base.musicUrl = "";
@@ -98,10 +93,10 @@ function normalize(inv: Invitation): Invitation {
     names: "Айбек & Айгүл",
     date: "2012-12-12",
     time: base.time || "17:00",
-    venue: "«Ала-Тоо»",
-    address: base.address || "Ресторанный комплекс",
+    venue: DEFAULT_VENUE.venue,
+    address: base.address || DEFAULT_VENUE.address,
     city: base.city || "Бишкек",
-    mapUrl: base.mapUrl || "https://go.2gis.com/41Efw",
+    mapUrl: base.mapUrl || DEFAULT_VENUE.mapUrl,
   };
 }
 
@@ -314,15 +309,15 @@ export function createInvitation(templateId: string, opts?: { force?: boolean })
     hosts: "",
     date: canvas?.date ?? "2012-12-12",
     time: canvas?.time ?? "17:00",
-    venue: canvas?.venue ?? "«Ала-Тоо»",
-    address: canvas?.address ?? "Ресторанный комплекс",
+    venue: canvas?.venue ?? DEFAULT_VENUE.venue,
+    address: canvas?.address ?? DEFAULT_VENUE.address,
     city: canvas?.city ?? "Бишкек",
     message: canvas?.message ?? "",
     dressCode: canvas?.dressCode ?? "",
     adultsOnly: false,
     music: template.format !== "photo",
     musicUrl: template.format === "photo" ? "" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
-    mapUrl: canvas?.mapUrl ?? "https://go.2gis.com/41Efw",
+    mapUrl: canvas?.mapUrl ?? DEFAULT_VENUE.mapUrl,
     coverImage: canvas?.coverImage ?? "",
     layout: { ...(canvas?.layout ?? {}) },
     extras: [...(canvas?.extras ?? [])],

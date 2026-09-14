@@ -1,5 +1,6 @@
 import { isCatalogTemplate } from "./inviteFormats";
 import { withEnvelope } from "./envelopes";
+import { withDefaultVenue } from "./defaultVenue";
 import { peekPreview, peekTemplates } from "./catalogStore";
 import { referenceWeddingTemplates } from "./referenceWeddings";
 import { pinterestTemplates } from "./pinterestTemplates";
@@ -162,7 +163,7 @@ export function pickStoredPrice(live: number | undefined, seed: number, template
   return live;
 }
 
-export const templates = applyCatalogPrices(seedTemplates).map(withEnvelope);
+export const templates = applyCatalogPrices(seedTemplates).map(withDefaultVenue).map(withEnvelope);
 
 export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): InvitationTemplate[] {
   if (!live?.length) {
@@ -188,7 +189,7 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
   });
   const seen = new Set(merged.map((item) => item.id));
   const result = [...merged, ...templates.filter((item) => !seen.has(item.id))];
-  return result.map(withEnvelope);
+  return result.map(withDefaultVenue).map(withEnvelope);
 }
 
 export function getTemplate(id: string) {

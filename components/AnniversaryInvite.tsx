@@ -1,5 +1,7 @@
 "use client";
 
+import { invitationMapUrl, DEFAULT_VENUE } from "@/lib/defaultVenue";
+
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { MapPin, Volume2, VolumeX } from "lucide-react";
 import type { Invitation } from "@/lib/types";
@@ -24,7 +26,7 @@ export function AnniversaryInvite({ invitation: inv, design, locale, onChange, s
   const text = (id: string, fallback: string, className = css.body, field?: WeddingPartInfo["field"]) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} className={className} field={field} />;
   const section = (id: string, label: string, children: ReactNode, extra = "") => <WeddingPart id={`section-${id}`} label={label} kind="block" className={`${css.section} ${extra}`}>{children}</WeddingPart>;
   const title = (id: string, ru: string, kg: string) => text(`${id}-title`, tr(ru, kg), css.title);
-  const map = safeWeddingLink(inv.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${inv.venue} ${inv.address} ${inv.city}`)}`);
+  const map = safeWeddingLink(invitationMapUrl(inv));
   const program = [tr("Встреча гостей", "Конокторду тосуу"), tr("Поздравления и праздничный ужин", "Куттуктоолор жана майрамдык дасторкон"), tr("Музыка, танцы и тёплые встречи", "Музыка, бий жана жылуу жолугушуулар")];
   const timeAt = (offset: number) => {
     const [h, m] = (inv.time || "18:00").split(":").map(Number);
