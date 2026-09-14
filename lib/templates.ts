@@ -85,7 +85,7 @@ const seedTemplates: InvitationTemplate[] = [
   {
     id: "minimal-white",
     name: { ky: "Минимал", ru: "Минимал" },
-    designer: "Chakyru Studio",
+    designer: "Toichakyru Studio",
     format: "photo",
     priceSom: 250,
     eventTypes: ["wedding", "birthday", "anniversary"],

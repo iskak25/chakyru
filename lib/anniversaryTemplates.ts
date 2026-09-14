@@ -9,7 +9,7 @@ export function getAnniversaryDesign(inv: Pick<Invitation, "templateId" | "copy"
   return anniversaryDesigns.find(d => d.id === inv.templateId || d.key === inv.copy?.["anniversary.design"]);
 }
 export const anniversaryTemplates: InvitationTemplate[] = anniversaryDesigns.map(d => ({
-  id: d.id, name: d.name, designer: "Chakyru Studio", format: "site3d", priceSom: 590,
+  id: d.id, name: d.name, designer: "Toichakyru Studio", format: "site3d", priceSom: 590,
   eventTypes: ["anniversary"], envelope: { enabled: true, variant: d.envelope },
   style: { bg: d.paper, panel: d.paper, pageBg: d.paper, text: d.ink, accent: d.accent, muted: d.accent, ornament: d.accent },
   canvas: { names: d.names, date: "2026-10-24", time: "18:00", venue: "«Ала-Тоо»", address: "Бишкек", city: "Бишкек", message: "", dressCode: "", mapUrl: "", coverImage: "", musicUrl: "", layout: {}, extras: [], gallery: {}, blockColors: {}, copy: { "anniversary.design": d.key, "jubilee-age": "50" } },

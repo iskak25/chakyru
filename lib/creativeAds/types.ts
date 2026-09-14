@@ -105,20 +105,20 @@ export function defaultCopy(language: CreativeLanguage) {
   if (language === "ky") {
     return {
       title: "Айгерим & Нурлан",
-      subtitle: "Сиздин тойго чакыруу Chakyru менен",
+      subtitle: "Сиздин тойго чакыруу Toichakyru менен",
       cta: "Чакыруу түзүү →",
     };
   }
   if (language === "en") {
     return {
       title: "Aigerim & Nurlan",
-      subtitle: "Create your invitation with Chakyru",
+      subtitle: "Create your invitation with Toichakyru",
       cta: "Create invitation →",
     };
   }
   return {
     title: "Айгерим & Нурлан",
-    subtitle: "Создайте приглашение в Chakyru",
+    subtitle: "Создайте приглашение в Toichakyru",
     cta: "Создать приглашение →",
   };
 }

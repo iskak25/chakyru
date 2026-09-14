@@ -57,7 +57,7 @@ const localizedTitles: Record<PinterestStyle, [string, string]> = {
   jentekCradle:["Жентек той — Алтын бешик","Жентек той — Алтын бешик"], tushooGarden:["Тушоо той — Первые шаги","Тушоо той — Алгачкы кадамдар"],
 };
 export const pinterestTemplates: InvitationTemplate[] = [...pinterestDesigns,...themedSiteDesigns].map(d => ({
-  id:d.id, name:{ru:localizedTitles[d.key][0],ky:localizedTitles[d.key][1]}, designer:"Chakyru Studio", format:d.format, priceSom:d.format === "photo" ? 250 : 590, eventTypes:[d.eventType || (d.format === "photo" ? "wedding" : "kyz")],
+  id:d.id, name:{ru:localizedTitles[d.key][0],ky:localizedTitles[d.key][1]}, designer:"Toichakyru Studio", format:d.format, priceSom:d.format === "photo" ? 250 : 590, eventTypes:[d.eventType || (d.format === "photo" ? "wedding" : "kyz")],
   style:{bg:d.paper,panel:d.paper,pageBg:d.paper,text:d.ink,accent:d.accent,muted:d.accent,ornament:d.accent,pageLayout:"classic"},
   canvas:{names:d.names,date:d.date,time:d.time,venue:d.venue,address:d.address,city:"",message:"",dressCode:"",mapUrl:"",coverImage:"",musicUrl:"",layout:{},extras:[],gallery:{},blockColors:{},copy:{"pinterest.design":d.key}},
 }));

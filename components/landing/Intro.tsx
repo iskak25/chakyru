@@ -12,7 +12,7 @@ export function Intro() {
   const { t } = useI18n();
   const highlights = t.features.slice(0, 3);
   const titleParts = t.featuresTitle.trim().split(/\s+/);
-  const brand = titleParts[titleParts.length - 1] ?? "Chakyru";
+  const brand = titleParts[titleParts.length - 1] ?? "Toichakyru";
   const lead = titleParts.slice(0, -1).join(" ");
 
   return (

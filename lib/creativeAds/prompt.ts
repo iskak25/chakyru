@@ -12,7 +12,7 @@ export function buildCreativePrompt(input: {
   const style = CREATIVE_STYLES.find((item) => item.id === input.style);
   return [
     "Create a luxury editorial advertising photograph for a digital wedding invitation product.",
-    `Product: Chakyru invitation template "${input.templateName}" (${input.templateId}).`,
+    `Product: Toichakyru invitation template "${input.templateName}" (${input.templateId}).`,
     `Event: ${input.eventType}. Language context: ${input.language}. Format: ${input.format}.`,
     `Scene mood: ${style?.tone ?? "premium wedding"}.`,
     "CRITICAL: The invitation design itself must remain unchanged — do not alter typography, names, colors, layout, ornaments, or invitation text.",

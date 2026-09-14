@@ -3,7 +3,7 @@ import type { StockPage, StockPhoto } from "@/lib/stock";
 
 export const dynamic = "force-dynamic";
 
-const UA = "Chakyru/1.0 (wedding invitations; localhost)";
+const UA = "Toichakyru/1.0 (wedding invitations; localhost)";
 
 function num(value: string | null, fallback: number) {
   const n = Number(value);

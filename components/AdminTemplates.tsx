@@ -32,7 +32,7 @@ function blankTemplate(): InvitationTemplate {
   return {
     id: `tpl-${crypto.randomUUID().slice(0, 8)}`,
     name: { ky: "Жаңы шаблон", ru: "Новый шаблон" },
-    designer: "Chakyru",
+    designer: "Toichakyru",
     format: "site3d",
     priceSom: 0,
     eventTypes: ["toi"],

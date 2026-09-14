@@ -15,7 +15,7 @@ export function Logo({
   const mark = (
     <span className={`inline-flex flex-col items-center leading-none ${color} ${className}`}>
       <span className="font-serif text-[17px] font-normal tracking-[0.32em] uppercase sm:text-[19px]">
-        Chakyru
+        Toichakyru
       </span>
       <span className="mt-1.5 text-[8px] uppercase tracking-[0.42em] opacity-70">kg</span>
     </span>

@@ -56,3 +56,18 @@
 @media (max-height:540px) { .heading { top:max(4dvh,env(safe-area-inset-top)); } .eyebrow,.heading p,.footerDate { display:none; } .heading h1 { font-size:25px; margin:0; } .footer { bottom:max(4dvh,env(safe-area-inset-bottom)); } .trigger { width:min(440px,calc(100vw - 40px),58dvh); } }
 @media (prefers-reduced-motion:reduce) { .scene *, .contentEntering { animation:none !important; } .scene[data-stage="revealing"] { animation:sceneFade 140ms linear both; } }
 .scene[data-reduced="true"] *, .scene[data-reduced="true"] ~ * { animation:none !important; }
+.embedded { container-type:inline-size; }
+.embedded .scene { position:relative; inset:auto; z-index:0; height:640px; height:178cqw; min-height:480px; touch-action:pan-y; overscroll-behavior:auto; }
+.embedded .heading { top:9%; }
+.embedded .heading h1 { font-size:clamp(28px,10cqw,36px); margin:14px 0 8px; }
+.embedded .eyebrow { display:inline; font-size:8px; }
+.embedded .heading p { display:block; font-size:10px; }
+.embedded .trigger { width:100%; transform:translateY(20px); }
+.embedded .cardTitle { font-size:9px; }
+.embedded .cardNames { font-size:clamp(19px,7cqw,28px); }
+.embedded .cardDate { font-size:10px; }
+.embedded .address { font-size:18px; }
+.embedded .monogram { font-size:16px; }
+.embedded .footer { bottom:9%; }
+.embedded .footerDate { display:inline; }
+.embedded .contentEntering { position:absolute; inset:0; }

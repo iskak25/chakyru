@@ -3,8 +3,8 @@ import type { InviteFormat } from "./types";
 const EXPORT_ID = "chakyru-export";
 
 function fileBase(names: string) {
-  const raw = names.trim() || "chakyru";
-  return raw.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 48) || "chakyru";
+  const raw = names.trim() || "toichakyru";
+  return raw.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 48) || "toichakyru";
 }
 
 function saveBlob(blob: Blob, filename: string) {

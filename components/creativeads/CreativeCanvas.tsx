@@ -34,7 +34,7 @@ export function CreativeCanvas({
       <div className={`relative z-10 flex h-full flex-col justify-between p-[8%] ${align}`}>
         <div className={align}>
           <p className="text-[10px] uppercase tracking-[0.32em]" style={{ color: ad.textColor, opacity: 0.72 }}>
-            Chakyru
+            Toichakyru
           </p>
           <h3
             className="font-serif mt-3 max-w-[16ch] leading-[1.05] tracking-[-0.03em]"

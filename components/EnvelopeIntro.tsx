@@ -13,9 +13,9 @@ function Ornament({ motif, className = "" }: { motif: string; className?: string
   </svg>;
 }
 
-type Props = { variant: EnvelopeVariant; names: string; date: string; locale: string; children: ReactNode };
+type Props = { variant: EnvelopeVariant; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean };
 
-export function EnvelopeIntro({ variant, names, date, locale, children }: Props) {
+export function EnvelopeIntro({ variant, names, date, locale, children, embedded = false }: Props) {
   const [stage, setStage] = useState<"closed" | "opening" | "revealing" | "open">("closed");
   const [reduced, setReduced] = useState(false);
   const started = useRef(false);
@@ -28,13 +28,16 @@ export function EnvelopeIntro({ variant, names, date, locale, children }: Props)
   const title = ru ? "Вам приглашение" : "Сизге чакыруу";
   const openLabel = ru ? "Открыть приглашение" : "Чакырууну ачуу";
   const initials = names.split(/\s*[&+/]\s*| менен | жана | и /i).filter(Boolean).slice(0, 2).map(s => Array.from(s.trim())[0]).join(" · ");
-  const parsed = /^\d{4}-\d{2}-\d{2}$/.test(date) ? new Date(`${date}T12:00:00`) : null;
-  const displayDate = parsed && !Number.isNaN(parsed.getTime()) ? parsed.toLocaleDateString(ru ? "ru-RU" : "ky-KG", { day: "2-digit", month: "2-digit", year: "numeric" }) : date;
+  const displayDate = date.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$3.$2.$1");
   const variables = Object.fromEntries(Object.entries(theme).filter(([key]) => key !== "motif").map(([key, value]) => [`--env-${key}`, value])) as CSSProperties;
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   useEffect(() => {
+    if (embedded) {
+      if (!active) content.current?.focus({ preventScroll: true });
+      return;
+    }
     if (!active) {
       content.current?.focus({ preventScroll: true });
       content.current?.scrollIntoView({ block: "start", behavior: "instant" });
@@ -57,7 +60,7 @@ export function EnvelopeIntro({ variant, names, date, locale, children }: Props)
       body.style.paddingRight = padding;
       document.removeEventListener("keydown", trapFocus, true);
     };
-  }, [active]);
+  }, [active, embedded]);
 
   function open() {
     if (started.current) return;
@@ -69,9 +72,9 @@ export function EnvelopeIntro({ variant, names, date, locale, children }: Props)
     timers.current.push(setTimeout(() => setStage("open"), reduce ? ENVELOPE_TIMING.reducedComplete : ENVELOPE_TIMING.complete));
   }
 
-  return <div className={css.experience} style={variables} data-envelope-experience={variant}>
+  return <div className={`${css.experience} ${embedded ? css.embedded : ""}`} style={variables} data-envelope-experience={variant}>
     {(stage === "revealing" || stage === "open") && <div ref={content} tabIndex={-1} aria-label={title} inert={active} className={`${css.content} ${stage === "revealing" ? css.contentEntering : ""}`}>{children}</div>}
-    {active && <section className={css.scene} data-envelope-intro={variant} data-stage={stage} data-reduced={reduced || undefined} role="dialog" aria-modal="true" aria-label={title}>
+    {active && <section className={css.scene} data-envelope-intro={variant} data-stage={stage} data-reduced={reduced || undefined} role={embedded ? undefined : "dialog"} aria-modal={embedded ? undefined : true} aria-label={title}>
       <div className={css.light} aria-hidden="true"/>
       <header className={css.heading}><span className={css.eyebrow}>{ru ? "Особенный день · особенные люди" : "Өзгөчө күн · өзгөчө адамдар"}</span><h1>{title}</h1><p>{ru ? "Для вас. С теплом и любовью." : "Сиз үчүн. Жылуулук жана сүйүү менен."}</p></header>
       <div className={css.center}>

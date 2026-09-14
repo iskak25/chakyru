@@ -106,7 +106,7 @@ function FormatInviteContent({
   );
 }
 
-export function FormatInvite(props: ComponentProps<typeof FormatInviteContent>) {
+export function FormatInvite(props: ComponentProps<typeof FormatInviteContent> & { envelopeEmbedded?: boolean }) {
   useCatalog();
   const template = getTemplate(props.invitation.templateId);
   const intro = shouldShowEnvelope(template, { interactive: props.interactive, startOpen: props.startOpen, editing: !!props.onChange });
@@ -114,7 +114,7 @@ export function FormatInvite(props: ComponentProps<typeof FormatInviteContent>) 
   // Do not fall back to Site3D's older cover when template.envelope.enabled is false.
   const contentProps = template.format === "site3d" && props.interactive ? { ...props, startOpen: true } : props;
   return <InvitationLanguageProvider locale={props.locale}>{intro ? (
-    <EnvelopeIntro key={`${props.invitation.id}:${props.invitation.templateId}`} variant={envelopeForTemplate(template).variant} names={props.invitation.names} date={props.invitation.date} locale={props.locale}>
+    <EnvelopeIntro key={`${props.invitation.id}:${props.invitation.templateId}`} variant={envelopeForTemplate(template).variant} names={props.invitation.names} date={props.invitation.date} locale={props.locale} embedded={props.envelopeEmbedded}>
       <FormatInviteContent {...contentProps} startOpen />
     </EnvelopeIntro>
   ) : <FormatInviteContent {...contentProps}/>}</InvitationLanguageProvider>;

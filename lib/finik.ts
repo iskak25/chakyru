@@ -204,7 +204,7 @@ export async function createFinikPayment(input: {
     Data: {
       accountId,
       merchantCategoryCode: cfg.mcc.trim() || "5999",
-      name_en: input.templateId ? `Chakyru ${input.templateId}` : `Chakyru ${input.plan}`,
+      name_en: input.templateId ? `Toichakyru ${input.templateId}` : `Toichakyru ${input.plan}`,
       webhookUrl: input.webhookUrl,
       paymentId: input.paymentId,
       plan: input.plan,

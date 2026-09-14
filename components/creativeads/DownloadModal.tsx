@@ -22,7 +22,7 @@ export function DownloadModal({
   const [format, setFormat] = useState<"png" | "jpg">("png");
   const [size, setSize] = useState(ad.format);
   const [busy, setBusy] = useState(false);
-  const filename = `chakyru-${ad.templateId}-${variant.style}-01.${format}`;
+  const filename = `toichakyru-${ad.templateId}-${variant.style}-01.${format}`;
 
   useEffect(() => {
     if (open) setSize(ad.format);

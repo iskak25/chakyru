@@ -55,7 +55,7 @@ const philosopher = Philosopher({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://toichakyru.com"),
-  title: "Chakyru — Тойго чакыруу",
+  title: "Toichakyru — Тойго чакыруу",
   description:
     "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
   keywords: [
@@ -74,15 +74,15 @@ export const metadata: Metadata = {
     locale: "ky_KG",
     alternateLocale: "ru_RU",
     url: "https://toichakyru.com",
-    siteName: "Chakyru",
-    title: "Chakyru — Тойго чакыруу",
+    siteName: "Toichakyru",
+    title: "Toichakyru — Тойго чакыруу",
     description:
       "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
     images: ["/icon.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Chakyru — Тойго чакыруу",
+    title: "Toichakyru — Тойго чакыруу",
     description:
       "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
     images: ["/icon.png"],

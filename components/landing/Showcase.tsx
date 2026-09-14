@@ -41,7 +41,7 @@ export function Showcase() {
             <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-ink/10" />
             <div className="overflow-hidden">
               {inv ? (
-                <FormatInvite invitation={inv} locale={locale} onReload={reload} />
+                <FormatInvite invitation={inv} locale={locale} onReload={reload} interactive envelopeEmbedded />
               ) : (
                 <div className="min-h-[480px] bg-[#f7f3ec]" />
               )}

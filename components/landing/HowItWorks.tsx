@@ -16,7 +16,7 @@ export function HowItWorks() {
             {t.howTitle}
           </h2>
           <div className="img-crop mt-10 hidden aspect-[4/5] lg:block">
-            <img src="/images/how-chakyru-phone.jpg" alt="Chakyru" className="h-full w-full object-cover object-top" />
+            <img src="/images/how-chakyru-phone.jpg" alt="Toichakyru" className="h-full w-full object-cover object-top" />
           </div>
         </Reveal>
         <div>
