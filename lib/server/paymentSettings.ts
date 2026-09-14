@@ -35,7 +35,12 @@ function envSettings(): PaymentSettings {
 }
 
 function text(value: unknown, fallback = "") {
-  return typeof value === "string" ? value.trim() : fallback;
+  // An explicit empty string in Firestore (e.g. a blank legacy settings doc)
+  // must NOT shadow a real env-var default -- only a genuinely non-empty
+  // value stored in Firestore should override it.
+  if (typeof value !== "string") return fallback;
+  const trimmed = value.trim();
+  return trimmed || fallback;
 }
 
 function boolean(value: unknown, fallback: boolean) {
