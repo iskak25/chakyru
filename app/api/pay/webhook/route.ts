@@ -35,6 +35,21 @@ export async function POST(req: NextRequest) {
       preferBeta: settings.finikBeta,
     });
     if (!ok) {
+      // Temporary diagnostics: no secrets, just enough to see why verification
+      // is rejecting every callback (host mismatch, missing headers, etc).
+      console.info("[FINIK_WEBHOOK_VERIFY_FAIL]", {
+        hasSignature: Boolean(signature),
+        signatureLen: signature.length,
+        hasTimestamp: Boolean(timestamp),
+        timestamp,
+        forwarded,
+        host,
+        siteUrl: settings.siteUrl || null,
+        siteHost: siteHost || null,
+        beta: settings.finikBeta,
+        bodyKeys: Object.keys(body || {}),
+        allHeaders: Object.fromEntries(req.headers.entries()),
+      });
       return NextResponse.json({ error: "signature" }, { status: 401 });
     }
     const paymentId = finikWebhookPaymentId(body);

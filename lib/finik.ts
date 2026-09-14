@@ -302,7 +302,17 @@ export async function fetchFinikPaymentStatus(
           signature,
         },
       });
-      if (!res.ok) continue;
+      if (!res.ok) {
+        // Temporary diagnostics: no secrets, just enough to see why the
+        // status lookup keeps failing (wrong path, auth, etc).
+        const text = await res.text().catch(() => "");
+        console.info("[FINIK_STATUS_CHECK_FAIL]", {
+          path,
+          status: res.status,
+          bodySnippet: text.slice(0, 300),
+        });
+        continue;
+      }
       const data = (await res.json().catch(() => null)) as Record<string, unknown> | null;
       if (!data) continue;
       const status = fieldFrom(data, "status", "Status") || fieldFrom((data.fields as Record<string, unknown>) ?? {}, "status");
