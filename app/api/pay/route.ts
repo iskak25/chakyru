@@ -108,7 +108,11 @@ export async function POST(req: NextRequest) {
     if (!finikReady(cfg)) {
       return NextResponse.json({ error: "finik" }, { status: 503 });
     }
-    const origin = originOf(req, settings.siteUrl || "https://chakyru.vercel.app");
+    // Prefer the domain the user actually paid from (req host) over a
+    // hardcoded default; a hardcoded fallback here would always win over
+    // the real host, sending everyone back to chakyru.vercel.app even when
+    // they started the checkout from www.toichakyru.com.
+    const origin = originOf(req, settings.siteUrl || undefined);
     const created = await createFinikPayment({
       plan: body.plan,
       paymentId,
