@@ -313,10 +313,23 @@ export async function fetchFinikPaymentStatus(
         });
         continue;
       }
-      const data = (await res.json().catch(() => null)) as Record<string, unknown> | null;
-      if (!data) continue;
+      const rawText = await res.text().catch(() => "");
+      const data = (() => {
+        try {
+          return JSON.parse(rawText) as Record<string, unknown>;
+        } catch {
+          return null;
+        }
+      })();
+      if (!data) {
+        console.info("[FINIK_STATUS_CHECK_UNPARSEABLE]", { path, bodySnippet: rawText.slice(0, 300) });
+        continue;
+      }
       const status = fieldFrom(data, "status", "Status") || fieldFrom((data.fields as Record<string, unknown>) ?? {}, "status");
-      if (!status) continue;
+      if (!status) {
+        console.info("[FINIK_STATUS_CHECK_NO_STATUS_FIELD]", { path, dataKeys: Object.keys(data), bodySnippet: rawText.slice(0, 400) });
+        continue;
+      }
       const amount = Number(data.amount ?? data.Amount ?? 0);
       return {
         paymentId: fieldFrom(data, "paymentId", "PaymentId", "id") || paymentId,
