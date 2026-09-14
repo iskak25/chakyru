@@ -86,7 +86,7 @@ export type InvitationTemplate = {
 
 export type AuthMethod = "name" | "google";
 export type PlanId = "free" | "standard" | "pro" | "unlimited";
-export type AccountRole = "admin" | "vip" | "user";
+export type AccountRole = "admin" | "pro" | "guest" | "vip" | "user";
 export type TemplateAccessType = "free" | "purchase" | "pro" | "vip" | "admin";
 export type PurchaseStatus = "pending" | "paid" | "failed" | "cancelled" | "refunded";
 export type PurchaseSource = "template" | "pro" | "admin";
@@ -104,6 +104,8 @@ export type Purchase = {
   finikTransactionId?: string;
   createdAt: string;
   paidAt?: string;
+  proMonths?: number;
+  proExpiresAt?: string;
   source: PurchaseSource;
 };
 
@@ -235,6 +237,8 @@ export type User = {
   picture?: string;
   plan: PlanId;
   accountRole: AccountRole;
+  proStartedAt?: string | null;
+  proExpiresAt?: string | null;
   templates?: string[];
 };
 

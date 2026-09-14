@@ -12,10 +12,12 @@ export function PlanBuyButton({
   plan,
   templateId,
   className,
+  proMonths = 1,
 }: {
   plan: "standard" | "pro";
   templateId?: string;
   className: string;
+  proMonths?: number;
 }) {
   const { t } = useI18n();
   const router = useRouter();
@@ -36,14 +38,14 @@ export function PlanBuyButton({
       return;
     }
     if (!canSubscribe(user)) {
-      router.push(planLoginHref(plan, templateId));
+      router.push(planLoginHref(plan, templateId, proMonths));
       return;
     }
     setBusy(true);
     try {
       const token = await getFirebaseAuth()?.currentUser?.getIdToken();
       if (!token) {
-        router.push(planLoginHref(plan, templateId));
+        router.push(planLoginHref(plan, templateId, proMonths));
         return;
       }
       const res = await fetch("/api/pay", {
@@ -52,7 +54,7 @@ export function PlanBuyButton({
           "content-type": "application/json",
           authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ plan, templateId }),
+        body: JSON.stringify({ plan, templateId, proMonths }),
       });
       const data = (await res.json().catch(() => null)) as {
         paymentUrl?: string;
@@ -60,9 +62,10 @@ export function PlanBuyButton({
         granted?: boolean;
         error?: string;
       } | null;
-      const { rememberCheckout, markPaidTemplate, unlockPaidTemplate } = await import("@/lib/payAccess");
+      const { rememberCheckout, markPaidTemplate, unlockPaidTemplate, refreshPaidAccount } = await import("@/lib/payAccess");
       rememberCheckout({ paymentId: data?.paymentId, templateId, plan });
       if (data?.granted) {
+        await refreshPaidAccount();
         if (templateId) {
           markPaidTemplate(templateId, data.paymentId);
           unlockPaidTemplate(templateId, plan);

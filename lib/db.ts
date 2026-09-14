@@ -11,7 +11,6 @@ import {
   type Unsubscribe,
 } from "firebase/firestore";
 import { isCatalogTemplate } from "./inviteFormats";
-import { isAdminEmail } from "./auth";
 import { getFirebaseApp, getFirebaseAuth, profileFromFirebase } from "./firebase";
 import type { Lesson } from "./lessons";
 import type { AccountRole, InvitationTemplate, PlanId, SiteSettings } from "./types";
@@ -25,14 +24,17 @@ export type RemoteUser = {
   email: string;
   picture?: string;
   accountRole: AccountRole;
+  proStartedAt?: string | null;
+  proExpiresAt?: string | null;
+  protectedAdmin?: boolean;
   plan: PlanId;
   templates?: string[];
   createdAt?: string;
 };
 
 function parseRole(value: unknown): AccountRole {
-  if (value === "admin" || value === "vip") return value;
-  return "user";
+  if (value === "admin" || value === "pro" || value === "vip") return value;
+  return "guest";
 }
 
 function parseTemplates(value: unknown): string[] {
@@ -51,82 +53,17 @@ export function getFirebaseDb(): Firestore | null {
   return getFirestore(app);
 }
 
-export async function upsertGoogleUser(input: {
-  firebaseUid: string;
-  id: string;
-  name: string;
-  email: string;
-  picture?: string;
-  plan?: PlanId;
+export async function upsertGoogleUser(_input: {
+  firebaseUid: string; id: string; name: string; email: string; picture?: string; plan?: PlanId;
 }): Promise<RemoteUser | null> {
-  const db = getFirebaseDb();
-  if (!db || !input.firebaseUid) return null;
-  try {
-    const ref = doc(db, "users", input.firebaseUid);
-    const snap = await getDoc(ref);
-    const now = new Date().toISOString();
-    const asAdmin = isAdminEmail(input.email);
-    if (snap.exists()) {
-      const data = snap.data();
-      const next: RemoteUser = {
-        id: input.id,
-        firebaseUid: input.firebaseUid,
-        name: input.name,
-        email: input.email,
-        picture: input.picture,
-        accountRole: asAdmin ? "admin" : parseRole(data.accountRole),
-        plan: parsePlan(data.plan) || input.plan || "free",
-        templates: parseTemplates(data.templates),
-        createdAt: typeof data.createdAt === "string" ? data.createdAt : now,
-      };
-      await setDoc(
-        ref,
-        {
-          id: next.id,
-          firebaseUid: next.firebaseUid,
-          name: next.name,
-          email: next.email,
-          picture: next.picture ?? null,
-          updatedAt: now,
-        },
-        { merge: true },
-      );
-      if (asAdmin && parseRole(data.accountRole) !== "admin") {
-        try {
-          await setDoc(ref, { accountRole: "admin", updatedAt: now }, { merge: true });
-          next.accountRole = "admin";
-        } catch {
-          /* bootstrap rule may deny; user row still exists */
-        }
-      }
-      return next;
-    }
-    const created: RemoteUser = {
-      id: input.id,
-      firebaseUid: input.firebaseUid,
-      name: input.name,
-      email: input.email,
-      picture: input.picture,
-      accountRole: "user",
-      plan: input.plan ?? "free",
-      templates: [],
-      createdAt: now,
-    };
-    await setDoc(ref, { ...created, picture: created.picture ?? null, updatedAt: now });
-    if (asAdmin) {
-      try {
-        await setDoc(ref, { accountRole: "admin", updatedAt: now }, { merge: true });
-        created.accountRole = "admin";
-      } catch {
-        /* listed as user until an admin upgrades the role */
-      }
-    }
-    return created;
-  } catch {
-    return null;
-  }
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+  if (!token) return null;
+  const response = await fetch("/api/me/sync", {
+    method: "POST", headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) throw new Error("profile-sync");
+  return (await response.json()).user ?? null;
 }
-
 export async function syncCurrentGoogleUser(): Promise<RemoteUser | null> {
   const auth = getFirebaseAuth();
   if (!auth) return null;
@@ -160,6 +97,8 @@ export function watchMe(uid: string, onUser: (user: RemoteUser | null) => void):
       email: String(data.email ?? ""),
       picture: data.picture ? String(data.picture) : undefined,
       accountRole: parseRole(data.accountRole),
+      proStartedAt: typeof data.proStartedAt === "string" ? data.proStartedAt : null,
+      proExpiresAt: typeof data.proExpiresAt === "string" ? data.proExpiresAt : null,
       plan: parsePlan(data.plan),
       templates: parseTemplates(data.templates),
       createdAt: typeof data.createdAt === "string" ? data.createdAt : undefined,
@@ -182,6 +121,8 @@ export function watchUsers(onUsers: (users: RemoteUser[]) => void, onError?: (er
           email: String(data.email ?? ""),
           picture: data.picture ? String(data.picture) : undefined,
           accountRole: parseRole(data.accountRole),
+          proStartedAt: typeof data.proStartedAt === "string" ? data.proStartedAt : null,
+          proExpiresAt: typeof data.proExpiresAt === "string" ? data.proExpiresAt : null,
           plan: parsePlan(data.plan),
           templates: parseTemplates(data.templates),
           createdAt: typeof data.createdAt === "string" ? data.createdAt : undefined,
@@ -195,23 +136,18 @@ export function watchUsers(onUsers: (users: RemoteUser[]) => void, onError?: (er
 }
 
 export async function setUserRole(uid: string, accountRole: AccountRole) {
-  const db = getFirebaseDb();
-  if (!db) throw new Error("firestore");
-  await setDoc(
-    doc(db, "users", uid),
-    { accountRole, updatedAt: new Date().toISOString() },
-    { merge: true },
-  );
+  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+  if (!token) throw new Error("auth");
+  const role = accountRole === "vip" ? "pro" : accountRole === "user" ? "guest" : accountRole;
+  const response = await fetch("/api/admin/users", {
+    method: "PATCH", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, accountRole: role }),
+  });
+  if (!response.ok) throw new Error("save");
 }
 
 export async function setUserPlan(uid: string, plan: PlanId) {
-  const db = getFirebaseDb();
-  if (!db) throw new Error("firestore");
-  await setDoc(
-    doc(db, "users", uid),
-    { plan, updatedAt: new Date().toISOString() },
-    { merge: true },
-  );
+  return setUserRole(uid, plan === "pro" || plan === "unlimited" ? "pro" : "guest");
 }
 
 const TEMPLATES_KEY = "chakyru-catalog-templates";

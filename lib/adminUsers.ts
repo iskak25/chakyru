@@ -1,138 +1,23 @@
-import { createPrivateKey } from "crypto";
-import { importPKCS8, SignJWT } from "jose";
 import { isAdminEmail } from "./auth";
-import { getAdminDb, serviceAccount } from "./firebaseAdmin";
+import { getAdminAuth, getAdminDb } from "./firebaseAdmin";
+import { grantProPeriod, type ProPeriod } from "./proAccess";
+import { canonicalAccount } from "./server/users";
 import type { AccountRole, PlanId } from "./types";
 
-export type AdminUserRow = {
-  id: string;
-  firebaseUid: string;
-  name: string;
-  email: string;
-  picture?: string;
-  accountRole: AccountRole;
-  plan: PlanId;
-  templates?: string[];
-  createdAt?: string;
+export type AdminUserRow = ProPeriod & {
+  id: string; firebaseUid: string; name: string; email: string; picture?: string;
+  accountRole: AccountRole; plan: PlanId; templates?: string[]; createdAt?: string; protectedAdmin?: boolean;
 };
-
-type AuthRecord = {
-  localId?: string;
-  email?: string;
-  displayName?: string;
-  photoUrl?: string;
-  createdAt?: string;
-};
-
-function parseRole(value: unknown): AccountRole {
-  if (value === "admin" || value === "vip") return value;
-  return "user";
-}
-
-function parsePlan(value: unknown): PlanId {
-  if (value === "standard" || value === "pro" || value === "unlimited") return value;
-  return "free";
-}
-
-function parseTemplates(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((id): id is string => typeof id === "string" && id.length > 0);
-}
-
-function createdIso(value?: string) {
-  const ms = Number(value);
-  if (!Number.isFinite(ms) || ms <= 0) return new Date().toISOString();
-  return new Date(ms).toISOString();
-}
-
-async function identityAccessToken() {
-  const sa = serviceAccount();
-  if (!sa?.clientEmail || !sa.privateKey) return null;
-  try {
-    const pem = sa.privateKey.includes("BEGIN RSA PRIVATE KEY")
-      ? createPrivateKey(sa.privateKey).export({ type: "pkcs8", format: "pem" }).toString()
-      : sa.privateKey;
-    const key = await importPKCS8(pem, "RS256");
-    const now = Math.floor(Date.now() / 1000);
-    const assertion = await new SignJWT({
-      scope:
-        "https://www.googleapis.com/auth/identitytoolkit https://www.googleapis.com/auth/firebase https://www.googleapis.com/auth/cloud-platform",
-    })
-      .setProtectedHeader({ alg: "RS256", typ: "JWT" })
-      .setIssuer(sa.clientEmail)
-      .setSubject(sa.clientEmail)
-      .setAudience("https://oauth2.googleapis.com/token")
-      .setIssuedAt(now)
-      .setExpirationTime(now + 3600)
-      .sign(key);
-    const res = await fetch("https://oauth2.googleapis.com/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-        assertion,
-      }),
-    });
-    const data = (await res.json()) as { access_token?: string };
-    return res.ok && data.access_token ? data.access_token : null;
-  } catch {
-    return null;
-  }
-}
-
-async function listIdentityUsers(): Promise<AuthRecord[]> {
-  try {
-    const sa = serviceAccount();
-    const projectId = sa?.projectId || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim();
-    const token = await identityAccessToken();
-    if (!projectId || !token) return [];
-    const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
-
-    const batchRes = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:batchGet`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ maxResults: 1000 }),
-    });
-    if (batchRes.ok) {
-      const data = (await batchRes.json()) as { users?: AuthRecord[]; userInfo?: AuthRecord[] };
-      const rows = data.users ?? data.userInfo;
-      if (Array.isArray(rows) && rows.length) return rows;
-    }
-
-    const downloadRes = await fetch("https://www.googleapis.com/identitytoolkit/v3/relyingparty/downloadAccount", {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ targetProjectId: projectId, maxResults: 1000 }),
-    });
-    if (downloadRes.ok) {
-      const data = (await downloadRes.json()) as { users?: AuthRecord[] };
-      if (Array.isArray(data.users) && data.users.length) return data.users;
-    }
-
-    const queryRes = await fetch(`https://identitytoolkit.googleapis.com/v1/projects/${projectId}/accounts:query`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ returnUserInfo: true, limit: "500" }),
-    });
-    if (!queryRes.ok) return [];
-    const data = (await queryRes.json()) as { userInfo?: AuthRecord[] };
-    return Array.isArray(data.userInfo) ? data.userInfo : [];
-  } catch {
-    return [];
-  }
-}
 
 function rowFromFirestore(uid: string, data: Record<string, unknown>): AdminUserRow {
   return {
-    id: String(data.id ?? `google:${uid}`),
-    firebaseUid: uid,
-    name: String(data.name ?? ""),
-    email: String(data.email ?? ""),
+    id: String(data.id ?? `google:${uid}`), firebaseUid: uid,
+    name: String(data.name ?? ""), email: String(data.email ?? ""),
     picture: data.picture ? String(data.picture) : undefined,
-    accountRole: parseRole(data.accountRole),
-    plan: parsePlan(data.plan),
-    templates: parseTemplates(data.templates),
+    ...canonicalAccount(data),
+    templates: Array.isArray(data.templates) ? data.templates.filter((id): id is string => typeof id === "string") : [],
     createdAt: typeof data.createdAt === "string" ? data.createdAt : undefined,
+    protectedAdmin: isAdminEmail(String(data.email ?? "")),
   };
 }
 
@@ -140,101 +25,85 @@ export async function callerIsAdmin(uid: string, email: string) {
   if (isAdminEmail(email)) return true;
   const db = getAdminDb();
   if (!db) return false;
-  const snap = await db.collection("users").doc(uid).get();
-  return snap.data()?.accountRole === "admin";
+  return (await db.collection("users").doc(uid).get()).data()?.accountRole === "admin";
 }
 
 export async function upsertAuthUser(input: {
-  firebaseUid: string;
-  name: string;
-  email: string;
-  picture?: string;
-}): Promise<AdminUserRow | null> {
+  firebaseUid: string; name: string; email: string; picture?: string; createdAt?: string;
+}): Promise<AdminUserRow> {
   const db = getAdminDb();
-  if (!db || !input.firebaseUid) return null;
+  if (!db || !input.firebaseUid) throw new Error("firebase-admin-not-configured");
   const ref = db.collection("users").doc(input.firebaseUid);
-  const snap = await ref.get();
-  const now = new Date().toISOString();
-  const existing = snap.data() ?? {};
-  const row: AdminUserRow = {
-    id: `google:${input.firebaseUid}`,
-    firebaseUid: input.firebaseUid,
-    name: input.name || String(existing.name ?? "") || input.email,
-    email: input.email || String(existing.email ?? ""),
-    picture: input.picture || (existing.picture ? String(existing.picture) : undefined),
-    accountRole: isAdminEmail(input.email) ? "admin" : parseRole(existing.accountRole),
-    plan: parsePlan(existing.plan),
-    templates: parseTemplates(existing.templates),
-    createdAt: typeof existing.createdAt === "string" ? existing.createdAt : now,
-  };
-  await ref.set(
-    {
-      id: row.id,
-      firebaseUid: row.firebaseUid,
-      name: row.name,
-      email: row.email,
-      picture: row.picture ?? null,
-      accountRole: row.accountRole,
-      plan: row.plan,
-      templates: row.templates ?? [],
-      createdAt: row.createdAt,
-      updatedAt: now,
-    },
-    { merge: true },
-  );
-  return row;
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    const existing = snap.data() ?? {};
+    const now = new Date().toISOString();
+    const data = {
+      ...existing, id: `google:${input.firebaseUid}`, firebaseUid: input.firebaseUid,
+      name: input.name || String(existing.name ?? "") || input.email,
+      email: input.email || String(existing.email ?? ""), picture: input.picture || existing.picture || null,
+      templates: Array.isArray(existing.templates) ? existing.templates : [],
+      createdAt: existing.createdAt || input.createdAt || now,
+    };
+    const account = canonicalAccount(data, now);
+    tx.set(ref, { ...data, ...account, updatedAt: now }, { merge: true });
+    return rowFromFirestore(input.firebaseUid, { ...data, ...account });
+  });
 }
 
-export async function patchAdminUser(uid: string, patch: { plan?: PlanId; accountRole?: AccountRole }) {
+export async function patchAdminUser(uid: string, patch: { accountRole: "guest" | "pro" | "admin"; proMonths?: number }) {
+  if (!["guest", "pro", "admin"].includes(patch.accountRole)) throw new Error("role");
+  if (patch.proMonths !== undefined && patch.proMonths !== 1 && patch.proMonths !== 3) throw new Error("months");
   const db = getAdminDb();
-  if (!db || !uid) throw new Error("firestore");
-  const next: Record<string, unknown> = { updatedAt: new Date().toISOString() };
-  if (patch.plan === "free" || patch.plan === "standard" || patch.plan === "pro") next.plan = patch.plan;
-  if (patch.accountRole === "user" || patch.accountRole === "vip" || patch.accountRole === "admin") {
-    next.accountRole = patch.accountRole;
-  }
-  await db.collection("users").doc(uid).set(next, { merge: true });
+  const auth = getAdminAuth();
+  if (!db || !auth) throw new Error("firebase-admin-not-configured");
+  const identity = await auth.getUser(uid);
+  if (isAdminEmail(identity.email) && patch.accountRole !== "admin") throw new Error("protected-admin");
+  const ref = db.collection("users").doc(uid);
+  await db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    const existing = snap.data() ?? {};
+    const now = new Date().toISOString();
+    const account = patch.accountRole === "pro"
+      ? grantProPeriod({ ...canonicalAccount(existing, now), accountRole: "guest" }, patch.proMonths ?? 1, now)
+      : { accountRole: patch.accountRole, plan: "free", proStartedAt: null, proExpiresAt: null };
+    tx.set(ref, {
+      ...account, id: `google:${uid}`, firebaseUid: uid,
+      name: identity.displayName || identity.email || "", email: identity.email || "",
+      picture: identity.photoURL || null, createdAt: existing.createdAt || identity.metadata.creationTime || now,
+      updatedAt: now,
+    }, { merge: true });
+  });
 }
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
   const db = getAdminDb();
-  const byUid = new Map<string, AdminUserRow>();
-
-  if (db) {
-    const snap = await db.collection("users").get();
-    for (const doc of snap.docs) {
-      byUid.set(doc.id, rowFromFirestore(doc.id, (doc.data() ?? {}) as Record<string, unknown>));
+  const auth = getAdminAuth();
+  if (!db || !auth) throw new Error("firebase-admin-not-configured");
+  // Paginate Firebase Authentication; surface errors rather than reporting an empty list.
+  let pageToken: string | undefined;
+  do {
+    const page = await auth.listUsers(1000, pageToken);
+    for (let offset = 0; offset < page.users.length; offset += 20) {
+      await Promise.all(page.users.slice(offset, offset + 20).map(user => upsertAuthUser({
+        firebaseUid: user.uid, name: user.displayName || user.email || "", email: user.email || "",
+        picture: user.photoURL, createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).toISOString() : undefined,
+      })));
     }
+    pageToken = page.pageToken;
+  } while (pageToken);
+  const snap = await db.collection("users").get();
+  const rows: AdminUserRow[] = [];
+  for (const doc of snap.docs) {
+    const row = await db.runTransaction(async tx => {
+      const fresh = await tx.get(doc.ref);
+      if (!fresh.exists) return null;
+      const data = fresh.data() ?? {};
+      const account = canonicalAccount(data);
+      if (Object.entries(account).some(([key, value]) => data[key] !== value)) tx.set(doc.ref, account, { merge: true });
+      return rowFromFirestore(doc.id, { ...data, ...account });
+    });
+    if (row) rows.push(row);
   }
-
-  const authUsers = await listIdentityUsers();
-  for (const auth of authUsers) {
-    const uid = auth.localId?.trim();
-    if (!uid) continue;
-    const email = auth.email || byUid.get(uid)?.email || "";
-    const name = auth.displayName || byUid.get(uid)?.name || email || "Google";
-    const existing = byUid.get(uid);
-    const row: AdminUserRow = {
-      id: existing?.id ?? `google:${uid}`,
-      firebaseUid: uid,
-      name,
-      email,
-      picture: auth.photoUrl || existing?.picture,
-      accountRole: existing?.accountRole ?? (isAdminEmail(email) ? "admin" : "user"),
-      plan: existing?.plan ?? "free",
-      templates: existing?.templates ?? [],
-      createdAt: existing?.createdAt ?? createdIso(auth.createdAt),
-    };
-    byUid.set(uid, row);
-    if (db && !existing) {
-      await upsertAuthUser({
-        firebaseUid: uid,
-        name: row.name,
-        email: row.email,
-        picture: row.picture,
-      });
-    }
-  }
-
-  return [...byUid.values()].sort((a, b) => a.email.localeCompare(b.email));
+  return rows.sort((a, b) => a.email.localeCompare(b.email));
 }

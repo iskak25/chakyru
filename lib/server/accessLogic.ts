@@ -1,8 +1,10 @@
 import type { AccountRole, PlanId, TemplateAccessType } from "../types";
+import { hasActivePro } from "../proAccess";
 
 export type AccessFacts = {
   accountRole: AccountRole;
   plan: PlanId;
+  proExpiresAt?: string | null;
   isAdminEmail: boolean;
   isFreeTemplate: boolean;
   hasPaidPurchase: boolean;
@@ -18,10 +20,7 @@ export function canUserAccessTemplateFromFacts(facts: AccessFacts): AccessDecisi
   if (facts.isAdminEmail || facts.accountRole === "admin") {
     return { allowed: true, accessType: "admin" };
   }
-  if (facts.accountRole === "vip") {
-    return { allowed: true, accessType: "vip" };
-  }
-  if (facts.plan === "pro" || facts.plan === "unlimited") {
+  if (hasActivePro(facts)) {
     return { allowed: true, accessType: "pro" };
   }
   if (facts.isFreeTemplate) {

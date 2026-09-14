@@ -26,8 +26,8 @@ function purchaseMatchesTemplate(
   templateId: string,
 ) {
   if (!isPaidPurchaseStatus(data.status)) return false;
-  if (data.templateId === templateId) return true;
-  return data.plan === "pro" || data.plan === "unlimited";
+  // Subscription receipts must never become permanent template ownership.
+  return data.plan === "standard" && data.templateId === templateId;
 }
 
 async function listUserCommerceDocs(uid: string) {
@@ -81,6 +81,7 @@ export async function canUserAccessTemplate(uid: string, templateId: string, ema
   const decision = canUserAccessTemplateFromFacts({
     accountRole: profile?.accountRole ?? "user",
     plan: profile?.plan ?? "free",
+    proExpiresAt: profile?.proExpiresAt,
     isAdminEmail: isAdminEmail(email) || isAdminEmail(profile?.email),
     isFreeTemplate: free,
     hasPaidPurchase: hasPaid,

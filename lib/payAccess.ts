@@ -1,6 +1,7 @@
 "use client";
 
-import { normalizeUser } from "./auth";
+import { normalizeUser, mergePaidAccess } from "./auth";
+import { syncCurrentGoogleUser } from "./db";
 import { fetchTemplateAccess } from "./accessClient";
 import { getFirebaseAuth, profileFromFirebase } from "./firebase";
 import { getUser, grantLocalTemplate, setPendingTemplate, setUser } from "./store";
@@ -77,11 +78,19 @@ export function unlockPaidTemplate(templateId: string, plan: "standard" | "pro" 
   return grantLocalTemplate(templateId, plan);
 }
 
+export async function refreshPaidAccount() {
+  const remote = await syncCurrentGoogleUser();
+  const current = getUser();
+  if (remote && current?.id === remote.id) setUser(mergePaidAccess(current, remote));
+  return getUser();
+}
+
 export async function restorePaidTemplate(templateId: string) {
   if (!templateId) return false;
   ensureGoogleUser();
   const access = await fetchTemplateAccess(templateId).catch(() => null);
   if (!access?.allowed) return false;
+  if (access.accessType === "pro") await refreshPaidAccount();
   unlockPaidTemplate(templateId, access.accessType === "pro" ? "pro" : "standard");
   return true;
 }
@@ -108,6 +117,7 @@ export async function confirmLastCheckout() {
       plan?: string | null;
     } | null;
     if (!data?.paid) return false;
+    await refreshPaidAccount();
     const templateId = data.templateId || checkout.templateId;
     if (templateId) unlockPaidTemplate(templateId, data.plan === "pro" ? "pro" : "standard");
     return true;

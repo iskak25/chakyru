@@ -28,7 +28,12 @@ service cloud.firestore {
       allow read: if signedIn() && (request.auth.uid == uid || admin());
       allow create: if signedIn()
         && request.auth.uid == uid
-        && request.resource.data.accountRole == 'user';
+        && request.resource.data.accountRole in ['user', 'guest']
+        && request.resource.data.plan == 'free'
+        && request.resource.data.get('templates', []) == []
+        && request.resource.data.get('proStartedAt', null) == null
+        && request.resource.data.get('proExpiresAt', null) == null
+        && request.resource.data.get('creativeCredits', 0) == 0;
       allow update: if signedIn() && (
         admin()
         || (
@@ -36,6 +41,9 @@ service cloud.firestore {
           && request.resource.data.accountRole == resource.data.accountRole
           && request.resource.data.plan == resource.data.plan
           && request.resource.data.get('templates', []) == resource.data.get('templates', [])
+          && request.resource.data.get('proStartedAt', null) == resource.data.get('proStartedAt', null)
+          && request.resource.data.get('proExpiresAt', null) == resource.data.get('proExpiresAt', null)
+          && request.resource.data.get('creativeCredits', 0) == resource.data.get('creativeCredits', 0)
         )
       );
 

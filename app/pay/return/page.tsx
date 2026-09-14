@@ -6,7 +6,7 @@ import { SiteShell } from "@/components/SiteShell";
 import { fetchTemplateAccess } from "@/lib/accessClient";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
-import { unlockPaidTemplate } from "@/lib/payAccess";
+import { unlockPaidTemplate, refreshPaidAccount } from "@/lib/payAccess";
 
 function editorHref(templateId: string) {
   return `/create/new?template=${encodeURIComponent(templateId)}`;
@@ -46,6 +46,7 @@ function ReturnInner() {
 
       let grantedTemplate = "";
       let grantedPlan: "standard" | "pro" = "standard";
+      let paidPro = false;
       const deadline = Date.now() + 45000;
       while (!cancelled && Date.now() < deadline) {
         if (pid) {
@@ -66,7 +67,7 @@ function ReturnInner() {
             } | null;
             if (data?.paid) {
               grantedTemplate = data.templateId || templateHint;
-              if (data.plan === "pro") grantedPlan = "pro";
+              if (data.plan === "pro") { grantedPlan = "pro"; paidPro = true; }
               break;
             }
             if (data?.status === "failed" || data?.status === "cancelled" || data?.status === "refunded") {
@@ -91,6 +92,13 @@ function ReturnInner() {
       }
 
       if (cancelled) return;
+      if (paidPro || grantedPlan === "pro") {
+        await refreshPaidAccount();
+        if (cancelled) return;
+        setPhase("opening");
+        router.replace(grantedTemplate ? editorHref(grantedTemplate) : "/templates");
+        return;
+      }
       if (grantedTemplate) {
         setPhase("opening");
         unlockPaidTemplate(grantedTemplate, grantedPlan);

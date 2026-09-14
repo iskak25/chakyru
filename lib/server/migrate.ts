@@ -56,7 +56,7 @@ export async function migrateChakyruData() {
       { merge: true },
     );
     purchaseWrites += 1;
-    if (status === "paid" && typeof data.templateId === "string" && data.templateId && (data.uid || data.userId)) {
+    if (status === "paid" && data.plan !== "pro" && data.plan !== "unlimited" && typeof data.templateId === "string" && data.templateId && (data.uid || data.userId)) {
       const uid = String(data.uid || data.userId);
       const accessRef = db.collection("users").doc(uid).collection("templateAccess").doc(data.templateId);
       await accessRef.set(

@@ -1,6 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "../firebaseAdmin";
 import { isAdminEmail } from "../auth";
+import { hasActivePro } from "../proAccess";
 import { ensurePaidTemplateAccess } from "./access";
 import { loadUserProfile } from "./users";
 import { getCatalogTemplate } from "./templates";
@@ -26,10 +27,10 @@ function asCreative(id: string, data: Record<string, unknown>): CreativeAd | nul
 
 export async function getCreativeCredits(uid: string, email?: string) {
   const profile = await loadUserProfile(uid);
-  if (isAdminEmail(email) || isAdminEmail(profile?.email) || profile?.accountRole === "admin" || profile?.accountRole === "vip") {
+  if (isAdminEmail(email) || isAdminEmail(profile?.email) || profile?.accountRole === "admin") {
     return { credits: Infinity, unlimited: true as const };
   }
-  if (profile?.plan === "pro" || profile?.plan === "unlimited") {
+  if (hasActivePro(profile)) {
     return { credits: Infinity, unlimited: true as const };
   }
   const credits = typeof profile?.creativeCredits === "number" ? profile.creativeCredits : DEFAULT_CREDITS;

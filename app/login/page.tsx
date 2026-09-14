@@ -33,11 +33,11 @@ function LoginInner() {
       const from = search.get("from") || extra.get("from");
       const prev = getUser();
       const user = normalizeUser({
-        ...prev,
+        ...(prev?.id === profile.id ? prev : {}),
         ...profile,
         auth,
         role: auth === "name" ? role : prev?.role ?? "host",
-        plan: prev?.plan ?? "free",
+        plan: prev?.id === profile.id ? prev.plan : "free",
       });
       if (auth === "name") user.plan = "free";
       if (auth === "google" && prev && prev.id !== user.id) {
@@ -59,6 +59,7 @@ function LoginInner() {
       }
       if (planId && planId !== "free") {
         const q = new URLSearchParams({ pay: planId });
+        if (planId === "pro") q.set("months", search.get("months") || extra.get("months") || "1");
         if (from) q.set("from", from);
         window.location.replace(`/pricing?${q.toString()}`);
         return;

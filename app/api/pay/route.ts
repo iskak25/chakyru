@@ -66,16 +66,19 @@ export async function POST(req: NextRequest) {
     if (!uid) {
       return NextResponse.json({ error: "auth" }, { status: settings.finikApiKey ? 401 : 503 });
     }
-    const body = (await req.json().catch(() => null)) as { plan?: string; templateId?: string; price?: unknown } | null;
+    const body = (await req.json().catch(() => null)) as { plan?: string; templateId?: string; price?: unknown; proMonths?: unknown } | null;
     if (!body?.plan || !isPaidPlan(body.plan) || body.plan === "unlimited") {
       return NextResponse.json({ error: "plan" }, { status: 400 });
     }
     const templateId = typeof body.templateId === "string" ? body.templateId.trim() : "";
+    const proMonths = body.proMonths ?? 1;
+    if (proMonths !== 1 && proMonths !== 3) return NextResponse.json({ error: "months" }, { status: 400 });
     const quoted = await quoteCheckout({
       uid,
       plan: body.plan,
       templateId: templateId || undefined,
       proPriceSom: pricing.proPriceSom,
+      proMonths,
     });
     if ("error" in quoted) {
       return NextResponse.json({ error: quoted.error }, { status: 400 });
@@ -89,6 +92,7 @@ export async function POST(req: NextRequest) {
       plan: body.plan,
       amount,
       templateId: quoted.templateId,
+      proMonths,
     });
     if (amount <= 0) {
       const done = await fulfillPurchase({

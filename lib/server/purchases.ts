@@ -3,6 +3,8 @@ import { getAdminDb } from "../firebaseAdmin";
 import type { PlanId, Purchase, PurchaseSource, PurchaseStatus } from "../types";
 import { grantTemplateAccess } from "./access";
 import { isFinikSucceeded, isPaidPurchaseStatus, purchasePriceLocked } from "./accessLogic";
+import { grantProPeriod, hasActivePro } from "../proAccess";
+import { canonicalAccount } from "./users";
 
 function pickText(...values: unknown[]) {
   for (const value of values) {
@@ -39,6 +41,8 @@ function purchaseFromPayment(id: string, data: Record<string, unknown>): Purchas
     finikTransactionId: pickText(data.finikTransactionId) || undefined,
     createdAt: pickText(data.createdAt) || new Date().toISOString(),
     paidAt: pickText(data.paidAt) || undefined,
+    proMonths: data.proMonths === 3 ? 3 : 1,
+    proExpiresAt: pickText(data.proExpiresAt) || undefined,
     source: (pickText(data.source) as PurchaseSource) || sourceOf(plan, templateId),
   };
 }
@@ -106,14 +110,16 @@ export async function findUserPurchase(uid: string, input?: { paymentId?: string
   return ranked[0] ?? null;
 }
 
-export async function findOpenPurchase(uid: string, input: { plan: Exclude<PlanId, "free">; templateId?: string }) {
+export async function findOpenPurchase(uid: string, input: { plan: Exclude<PlanId, "free">; templateId?: string; proMonths?: number; amount?: number }) {
   const db = getAdminDb();
   if (!db) return null;
   const snap = await db.collection("payments").where("uid", "==", uid).get();
   const match = snap.docs.find((doc) => {
-    const data = doc.data() as { plan?: string; templateId?: string; status?: string };
+    const data = doc.data() as { plan?: string; templateId?: string; status?: string; proMonths?: number; amount?: number };
     if (isPaidPurchaseStatus(data.status) || data.status === "failed" || data.status === "cancelled") return false;
     if (data.plan !== input.plan) return false;
+    if (input.amount !== undefined && data.amount !== input.amount) return false;
+    if (input.plan === "pro" && (data.proMonths ?? 1) !== (input.proMonths ?? 1)) return false;
     if (input.plan === "standard") return data.templateId === input.templateId;
     return true;
   });
@@ -126,6 +132,7 @@ export async function createPurchase(input: {
   plan: Exclude<PlanId, "free">;
   amount: number;
   templateId?: string;
+  proMonths?: number;
 }) {
   const db = getAdminDb();
   if (!db) return;
@@ -134,6 +141,7 @@ export async function createPurchase(input: {
     uid: input.uid,
     userId: input.uid,
     plan: input.plan,
+    proMonths: input.plan === "pro" || input.plan === "unlimited" ? input.proMonths ?? 1 : null,
     amount: input.amount,
     price: input.amount,
     currency: "KGS" as const,
@@ -174,7 +182,7 @@ export async function fulfillPurchase(input: {
   if (input.uid && found.userId && !samePurchasePayer(found.userId, input.uid)) return false;
 
   const id = found.id;
-  const uid = input.uid || found.userId;
+  const uid = (input.uid || found.userId).replace(/^google:/, "");
   const plan = found.plan;
   const templateId = found.templateId;
   const frozenPrice = found.price;
@@ -206,51 +214,40 @@ export async function fulfillPurchase(input: {
 
   const paidAt = new Date().toISOString();
   const userRef = db.collection("users").doc(uid);
-  const userSnap = await userRef.get();
-  const currentPlan = userSnap.data()?.plan;
-  const keepPro = currentPlan === "pro" || currentPlan === "unlimited";
-
-  if (plan === "pro" || plan === "unlimited") {
-    await userRef.set({ plan: "pro", updatedAt: paidAt }, { merge: true });
-  } else {
-    const patch: Record<string, unknown> = {
-      plan: keepPro ? currentPlan : "standard",
-      updatedAt: paidAt,
-    };
-    if (templateId) patch.templates = FieldValue.arrayUnion(templateId);
-    await userRef.set(patch, { merge: true });
-    if (templateId) {
-      await grantTemplateAccess({
-        uid,
-        templateId,
-        accessType: "purchase",
-        purchaseId: id,
-      });
+  return db.runTransaction(async tx => {
+    const [purchaseSnap, paymentSnap, userSnap] = await Promise.all([tx.get(purchaseRef), tx.get(paymentRef), tx.get(userRef)]);
+    const record = purchaseSnap.exists ? purchaseSnap.data()! : paymentSnap.data();
+    if (!record) return false;
+    if (isPaidPurchaseStatus(record.status)) return true;
+    if (record.status !== "pending") return false;
+    const current = canonicalAccount(userSnap.data() ?? {}, paidAt);
+    const months = record.proMonths === 3 ? 3 : 1;
+    const pro = plan === "pro" || plan === "unlimited";
+    const grant = pro ? grantProPeriod(current, months, paidAt, true) : null;
+    if (grant) {
+      tx.set(userRef, { ...grant, updatedAt: paidAt }, { merge: true });
+    } else {
+      tx.set(userRef, {
+        ...current, plan: hasActivePro(current, Date.parse(paidAt)) ? "pro" : "standard",
+        ...(templateId ? { templates: FieldValue.arrayUnion(templateId) } : {}), updatedAt: paidAt,
+      }, { merge: true });
+      if (templateId) tx.set(userRef.collection("templateAccess").doc(templateId), {
+        templateId, accessType: "purchase", purchaseId: id, grantedAt: paidAt,
+      }, { merge: true });
     }
-  }
-
-  const paidPayload = {
-    uid,
-    userId: uid,
-    plan,
-    amount: frozenPrice,
-    price: frozenPrice,
-    currency: "KGS",
-    templateId: templateId ?? null,
-    status: "paid",
-    paidAt,
-    finikPaymentId: found.finikPaymentId || id,
-    finikTransactionId: pickText(input.transactionId) || found.finikTransactionId || null,
-    source: found.source,
-  };
-
-  await Promise.all([
-    paymentRef.set({ ...paidPayload, status: "succeeded" }, { merge: true }),
-    purchaseRef.set({ id, ...paidPayload }, { merge: true }),
-  ]);
-  return true;
+    const paidPayload = {
+      uid, userId: uid, plan, amount: frozenPrice, price: frozenPrice, currency: "KGS",
+      templateId: templateId ?? null, status: "paid", paidAt,
+      proMonths: pro ? months : null, proExpiresAt: grant?.proExpiresAt ?? null,
+      finikPaymentId: found.finikPaymentId || id,
+      finikTransactionId: pickText(input.transactionId) || found.finikTransactionId || null,
+      source: found.source,
+    };
+    tx.set(paymentRef, { ...paidPayload, status: "succeeded" }, { merge: true });
+    tx.set(purchaseRef, { id, ...paidPayload }, { merge: true });
+    return true;
+  });
 }
-
 export function samePurchasePayer(userId: string | undefined, uid: string) {
   if (!userId || !uid) return false;
   return userId === uid || userId === `google:${uid}` || userId.replace(/^google:/, "") === uid;

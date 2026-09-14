@@ -7,9 +7,12 @@ export async function quoteCheckout(input: {
   plan: Exclude<PlanId, "free">;
   templateId?: string;
   proPriceSom: number;
+  proMonths?: number;
 }) {
   if (input.plan === "pro" || input.plan === "unlimited") {
-    return { amount: input.proPriceSom, granted: false as const };
+    const months = input.proMonths ?? 1;
+    if (months !== 1 && months !== 3) return { error: "months" as const };
+    return { amount: input.proPriceSom * months, granted: false as const };
   }
   const templateId = input.templateId?.trim() || "";
   if (!templateId) return { error: "template" as const };
@@ -27,8 +30,9 @@ export async function openCheckout(input: {
   plan: Exclude<PlanId, "free">;
   amount: number;
   templateId?: string;
+  proMonths?: number;
 }) {
-  const existing = await findOpenPurchase(input.uid, { plan: input.plan, templateId: input.templateId });
+  const existing = await findOpenPurchase(input.uid, { plan: input.plan, templateId: input.templateId, proMonths: input.proMonths, amount: input.amount });
   if (existing) return existing.id;
   const paymentId = crypto.randomUUID();
   await createPurchase({
@@ -37,6 +41,7 @@ export async function openCheckout(input: {
     plan: input.plan,
     amount: input.amount,
     templateId: input.templateId,
+    proMonths: input.proMonths,
   });
   return paymentId;
 }

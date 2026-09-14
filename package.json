@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "migrate:commerce": "npx --yes tsx --env-file=.env.local scripts/migrate-chakyru-data.ts",
-    "verify:commerce": "npx --yes tsx scripts/verify-commerce.ts"
+    "verify:commerce": "npx --yes tsx scripts/verify-commerce.ts",
+    "verify:pro": "node scripts/verify-pro-access.cjs",
+    "sync:users": "npx --yes tsx --env-file=.env.local scripts/sync-firebase-users.ts"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.1",

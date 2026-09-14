@@ -245,9 +245,11 @@ export function pricingHref(templateId: string) {
 export function grantLocalTemplate(templateId: string, plan: PlanId = "standard") {
   const user = getUser();
   if (!user || user.auth !== "google" || !templateId) return null;
+  // A Pro subscription does not grant permanent ownership of its templates.
+  if (plan === "pro" || plan === "unlimited") return user;
   const templates = [...new Set([...(user.templates ?? []), templateId].filter(Boolean))];
   const nextPlan: PlanId =
-    plan === "pro" || user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard";
+    user.plan === "pro" || user.plan === "unlimited" ? "pro" : "standard";
   setUser({ ...user, plan: nextPlan, templates });
   return getUser();
 }

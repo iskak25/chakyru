@@ -1,5 +1,6 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { mergeSettings, type PublicPricing } from "./settings";
 import type { PlanId } from "./types";
@@ -67,6 +68,11 @@ export function adminReady() {
 export function getAdminDb() {
   const app = adminApp();
   return app ? getFirestore(app) : null;
+}
+
+export function getAdminAuth() {
+  const app = adminApp();
+  return app ? getAuth(app) : null;
 }
 
 export function serviceAccount() {

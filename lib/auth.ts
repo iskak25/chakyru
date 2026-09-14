@@ -1,8 +1,9 @@
 import type { AccountRole, Invitation, User } from "./types";
+import { effectiveAccount, hasActivePro } from "./proAccess";
 
 function parseAccountRole(value: unknown): AccountRole {
-  if (value === "admin" || value === "vip") return value;
-  return "user";
+  if (value === "admin" || value === "pro" || value === "vip") return value;
+  return "guest";
 }
 
 const BOOTSTRAP_ADMIN_EMAILS = ["dastaniskak0302@gmail.com", "iskak2512@gmail.com"];
@@ -33,8 +34,9 @@ export function normalizeUser(raw: Partial<User> & { name: string }): User {
     auth,
     email: raw.email,
     picture: raw.picture,
-    plan: raw.plan ?? "free",
-    accountRole: parseAccountRole(raw.accountRole),
+    ...effectiveAccount({ ...raw, accountRole: parseAccountRole(raw.accountRole) }),
+    proStartedAt: raw.proStartedAt ?? null,
+    proExpiresAt: raw.proExpiresAt ?? null,
     templates: Array.isArray(raw.templates) ? raw.templates.filter((id): id is string => typeof id === "string") : [],
   };
 }
@@ -55,10 +57,8 @@ export function myInvitations(user: User | null, list: Invitation[]): Invitation
 
 export function canEditTemplate(user: User | null, templateId?: string): boolean {
   if (!user || user.auth !== "google") return false;
-  if (isAdminUser(user) || user.accountRole === "vip") return true;
-  if (user.plan === "pro" || user.plan === "unlimited") return true;
+  if (isAdminUser(user) || hasActivePro(user)) return true;
   if (!templateId) return (user.templates?.length ?? 0) > 0;
-  if (templateId === "klassika") return true;
   return (user.templates ?? []).includes(templateId);
 }
 
@@ -107,28 +107,17 @@ export function canSubscribe(user: User | null): boolean {
   return Boolean(user && user.auth === "google");
 }
 
-function planRank(plan?: string) {
-  if (plan === "pro" || plan === "unlimited") return 2;
-  if (plan === "standard") return 1;
-  return 0;
-}
-
 export function mergePaidAccess(
   current: User,
-  remote: Partial<Pick<User, "plan" | "templates" | "accountRole">>,
+  remote: Partial<Pick<User, "plan" | "templates" | "accountRole" | "proStartedAt" | "proExpiresAt">>,
 ): User {
-  const plan = planRank(remote.plan) >= planRank(current.plan) ? remote.plan || current.plan : current.plan;
-  const templates = [...new Set([...(current.templates ?? []), ...(remote.templates ?? [])])];
-  return {
-    ...current,
-    accountRole: remote.accountRole || current.accountRole,
-    plan,
-    templates,
-  };
+  // The server may revoke or expire access. Never keep an older, higher local plan.
+  return normalizeUser({ ...current, ...remote });
 }
 
-export function planLoginHref(plan: "standard" | "pro", templateId?: string) {
+export function planLoginHref(plan: "standard" | "pro", templateId?: string, proMonths = 1) {
   const q = new URLSearchParams({ plan, google: "1" });
+  if (plan === "pro") q.set("months", String(proMonths));
   if (templateId) q.set("from", templateId);
   return `/login?${q.toString()}`;
 }

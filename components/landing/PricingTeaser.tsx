@@ -38,7 +38,7 @@ export function PricingTeaser() {
                   {key === "pro" ? formatPrice(locale, pricing.proPriceSom) : t.plans.standard.priceHint}
                 </p>
                 <p className={`mt-2 text-[10px] uppercase tracking-[0.16em] ${key === "pro" ? "text-gold-bright/55" : "text-meta"}`}>
-                  {t.perInvite}
+                  {key === "pro" ? t.perMonth : t.perInvite}
                 </p>
                 <ul className={`mt-8 space-y-2 text-[15px] leading-8 ${key === "pro" ? "text-gold-bright/75" : "text-ink-soft"}`}>
                   {t.plans[key].feat.map((f) => (
