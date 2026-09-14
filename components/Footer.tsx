@@ -22,6 +22,9 @@ export function Footer() {
           <Link href="/templates" className="transition-opacity duration-200 hover:opacity-50">
             {t.nav.templates}
           </Link>
+          <Link href="/priglasitelnye-na-svadbu" className="transition-opacity duration-200 hover:opacity-50">
+            Пригласительные на свадьбу
+          </Link>
           <Link href="/learn" className="transition-opacity duration-200 hover:opacity-50">
             {t.nav.learn}
           </Link>
