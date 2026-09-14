@@ -55,7 +55,7 @@ export async function patchAdminUser(uid: string, patch: { accountRole: "guest" 
   if (!["guest", "pro", "admin"].includes(patch.accountRole)) throw new Error("role");
   if (patch.proMonths !== undefined && patch.proMonths !== 1 && patch.proMonths !== 3) throw new Error("months");
   const db = getAdminDb();
-  const auth = getAdminAuth();
+  const auth = await getAdminAuth();
   if (!db || !auth) throw new Error("firebase-admin-not-configured");
   const identity = await auth.getUser(uid);
   if (isAdminEmail(identity.email) && patch.accountRole !== "admin") throw new Error("protected-admin");
@@ -78,7 +78,7 @@ export async function patchAdminUser(uid: string, patch: { accountRole: "guest" 
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
   const db = getAdminDb();
-  const auth = getAdminAuth();
+  const auth = await getAdminAuth();
   if (!db || !auth) throw new Error("firebase-admin-not-configured");
   // Paginate Firebase Authentication; surface errors rather than reporting an empty list.
   let pageToken: string | undefined;

@@ -1,6 +1,5 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
-import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { mergeSettings, type PublicPricing } from "./settings";
 import type { PlanId } from "./types";
@@ -70,9 +69,15 @@ export function getAdminDb() {
   return app ? getFirestore(app) : null;
 }
 
-export function getAdminAuth() {
+export async function getAdminAuth() {
   const app = adminApp();
-  return app ? getAuth(app) : null;
+  if (!app) return null;
+  // Lazy import: loading "firebase-admin/auth" at module top-level pulls in
+  // jwks-rsa -> jose's ESM build, which fails under Vercel/Turbopack
+  // (ERR_REQUIRE_ESM) and was breaking every route that merely imports this
+  // file (pay/me/sync/access), not just the admin routes that need auth.
+  const { getAuth } = await import("firebase-admin/auth");
+  return getAuth(app);
 }
 
 export function serviceAccount() {
