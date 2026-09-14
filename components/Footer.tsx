@@ -34,11 +34,14 @@ export function Footer() {
           <Link href="/dashboard" className="transition-opacity duration-200 hover:opacity-50">
             {t.nav.mine}
           </Link>
-          <a href="https://wa.me/996555000000" className="transition-opacity duration-200 hover:opacity-50">
+          <a href="https://wa.me/996555662021" className="transition-opacity duration-200 hover:opacity-50">
             WhatsApp
           </a>
-          <a href="https://instagram.com" className="transition-opacity duration-200 hover:opacity-50">
+          <a href="https://www.instagram.com/toichakyru/" className="transition-opacity duration-200 hover:opacity-50">
             Instagram
+          </a>
+          <a href="https://go.2gis.com/Y5DMn" className="transition-opacity duration-200 hover:opacity-50">
+            2ГИС
           </a>
         </div>
       </Container>
