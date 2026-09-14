@@ -37,7 +37,7 @@ function LoginInner() {
         ...profile,
         auth,
         role: auth === "name" ? role : prev?.role ?? "host",
-        plan: prev?.id === profile.id ? prev.plan : "free",
+        plan: prev && prev.id === profile.id ? prev.plan : "free",
       });
       if (auth === "name") user.plan = "free";
       if (auth === "google" && prev && prev.id !== user.id) {
