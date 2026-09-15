@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     } catch {
       siteHost = "";
     }
-    const ok = verifyFinikCallback({
+    const ok = await verifyFinikCallback({
       method: "POST",
       path: "/api/pay/webhook",
       hosts: [forwarded, host, siteHost, "chakyru.vercel.app"],
@@ -40,9 +40,12 @@ export async function POST(req: NextRequest) {
     if (!ok) {
       // Temporary diagnostics: no secrets, just enough to see why verification
       // is rejecting every callback (host mismatch, missing headers, etc).
+      // allHeaderNames lets us see if Finik sent an x-api-* header our
+      // extraHeaders filter didn't pick up (or an unexpected extra one).
       console.info("[FINIK_WEBHOOK_VERIFY_FAIL]", {
         hasSignature: Boolean(signature),
         signatureLen: signature.length,
+        signaturePrefix: signature.slice(0, 12),
         hasTimestamp: Boolean(timestamp),
         timestamp,
         forwarded,
@@ -51,6 +54,10 @@ export async function POST(req: NextRequest) {
         siteHost: siteHost || null,
         beta: settings.finikBeta,
         bodyKeys: Object.keys(body || {}),
+        rawBodyLen: raw.length,
+        rawBodyPreview: raw.slice(0, 500),
+        allHeaderNames: [...req.headers.keys()],
+        xApiHeaders: Object.fromEntries([...req.headers.entries()].filter(([name]) => name.startsWith("x-api-"))),
       });
       return NextResponse.json({ error: "signature" }, { status: 401 });
     }

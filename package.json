@@ -12,6 +12,7 @@
     "sync:users": "npx --yes tsx --env-file=.env.local scripts/sync-firebase-users.ts"
   },
   "dependencies": {
+    "@mancho.devs/authorizer": "^2.12.8",
     "@opentelemetry/api": "^1.9.1",
     "firebase": "^12.18.0",
     "firebase-admin": "^14.3.0",

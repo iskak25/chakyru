@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createSign, createVerify, createPublicKey } from "crypto";
+import { Signer } from "@mancho.devs/authorizer";
 import type { PlanId } from "./types";
 
 export function isPaidPlan(value: string): value is Exclude<PlanId, "free"> {
@@ -68,54 +68,26 @@ function privateKeyPem(cfg?: FinikConfig) {
     .replace(/-----[\s]*END[\s]+([A-Z0-9 ]+?)[\s]*-----/g, (_m, name: string) => `-----END ${name.trim()}-----`);
 }
 
-function sortedJson(value: unknown): string {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map(sortedJson).join(",")}]`;
-  const keys = Object.keys(value as object).sort();
-  return `{${keys.map((key) => `${JSON.stringify(key)}:${sortedJson((value as Record<string, unknown>)[key])}`).join(",")}}`;
-}
-
-function headerPart(headers: Record<string, string>) {
-  return Object.entries(headers)
-    .map(([name, value]) => [name.toLowerCase(), String(value)] as const)
-    .filter(([name]) => name === "host" || name.startsWith("x-api-"))
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([name, value]) => `${name}:${value}`)
-    .join("&");
-}
-
-function canonicalString(input: {
-  method: string;
-  path: string;
-  headers: Record<string, string>;
-  query?: Record<string, string>;
-  body?: unknown;
-}) {
-  let data = `${input.method.toLowerCase()}\n${input.path}\n${headerPart(input.headers)}\n`;
-  if (input.query && Object.keys(input.query).length) {
-    const q = Object.entries(input.query)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-      .join("&");
-    data += `${q}\n`;
-  }
-  if (input.body !== undefined) data += sortedJson(input.body);
-  return data;
-}
-
-function sign(payload: string, cfg?: FinikConfig) {
+// Finik signs/verifies with its own reference algorithm (published as the
+// @mancho.devs/authorizer npm package: method+path+host/x-api-* headers+
+// query+body, "\n"-joined). That algorithm only sorts JSON object keys at
+// the TOP level of the body -- nested objects (e.g. a webhook's `fields` or
+// our own `Data`) keep their original key order. A previous hand-rolled
+// version of this file recursively re-sorted every nested key, which built
+// a different canonical string than the one Finik actually signed and made
+// every real webhook fail signature verification. Using their own library
+// avoids re-diverging from it.
+async function sign(requestData: ConstructorParameters<typeof Signer>[0], cfg?: FinikConfig) {
   const key = privateKeyPem(cfg);
   if (!key.includes("BEGIN")) throw new Error("finik_private_key");
-  const signer = createSign("RSA-SHA256");
-  signer.update(payload, "utf8");
   try {
-    return signer.sign(key, "base64");
+    return await new Signer(requestData).sign(key);
   } catch {
     throw new Error("finik_private_key");
   }
 }
 
-export function verifyFinikWebhook(input: {
+export async function verifyFinikWebhook(input: {
   method: string;
   path: string;
   host: string;
@@ -125,29 +97,53 @@ export function verifyFinikWebhook(input: {
   extraHeaders?: Record<string, string>;
   query?: Record<string, string>;
   beta?: boolean;
+  debugLabel?: string;
 }) {
-  const payload = canonicalString({
-    method: input.method,
+  const publicKey = (input.beta ?? isBeta()) ? FINIK_PUBLIC.beta : FINIK_PUBLIC.prod;
+  const signer = new Signer({
+    httpMethod: input.method,
     path: input.path,
     headers: {
       Host: input.host,
       "x-api-timestamp": input.timestamp,
       ...(input.extraHeaders ?? {}),
     },
-    body: input.body,
-    query: input.query,
+    body: (input.body ?? null) as Record<string, unknown> | null,
+    queryStringParameters: input.query ?? null,
   });
-  const key = createPublicKey((input.beta ?? isBeta()) ? FINIK_PUBLIC.beta : FINIK_PUBLIC.prod);
-  const verifier = createVerify("RSA-SHA256");
-  verifier.update(payload, "utf8");
-  return verifier.verify(key, input.signature, "base64");
+  try {
+    const ok = await signer.verify(publicKey, input.signature);
+    if (!ok && input.debugLabel) {
+      // Temporary: log the exact canonical string this attempt hashed, so a
+      // failing verification can be compared byte-for-byte against what
+      // Finik intended to sign. No secrets (public key only) are logged.
+      const getData = (signer as unknown as { getData?: () => string }).getData;
+      console.info("[FINIK_WEBHOOK_CANONICAL]", {
+        label: input.debugLabel,
+        host: input.host,
+        beta: input.beta ?? isBeta(),
+        canonical: typeof getData === "function" ? getData.call(signer) : "unavailable",
+      });
+    }
+    return ok;
+  } catch (err) {
+    if (input.debugLabel) {
+      console.info("[FINIK_WEBHOOK_VERIFY_ERROR]", {
+        label: input.debugLabel,
+        host: input.host,
+        beta: input.beta ?? isBeta(),
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+    return false;
+  }
 }
 
 function cleanHost(value: string) {
   return value.split(",")[0].trim().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/:\d+$/, "");
 }
 
-export function verifyFinikCallback(input: {
+export async function verifyFinikCallback(input: {
   method: string;
   path: string;
   hosts: string[];
@@ -165,21 +161,19 @@ export function verifyFinikCallback(input: {
   for (const host of hosts) {
     for (const path of paths) {
       for (const beta of betas) {
-        if (
-          verifyFinikWebhook({
-            method: input.method,
-            path,
-            host,
-            timestamp: input.timestamp,
-            signature: input.signature,
-            body: input.body,
-            extraHeaders: input.extraHeaders,
-            query: input.query,
-            beta,
-          })
-        ) {
-          return true;
-        }
+        const ok = await verifyFinikWebhook({
+          method: input.method,
+          path,
+          host,
+          timestamp: input.timestamp,
+          signature: input.signature,
+          body: input.body,
+          extraHeaders: input.extraHeaders,
+          query: input.query,
+          beta,
+          debugLabel: `host=${host} path=${path} beta=${beta}`,
+        });
+        if (ok) return true;
       }
     }
   }
@@ -223,7 +217,7 @@ export async function createFinikPayment(input: {
     "x-api-key": apiKey,
     "x-api-timestamp": timestamp,
   };
-  const signature = sign(canonicalString({ method: "POST", path, headers, body }), cfg);
+  const signature = await sign({ httpMethod: "POST", path, headers, body, queryStringParameters: null }, cfg);
   const res = await fetch(`${baseUrl(cfg)}${path}`, {
     method: "POST",
     headers: {
@@ -232,7 +226,7 @@ export async function createFinikPayment(input: {
       "x-api-timestamp": timestamp,
       signature,
     },
-    body: sortedJson(body),
+    body: JSON.stringify(body),
     redirect: "manual",
   });
   const location = res.headers.get("location");
