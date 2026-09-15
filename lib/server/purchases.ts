@@ -110,13 +110,23 @@ export async function findUserPurchase(uid: string, input?: { paymentId?: string
   return ranked[0] ?? null;
 }
 
+// A Finik checkout session (QR/payment URL) is short-lived. Reusing an old
+// "pending" purchase's paymentId past that window points the user at a dead
+// Finik session (or Finik rejects the reused PaymentId outright), so a stale
+// pending purchase must NOT be treated as "open" -- it should fall through
+// and let openCheckout mint a fresh paymentId + Finik session instead.
+const OPEN_PURCHASE_MAX_AGE_MS = 20 * 60 * 1000;
+
 export async function findOpenPurchase(uid: string, input: { plan: Exclude<PlanId, "free">; templateId?: string; proMonths?: number; amount?: number }) {
   const db = getAdminDb();
   if (!db) return null;
   const snap = await db.collection("payments").where("uid", "==", uid).get();
+  const now = Date.now();
   const match = snap.docs.find((doc) => {
-    const data = doc.data() as { plan?: string; templateId?: string; status?: string; proMonths?: number; amount?: number };
+    const data = doc.data() as { plan?: string; templateId?: string; status?: string; proMonths?: number; amount?: number; createdAt?: string };
     if (isPaidPurchaseStatus(data.status) || data.status === "failed" || data.status === "cancelled") return false;
+    const createdAtMs = data.createdAt ? Date.parse(data.createdAt) : NaN;
+    if (!Number.isFinite(createdAtMs) || now - createdAtMs > OPEN_PURCHASE_MAX_AGE_MS) return false;
     if (data.plan !== input.plan) return false;
     if (input.amount !== undefined && data.amount !== input.amount) return false;
     if (input.plan === "pro" && (data.proMonths ?? 1) !== (input.proMonths ?? 1)) return false;
