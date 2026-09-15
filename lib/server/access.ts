@@ -73,6 +73,7 @@ export async function ensurePaidTemplateAccess(uid: string, templateId: string, 
 export async function canUserAccessTemplate(uid: string, templateId: string, email?: string) {
   const profile = await loadUserProfile(uid);
   const template = await getCatalogTemplate(templateId);
+  if (!template) return { allowed: false, accessType: null, owned: false, isFree: false, profile, template: null };
   const basePrice = template?.priceSom ?? 0;
   const free = isFreeTemplate(templateId, basePrice);
   const hasAccessDoc = await hasTemplateAccessDoc(uid, templateId);

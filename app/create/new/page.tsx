@@ -7,6 +7,7 @@ import { canEditTemplate } from "@/lib/auth";
 import { unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser, openPaidInvitation, startInvitation } from "@/lib/store";
 import { useI18n } from "@/lib/locale";
+import { checkoutReturn, paymentReturnHref } from "@/lib/checkoutReturn";
 
 function CreateNewInner() {
   const router = useRouter();
@@ -16,7 +17,11 @@ function CreateNewInner() {
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    const template = search.get("template") || "";
+    const { templateId: template, paymentId } = checkoutReturn(search.toString());
+    if (paymentId) {
+      router.replace(paymentReturnHref(paymentId, template));
+      return;
+    }
     if (!template) {
       router.replace("/templates");
       return;

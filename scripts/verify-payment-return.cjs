@@ -9,6 +9,15 @@ function load(file, resolve = require) {
 }
 const { paymentOrigin } = load("lib/paymentOrigin.ts");
 const canonical = "https://www.toichakyru.com";
+const { checkoutReturn, paymentReturnHref } = load("lib/checkoutReturn.ts");
+const pid = "c48258b5-b60c-4ee8-ae35-4d268cdfdf18";
+for (const query of [
+  `template=baxmal%3FpaymentId%3D${pid}`,
+  `template=baxmal?paymentId=${pid}`,
+  `pid=${pid}&plan=standard&template=baxmal?paymentId=provider-id`,
+  `pid=${pid}&template=baxmal`,
+]) assert.deepEqual(checkoutReturn(query), { templateId: "baxmal", paymentId: pid });
+assert.equal(paymentReturnHref(pid, "baxmal"), `/pay/return?pid=${pid}&template=baxmal`);
 for (const host of ["www.toichakyru.com", "toichakyru.com", "chakyru.vercel.app"]) {
   assert.equal(paymentOrigin(`https://${host}/api/pay`, "https://chakyru.vercel.app"), canonical);
 }
@@ -16,14 +25,15 @@ assert.equal(paymentOrigin("http://localhost:3000/api/pay"), "http://localhost:3
 assert.equal(paymentOrigin("https://preview.vercel.app/api/pay", canonical), canonical);
 assert.equal(paymentOrigin("https://www.toichakyru.com/api/pay", "https://obsolete.example"), canonical);
 
-async function verifySaveBeforeNavigation(ok) {
+async function verifySaveBeforeNavigation(ok, query = "template=wedding") {
   const effects = [], navigation = [], state = [];
   let finishSave, savedInvitation;
   const invitation = { id: "paid-invitation", templateId: "wedding" };
   const { default: Page } = load("app/create/new/page.tsx", name => {
     if (name === "react") return { Suspense: "suspense", useEffect: fn => effects.push(fn), useState: initial => [initial, value => state.push(value)] };
     if (name === "react/jsx-runtime") return require(name);
-    if (name === "next/navigation") return { useRouter: () => ({ replace: url => navigation.push(url) }), useSearchParams: () => new URLSearchParams("template=wedding") };
+    if (name === "next/navigation") return { useRouter: () => ({ replace: url => navigation.push(url) }), useSearchParams: () => new URLSearchParams(query) };
+    if (name.endsWith("/checkoutReturn")) return { checkoutReturn, paymentReturnHref };
     if (name.endsWith("/accessClient")) return {
       fetchTemplateAccess: async () => ({ allowed: true, accessType: "purchase" }),
       pushInvitationRemote: inv => { savedInvitation = inv; return new Promise(resolve => { finishSave = resolve; }); },
@@ -38,6 +48,11 @@ async function verifySaveBeforeNavigation(ok) {
   inner.type();
   effects[0]();
   await new Promise(setImmediate);
+  if (query.includes("paymentId")) {
+    assert.equal(savedInvitation, undefined, "corrupt return must confirm payment before creating any invitation");
+    assert.deepEqual(navigation, [paymentReturnHref(pid, "baxmal")]);
+    return;
+  }
   assert.equal(savedInvitation, invitation);
   assert.deepEqual(navigation, [], "must wait for cloud save");
   finishSave(ok ? { ok: true } : { ok: false, error: "network" });
@@ -49,6 +64,7 @@ async function verifySaveBeforeNavigation(ok) {
 async function run() {
   await verifySaveBeforeNavigation(true);
   await verifySaveBeforeNavigation(false);
+  await verifySaveBeforeNavigation(true, `template=baxmal%3FpaymentId%3D${pid}`);
   const { default: config } = load("next.config.ts");
   const redirects = await config.redirects();
   const legacy = redirects.find(item => item.source === "/pay/return");

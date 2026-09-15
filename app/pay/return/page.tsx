@@ -7,6 +7,7 @@ import { fetchTemplateAccess } from "@/lib/accessClient";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
 import { unlockPaidTemplate, refreshPaidAccount } from "@/lib/payAccess";
+import { checkoutReturn } from "@/lib/checkoutReturn";
 
 function editorHref(templateId: string) {
   return `/create/new?template=${encodeURIComponent(templateId)}`;
@@ -19,8 +20,7 @@ function ReturnInner() {
   const [phase, setPhase] = useState<"wait" | "opening" | "fail">("wait");
 
   useEffect(() => {
-    const pid = search.get("pid") || "";
-    const templateHint = search.get("template") || "";
+    const { paymentId: pid, templateId: templateHint } = checkoutReturn(search.toString());
 
     let cancelled = false;
 
@@ -123,7 +123,7 @@ function ReturnInner() {
         <button
           type="button"
           className="mt-8 bg-forest px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-cream"
-          onClick={() => router.replace(templateHintHref(search.get("template") || ""))}
+          onClick={() => router.replace(templateHintHref(checkoutReturn(search.toString()).templateId))}
         >
           {t.nav.templates}
         </button>
