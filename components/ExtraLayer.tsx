@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+import { ImagePlus } from "lucide-react";
 import type { CanvasItem, Invitation, LayoutBox } from "@/lib/types";
 import { safeWeddingLink } from "@/lib/weddingEditor";
 import { deleteCanvasId } from "@/lib/canvasOps";
@@ -132,6 +134,53 @@ export function ExtraLayer({
   );
 }
 
+// Same tap-anywhere-opens-the-device-picker pattern as SlotPhoto
+// (components/SiteEdit.tsx) and WeddingPart (components/WeddingEditor.tsx):
+// the tap-vs-drag decision runs on "click" rather than "pointerup" because
+// FreeMove's drag-start also calls canvas.setPointerCapture on every
+// pointerdown, which retargets pointerup away from this div.
+function ExtraImage({ item, onChange, patchItem }: { item: CanvasItem; onChange?: InvitePatch; patchItem: (partial: Partial<CanvasItem>) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const downPos = useRef<{ x: number; y: number } | null>(null);
+  return (
+    <div className="relative h-full w-full">
+      <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${item.src})` }} />
+      {onChange ? (
+        <>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={e => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = () => patchItem({ src: String(reader.result ?? "") });
+              reader.readAsDataURL(file);
+            }}
+          />
+          <div
+            className="absolute inset-0 z-[2] cursor-pointer"
+            onPointerDown={e => {
+              downPos.current = { x: e.clientX, y: e.clientY };
+            }}
+            onClick={e => {
+              const start = downPos.current;
+              downPos.current = null;
+              const moved = start ? Math.hypot(e.clientX - start.x, e.clientY - start.y) : 0;
+              if (moved < 5) inputRef.current?.click();
+            }}
+          />
+          <span className="pointer-events-none absolute bottom-2 right-2 z-[3] flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#161616] shadow">
+            <ImagePlus size={14} />
+          </span>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
 function ExtraBody({
   item,
   invitation,
@@ -184,12 +233,7 @@ function ExtraBody({
     );
   }
   if (item.kind === "image" && item.src) {
-    return (
-      <div
-        className="h-full w-full bg-cover bg-center"
-        style={{ backgroundImage: `url(${item.src})` }}
-      />
-    );
+    return <ExtraImage item={item} onChange={onChange} patchItem={patchItem} />;
   }
   if (item.kind === "button") {
     return (

@@ -18,6 +18,7 @@ import {
 import type { LayoutKit } from "../Site3DLayouts";
 import { addRsvp } from "@/lib/store";
 import { completeGuestForm } from "@/lib/guestSubmission";
+import { SlotPhoto } from "../SiteEdit";
 
 function Ornament() {
   return (
@@ -73,7 +74,7 @@ function Countdown({ weddingDate }: { weddingDate: Date }) {
 }
 
 export function ElegantFamily({ kit }: { kit: LayoutKit }) {
-  const { invitation } = kit;
+  const { invitation, onChange, heroPhoto, venuePhoto } = kit;
   const [attendance, setAttendance] = useState("yes");
   const [drink, setDrink] = useState("");
   const [guests, setGuests] = useState("1");
@@ -100,7 +101,7 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
         </div>
 
         <div className="h-[565px] overflow-hidden bg-[#e8dcc8]">
-          <img src={invitation.coverImage || "/images/hero.jpg"} alt="hero" className="h-full w-full object-cover" />
+          <SlotPhoto invitation={invitation} onChange={onChange} slot="hero" src={heroPhoto || invitation.coverImage || "/images/hero.jpg"} className="h-full w-full" imgClass="h-full w-full object-cover" />
         </div>
 
         <div className="relative z-20 -mt-[150px] rounded-t-[50%_90px] bg-[#f4ecdf] px-6 pb-8 pt-14 text-center">
@@ -172,7 +173,7 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
         <Ornament />
         <h2 className="mt-6 text-center font-serif text-[18px] tracking-[0.14em]">ӨТКӨРҮҮ ЖЕРИ</h2>
         <div className="mt-5 overflow-hidden rounded-[15px] bg-[#e8dcc8] h-[190px]">
-          <img src={invitation.gallery?.venue || "/images/venue.jpg"} alt="venue" className="h-full w-full object-cover" />
+          <SlotPhoto invitation={invitation} onChange={onChange} slot="venue" src={venuePhoto || "/images/venue.jpg"} className="h-full w-full" imgClass="h-full w-full object-cover" />
         </div>
         <div className="mt-4 text-center">
           <h3 className="font-serif text-[18px]">{invitation.venue || "«Ала-Тоо»"}</h3>

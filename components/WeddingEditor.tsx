@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element -- User-selected media is displayed directly, including Firebase download URLs. */
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import { weddingStyle, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
 import { MoveCanvas, Selectable } from "./MoveCanvas";
@@ -52,6 +53,8 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const context = useContext(Context);
   if (!context) throw new Error("WeddingPart requires WeddingEditor");
   const { invitation, onChange, register, locale } = context;
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const imageDownPos = useRef<{ x: number; y: number } | null>(null);
   const translatedFallback = fallback === undefined ? undefined : invitationText(fallback, locale);
   const translatedLabel = invitationText(label, locale);
   useEffect(() => {
@@ -84,9 +87,52 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
           onChange={next => onChange(weddingTextPatch(invitation, { id, label, kind, fallback, field, slot }, next))}
         />
       ) : renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{id === "names" ? value.replace(/\s*&\s*/g, "\n&\n") : value}</p> : kind === "image" ? (
-        restored && !invitation.gallery?.[slot || id] ? <img src={restored.source} width={restored.width} height={restored.height} alt={translatedLabel} draggable={false} className="absolute inset-0 h-full w-full" style={{ objectFit: restored.fit, objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} /> : crop && !invitation.gallery?.[slot || id] ? <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: "inherit" }}>
-          <img src={templateImageSource(crop.source)} alt={translatedLabel} draggable={false} style={{ position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%` }} />
-        </div> : <img src={invitation.gallery?.[slot || id] ?? fallback ?? ""} alt={label} className="h-full w-full object-cover" style={{ objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} />
+        <div className="relative h-full w-full">
+          {restored && !invitation.gallery?.[slot || id] ? <img src={restored.source} width={restored.width} height={restored.height} alt={translatedLabel} draggable={false} className="absolute inset-0 h-full w-full" style={{ objectFit: restored.fit, objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} /> : crop && !invitation.gallery?.[slot || id] ? <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: "inherit" }}>
+            <img src={templateImageSource(crop.source)} alt={translatedLabel} draggable={false} style={{ position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%` }} />
+          </div> : <img src={invitation.gallery?.[slot || id] ?? fallback ?? ""} alt={label} className="h-full w-full object-cover" style={{ objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} />}
+          {onChange ? (
+            <>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = () => onChange({ gallery: { ...(invitation.gallery ?? {}), [slot || id]: String(reader.result ?? "") } });
+                  reader.readAsDataURL(file);
+                }}
+              />
+              {/* Full-area tap target so clicking anywhere on the photo opens
+                  the device picker (see components/SiteEdit.tsx's SlotPhoto
+                  for the same pattern). Selectable's own pointerdown handler
+                  still starts a reposition drag for this plain div; the
+                  tap-vs-drag decision has to run on "click" rather than
+                  "pointerup" because Selectable's drag-start also calls
+                  canvas.setPointerCapture on every pointerdown (not just real
+                  drags), which retargets pointerup away from this div, while
+                  the mouse-compatibility "click" event is unaffected. */}
+              <div
+                className="absolute inset-0 z-[2] cursor-pointer"
+                onPointerDown={e => {
+                  imageDownPos.current = { x: e.clientX, y: e.clientY };
+                }}
+                onClick={e => {
+                  const start = imageDownPos.current;
+                  imageDownPos.current = null;
+                  const moved = start ? Math.hypot(e.clientX - start.x, e.clientY - start.y) : 0;
+                  if (moved < 5) imageInputRef.current?.click();
+                }}
+              />
+              <span className="pointer-events-none absolute bottom-2 right-2 z-[3] flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-[#161616] shadow">
+                <ImagePlus size={14} />
+              </span>
+            </>
+          ) : null}
+        </div>
       ) : children}
     </Selectable>
   );
