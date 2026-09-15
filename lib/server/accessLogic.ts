@@ -58,7 +58,7 @@ export function userTemplatePriceId(userId: string, templateId: string) {
 }
 
 export function isFinikSucceeded(status?: string) {
-  return String(status || "").toUpperCase() === "SUCCEEDED" || isPaidPurchaseStatus(status);
+  return ["SUCCESS", "SUCCEEDED", "PAID"].includes(String(status || "").trim().toUpperCase());
 }
 
 export function canSaveInvitation(facts: {

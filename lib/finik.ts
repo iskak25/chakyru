@@ -123,6 +123,7 @@ export function verifyFinikWebhook(input: {
   signature: string;
   body: unknown;
   extraHeaders?: Record<string, string>;
+  query?: Record<string, string>;
   beta?: boolean;
 }) {
   const payload = canonicalString({
@@ -134,6 +135,7 @@ export function verifyFinikWebhook(input: {
       ...(input.extraHeaders ?? {}),
     },
     body: input.body,
+    query: input.query,
   });
   const key = createPublicKey((input.beta ?? isBeta()) ? FINIK_PUBLIC.beta : FINIK_PUBLIC.prod);
   const verifier = createVerify("RSA-SHA256");
@@ -153,6 +155,8 @@ export function verifyFinikCallback(input: {
   signature: string;
   body: unknown;
   preferBeta: boolean;
+  extraHeaders?: Record<string, string>;
+  query?: Record<string, string>;
 }) {
   if (!input.signature || !input.timestamp) return false;
   const hosts = [...new Set(input.hosts.map(cleanHost).filter(Boolean))];
@@ -169,7 +173,8 @@ export function verifyFinikCallback(input: {
             timestamp: input.timestamp,
             signature: input.signature,
             body: input.body,
-            extraHeaders: {},
+            extraHeaders: input.extraHeaders,
+            query: input.query,
             beta,
           })
         ) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { finikWebhookPaymentId, verifyFinikCallback, type FinikWebhook } from "@/lib/finik";
+import { isFinikSucceeded } from "@/lib/server/accessLogic";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +33,8 @@ export async function POST(req: NextRequest) {
       timestamp,
       signature,
       body,
+      extraHeaders: Object.fromEntries([...req.headers.entries()].filter(([name]) => name.startsWith("x-api-"))),
+      query: Object.fromEntries(req.nextUrl.searchParams),
       preferBeta: settings.finikBeta,
     });
     if (!ok) {
@@ -48,7 +51,6 @@ export async function POST(req: NextRequest) {
         siteHost: siteHost || null,
         beta: settings.finikBeta,
         bodyKeys: Object.keys(body || {}),
-        allHeaders: Object.fromEntries(req.headers.entries()),
       });
       return NextResponse.json({ error: "signature" }, { status: 401 });
     }
@@ -63,7 +65,7 @@ export async function POST(req: NextRequest) {
       console.info("[FINIK_WEBHOOK]", { paymentId, status, failed: done });
       return NextResponse.json({ ok: true });
     }
-    if (status !== "SUCCEEDED") {
+    if (!isFinikSucceeded(status)) {
       return NextResponse.json({ ok: true });
     }
     const amount = Number(body.amount ?? body.fields?.amount ?? 0);

@@ -18,8 +18,10 @@ function ReturnInner() {
   const router = useRouter();
   const search = useSearchParams();
   const [phase, setPhase] = useState<"wait" | "opening" | "fail">("wait");
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
+    setPhase("wait");
     const { paymentId: pid, templateId: templateHint } = checkoutReturn(search.toString());
 
     let cancelled = false;
@@ -109,7 +111,7 @@ function ReturnInner() {
     return () => {
       cancelled = true;
     };
-  }, [router, search]);
+  }, [router, search, retry]);
 
   const title = phase === "opening" ? t.pay.opening : phase === "fail" ? t.pay.confirmFail : t.pay.wait;
   const hint = phase === "opening" ? t.pay.openingHint : phase === "fail" ? t.pay.waitHint : t.pay.waitHint;
@@ -119,6 +121,7 @@ function ReturnInner() {
       <p className="label">Finik</p>
       <h1 className="font-serif mt-4 text-4xl uppercase">{title}</h1>
       <p className="mt-4 text-sm leading-7 text-ink-soft">{hint}</p>
+      {phase === "fail" ? <button type="button" className="mt-6 block mx-auto underline" onClick={() => setRetry(value => value + 1)}>{t.nav.templates === "Шаблоны" ? "Проверить оплату ещё раз" : "Төлөмдү кайра текшерүү"}</button> : null}
       {phase === "fail" ? (
         <button
           type="button"
