@@ -157,19 +157,22 @@ export async function confirmReturnPayment(
     beta: settings.finikBeta,
   };
   const purchase = await findUserPurchase(uid, { paymentId, templateId });
+  if (!purchase || purchase.status !== "pending") return confirmOwnedPurchase(paymentId, uid, { templateId });
   const ids = [...new Set([paymentId, purchase?.finikPaymentId, purchase?.id].filter((value): value is string => Boolean(value)))];
   let finikStatus: string | undefined;
+  const failures: string[] = [];
   for (const id of ids) {
-    const finik = await fetchFinikPaymentStatus(id, cfg);
+    const finik = await fetchFinikPaymentStatus(id, cfg, code => failures.push(code));
     if (finik?.status) {
       finikStatus = finik.status;
       break;
     }
   }
-  return confirmOwnedPurchase(paymentId, uid, {
+  const result = await confirmOwnedPurchase(paymentId, uid, {
     templateId,
     finikStatus,
   });
+  return { ...result, ...(!result.paid && !finikStatus ? { verificationError: failures[0] || "finik_unavailable" } : {}) };
 }
 
 export function getAdminStorageBucket() {

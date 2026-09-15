@@ -286,8 +286,10 @@ export function finikWebhookPaymentId(body: FinikWebhook) {
 export async function fetchFinikPaymentStatus(
   paymentId: string,
   cfg: FinikConfig,
+  onFailure?: (code: string) => void,
 ): Promise<FinikPaymentStatus | null> {
-  if (!paymentId || !finikReady(cfg)) return null;
+  if (!paymentId) { onFailure?.("payment_id_missing"); return null; }
+  if (!finikReady(cfg)) { onFailure?.("finik_not_configured"); return null; }
   const host = new URL(baseUrl(cfg)).host;
   const timestamp = Date.now().toString();
   const paths = [`/v1/payment/${encodeURIComponent(paymentId)}`, `/v1/payments/${encodeURIComponent(paymentId)}`];
@@ -301,6 +303,7 @@ export async function fetchFinikPaymentStatus(
       const signature = sign(canonicalString({ method: "GET", path, headers }), cfg);
       const res = await fetch(`${baseUrl(cfg)}${path}`, {
         method: "GET",
+        signal: AbortSignal.timeout(5000),
         headers: {
           "x-api-key": cfg.apiKey.trim(),
           "x-api-timestamp": timestamp,
@@ -310,11 +313,10 @@ export async function fetchFinikPaymentStatus(
       if (!res.ok) {
         // Temporary diagnostics: no secrets, just enough to see why the
         // status lookup keeps failing (wrong path, auth, etc).
-        const text = await res.text().catch(() => "");
+        onFailure?.(`finik_http_${res.status}`);
         console.info("[FINIK_STATUS_CHECK_FAIL]", {
           path,
           status: res.status,
-          bodySnippet: text.slice(0, 300),
         });
         continue;
       }
@@ -327,12 +329,14 @@ export async function fetchFinikPaymentStatus(
         }
       })();
       if (!data) {
-        console.info("[FINIK_STATUS_CHECK_UNPARSEABLE]", { path, bodySnippet: rawText.slice(0, 300) });
+        onFailure?.("finik_invalid_response");
+        console.info("[FINIK_STATUS_CHECK_UNPARSEABLE]", { path });
         continue;
       }
       const status = fieldFrom(data, "status", "Status") || fieldFrom((data.fields as Record<string, unknown>) ?? {}, "status");
       if (!status) {
-        console.info("[FINIK_STATUS_CHECK_NO_STATUS_FIELD]", { path, dataKeys: Object.keys(data), bodySnippet: rawText.slice(0, 400) });
+        onFailure?.("finik_status_missing");
+        console.info("[FINIK_STATUS_CHECK_NO_STATUS_FIELD]", { path, dataKeys: Object.keys(data) });
         continue;
       }
       const amount = Number(data.amount ?? data.Amount ?? 0);
@@ -341,8 +345,8 @@ export async function fetchFinikPaymentStatus(
         status,
         amount: Number.isFinite(amount) ? amount : undefined,
       };
-    } catch {
-      /* try next path */
+    } catch (error) {
+      onFailure?.(error instanceof Error && error.message === "finik_private_key" ? "finik_private_key" : error instanceof Error && ["TimeoutError", "AbortError"].includes(error.name) ? "finik_timeout" : "finik_network");
     }
   }
   return null;
