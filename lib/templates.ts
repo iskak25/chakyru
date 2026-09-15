@@ -55,11 +55,11 @@ const seedTemplates: InvitationTemplate[] = [
   },
   {
     id: "balalyk",
-    name: { ky: "Балалык", ru: "Детский" },
+    name: { ky: "nike", ru: "nike" },
     designer: "Studio Nur",
     format: "photo",
     priceSom: 250,
-    eventTypes: ["birthday", "beshik"],
+    eventTypes: ["wedding"],
     style: style(
       "linear-gradient(165deg, #4a6a8a 0%, #243848 100%)",
       "rgba(244, 250, 255, 0.95)",

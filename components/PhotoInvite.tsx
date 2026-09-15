@@ -61,7 +61,7 @@ export function PhotoInvite({
         onSelect={onSelect}
         onChange={onChange}
         invitation={invitation}
-        height="auto"
+        height={compact ? "100%" : "auto"}
         className="h-full"
       >
         {layout === "jpgSplash" ? (

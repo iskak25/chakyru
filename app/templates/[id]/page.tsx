@@ -17,6 +17,10 @@ import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { referenceWedding } from "@/lib/referenceWeddings";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
 import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
+import { TemplatePaperPreview } from "@/components/TemplatePaperPreview";
+import { AnniversaryHero } from "@/components/AnniversaryHero";
+import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
+import anniversaryCss from "@/components/AnniversaryInvite.module.css";
 
 // FormatInvite (behind TemplateRenderer) statically pulls in every site-look renderer
 // (Site3D, PinterestInvite, ThemedSiteInvite, FamilySiteInvite, PhotoInvite...) — that's
@@ -35,6 +39,8 @@ export default function TemplatePreviewPage() {
   const id = params.id;
   const template = templates.find((item) => item.id === id);
   const invitation = useMemo(() => (template ? previewInvitation(template.id) : null), [template]);
+  const anniversary = invitation ? getAnniversaryDesign(invitation) : undefined;
+  const paperPreview = template?.id === "minimal-white" || (invitation && getPinterestDesign(invitation)?.key === "pearl");
   const [access, setAccess] = useState<TemplateAccessResponse | null>(null);
   const [mounted, setMounted] = useState(false);
   // The interactive renderer (Site3D / PinterestInvite / ThemedSiteInvite / etc.) pulls in
@@ -132,7 +138,13 @@ export default function TemplatePreviewPage() {
               onClick={() => setPreviewOpen(true)}
               className="group relative block aspect-[3/5] w-full overflow-hidden rounded-[calc(var(--radius-xl)-8px)]"
             >
-              {previewPhoto ? (
+              {anniversary ? (
+                <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true">
+                  <AnniversaryHero invitation={invitation} design={anniversary} locale={locale} preview eager />
+                </div>
+              ) : paperPreview ? (
+                <TemplatePaperPreview template={template} locale={locale} eager />
+              ) : previewPhoto ? (
                 <img src={previewPhoto} alt="" loading="eager" className="h-full w-full object-cover" />
               ) : (
                 <div className="h-full w-full bg-[#f3ede2]" />
