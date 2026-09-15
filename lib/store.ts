@@ -3,7 +3,7 @@
 import type { Guest, Invitation, PlanId, RsvpStatus, User, Wish } from "./types";
 import { canCreateInvitation, canEditTemplate, normalizeUser, ownsInvitation } from "./auth";
 import { getTemplate } from "./templates";
-import { DEFAULT_MUSIC_URL } from "./music";
+import { DEFAULT_MUSIC_URL, templateMusicUrl } from "./music";
 import { DEFAULT_VENUE } from "./defaultVenue";
 
 const INV_KEY = "chakyru-invitations";
@@ -29,7 +29,7 @@ export const demoInvitation: Invitation = {
   dressCode: "Улуттук / классика",
   adultsOnly: true,
   music: true,
-  musicUrl: "https://www.youtube.com/watch?v=sadyraliev-eki-zhas",
+  musicUrl: DEFAULT_MUSIC_URL,
   mapUrl: DEFAULT_VENUE.mapUrl,
   coverImage: "",
   layout: {},
@@ -205,7 +205,6 @@ export function previewInvitation(templateId: string): Invitation {
 
   // Custom preview data for ak-kyoshok template
   const isAkKyoshok = templateId === "ak-kyoshok";
-  const isAkShumkar = templateId === "ak-shumkar";
 
   return {
     ...demoInvitation,
@@ -221,7 +220,7 @@ export function previewInvitation(templateId: string): Invitation {
     mapUrl: canvas?.mapUrl ?? demoInvitation.mapUrl,
     names: canvas?.names ?? (isAkKyoshok ? "Айбек & Айгул" : demoInvitation.names),
     message: canvas?.message ?? demoInvitation.message,
-    musicUrl: template.format === "photo" ? "" : isAkKyoshok ? "https://www.youtube.com/watch?v=sadyraliev-eki-zhas" : isAkShumkar ? "https://www.youtube.com/watch?v=sadyraliev-eki-zhas" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
+    musicUrl: templateMusicUrl(template),
     music: template.format !== "photo",
     coverImage: canvas?.coverImage ?? "",
     layout: { ...(canvas?.layout ?? {}) },
@@ -318,7 +317,7 @@ export function createInvitation(templateId: string, opts?: { force?: boolean })
     dressCode: canvas?.dressCode ?? "",
     adultsOnly: false,
     music: template.format !== "photo",
-    musicUrl: template.format === "photo" ? "" : canvas?.musicUrl || DEFAULT_MUSIC_URL,
+    musicUrl: templateMusicUrl(template),
     mapUrl: canvas?.mapUrl ?? DEFAULT_VENUE.mapUrl,
     coverImage: canvas?.coverImage ?? "",
     layout: { ...(canvas?.layout ?? {}) },

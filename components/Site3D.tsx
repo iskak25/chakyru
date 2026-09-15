@@ -380,7 +380,7 @@ export function Site3D({
   const [wishText, setWishText] = useState("");
   const [wishOpen, setWishOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music);
+  const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType);
 
   const look = getSiteLook(invitation.templateId);
   const overlay = look.overlay;

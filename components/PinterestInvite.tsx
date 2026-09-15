@@ -49,7 +49,7 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
   const formId=useId();
   const [formState,setFormState]=useState<"idle"|"sending"|"sent"|"error">("idle");
   const ru=locale === "ru";
-  const musicSrc=effectiveMusicUrl(inv.musicUrl, inv.music);
+  const musicSrc=effectiveMusicUrl(inv.musicUrl, inv.music, inv.eventType);
   const [playing,setPlaying]=useState(false);
   const text=(id:string,value:string,className="",field?:WeddingPartInfo["field"]) => <Copy id={id} text={value} className={className} field={field} />;
   const title=(id:string,value:string,script=false) => text(`${id}-title`,value,`${css.title} ${script?css.script:""}`);

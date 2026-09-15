@@ -26,10 +26,10 @@ import { ElementInspector } from "./ElementInspector";
 import { MusicPicker } from "./MusicPicker";
 import { StockPhotos } from "./StockPhotos";
 import { uploadInvitationImage } from "@/lib/uploadImage";
-import { DEFAULT_MUSIC_URL } from "@/lib/music";
+import { defaultMusicForEvent, effectiveMusicUrl, templateMusicUrl } from "@/lib/music";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 
-type Tab = "templates" | "media" | "extras" | "text" | "element";
+type Tab = "templates" | "media" | "music" | "extras" | "text" | "element";
 
 function MediaGlyph() {
   return (
@@ -213,6 +213,7 @@ export function EditorDock({
   const mainTabs: { id: Tab; label: string; icon: ReactNode }[] = [
     ...(parts ? [{ id: "element" as const, label: labels.element, icon: <PenLine size={19} strokeWidth={1.6} /> }] : []),
     { id: "media", label: labels.media, icon: format === "photo" ? <ImageIcon size={18} strokeWidth={1.6} /> : <MediaGlyph /> },
+    ...(format === "site3d" ? [{ id: "music" as const, label: labels.music, icon: <Music size={20} strokeWidth={1.6} /> }] : []),
     { id: "extras", label: labels.extras, icon: <ExtrasGlyph /> },
     { id: "text", label: labels.text, icon: <Type size={22} strokeWidth={1.6} /> },
   ];
@@ -281,7 +282,7 @@ export function EditorDock({
             <p className="font-medium">
               {tab === "templates"
                 ? labels.templates
-                : tab === "media"
+                : tab === "music" ? labels.music : tab === "media"
                   ? labels.media
                   : tab === "extras"
                     ? labels.extrasTitle
@@ -295,6 +296,15 @@ export function EditorDock({
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
+          {tab === "music" && format === "site3d" && <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={invitation.music} onChange={e => onChange({ music: e.target.checked, musicUrl: effectiveMusicUrl(invitation.musicUrl, true, invitation.eventType) })} />
+              {locale === "ru" ? "Музыка при открытии" : "Ачылганда музыка ойнотуу"}
+            </label>
+            <p className="text-xs leading-5 text-ink-soft">{locale === "ru" ? "Выберите композицию, вставьте ссылку на аудио или YouTube, либо загрузите свой файл. Музыка начнёт играть при открытии конверта." : "Музыка тандаңыз, аудио же YouTube шилтемесин коюңуз же өз файлыңызды жүктөңүз. Конверт ачылганда музыка ойнойт."}</p>
+            <button type="button" className="text-sm text-forest underline underline-offset-4" onClick={() => onChange({ music: true, musicUrl: defaultMusicForEvent(invitation.eventType) })}>{locale === "ru" ? "Музыка по теме шаблона" : "Шаблондун темасына ылайык музыка"}</button>
+            <MusicPicker eventType={invitation.eventType} value={effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType)} onChange={musicUrl => onChange({ musicUrl, music: Boolean(musicUrl) })} locale={locale} labels={{ online: labels.musicOnline, device: labels.musicDevice, link: labels.musicLink, apply: labels.musicApply, clear: labels.music, pickFile: labels.musicPickFile }} />
+          </div>}
           {tab === "templates" ? (
             templatesPanel ? (
               templatesPanel
@@ -310,9 +320,10 @@ export function EditorDock({
                       const photo = tpl.format === "photo";
                       onChange({
                         templateId: tpl.id,
+                        eventType: tpl.eventTypes[0],
                         blockColors: {},
                         music: !photo,
-                        musicUrl: photo ? "" : invitation.musicUrl || DEFAULT_MUSIC_URL,
+                        musicUrl: templateMusicUrl(tpl),
                       });
                     }}
                     className={`overflow-hidden rounded-xl text-left ${
@@ -400,22 +411,6 @@ export function EditorDock({
                 <span className="rounded-full bg-forest px-3 py-1 text-xs text-cream">
                   {labels.images}
                 </span>
-              </div>
-              <div className="space-y-1.5">
-                <p className="text-xs text-ink-soft">{labels.music}</p>
-                <MusicPicker
-                  value={invitation.musicUrl}
-                  onChange={(musicUrl) => onChange({ musicUrl, music: Boolean(musicUrl) })}
-                  locale={locale}
-                  labels={{
-                    online: labels.musicOnline,
-                    device: labels.musicDevice,
-                    link: labels.musicLink,
-                    apply: labels.musicApply,
-                    clear: labels.music,
-                    pickFile: labels.musicPickFile,
-                  }}
-                />
               </div>
               <div className="space-y-3 pt-1">
                 {CLIPART_GROUPS.map((group) => (

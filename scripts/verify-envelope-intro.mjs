@@ -45,12 +45,15 @@ for (const template of templates) {
     assert.ok(envelopeVariants[config.variant]);
     assert.ok(html.includes('data-stage="closed"'));
     assert.ok(!html.includes('data-box='), `${template.id}: invitation leaked before opening`);
-    assert.ok(!html.includes('<audio') && !html.includes('<iframe'), `${template.id}: media mounted before opening`);
+    assert.equal((html.match(/<audio\b/g) || []).length, 1, `${template.id}: prepare one shared audio element for the opening gesture`);
+    assert.ok(!html.includes('autoPlay=') && !html.includes('<iframe'), `${template.id}: media must not autoplay before opening`);
     for (const layer of ["back", "card", "left", "right", "bottom", "flap", "seal"]) assert.ok(html.includes(layer), `${template.id}: ${layer} missing`);
     const openHtml = render(inv, { startOpen: true });
+    assert.equal((openHtml.match(/<audio\b/g) || []).length, 1, `${template.id}: duplicate audio players after opening`);
     assert.ok(!openHtml.includes("data-envelope-intro="));
     assert.ok(openHtml.includes('data-box=') && openHtml.includes('<input'), `${template.id}: existing invitation/RSVP missing after bypass`);
     const editor = render(inv, { onChange: () => {} });
+    assert.ok(!editor.includes('data-invitation-experience'), `${template.id}: guest playback must not run in the editor`);
     assert.ok(!editor.includes("data-envelope-intro="), `${template.id}: editor blocked`);
     assert.ok(!shouldShowEnvelope(template, { interactive: false }));
     const clone = { ...template, id: "admin-copy", envelope: undefined };

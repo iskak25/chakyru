@@ -13,9 +13,9 @@ function Ornament({ motif, className = "" }: { motif: string; className?: string
   </svg>;
 }
 
-type Props = { variant: EnvelopeVariant; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean };
+type Props = { variant: EnvelopeVariant; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
 
-export function EnvelopeIntro({ variant, names, date, locale, children, embedded = false }: Props) {
+export function EnvelopeIntro({ variant, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
   const [stage, setStage] = useState<"closed" | "opening" | "revealing" | "open">("closed");
   const [reduced, setReduced] = useState(false);
   const started = useRef(false);
@@ -65,11 +65,12 @@ export function EnvelopeIntro({ variant, names, date, locale, children, embedded
   function open() {
     if (started.current) return;
     started.current = true;
+    onOpen?.();
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setReduced(reduce);
     setStage("opening");
     timers.current.push(setTimeout(() => setStage("revealing"), reduce ? ENVELOPE_TIMING.reducedReveal : ENVELOPE_TIMING.reveal));
-    timers.current.push(setTimeout(() => setStage("open"), reduce ? ENVELOPE_TIMING.reducedComplete : ENVELOPE_TIMING.complete));
+    timers.current.push(setTimeout(() => { setStage("open"); onOpened?.(); }, reduce ? ENVELOPE_TIMING.reducedComplete : ENVELOPE_TIMING.complete));
   }
 
   return <div className={`${css.experience} ${embedded ? css.embedded : ""}`} style={variables} data-envelope-experience={variant}>

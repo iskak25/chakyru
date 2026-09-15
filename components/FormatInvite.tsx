@@ -5,7 +5,7 @@ import { InvitationLanguageProvider } from "./InvitationLanguage";
 
 import { formatOf, getTemplate } from "@/lib/templates";
 import { envelopeForTemplate, shouldShowEnvelope } from "@/lib/envelopes";
-import { EnvelopeIntro } from "./EnvelopeIntro";
+import { InvitationExperience } from "./InvitationExperience";
 import { useCatalog } from "@/lib/useCatalog";
 import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
@@ -113,9 +113,10 @@ export function FormatInvite(props: ComponentProps<typeof FormatInviteContent> &
   // The shared intro owns opening in guest mode, including an explicitly disabled intro.
   // Do not fall back to Site3D's older cover when template.envelope.enabled is false.
   const contentProps = template.format === "site3d" && props.interactive ? { ...props, startOpen: true } : props;
-  return <InvitationLanguageProvider locale={props.locale}>{intro ? (
-    <EnvelopeIntro key={`${props.invitation.id}:${props.invitation.templateId}`} variant={envelopeForTemplate(template).variant} names={props.invitation.names} date={props.invitation.date} locale={props.locale} embedded={props.envelopeEmbedded}>
-      <FormatInviteContent {...contentProps} startOpen />
-    </EnvelopeIntro>
+  const experience = template.format === "site3d" && !!props.interactive && !props.onChange;
+  return <InvitationLanguageProvider locale={props.locale}>{experience ? (
+    <InvitationExperience key={`${props.invitation.id}:${props.invitation.templateId}:${props.invitation.musicUrl}:${props.invitation.music}`} invitation={props.invitation} intro={intro} variant={envelopeForTemplate(template).variant} locale={props.locale} embedded={props.envelopeEmbedded}>
+      <FormatInviteContent {...contentProps} invitation={{ ...props.invitation, music: false }} startOpen />
+    </InvitationExperience>
   ) : <FormatInviteContent {...contentProps}/>}</InvitationLanguageProvider>;
 }

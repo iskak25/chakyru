@@ -1,5 +1,5 @@
 import type { Invitation, InvitationTemplate, TemplateCanvas } from "@/lib/types";
-import { DEFAULT_MUSIC_URL } from "@/lib/music";
+import { DEFAULT_MUSIC_URL, templateMusicUrl } from "@/lib/music";
 
 export const PREVIEW_INVITE: Invitation = {
   id: "preview",
@@ -69,6 +69,7 @@ export function inviteFromTemplate(tpl: InvitationTemplate): Invitation {
   return {
     ...PREVIEW_INVITE,
     templateId: tpl.id,
+    eventType: tpl.eventTypes[0],
     date: c.date ?? PREVIEW_INVITE.date,
     time: c.time ?? PREVIEW_INVITE.time,
     venue: c.venue ?? PREVIEW_INVITE.venue,
@@ -84,7 +85,7 @@ export function inviteFromTemplate(tpl: InvitationTemplate): Invitation {
     blockColors: { ...(c.blockColors ?? {}) },
     copy: { ...(c.copy ?? {}) },
     gallery: { ...(c.gallery ?? {}) },
-    musicUrl: tpl.format === "photo" ? "" : c.musicUrl || DEFAULT_MUSIC_URL,
+    musicUrl: templateMusicUrl(tpl),
     music: tpl.format !== "photo",
   };
 }

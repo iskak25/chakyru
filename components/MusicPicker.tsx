@@ -2,13 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Cloud, Pause, Play, Search, Smartphone, Trash2 } from "lucide-react";
-import { musicLabel, ONLINE_TRACKS, searchOnlineMusic, type SearchTrack } from "@/lib/music";
-
-function fileToData(file: File, cb: (url: string) => void) {
-  const reader = new FileReader();
-  reader.onload = () => cb(String(reader.result ?? ""));
-  reader.readAsDataURL(file);
-}
+import { musicLabel, ONLINE_TRACKS, searchOnlineMusic, youtubeId, type SearchTrack } from "@/lib/music";
+import { uploadInvitationAudio } from "@/lib/uploadAudio";
+import type { EventType } from "@/lib/types";
 
 function isLink(q: string) {
   return /^https?:\/\//i.test(q.trim());
@@ -19,7 +15,9 @@ export function MusicPicker({
   onChange,
   locale,
   labels,
+  eventType,
 }: {
+  eventType?: EventType;
   value: string;
   onChange: (url: string) => void;
   locale: string;
@@ -39,8 +37,17 @@ export function MusicPicker({
   const [loading, setLoading] = useState(false);
   const preview = useRef<HTMLAudioElement>(null);
   const [previewing, setPreviewing] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
 
   const current = useMemo(() => musicLabel(value, locale), [value, locale]);
+
+  function chooseTrack(url: string) {
+    preview.current?.pause();
+    setPreviewing(null);
+    setError("");
+    onChange(url);
+  }
 
   useEffect(() => {
     if (mode !== "online") return;
@@ -63,19 +70,39 @@ export function MusicPicker({
   function togglePreview(url: string) {
     const el = preview.current;
     if (!el) return;
+    if (youtubeId(url)) {
+      el.pause();
+      setError("");
+      setPreviewing(previewing === url ? null : url);
+      return;
+    }
     if (previewing === url && !el.paused) {
       el.pause();
       setPreviewing(null);
       return;
     }
     el.src = url;
-    void el.play();
-    setPreviewing(url);
+    setError("");
+    void el.play().then(() => setPreviewing(url)).catch(() => {
+      setPreviewing(null);
+      setError(locale === "ru" ? "Не удалось воспроизвести композицию." : "Музыка ойнотулган жок.");
+    });
   }
 
   return (
     <div className="space-y-2">
+      {error && <p role="alert" className="text-xs text-rose">{error}</p>}
       <audio ref={preview} onEnded={() => setPreviewing(null)} />
+      {previewing && youtubeId(previewing) ? (
+        <iframe
+          key={previewing}
+          title={musicLabel(previewing, locale)}
+          src={`https://www.youtube.com/embed/${encodeURIComponent(youtubeId(previewing)!)}?autoplay=1`}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          className="h-[200px] w-full rounded-lg border-0"
+          allowFullScreen
+        />
+      ) : null}
       <div className="grid grid-cols-2 gap-1 rounded-xl bg-black/5 p-1">
         <button
           type="button"
@@ -100,7 +127,7 @@ export function MusicPicker({
       {current ? (
         <div className="flex items-center justify-between gap-2 rounded-lg bg-black/5 px-2 py-1.5 text-[11px]">
           <span className="truncate">{current}</span>
-          <button type="button" onClick={() => onChange("")} className="shrink-0 text-rose">
+          <button type="button" aria-label={locale === "ru" ? "Удалить музыку" : "Музыканы өчүрүү"} onClick={() => { preview.current?.pause(); setPreviewing(null); onChange(""); }} className="shrink-0 text-rose">
             <Trash2 size={12} />
           </button>
         </div>
@@ -116,7 +143,7 @@ export function MusicPicker({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && isLink(query)) onChange(query.trim());
+                  if (e.key === "Enter" && isLink(query)) chooseTrack(query.trim());
                 }}
                 placeholder={labels.link}
                 className="w-full rounded-lg border border-ink/10 py-2 pl-7 pr-2 text-xs"
@@ -125,7 +152,7 @@ export function MusicPicker({
             {isLink(query) ? (
               <button
                 type="button"
-                onClick={() => onChange(query.trim())}
+                onClick={() => chooseTrack(query.trim())}
                 className="rounded-lg bg-forest px-2 py-1.5 text-[11px] text-cream"
               >
                 {labels.apply}
@@ -138,7 +165,7 @@ export function MusicPicker({
             </p>
           ) : null}
           <div className="max-h-64 space-y-1 overflow-y-auto">
-            {ONLINE_TRACKS.map((track) => {
+            {[...ONLINE_TRACKS].sort((a, b) => Number(!!eventType && !!b.events?.includes(eventType)) - Number(!!eventType && !!a.events?.includes(eventType))).map((track) => {
               const on = value === track.url;
               const name = locale === "ru" ? track.ru : track.ky;
               return (
@@ -160,7 +187,7 @@ export function MusicPicker({
                   </button>
                   <button
                     type="button"
-                    onClick={() => onChange(track.url)}
+                    onClick={() => chooseTrack(track.url)}
                     className="min-w-0 flex-1 truncate py-1.5 text-left text-xs"
                   >
                     {name}
@@ -189,7 +216,7 @@ export function MusicPicker({
                   </button>
                   <button
                     type="button"
-                    onClick={() => onChange(track.url)}
+                    onClick={() => chooseTrack(track.url)}
                     className="min-w-0 flex-1 py-1 text-left"
                   >
                     <span className="block truncate text-xs">{track.title}</span>
@@ -203,14 +230,20 @@ export function MusicPicker({
       ) : (
         <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-ink/15 px-3 py-4 text-xs">
           <Smartphone size={14} />
-          {labels.pickFile}
+          {uploading ? (locale === "ru" ? "Загрузка…" : "Жүктөлүүдө…") : `${labels.pickFile} (MP3, M4A, OGG, WAV · 4 МБ)`}
           <input
             type="file"
-            accept="audio/*"
+            accept=".mp3,.m4a,.ogg,.wav,audio/*"
+            disabled={uploading}
             className="hidden"
-            onChange={(e) => {
+            onChange={async (e) => {
               const file = e.target.files?.[0];
-              if (file) fileToData(file, onChange);
+              e.target.value = "";
+              if (!file) return;
+              setUploading(true); setError("");
+              try { chooseTrack(await uploadInvitationAudio(file, locale)); }
+              catch (error) { setError(error instanceof Error ? error.message : "Upload error"); }
+              finally { setUploading(false); }
             }}
           />
         </label>

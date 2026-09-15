@@ -51,7 +51,7 @@ export function ReferenceWedding({ invitation, design, locale, onChange, selecte
   const formId = useId();
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [error, setError] = useState("");
-  const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music);
+  const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType);
   const [playing, setPlaying] = useState(false);
   const date = new Date(`${invitation.date}T12:00:00`);
   const formattedDate = Number.isNaN(date.getTime()) ? invitation.date : date.toLocaleDateString("ru-RU").replaceAll(".", " · ");

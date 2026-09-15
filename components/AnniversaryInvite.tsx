@@ -22,7 +22,7 @@ export function AnniversaryInvite({ invitation: inv, design, locale, onChange, s
   const ky = locale === "ky", mono = design.key === "monochrome";
   const tr = (ru: string, kg: string) => ky ? kg : ru;
   const preview = inv.id === "demo" || inv.id.startsWith("preview");
-  const music = effectiveMusicUrl(inv.musicUrl, inv.music);
+  const music = effectiveMusicUrl(inv.musicUrl, inv.music, inv.eventType);
   const text = (id: string, fallback: string, className = css.body, field?: WeddingPartInfo["field"]) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} className={className} field={field} />;
   const section = (id: string, label: string, children: ReactNode, extra = "") => <WeddingPart id={`section-${id}`} label={label} kind="block" className={`${css.section} ${extra}`}>{children}</WeddingPart>;
   const title = (id: string, ru: string, kg: string) => text(`${id}-title`, tr(ru, kg), css.title);
