@@ -6,7 +6,6 @@ import { coupleNames, mapsEmbedUrl, pad, programItems } from "./shared";
 import { IconDressOutline, IconSuitOutline } from "./Icons";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 function dressTones(invitation: LayoutKit["invitation"]) {
   const fromCopy = [0, 1, 2, 3]
@@ -133,8 +132,6 @@ export function FrostFamily({ kit }: { kit: LayoutKit }) {
           {kit.locale === "ru" ? "Вопросы" : "Суроолор"}
         </a>
       </Reveal>
-
-      <WishesCard kit={kit} tone="frost" />
 
       <section id="frost-rsvp" className="px-8 pb-10">
         <RsvpForm kit={kit} tone="frost" />

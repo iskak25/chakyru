@@ -21,6 +21,7 @@ import { confirmLastCheckout, unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser } from "@/lib/store";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
+import { ShareInvitationDialog } from "@/components/ShareInvitationDialog";
 
 function EditorPageInner() {
   const params = useParams<{ id: string }>();
@@ -28,7 +29,7 @@ function EditorPageInner() {
   const searchParams = useSearchParams();
   const { locale, t } = useI18n();
   const { inv, ready, patch, undo, redo, canUndo, canRedo, saveState } = useInviteHistory(params.id);
-  const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [saving, setSaving] = useState(false);
@@ -79,14 +80,6 @@ function EditorPageInner() {
   }, [inv, router]);
 
   const onSelect = useCallback((id: string | null) => setSelected(id), []);
-
-  async function copyLink() {
-    if (!inv) return;
-    const url = `${window.location.origin}/i/${inv.id}`;
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1600);
-  }
 
   async function download() {
     if (!inv || saving) return;
@@ -238,11 +231,12 @@ function EditorPageInner() {
                 <>
                   <button
                     type="button"
-                    onClick={copyLink}
+                    onClick={() => setShareOpen(true)}
                     className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
                   >
-                    {copied ? t.editor.copied : t.editor.share}
+                    {t.editor.share}
                   </button>
+                  {shareOpen && <ShareInvitationDialog invitationId={inv.id} names={inv.names} locale={locale} onClose={() => setShareOpen(false)} />}
                   <Link
                     href={`/i/${inv.id}`}
                     className="inline-flex h-10 items-center rounded-[12px] bg-espresso px-4 text-[11px] uppercase tracking-[0.12em] text-cream"

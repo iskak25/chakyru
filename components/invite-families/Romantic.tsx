@@ -7,7 +7,6 @@ import { coupleNames, mapsEmbedUrl, monthLabel, pad, programItems } from "./shar
 import { WaveEdge } from "./Ornaments";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 export function RomanticFamily({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, a, b, labels, heroPhoto, photos, count, mapHref, mapQuery, event } = kit;
@@ -125,8 +124,6 @@ export function RomanticFamily({ kit }: { kit: LayoutKit }) {
       <div className="px-5 py-6">
         <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className="h-[150px] w-full rounded-[24px] border-0" loading="lazy" />
       </div>
-
-      <WishesCard kit={kit} tone="romantic" />
 
       <section className="px-8 pb-16 pt-2">
         <p className="font-rom mb-5 text-center text-[30px]">{labels.rsvpHint}</p>

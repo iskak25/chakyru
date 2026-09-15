@@ -1,5 +1,7 @@
 "use client";
 
+import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
+
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
@@ -85,19 +87,21 @@ export function ReferenceWedding({ invitation, design, locale, onChange, selecte
       e.preventDefault(); if (onChange || status === "sending") return;
       const data = new FormData(e.currentTarget); const name = String(data.get("name") || "").trim();
       if (!name) return;
-      if (invitation.id === "preview" || invitation.id === "demo" || invitation.id.startsWith("preview-")) { setStatus("sent"); return; }
+      if (invitation.id === "preview" || invitation.id === "demo" || invitation.id.startsWith("preview-")) { guestFeedback("preview"); setStatus("sent"); return; }
       setStatus("sending"); setError("");
+      const answer = String(data.get("attendance") || "yes") as RsvpStatus;
+      const couple = d === "sage" && answer === "maybe";
       try {
-        const response = await fetch(`/api/invitations/${encodeURIComponent(invitation.id)}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, rsvp: String(data.get("attendance") || "yes") as RsvpStatus, plusOne: Math.max(0, Number(data.get("guests") || 1) - 1), ...(data.has("drinks") ? { drinks: String(data.get("drinks") || "") } : {}), ...(data.has("note") ? { note: String(data.get("note") || "") } : {}) }) });
+        const response = await guestFetch(`/api/invitations/${encodeURIComponent(invitation.id)}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, rsvp: couple ? "yes" : answer, plusOne: answer === "no" ? 0 : Math.max(couple ? 1 : 0, Number(data.get("guests") || 1) - 1), ...(data.has("drinks") ? { drinks: String(data.get("drinks") || "") } : {}) }) });
         if (!response.ok) throw new Error(tr("Не удалось отправить ответ. Попробуйте ещё раз."));
         setStatus("sent");
-      } catch (err) { setStatus("error"); setError(err instanceof Error ? err.message : "Ошибка отправки"); }
+      } catch { setStatus("error"); setError(tr("Не удалось отправить ответ. Попробуйте ещё раз.")); }
     }}>
       <WeddingPart id="rsvp-attendance" label="Варианты присутствия" kind="widget"><fieldset><legend className={css.srOnly}>{tr("Присутствие")}</legend>{(["yes", "no", "maybe"] as const).slice(0, d === "sage" ? 3 : 2).map((value, i) => <label className={css.radio} key={value}><input type="radio" name="attendance" value={value} defaultChecked={i === 0} /><Text id={`rsvp-option-${value}`} text={(english ? ["Joyfully accept", "Regretfully decline", "Maybe"] : kazakh ? ["Иә, келемін", "Жоқ, келе алмаймын", "Жұбыммен келемін"] : ["С радостью приду", "К сожалению, не смогу", "Пока не знаю"])[i]} /></label>)}</fieldset></WeddingPart>
       <label><Text id="rsvp-name-label" text={english ? "Your name" : "Ваше имя и фамилия"} className={css.formLabel} /><WeddingPart id="rsvp-name" label="Поле имени" kind="widget" fallback="Введите имя"><input name="name" aria-label={tr(english ? "Your name" : "Ваше имя и фамилия")} autoComplete="name" required maxLength={120} placeholder={tr(weddingStyle(invitation, "rsvp-name", "placeholder") || (english ? "Your name" : "Введите имя"))} /></WeddingPart></label>
       <label><Text id="rsvp-guests-label" text={english ? "Number of guests" : "Количество гостей"} className={css.formLabel} /><WeddingPart id="rsvp-guests" label="Количество гостей" kind="widget"><input name="guests" aria-label={tr("Количество гостей")} type="number" min="1" max="20" defaultValue="1" required /></WeddingPart></label>
       {d === "rose" ? <WeddingPart id="rsvp-drinks" label="Предпочтения по напиткам" kind="widget"><fieldset><legend className={css.formLabel}><Text id="rsvp-drinks-label" text="Напитки" /></legend><Text id="rsvp-drinks-hint" text="Что бы вы предпочли?" className={css.body} />{["Вино (белое / красное)", "Шампанское", "Без алкоголя"].map((drink, i) => <label key={drink} className={css.radio}><input type="radio" name="drinks" value={drink} /><Text id={`rsvp-drink-${i}`} text={drink} /></label>)}</fieldset></WeddingPart> : null}
-      {d === "rose" || d === "tuscany" ? <label><Text id="rsvp-note-label" text="Ваши пожелания" className={css.formLabel} /><WeddingPart id="rsvp-note" label="Поле пожеланий" kind="widget" fallback="Напишите несколько тёплых слов"><textarea name="note" aria-label={tr("Ваши пожелания")} maxLength={2000} placeholder={tr(weddingStyle(invitation, "rsvp-note", "placeholder") || "Напишите несколько тёплых слов")} /></WeddingPart></label> : null}
+
       <WeddingPart id="rsvp-submit" label="Кнопка отправки" kind="widget"><button type="submit" className={css.button} disabled={!!onChange || status === "sending" || status === "sent"}><Text id="rsvp-submit-label" text={status === "sending" ? (english ? "Sending…" : "Отправка…") : english ? "RSVP" : kazakh ? "Жауапты жіберемін" : "ОТПРАВИТЬ ОТВЕТ"} /></button></WeddingPart>
       {status === "sent" ? <p role="status" className={css.feedback}>{invitation.id.startsWith("preview") || invitation.id === "demo" ? (english ? tr("Это предпросмотр. Ответ не отправлен.") : tr("Это предпросмотр. Ответ не отправлен.")) : english ? tr("Спасибо! Ваш ответ отправлен.") : tr("Спасибо! Ваш ответ отправлен.")}</p> : null}{status === "error" ? <p role="alert" className={css.feedback}>{tr(error)}</p> : null}
     </form></>, css.rsvp);

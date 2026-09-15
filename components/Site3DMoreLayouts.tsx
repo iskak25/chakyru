@@ -10,7 +10,6 @@ import {
   MonthCalendar,
   Names,
   RsvpBlock,
-  WishesBlock,
   type LayoutKit,
 } from "./Site3DLayouts";
 
@@ -256,7 +255,6 @@ export function LayoutVelvet({ kit }: { kit: LayoutKit }) {
       </section>
       <RsvpBlock kit={kit} soft />
       <CountdownBlock kit={kit} light title={labels.untilWedding} />
-      <WishesBlock kit={kit} hideIcon />
     </div>
   );
 }

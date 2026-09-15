@@ -8,7 +8,6 @@ import { HeartRule } from "./Ornaments";
 import { HeartOutline, IconCake, IconGlasses, IconRings } from "./Icons";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 export function CeremonyFamily({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, a, b, labels, heroPhoto, photos, count, mapHref, mapQuery, event } = kit;
@@ -106,8 +105,6 @@ export function CeremonyFamily({ kit }: { kit: LayoutKit }) {
         </a>
         <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className="mt-4 h-[140px] w-full border-0" loading="lazy" />
       </Reveal>
-
-      <WishesCard kit={kit} tone="elegant" />
       <section className="px-8 pb-16">
         <RsvpForm kit={kit} tone="elegant" />
       </section>

@@ -1,0 +1,50 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+function compile(file, imports = require, fetchMock) {
+  const module = { exports: {} };
+  const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
+  new Function('require', 'module', 'exports', 'fetch', code)(imports, module, module.exports, fetchMock);
+  return module.exports;
+}
+(async () => {
+  global.window = new EventTarget();
+  const events = [];
+  window.addEventListener('chakyru-guest-feedback', e => events.push(e.detail));
+  let resolve, calls = 0;
+  const api = compile('lib/guestSubmission.ts', require, async () => { calls++; return new Promise(r => { resolve = r; }); });
+  const button = { disabled: false };
+  const form = { setAttribute() {}, removeAttribute() {}, querySelectorAll: () => [button] };
+  const pending = api.completeGuestForm(form, () => api.guestFetch('/api/invitations/live/rsvp', { body: '{}' }));
+  assert.equal(button.disabled, true);
+  assert.deepEqual(events, []);
+  assert.equal(await api.completeGuestForm(form, () => { throw Error('duplicate'); }), false);
+  resolve(Response.json({ guest: { id: 'saved' } }));
+  assert.equal(await pending, true); assert.equal(button.disabled, false);
+  assert.deepEqual(events, ['rsvp']);
+  const invalid = api.guestFetch('/api/invitations/live/wish', { body: '{}' });
+  resolve(Response.json({})); await assert.rejects(invalid);
+  assert.equal(events.at(-1), 'error');
+  for (const id of ['demo', 'preview', 'preview-abc']) await assert.rejects(api.guestFetch(`/api/invitations/${id}/rsvp`, { body: '{}' }));
+  assert.equal(calls, 2); assert.equal(events.at(-1), 'preview');
+
+  window.location = { origin: 'https://www.toichakyru.com' };
+  let hooks = [], index = 0, copied, fail = false;
+  Object.defineProperty(global, 'navigator', { configurable: true, value: { clipboard: { writeText: async value => { if (fail) throw Error('blocked'); copied = value; } } } });
+  const { ShareInvitationDialog } = compile('components/ShareInvitationDialog.tsx', name => name === 'react' ? { useState(value) { const i = index++; if (!(i in hooks)) hooks[i] = value; return [hooks[i], next => { hooks[i] = next; }]; } } : name === './AppDialog' ? { AppDialog: 'dialog' } : require(name));
+  const render = () => { index = 0; return ShareInvitationDialog({ invitationId: 'invite/123', names: 'Айбек & Айгүл', locale: 'ru', onClose() {} }); };
+  const nodes = tree => !tree || typeof tree !== 'object' ? [] : [tree, ...[tree.props?.children].flat(Infinity).flatMap(nodes)];
+  let tree = render();
+  const links = nodes(tree).filter(n => n.type === 'a');
+  assert.equal(links.length, 3);
+  const telegram = new URL(links.find(n => n.props.children === 'Telegram').props.href);
+  assert.equal(telegram.searchParams.get('url'), 'https://www.toichakyru.com/i/invite%2F123');
+  assert.equal(telegram.searchParams.get('text'), 'Приглашение · Айбек & Айгүл');
+  nodes(tree).filter(n => n.type === 'button').at(-1).props.onClick();
+  await new Promise(setImmediate);
+  assert.equal(copied, 'https://www.toichakyru.com/i/invite%2F123'); assert.equal(hooks[0], true);
+  fail = true; tree = render(); nodes(tree).filter(n => n.type === 'button').at(-1).props.onClick();
+  await new Promise(setImmediate); tree = render();
+  assert(nodes(tree).some(n => n.props?.role === 'alert'));
+  console.log('PASS: confirmation waits for saved record, malformed responses fail, double submit blocked, previews isolated, share URLs encoded, clipboard success/failure');
+})().catch(error => { console.error(error); process.exitCode = 1; });

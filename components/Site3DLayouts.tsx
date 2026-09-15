@@ -1,5 +1,7 @@
 "use client";
 
+import { completeGuestForm } from "@/lib/guestSubmission";
+
 import { useEffect, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import { ExternalLink, Heart } from "lucide-react";
 import { formatInviteDay } from "@/lib/i18n";
@@ -447,10 +449,10 @@ export function RsvpBlock({ kit, soft }: { kit: LayoutKit; soft?: boolean }) {
       {variant === "guest" ? (
         <form
           className="space-y-3"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!rsvpName.trim()) return;
-            addRsvp(invitation.id, rsvpName.trim(), rsvp, rsvp === "maybe" ? 1 : 0);
+            if (!await completeGuestForm(e.currentTarget, () => addRsvp(invitation.id, rsvpName.trim(), rsvp === "maybe" ? "yes" : rsvp, rsvp === "maybe" ? 1 : 0))) return;
             setRsvpDone(true);
             onReload?.();
           }}
@@ -683,7 +685,6 @@ function LayoutClassic({ kit }: { kit: LayoutKit }) {
       <AddressBlock kit={kit} />
       <RsvpBlock kit={kit} />
       <CountdownBlock kit={kit} />
-      <WishesBlock kit={kit} />
       <FooterBlock kit={kit} />
     </>
   );
@@ -758,7 +759,6 @@ function LayoutEditorial({ kit }: { kit: LayoutKit }) {
       <AddressBlock kit={kit} />
       <RsvpBlock kit={kit} />
       <CountdownBlock kit={kit} title={labels.untilWedding} />
-      <WishesBlock kit={kit} script />
       <FooterBlock kit={kit} withLove />
     </>
   );
@@ -817,7 +817,6 @@ function LayoutArches({ kit }: { kit: LayoutKit }) {
       <CountdownBlock kit={kit} title={labels.untilWedding} />
       <AddressBlock kit={kit} />
       <RsvpBlock kit={kit} />
-      <WishesBlock kit={kit} />
       <FooterBlock kit={kit} withLove />
     </>
   );
@@ -839,7 +838,6 @@ function LayoutHeroTimer({ kit }: { kit: LayoutKit }) {
       </section>
       <AddressBlock kit={kit} />
       <RsvpBlock kit={kit} />
-      <WishesBlock kit={kit} script />
       <FooterBlock kit={kit} withLove />
     </>
   );
@@ -1034,8 +1032,6 @@ function LayoutBloom({ kit }: { kit: LayoutKit }) {
           <CountdownBlock kit={kit} gold title={labels.countdown} />
         </div>
       </section>
-
-      <WishesBlock kit={kit} hideIcon />
       <FooterBlock kit={kit} withLove />
     </>
   );

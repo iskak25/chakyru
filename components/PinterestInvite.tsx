@@ -1,5 +1,7 @@
 "use client";
 
+import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
+
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
@@ -74,10 +76,10 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
     <form id={formId} className={css.form} onSubmit={async e=>{
       e.preventDefault(); if(onChange || formState==="sending") return;
       const data=new FormData(e.currentTarget), name=String(data.get("name")||"").trim(); if(!name)return;
-      if(inv.id==="demo" || inv.id.startsWith("preview")){setFormState("sent");return;}
+      if(inv.id==="demo" || inv.id.startsWith("preview")){guestFeedback("preview");setFormState("sent");return;}
       setFormState("sending");
       const attending=String(data.get("attendance"));
-      try { const response=await fetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:attending==="no"?"no":"yes",plusOne:attending==="couple"?1:0})}); if(!response.ok)throw Error("send");setFormState("sent"); } catch {setFormState("error");}
+      try { const response=await guestFetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:attending==="no"?"no":"yes",plusOne:attending==="couple"?1:0})}); if(!response.ok)throw Error("send");setFormState("sent"); } catch {setFormState("error");}
     }}>
       <label>{text("guest-name-label",ru?"Ваше имя и фамилия":"АТЫ-ЖӨНІҢІЗ",css.formLabel)}<WeddingPart id="guest-name" label="Поле имени" kind="widget" fallback="Имя"><input name="name" aria-label={tr("Имя гостя")} required maxLength={120} autoComplete="name" placeholder={tr(weddingStyle(inv,"guest-name","placeholder") || tr("Ваше имя"))} /></WeddingPart></label>
       <WeddingPart id="guest-attendance" label="Варианты присутствия" kind="widget"><fieldset><legend>{text("attendance-title",ru?"Вы придёте?":"ҚАТЫСУЫҢЫЗ")}</legend>{["yes","couple","no"].map((v,i)=><label key={v} className={css.radio}><input type="radio" name="attendance" value={v} defaultChecked={i===0}/>{text(`attendance-${v}`,(ru?["С радостью приду","Буду с парой","К сожалению, не смогу"]:["КЕЛЕМІН","ЖҰБЫММЕН КЕЛЕМІН","ӨКІНІШКЕ ОРАЙ, КЕЛЕ АЛМАЙМЫН"])[i])}</label>)}</fieldset></WeddingPart>

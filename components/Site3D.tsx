@@ -1,8 +1,8 @@
 ﻿"use client";
 
+
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { addWish } from "@/lib/store";
 import type { Invitation } from "@/lib/types";
 import type { InvitePatch } from "./CanvasEdit";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
@@ -376,9 +376,6 @@ export function Site3D({
   const [open, setOpen] = useState(variant === "editor" || !!startOpen);
   const [opening, setOpening] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [wishName, setWishName] = useState("");
-  const [wishText, setWishText] = useState("");
-  const [wishOpen, setWishOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType);
 
@@ -479,45 +476,7 @@ export function Site3D({
         </>
       ) : null}
 
-      {wishOpen ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4">
-          <form
-            className="w-full max-w-[400px] rounded-3xl bg-white p-5"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!wishName.trim() || !wishText.trim()) return;
-              addWish(invitation.id, wishName.trim(), wishText.trim());
-              setWishText("");
-              setWishOpen(false);
-              onReload?.();
-            }}
-          >
-            <p className="font-ceremonial text-3xl">{labels.writeWish}</p>
-            <input
-              required
-              value={wishName}
-              onChange={(e) => setWishName(e.target.value)}
-              placeholder={labels.yourName}
-              className="mt-4 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm"
-            />
-            <textarea
-              required
-              value={wishText}
-              onChange={(e) => setWishText(e.target.value)}
-              rows={3}
-              className="mt-3 w-full rounded-xl border border-black/10 px-3 py-2.5 text-sm"
-            />
-            <div className="mt-4 flex gap-2">
-              <button type="button" onClick={() => setWishOpen(false)} className="flex-1 rounded-full border py-2.5 text-sm">
-                ✕
-              </button>
-              <button type="submit" className="flex-1 rounded-full bg-black py-2.5 text-sm text-white">
-                {locale === "ru" ? "Отправить" : "Жөнөтүү"}
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : null}
+
 
     </div>
   );

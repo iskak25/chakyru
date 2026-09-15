@@ -16,6 +16,8 @@ import {
   Utensils,
 } from "lucide-react";
 import type { LayoutKit } from "../Site3DLayouts";
+import { addRsvp } from "@/lib/store";
+import { completeGuestForm } from "@/lib/guestSubmission";
 
 function Ornament() {
   return (
@@ -76,7 +78,6 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
   const [drink, setDrink] = useState("");
   const [guests, setGuests] = useState("1");
   const [name, setName] = useState("");
-  const [wishes, setWishes] = useState("");
 
   const weddingDate = new Date(invitation.date ? `${invitation.date}T${invitation.time || "17:00"}:00` : "2026-08-28T17:00:00");
 
@@ -188,7 +189,12 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
       </section>
 
       {/* RSVP section */}
-      <section className="border-t border-[#c8aa86]/30 px-7 py-11">
+      <form className="border-t border-[#c8aa86]/30 px-7 py-11" onSubmit={async e => {
+        e.preventDefault();
+        if (kit.variant !== "guest" || kit.onChange || !name.trim()) return;
+        if (!await completeGuestForm(e.currentTarget, () => addRsvp(invitation.id, name.trim(), attendance === "no" ? "no" : "yes", attendance === "no" ? 0 : Number(guests) - 1, { drinks: drink }))) return;
+        kit.onReload?.();
+      }}>
         <h2 className="text-center font-serif text-[18px] tracking-[0.13em]">КАТЫШУУҢУЗДУ<br />ЫРАСТАҢЫЗ</h2>
         <div className="mt-5">
           <Ornament />
@@ -226,6 +232,8 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
           <span className="mb-2 block font-serif text-[10px]">Сиздин аты-жөнүңүз жана фамилияңыз</span>
           <input
             type="text"
+            required
+            maxLength={120}
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Мисалы: Эрланбек Темирбеков"
@@ -244,22 +252,13 @@ export function ElegantFamily({ kit }: { kit: LayoutKit }) {
           </select>
         </label>
 
-        <label className="mt-5 block">
-          <span className="mb-2 block font-serif text-[10px]">Сиздин каалоо-тилектериңиз</span>
-          <textarea
-            rows={4}
-            value={wishes}
-            onChange={(e) => setWishes(e.target.value)}
-            placeholder="Бизге каалоо-тилектериңизди жазыңыз..."
-            className="w-full resize-none rounded-[7px] border border-[#c6ad8e]/50 bg-transparent p-3 font-serif text-[11px] outline-none placeholder:text-[#aa9d8e] focus:border-[#96714d]"
-          />
-        </label>
 
-        <button type="button" className="mt-5 flex h-[48px] w-full items-center justify-center gap-2 rounded-full bg-[#30483e] text-[#f8f1e6] shadow-sm">
+
+        <button type="submit" disabled={kit.variant !== "guest" || !!kit.onChange} className="mt-5 flex h-[48px] w-full items-center justify-center gap-2 rounded-full bg-[#30483e] text-[#f8f1e6] shadow-sm disabled:opacity-50">
           <Send size={16} strokeWidth={1.5} />
           <span className="font-serif text-[11px] tracking-[0.1em]">ЖӨНӨТҮҮ</span>
         </button>
-      </section>
+      </form>
 
       {/* Contacts section */}
       <section className="px-7 pb-11">

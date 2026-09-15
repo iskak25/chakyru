@@ -7,7 +7,6 @@ import { coupleNames, mapsEmbedUrl, pad, programItems } from "./shared";
 import { TraBand, TraHorn } from "./Ornaments";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 export function TraditionalFamily({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, a, b, labels, heroPhoto, photos, count, mapHref, mapQuery, event } = kit;
@@ -98,8 +97,6 @@ export function TraditionalFamily({ kit }: { kit: LayoutKit }) {
         </a>
         <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className="mt-4 h-[150px] w-full border-0" loading="lazy" />
       </Reveal>
-
-      <WishesCard kit={kit} tone="traditional" />
 
       <section className="px-8 pb-16">
         <p className="mb-5 text-center text-[11px] uppercase tracking-[0.2em]">{labels.rsvpHint}</p>

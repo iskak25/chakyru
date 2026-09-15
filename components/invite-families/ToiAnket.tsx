@@ -1,6 +1,8 @@
 "use client";
+
+import { completeGuestForm } from "@/lib/guestSubmission";
 import { useState } from "react";
-import { addRsvp, addWish } from "@/lib/store";
+import { addRsvp } from "@/lib/store";
 import type { RsvpStatus } from "@/lib/types";
 import { CanvasText } from "../CanvasEdit";
 import { Field, SlotPhoto, fieldValue } from "../SiteEdit";
@@ -110,7 +112,6 @@ export function ToiAnketFamily({ kit }: { kit: LayoutKit }) {
 function RSVPSection({ kit }: { kit: LayoutKit }) {
   const { invitation, labels, variant, rsvp, setRsvp, rsvpName, setRsvpName, rsvpDone, setRsvpDone, onReload } = kit;
   const [guestCount, setGuestCount] = useState("1");
-  const [wish, setWish] = useState("");
   const ru = kit.locale === "ru";
   const options: [RsvpStatus, string][] = [
     ["yes", ru ? "Ооба, келем" : "Ооба, келем"],
@@ -128,11 +129,10 @@ function RSVPSection({ kit }: { kit: LayoutKit }) {
       ) : (
         <form
           className="mt-6 space-y-3"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!rsvpName.trim()) return;
-            addRsvp(invitation.id, rsvpName.trim(), rsvp, rsvp === "maybe" ? 1 : 0);
-            addWish(invitation.id, rsvpName.trim(), `${ru ? "Коноктор саны" : "Коноктор саны"}: ${guestCount}${wish.trim() ? `\n${wish.trim()}` : ""}`);
+            if (!await completeGuestForm(e.currentTarget, () => addRsvp(invitation.id, rsvpName.trim(), rsvp === "maybe" ? "yes" : rsvp, rsvp === "no" ? 0 : Math.max(rsvp === "maybe" ? 1 : 0, Number(guestCount) - 1)))) return;
             setRsvpDone(true);
             onReload?.();
           }}
@@ -167,13 +167,7 @@ function RSVPSection({ kit }: { kit: LayoutKit }) {
             placeholder={labels.yourName}
             className="h-12 w-full rounded-[4px] border border-[#8aa890]/45 bg-[#fffaf3] px-4 text-sm outline-none"
           />
-          <textarea
-            value={wish}
-            onChange={(e) => setWish(e.target.value)}
-            rows={3}
-            placeholder={labels.guestWishes}
-            className="w-full rounded-[4px] border border-[#8aa890]/45 bg-[#fffaf3] px-4 py-3 text-sm outline-none"
-          />
+
           <button type="submit" className="mt-2 flex h-12 w-full items-center justify-center rounded-[4px] bg-[#2f4a3a] text-[11px] uppercase tracking-[0.18em] text-[#fdf8ee]">
             {ru ? "Жөнөтүү" : "Жөнөтүү"}
           </button>

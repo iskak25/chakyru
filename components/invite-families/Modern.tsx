@@ -6,7 +6,6 @@ import type { LayoutKit } from "../Site3DLayouts";
 import { mapsEmbedUrl, pad, programItems } from "./shared";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 export function ModernFamily({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, a, b, labels, heroPhoto, photos, count, mapHref, mapQuery, event } = kit;
@@ -114,8 +113,6 @@ export function ModernFamily({ kit }: { kit: LayoutKit }) {
         </a>
         <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className="mt-3 h-[140px] w-full border-0" loading="lazy" />
       </Reveal>
-
-      <WishesCard kit={kit} tone="modern" />
 
       <section className="px-5 pb-16">
         <p className="mb-5 text-[10px] uppercase tracking-[0.2em]">{labels.rsvpHint}</p>

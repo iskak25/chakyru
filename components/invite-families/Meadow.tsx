@@ -5,7 +5,6 @@ import type { LayoutKit } from "../Site3DLayouts";
 import { coupleNames, mapsEmbedUrl, pad, programItems } from "./shared";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 function dressTones(invitation: LayoutKit["invitation"]) {
   const fromCopy = [0, 1, 2]
@@ -136,8 +135,6 @@ export function MeadowFamily({ kit }: { kit: LayoutKit }) {
         <Field invitation={invitation} onChange={onChange} id="hosts" fallback={invitation.hosts} className="mt-3 text-[14px] leading-7 text-[#2c261c]" />
         <Field invitation={invitation} onChange={onChange} id="phoneA" fallback={fieldValue(invitation, "phoneA", "")} className="text-[13px] text-[#7a6a4a]" />
       </Reveal>
-
-      <WishesCard kit={kit} tone="meadow" />
 
       <section className="px-8 pb-10">
         <RsvpForm kit={kit} tone="meadow" />

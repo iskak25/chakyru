@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { addRsvp } from "@/lib/store";
+import { completeGuestForm } from "@/lib/guestSubmission";
 import {
   Camera,
   Check,
@@ -319,6 +321,15 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
         {/* =====================================================
             RSVP
         ====================================================== */}
+        <form onSubmit={async e => {
+          e.preventDefault();
+          if (onChange) return;
+          const form = e.currentTarget;
+          const data = new FormData(form);
+          const name = String(data.get("guestName") || "").trim();
+          if (!name) return;
+          if (!await completeGuestForm(form, () => addRsvp(invitation.id, name, attendance === "no" ? "no" : "yes", attendance === "no" ? 0 : Number(guests) - 1, { drinks: drink }))) return;
+        }}>
 
         <WeddingPart id="section-5" label={"Ответ гостей"} kind="block" className="border-t border-[#c8aa86]/30 px-7 py-11" ><WeddingPart id="text-16" label={"КАТЫШУУҢУЗДУ\nЫРАСТАҢЫЗ"} kind="text" className="text-center font-serif text-[18px] tracking-[0.13em]" fallback={"КАТЫШУУҢУЗДУ\nЫРАСТАҢЫЗ"} ></WeddingPart><div className="mt-5">
             <WeddingPart id="ornament-8" label="Орнамент 8" kind="decoration" style={{color:"#a27b50"}}><Ornament /></WeddingPart>
@@ -370,6 +381,9 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
               </span><WeddingPart id="text-20" label={"Тилекке каршы, келе албайм"} kind="text" className="font-serif text-[11px]" fallback={"Тилекке каршы, келе албайм"} ></WeddingPart></Action></WeddingPart>
           </div><WeddingPart id="form-22" label={"Поле формы"} kind="widget" className="mt-6 block" fallback={"Мисалы: Эрланбек Темирбеков"} ><label className="contents"><WeddingPart id="text-23" label={"Сиздин аты-жөнүңүз жана фамилияңыз"} kind="text" className="mb-2 block font-serif text-[10px]" fallback={"Сиздин аты-жөнүңүз жана фамилияңыз"} ></WeddingPart><input
               type="text"
+              name="guestName"
+              required
+              maxLength={120}
               placeholder={tr(invitation.copy?.["$placeholder:form-22"] ?? tr("Мисалы: Эрланбек Темирбеков"))}
               className="
                 h-[43px] w-full rounded-[7px]
@@ -398,21 +412,8 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
               <option value="3">{tr("3 конок")}</option>
               <option value="4">{tr("4 конок")}</option>
               <option value="5">{tr("5 конок")}</option>
-            </select></label></WeddingPart><WeddingPart id="form-26" label={"Поле формы"} kind="widget" className="mt-5 block" ><label className="contents"><WeddingPart id="text-27" label={"Сиздун каалоо-тилектериңиз"} kind="text" className="mb-2 block font-serif text-[10px]" fallback={"Сиздун каалоо-тилектериңиз"} ></WeddingPart><textarea
-              rows={4}
-              placeholder={tr("Бизге каалоо-тилектериңизди жазыңыз...")}
-              className="
-                w-full resize-none rounded-[7px]
-                border border-[#c6ad8e]/50
-                bg-transparent
-                p-3
-                font-serif text-[11px]
-                outline-none
-                placeholder:text-[#aa9d8e]
-                focus:border-[#96714d]
-              "
-            /></label></WeddingPart><WeddingPart id="button-29" label="Кнопка формы" kind="widget"><Action style={{backgroundColor:invitation.blockColors?.["button-29"]}}
-            type="button"
+            </select></label></WeddingPart><WeddingPart id="button-29" label="Кнопка формы" kind="widget"><Action style={{backgroundColor:invitation.blockColors?.["button-29"]}}
+            type="submit"
             className="
               mt-5 flex h-[48px] w-full
               items-center justify-center gap-2
@@ -422,6 +423,7 @@ export function WeddingInvitation({ invitation, onChange, selected, onSelect, on
               shadow-sm
             "
           ><Send size={16} strokeWidth={1.5} /><WeddingPart id="text-28" label={"ЖӨНӨТҮҮ"} kind="text" className="font-serif text-[11px] tracking-[0.1em]" fallback={"ЖӨНӨТҮҮ"} ></WeddingPart></Action></WeddingPart></WeddingPart>
+        </form>
 
         {/* =====================================================
             DRINKS

@@ -1,5 +1,7 @@
 "use client";
 
+import { completeGuestForm } from "@/lib/guestSubmission";
+
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { addRsvp } from "@/lib/store";
@@ -12,7 +14,6 @@ import {
   MonthCalendar,
   Names,
   RsvpBlock,
-  WishesBlock,
   type LayoutKit,
 } from "./Site3DLayouts";
 
@@ -174,7 +175,6 @@ export function LayoutOliveWave({ kit }: { kit: LayoutKit }) {
       <div id="rsvp">
         <RsvpBlock kit={kit} soft />
       </div>
-      <WishesBlock kit={kit} script />
       <FooterBlock kit={kit} withLove />
     </div>
   );
@@ -282,7 +282,6 @@ export function LayoutMonoInk({ kit }: { kit: LayoutKit }) {
         <Field invitation={invitation} onChange={onChange} id="seeYou" fallback={labels.seeYou} className="mt-2 text-center font-serif text-[20px] uppercase tracking-[0.16em]" />
         <p className="mt-2 text-center text-[13px] opacity-50">{a} & {b}</p>
       </section>
-      <WishesBlock kit={kit} />
     </div>
   );
 }
@@ -349,7 +348,6 @@ export function LayoutRoundedMono({ kit }: { kit: LayoutKit }) {
       <section className="px-8 pb-16 pt-4 text-center">
         <Field invitation={invitation} onChange={onChange} id="seeYou" fallback={labels.seeYou} className="font-script text-[40px] leading-none" />
       </section>
-      <WishesBlock kit={kit} hideIcon />
     </div>
   );
 }
@@ -379,10 +377,10 @@ function SoftRsvp({ kit }: { kit: LayoutKit }) {
       {variant === "guest" ? (
         <form
           className="mt-8 space-y-5"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!rsvpName.trim()) return;
-            addRsvp(invitation.id, rsvpName.trim(), rsvp, rsvp === "maybe" ? 1 : 0);
+            if (!await completeGuestForm(e.currentTarget, () => addRsvp(invitation.id, rsvpName.trim(), rsvp === "maybe" ? "yes" : rsvp, rsvp === "maybe" ? 1 : 0))) return;
             setRsvpDone(true);
             onReload?.();
           }}
@@ -528,7 +526,6 @@ export function LayoutSoftInvite({ kit }: { kit: LayoutKit }) {
       <section className="px-6 pb-6">
         <CountdownBlock kit={kit} title={ru ? "Встретимся через" : labels.untilWedding} />
       </section>
-      <WishesBlock kit={kit} script />
       <FooterBlock kit={kit} withLove />
     </div>
   );

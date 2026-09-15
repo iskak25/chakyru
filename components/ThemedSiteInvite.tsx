@@ -1,5 +1,7 @@
 "use client";
 
+import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
+
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
@@ -75,14 +77,14 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
           <form className={css.form} id={formId} onSubmit={async e=>{
             e.preventDefault();if(onChange || reply==="sending")return;
             const data=new FormData(e.currentTarget), name=String(data.get("name")||"").trim();if(!name)return;
-            if(inv.id==="demo"||inv.id.startsWith("preview")){setReply("sent");return;}
+            if(inv.id==="demo"||inv.id.startsWith("preview")){guestFeedback("preview");setReply("sent");return;}
             setReply("sending");
-            try{const result=await fetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:String(data.get("attendance")||"yes"),plusOne:Math.max(0,Number(data.get("guests")||1)-1),note:String(data.get("note")||"")})});if(!result.ok)throw Error("send");setReply("sent");}catch{setReply("error");}
+            try{const result=await guestFetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:String(data.get("attendance")||"yes"),plusOne:Math.max(0,Number(data.get("guests")||1)-1),...(girls ? {note:String(data.get("note")||"")} : {})})});if(!result.ok)throw Error("send");setReply("sent");}catch{setReply("error");}
           }}>
             <label>{text("rsvp-name-label",girls?"Твоё имя":"Ваше имя",css.formLabel)}<WeddingPart id="rsvp-name" label="Поле имени" kind="widget" fallback="Имя и фамилия"><input name="name" aria-label={tr("Имя гостя")} required autoComplete="name" maxLength={120} placeholder={tr(weddingStyle(inv,"rsvp-name","placeholder")||tr("Имя и фамилия"))}/></WeddingPart></label>
             <WeddingPart id="rsvp-attendance" label="Присутствие" kind="widget"><fieldset><legend>{text("attendance-label","Подтверждение участия",css.formLabel)}</legend>{["yes","no"].map((value,i)=><label key={value} className={css.radio}><input name="attendance" type="radio" value={value} defaultChecked={i===0}/>{text(`attendance-${value}`,i===0?(girls?"Конечно, буду!":"С радостью приду"):(girls?"В этот раз не смогу":"К сожалению, не смогу"))}</label>)}</fieldset></WeddingPart>
             {!girls?<label>{text("guests-label","Количество гостей",css.formLabel)}<WeddingPart id="rsvp-guests" label="Число гостей" kind="widget"><input name="guests" aria-label={tr("Количество гостей")} type="number" defaultValue="1" min="1" max="20" required/></WeddingPart></label>:null}
-            <label>{text("note-label",girls?"Пожелания по меню":"Ваши пожелания",css.formLabel)}<WeddingPart id="rsvp-note" label="Поле пожеланий" kind="widget" fallback="Можно оставить пустым"><textarea name="note" aria-label={tr("Пожелания")} maxLength={2000} rows={3} placeholder={tr(weddingStyle(inv,"rsvp-note","placeholder")||tr("Можно оставить пустым"))}/></WeddingPart></label>
+            {girls && <label>{text("note-label",girls?"Пожелания по меню":"Ваши пожелания",css.formLabel)}<WeddingPart id="rsvp-note" label="Поле пожеланий" kind="widget" fallback="Можно оставить пустым"><textarea name="note" aria-label={tr("Пожелания")} maxLength={2000} rows={3} placeholder={tr(weddingStyle(inv,"rsvp-note","placeholder")||tr("Можно оставить пустым"))}/></WeddingPart></label>}
             <WeddingPart id="rsvp-submit" label="Отправить ответ" kind="widget"><button className={css.button} type="submit" disabled={!!onChange||reply==="sending"||reply==="sent"}>{text("submit-label",girls?"Отправить ответ ♡":"Подтвердить участие")}</button></WeddingPart>
             {reply==="sent"?<p role="status">{inv.id==="demo"||inv.id.startsWith("preview")?tr("Это предпросмотр. Ответ не отправлен."):tr("Спасибо! Ваш ответ отправлен.")}</p>:null}{reply==="error"?<p role="alert">{tr("Не удалось отправить ответ. Попробуйте ещё раз.")}</p>:null}
           </form>

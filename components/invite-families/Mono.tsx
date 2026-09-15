@@ -7,7 +7,6 @@ import type { LayoutKit } from "../Site3DLayouts";
 import { coupleNames, mapsEmbedUrl, pad, programItems } from "./shared";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 const MONTH_NAMES_EN = [
   "January", "February", "March", "April", "May", "June",
@@ -150,8 +149,6 @@ export function MonoFamily({ kit }: { kit: LayoutKit }) {
         </a>
         <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className="mt-4 h-[140px] w-full border-0" loading="lazy" />
       </Reveal>
-
-      <WishesCard kit={kit} tone="mono" />
 
       <section className="px-8 pb-10">
         <RsvpForm kit={kit} tone="mono" />

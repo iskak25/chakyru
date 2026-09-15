@@ -5,7 +5,6 @@ import type { LayoutKit } from "../Site3DLayouts";
 import { coupleNames, mapsEmbedUrl, pad, programItems } from "./shared";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 function storyChapters(ru: boolean) {
   return [
@@ -201,8 +200,6 @@ export function StarsFamily({ kit }: { kit: LayoutKit }) {
           </div>
         </Reveal>
       ) : null}
-
-      <WishesCard kit={kit} tone="stars" />
 
       <section className="px-8 pb-10">
         <RsvpForm kit={kit} tone="stars" />

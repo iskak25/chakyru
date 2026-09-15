@@ -1,8 +1,10 @@
 "use client";
 
+import { completeGuestForm } from "@/lib/guestSubmission";
+
 import { useState } from "react";
 import { MapPin } from "lucide-react";
-import { addRsvp, addWish } from "@/lib/store";
+import { addRsvp } from "@/lib/store";
 import { CanvasText } from "../CanvasEdit";
 import { Field, SlotPhoto, fieldValue } from "../SiteEdit";
 import type { LayoutKit } from "../Site3DLayouts";
@@ -264,7 +266,6 @@ function DressCodeSection({
 function RSVPSection({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, labels, variant, rsvp, setRsvp, rsvpName, setRsvpName, rsvpDone, setRsvpDone, onReload } = kit;
   const [drink, setDrink] = useState(fieldValue(invitation, "drink1", kit.locale === "ru" ? "Вино (белое / красное)" : "Вино"));
-  const [wish, setWish] = useState("");
   const drinks = [
     fieldValue(invitation, "drink1", kit.locale === "ru" ? "Вино (белое / красное)" : "Вино (ак / кызыл)"),
     fieldValue(invitation, "drink2", kit.locale === "ru" ? "Шампанское" : "Шампанское"),
@@ -300,11 +301,10 @@ function RSVPSection({ kit }: { kit: LayoutKit }) {
       ) : (
         <form
           className="mt-6 space-y-4"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!rsvpName.trim()) return;
-            addRsvp(invitation.id, rsvpName.trim(), rsvp, rsvp === "maybe" ? 1 : 0);
-            if (wish.trim()) addWish(invitation.id, rsvpName.trim(), `${wish.trim()}\n${drink}`);
+            if (!await completeGuestForm(e.currentTarget, () => addRsvp(invitation.id, rsvpName.trim(), rsvp === "maybe" ? "yes" : rsvp, rsvp === "maybe" ? 1 : 0, { drinks: drink }))) return;
             setRsvpDone(true);
             onReload?.();
           }}
@@ -342,23 +342,8 @@ function RSVPSection({ kit }: { kit: LayoutKit }) {
               </button>
             ))}
           </div>
-          <Field
-            invitation={invitation}
-            onChange={onChange}
-            id="wishesTitle"
-            fallback={kit.locale === "ru" ? "ВАШИ ПОЖЕЛАНИЯ" : "КААЛООЛОРУҢУЗ"}
-            className="font-mauve pt-4 text-center text-[18px] uppercase tracking-[0.14em]"
-          />
-          <p className="text-center text-[13px] text-[#6a625c]">
-            {fieldValue(invitation, "wishesHint", kit.locale === "ru" ? "Напишите несколько тёплых слов" : "Бир нече жылуу сөз жазыңыз")}
-          </p>
-          <textarea
-            value={wish}
-            onChange={(e) => setWish(e.target.value)}
-            rows={4}
-            placeholder={kit.locale === "ru" ? "Введите текст" : "Текст жазыңыз"}
-            className="w-full rounded-[12px] border border-[#e4d9d2] bg-[#faf6f2] px-4 py-3 text-sm outline-none"
-          />
+
+
           <button
             type="submit"
             className="fam-ivory-btn flex min-h-12 w-full items-center justify-center rounded-full bg-[#9f7e7e] text-[11px] uppercase tracking-[0.16em] text-white"

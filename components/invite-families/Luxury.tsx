@@ -7,7 +7,6 @@ import { coupleNames, mapsEmbedUrl, monthLabel, pad, programItems } from "./shar
 import { GoldFiligree } from "./Ornaments";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 export function LuxuryFamily({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, a, b, labels, heroPhoto, photos, venuePhoto, count, mapHref, mapQuery, event } = kit;
@@ -121,8 +120,6 @@ export function LuxuryFamily({ kit }: { kit: LayoutKit }) {
           ))}
         </div>
       ) : null}
-
-      <WishesCard kit={kit} tone="luxury" />
 
       <section className="px-8 py-10">
         <p className="mb-6 text-center text-[10px] uppercase tracking-[0.32em] text-[#c4a35e]">{labels.rsvpHint}</p>

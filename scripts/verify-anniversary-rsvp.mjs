@@ -10,11 +10,16 @@ function harness(id, editing = false) {
   let index = 0, success = true, tree;
   const module = { exports: {} };
   const stub = new Proxy({}, { get: (_, key) => key === "__esModule" ? false : String(key) });
+  const fetchMock = async (url, options) => { requests.push({ url, body: JSON.parse(options.body) }); return Response.json({ guest: { id: "saved" } }, { status: success ? 200 : 500 }); };
+  const submission = { exports: {} };
+  new Function("exports", "fetch", ts.transpileModule(fs.readFileSync("lib/guestSubmission.ts", "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText)(submission.exports, fetchMock);
   new Function("require", "module", "exports", "fetch", "FormData", compiled)(name => {
     if (name === "react") return { useState(initial) { const i = index++; if (!(i in hooks)) hooks[i] = initial; return [hooks[i], value => { hooks[i] = value; }]; } };
     if (name === "react/jsx-runtime") return require(name);
     if (name.endsWith("/weddingEditor")) return { safeWeddingLink: value => value };
     if (name.endsWith("/music")) return { effectiveMusicUrl: () => "" };
+    if (name.endsWith("/defaultVenue")) return { invitationMapUrl: () => "" };
+    if (name.endsWith("/guestSubmission")) return submission.exports;
     return stub;
   }, module, module.exports, async (url, options) => { requests.push({ url, body: JSON.parse(options.body) }); return { ok: success }; }, class { constructor(values) { this.values = values; } get(key) { return this.values[key]; } });
   const inv = { id, templateId: "jubilee-monochrome", names: "Тест", date: "2026-10-24", time: "18:00", venue: "Зал", address: "Бишкек", city: "Бишкек", copy: {}, gallery: {} };

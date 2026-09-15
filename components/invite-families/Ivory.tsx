@@ -8,7 +8,6 @@ import { mapsEmbedUrl, pad, programItems } from "./shared";
 import { GoldFlourish, IVORY_ICONS, IvoryCornerBloom } from "./florals";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 function dressSwatches(invitation: LayoutKit["invitation"]) {
   const fromCopy = [0, 1, 2, 3, 4]
@@ -33,9 +32,6 @@ export function IvoryFamily({ kit }: { kit: LayoutKit }) {
       <VenueSection kit={kit} mapHref={mapHref} photos={photos} instant={instant} />
       <ProgramSection kit={kit} items={items} instant={instant} />
       <DressCodeSection kit={kit} swatches={swatches} instant={instant} />
-      <Reveal instant={instant}>
-        <WishesCard kit={kit} tone="elegant" />
-      </Reveal>
       <section className="px-8 pb-8">
         <RsvpForm kit={kit} tone="ivory" />
       </section>

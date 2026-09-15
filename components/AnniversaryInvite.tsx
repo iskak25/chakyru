@@ -1,5 +1,7 @@
 "use client";
 
+import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
+
 import { invitationMapUrl, DEFAULT_VENUE } from "@/lib/defaultVenue";
 
 import { useState, type CSSProperties, type ReactNode } from "react";
@@ -67,10 +69,10 @@ export function AnniversaryInvite({ invitation: inv, design, locale, onChange, s
           e.preventDefault(); if (onChange || reply === "sending" || reply === "sent") return;
           const data = new FormData(e.currentTarget), name = String(data.get("name") || "").trim();
           if (!name) return;
-          if (preview) { setReply("sent"); return; }
+          if (preview) { guestFeedback("preview"); setReply("sent"); return; }
           setReply("sending");
           try {
-            const response = await fetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, rsvp: String(data.get("attendance") || "yes"), plusOne: Math.max(0, Math.min(19, Number(data.get("guests") || 1) - 1)), note: String(data.get("note") || "") }) });
+            const response = await guestFetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, rsvp: String(data.get("attendance") || "yes"), plusOne: Math.max(0, Math.min(19, Number(data.get("guests") || 1) - 1)), note: String(data.get("note") || "") }) });
             if (!response.ok) throw new Error("rsvp"); setReply("sent");
           } catch { setReply("error"); }
         }}>

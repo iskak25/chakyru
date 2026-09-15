@@ -110,6 +110,7 @@ export async function addInvitationRsvp(input: {
   plusOne: number;
   drinks?: string;
   note?: string;
+  wish?: string;
 }): Promise<Guest | null> {
   const db = getAdminDb();
   if (!db) return null;
@@ -127,7 +128,11 @@ export async function addInvitationRsvp(input: {
     if (input.drinks !== undefined) guest.drinks = input.drinks;
     if (input.note !== undefined) guest.note = input.note;
     const next = existing ? guests.map((g) => (g.id === guest.id ? guest : g)) : [...guests, guest];
-    tx.set(ref, { guests: next, updatedAt: new Date().toISOString() }, { merge: true });
+    const wishes = Array.isArray(inv.wishes) ? inv.wishes : [];
+    // A combined form saves attendance and congratulations atomically.
+    const wish = input.wish?.trim();
+    const alreadySaved = wishes.some(w => w.name === input.name && w.text === wish);
+    tx.set(ref, { guests: next, ...(wish && !alreadySaved ? { wishes: [{ id: crypto.randomUUID(), name: input.name, text: wish, likes: 0, createdAt: new Date().toISOString() }, ...wishes] } : {}), updatedAt: new Date().toISOString() }, { merge: true });
     return guest;
   });
 }
@@ -167,16 +172,18 @@ export async function likeInvitationWish(invitationId: string, wishId: string) {
   const db = getAdminDb();
   if (!db) return false;
   const ref = db.collection("invitations").doc(invitationId);
-  const snap = await ref.get();
-  if (!snap.exists) return false;
-  const inv = asInvitation(invitationId, (snap.data() ?? {}) as Record<string, unknown>);
-  if (!inv) return false;
-  await ref.set(
-    {
-      wishes: (inv.wishes ?? []).map((wish) => (wish.id === wishId ? { ...wish, likes: wish.likes + 1 } : wish)),
-      updatedAt: new Date().toISOString(),
-    },
-    { merge: true },
-  );
-  return true;
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return false;
+    const inv = asInvitation(invitationId, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!inv) return false;
+    tx.set(ref,
+      {
+        wishes: (inv.wishes ?? []).map((wish) => (wish.id === wishId ? { ...wish, likes: wish.likes + 1 } : wish)),
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true },
+    );
+    return true;
+  });
 }

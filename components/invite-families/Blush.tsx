@@ -6,7 +6,6 @@ import { coupleNames, mapsEmbedUrl, pad, programItems } from "./shared";
 import { BlushCornerBloom } from "./florals";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 function dressTones(invitation: LayoutKit["invitation"]) {
   const fromCopy = [0, 1, 2]
@@ -112,8 +111,6 @@ export function BlushFamily({ kit }: { kit: LayoutKit }) {
           ))}
         </div>
       </Reveal>
-
-      <WishesCard kit={kit} tone="blush" />
 
       <section className="px-8 pb-10">
         <RsvpForm kit={kit} tone="blush" />

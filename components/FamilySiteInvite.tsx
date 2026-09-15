@@ -1,5 +1,7 @@
 "use client";
 
+import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
+
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
@@ -80,9 +82,9 @@ export function FamilySiteInvite({invitation:inv,design,locale,onChange,selected
           <form className={css.form} onSubmit={async e=>{
             e.preventDefault();if(onChange||reply==="sending"||reply==="sent")return;
             const data=new FormData(e.currentTarget),name=String(data.get("name")||"").trim();if(!name)return;
-            if(preview){setReply("sent");return;}
+            if(preview){guestFeedback("preview");setReply("sent");return;}
             setReply("sending");
-            try {const result=await fetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:String(data.get("attendance")||"yes"),plusOne:Math.min(19,Math.max(0,Number(data.get("guests")||1)-1)),note:String(data.get("note")||"")})});if(!result.ok)throw Error("send");setReply("sent");}catch{setReply("error");}
+            try {const result=await guestFetch(`/api/invitations/${encodeURIComponent(inv.id)}/rsvp`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name,rsvp:String(data.get("attendance")||"yes"),plusOne:Math.min(19,Math.max(0,Number(data.get("guests")||1)-1)),note:String(data.get("note")||"")})});if(!result.ok)throw Error("send");setReply("sent");}catch{setReply("error");}
           }}>
             <label>{text("rsvp-name-label",tr("Ваше имя","Атыңыз"),css.formLabel)}<WeddingPart id="rsvp-name" label="Поле имени" kind="widget" fallback={tr("Имя и фамилия","Аты-жөнүңүз")}><input name="name" aria-label={tr("Имя гостя","Коноктун аты")} required autoComplete="name" maxLength={120} placeholder={weddingStyle(inv,"rsvp-name","placeholder")||tr("Имя и фамилия","Аты-жөнүңүз")}/></WeddingPart></label>
             <WeddingPart id="rsvp-attendance" label="Присутствие" kind="widget"><fieldset><legend>{text("attendance-label",tr("Подтверждение участия","Катышууну ырастоо"),css.formLabel)}</legend>{["yes","no"].map((value,i)=><label key={value} className={css.radio}><input name="attendance" type="radio" value={value} defaultChecked={i===0}/>{text(`attendance-${value}`,i===0?tr("С радостью придём","Кубаныч менен келебиз"):tr("К сожалению, не сможем","Тилекке каршы, келе албайбыз"))}</label>)}</fieldset></WeddingPart>

@@ -1,5 +1,7 @@
 "use client";
 
+import { completeGuestForm } from "@/lib/guestSubmission";
+
 import { addRsvp } from "@/lib/store";
 import type { RsvpStatus } from "@/lib/types";
 import { fieldValue } from "../SiteEdit";
@@ -99,10 +101,10 @@ export function RsvpForm({
   return (
     <form
       className="space-y-3"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         if (!rsvpName.trim()) return;
-        addRsvp(invitation.id, rsvpName.trim(), rsvp, rsvp === "maybe" ? 1 : 0);
+        if (!await completeGuestForm(e.currentTarget, () => addRsvp(invitation.id, rsvpName.trim(), rsvp === "maybe" ? "yes" : rsvp, rsvp === "maybe" ? 1 : 0))) return;
         setRsvpDone(true);
         onReload?.();
       }}

@@ -9,7 +9,6 @@ import { KyalRule, MountainSilhouette } from "./Ornaments";
 import { IconCake, IconGlasses, IconMusic, IconPlate, IconRings } from "./Icons";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 const PROGRAM_ICONS = [IconRings, IconGlasses, IconPlate, IconMusic, IconCake];
 
@@ -124,8 +123,6 @@ export function KyrgyzFamily({ kit }: { kit: LayoutKit }) {
           </div>
         </Reveal>
       ) : null}
-
-      <WishesCard kit={kit} tone="kyrgyz" />
 
       <section className="px-8 pb-10">
         <p className="mb-5 text-center text-[11px] uppercase tracking-[0.2em] text-[#8a7a64]">{labels.rsvpHint}</p>

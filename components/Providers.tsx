@@ -3,6 +3,7 @@
 import { LocaleProvider } from "@/lib/locale";
 import { CatalogHydrator } from "./CatalogHydrator";
 import { FirebaseSession } from "./FirebaseSession";
+import { GuestSubmissionFeedback } from "./GuestSubmissionFeedback";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <FirebaseSession />
       <CatalogHydrator />
       {children}
+      <GuestSubmissionFeedback />
     </LocaleProvider>
   );
 }

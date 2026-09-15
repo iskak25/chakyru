@@ -13,17 +13,19 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
     plusOne?: number;
     drinks?: string;
     note?: string;
+    wish?: string;
   } | null;
-  const name = body?.name?.trim() || "";
+  const name = typeof body?.name === "string" ? body.name.trim() : "";
   const rsvp = body?.rsvp;
-  if (!id || !name || (rsvp !== "yes" && rsvp !== "no" && rsvp !== "maybe")) {
+  if (!id || id === "demo" || id === "preview" || id.startsWith("preview-") || !name || name.length > 120 || (rsvp !== "yes" && rsvp !== "no" && rsvp !== "maybe") || (body?.wish !== undefined && (typeof body.wish !== "string" || body.wish.length > 2000))) {
     return NextResponse.json({ error: "input" }, { status: 400 });
   }
   const guest = await addInvitationRsvp({
     invitationId: id,
     name,
     rsvp,
-    plusOne: Number.isFinite(body?.plusOne) ? Math.max(0, Number(body?.plusOne)) : 0,
+    plusOne: rsvp !== "no" && Number.isFinite(body?.plusOne) ? Math.min(19, Math.max(0, Math.floor(Number(body?.plusOne)))) : 0,
+    ...(typeof body?.wish === "string" ? { wish: body.wish.trim() } : {}),
     ...(typeof body?.drinks === "string" ? { drinks: body.drinks.trim().slice(0, 120) } : {}),
     ...(typeof body?.note === "string" ? { note: body.note.trim().slice(0, 2000) } : {}),
   });

@@ -6,7 +6,6 @@ import { coupleNames, mapsEmbedUrl, monthLabel, pad, programItems } from "./shar
 import { CalendarGrid, DoveOrnament } from "./Ornaments";
 import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
-import { WishesCard } from "./Wishes";
 
 export function NoirFamily({ kit }: { kit: LayoutKit }) {
   const { invitation, onChange, a, b, labels, heroPhoto, photos, event, mapHref, mapQuery, venuePhoto } = kit;
@@ -125,8 +124,6 @@ export function NoirFamily({ kit }: { kit: LayoutKit }) {
           </span>
         </div>
       </Reveal>
-
-      <WishesCard kit={kit} tone="noir" />
 
       <section className="bg-[#f5f0e8] px-8 pb-10">
         <RsvpForm kit={kit} tone="noir" />

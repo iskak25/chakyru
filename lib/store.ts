@@ -348,54 +348,31 @@ export function saveInvitation(next: Invitation) {
   queueInvitationSync(stored);
 }
 
-export function addRsvp(
+export async function addRsvp(
   invitationId: string,
   name: string,
   rsvp: RsvpStatus,
   plusOne: number,
-): Guest {
-  if (invitationId.startsWith("preview-")) {
-    return { id: "preview-rsvp", name, rsvp, plusOne };
-  }
+  details: { drinks?: string; note?: string; wish?: string } = {},
+): Promise<Guest> {
+  const { guestFetch } = await import("./guestSubmission");
+  const response = await guestFetch(`/api/invitations/${encodeURIComponent(invitationId)}/rsvp`, {
+    method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, rsvp, plusOne, ...details }),
+  });
+  const { guest } = await response.json() as { guest: Guest };
   const inv = getInvitation(invitationId);
-  if (!inv) throw new Error("not found");
-  const existing = inv.guests.find(
-    (g) => g.name.trim().toLowerCase() === name.trim().toLowerCase(),
-  );
-  const guest: Guest = existing
-    ? { ...existing, rsvp, plusOne }
-    : { id: uid(), name, rsvp, plusOne };
-  const guests = existing
-    ? inv.guests.map((g) => (g.id === guest.id ? guest : g))
-    : [...inv.guests, guest];
-  saveInvitation({ ...inv, guests });
-  void fetch(`/api/invitations/${encodeURIComponent(invitationId)}/rsvp`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ name, rsvp, plusOne }),
-  }).catch(() => {});
+  if (inv) rememberRemoteInvitation({ ...inv, guests: [...(inv.guests || []).filter(g => g.id !== guest.id && g.name.trim().toLowerCase() !== name.trim().toLowerCase()), guest] });
   return guest;
 }
 
-export function addWish(invitationId: string, name: string, text: string): Wish {
-  if (invitationId.startsWith("preview-")) {
-    return { id: "preview-wish", name, text, likes: 0, createdAt: new Date().toISOString() };
-  }
+export async function addWish(invitationId: string, name: string, text: string): Promise<Wish> {
+  const { guestFetch } = await import("./guestSubmission");
+  const response = await guestFetch(`/api/invitations/${encodeURIComponent(invitationId)}/wish`, {
+    method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, text }),
+  });
+  const { wish } = await response.json() as { wish: Wish };
   const inv = getInvitation(invitationId);
-  if (!inv) throw new Error("not found");
-  const wish: Wish = {
-    id: uid(),
-    name,
-    text,
-    likes: 0,
-    createdAt: new Date().toISOString(),
-  };
-  saveInvitation({ ...inv, wishes: [wish, ...inv.wishes] });
-  void fetch(`/api/invitations/${encodeURIComponent(invitationId)}/wish`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ name, text }),
-  }).catch(() => {});
+  if (inv) rememberRemoteInvitation({ ...inv, wishes: [wish, ...(inv.wishes || [])] });
   return wish;
 }
 
