@@ -146,33 +146,11 @@ export async function confirmReturnPayment(
   uid: string,
   templateId?: string,
 ) {
-  const { confirmOwnedPurchase, findUserPurchase } = await import("./server/purchases");
-  const { fetchFinikPaymentStatus } = await import("./finik");
-  const settings = await getAdminSettings();
-  const cfg = {
-    apiKey: settings.finikApiKey,
-    accountId: settings.finikAccountId,
-    privateKey: settings.finikPrivateKey,
-    mcc: settings.finikMcc,
-    beta: settings.finikBeta,
-  };
-  const purchase = await findUserPurchase(uid, { paymentId, templateId });
-  if (!purchase || purchase.status !== "pending") return confirmOwnedPurchase(paymentId, uid, { templateId });
-  const ids = [...new Set([paymentId, purchase?.finikPaymentId, purchase?.id].filter((value): value is string => Boolean(value)))];
-  let finikStatus: string | undefined;
-  const failures: string[] = [];
-  for (const id of ids) {
-    const finik = await fetchFinikPaymentStatus(id, cfg, code => failures.push(code));
-    if (finik?.status) {
-      finikStatus = finik.status;
-      break;
-    }
-  }
-  const result = await confirmOwnedPurchase(paymentId, uid, {
-    templateId,
-    finikStatus,
-  });
-  return { ...result, ...(!result.paid && !finikStatus ? { verificationError: failures[0] || "finik_unavailable" } : {}) };
+  // Finik has no payment-status-by-id endpoint (webhook is the sole source
+  // of truth — see lib/finik.ts), so this just reflects whatever the webhook
+  // has already written to the purchase record.
+  const { confirmOwnedPurchase } = await import("./server/purchases");
+  return confirmOwnedPurchase(paymentId, uid, { templateId });
 }
 
 export function getAdminStorageBucket() {

@@ -8,7 +8,6 @@ require.extensions[".ts"] = (mod, filename) => mod._compile(ts.transpileModule(f
 async function main() {
   const { getAdminDb } = require("../lib/firebaseAdmin.ts");
   const { getPaymentSettings } = require("../lib/server/paymentSettings.ts");
-  const { fetchFinikPaymentStatus } = require("../lib/finik.ts");
   const db = getAdminDb();
   if (!db) throw new Error("firebase-config");
   const pid = process.argv[2];
@@ -19,10 +18,8 @@ async function main() {
     const p = snap.data();
     console.log(JSON.stringify({collection, exists: snap.exists, status: p?.status, templateId: p?.templateId, plan: p?.plan, finikPaymentId: p?.finikPaymentId}));
   }
-  // Avoid printing provider response bodies in diagnostics.
-  const info = console.info; console.info = (...args) => info(args[0], {status: args[1]?.status, path: args[1]?.path});
-  const status = await fetchFinikPaymentStatus(pid, {apiKey: settings.finikApiKey, privateKey: settings.finikPrivateKey, accountId: settings.finikAccountId, mcc: settings.finikMcc, beta: settings.finikBeta});
-  console.log(JSON.stringify({providerStatus: status?.status || null}));
+  // Finik has no payment-status-by-id endpoint; the webhook write above is
+  // the only source of truth for whether this payment actually succeeded.
   await db.terminate();
 }
 main().catch(error => { console.error("diagnostic-failed", error.code || error.message?.slice(0, 70)); process.exitCode = 1; });

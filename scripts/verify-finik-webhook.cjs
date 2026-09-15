@@ -29,21 +29,6 @@ async function send(status) {
   return route.POST({text: async () => JSON.stringify({...body, status}), headers: new Headers({host: "www.toichakyru.com"}), nextUrl: new URL("https://www.toichakyru.com/api/pay/webhook")});
 }
 async function main() {
-  const cfg = {apiKey: "test", accountId: "test", privateKey: keys.privateKey.export({type: "pkcs8", format: "pem"}), mcc: "5999", beta: false};
-  const failures = [];
-  assert.equal(await finik.fetchFinikPaymentStatus("order-1", {...cfg, apiKey: ""}, code => failures.push(code)), null);
-  assert.deepEqual(failures, ["finik_not_configured"]);
-  const originalFetch = global.fetch;
-  try {
-    global.fetch = async () => new Response("", {status: 401});
-    failures.length = 0;
-    assert.equal(await finik.fetchFinikPaymentStatus("order-1", cfg, code => failures.push(code)), null);
-    assert.deepEqual(failures, ["finik_http_401", "finik_http_401"]);
-    global.fetch = async () => Response.json({status: "pending", paymentId: "order-1", amount: 1});
-    failures.length = 0;
-    assert.equal((await finik.fetchFinikPaymentStatus("order-1", cfg, code => failures.push(code))).status, "pending");
-    assert.deepEqual(failures, [], "actual pending must differ from a failed status lookup");
-  } finally { global.fetch = originalFetch; }
   for (const status of ["success", "SUCCESS", "succeeded", "SUCCEEDED"]) {
     const before = grants;
     assert.equal((await send(status)).status, 200);

@@ -256,12 +256,6 @@ export type FinikWebhook = {
   fields?: Record<string, unknown>;
 };
 
-export type FinikPaymentStatus = {
-  paymentId: string;
-  status: string;
-  amount?: number;
-};
-
 function fieldFrom(record: Record<string, unknown>, ...keys: string[]) {
   for (const key of keys) {
     const value = record[key];
@@ -283,71 +277,10 @@ export function finikWebhookPaymentId(body: FinikWebhook) {
   );
 }
 
-export async function fetchFinikPaymentStatus(
-  paymentId: string,
-  cfg: FinikConfig,
-  onFailure?: (code: string) => void,
-): Promise<FinikPaymentStatus | null> {
-  if (!paymentId) { onFailure?.("payment_id_missing"); return null; }
-  if (!finikReady(cfg)) { onFailure?.("finik_not_configured"); return null; }
-  const host = new URL(baseUrl(cfg)).host;
-  const timestamp = Date.now().toString();
-  const paths = [`/v1/payment/${encodeURIComponent(paymentId)}`, `/v1/payments/${encodeURIComponent(paymentId)}`];
-  for (const path of paths) {
-    try {
-      const headers = {
-        Host: host,
-        "x-api-key": cfg.apiKey.trim(),
-        "x-api-timestamp": timestamp,
-      };
-      const signature = sign(canonicalString({ method: "GET", path, headers }), cfg);
-      const res = await fetch(`${baseUrl(cfg)}${path}`, {
-        method: "GET",
-        signal: AbortSignal.timeout(5000),
-        headers: {
-          "x-api-key": cfg.apiKey.trim(),
-          "x-api-timestamp": timestamp,
-          signature,
-        },
-      });
-      if (!res.ok) {
-        // Temporary diagnostics: no secrets, just enough to see why the
-        // status lookup keeps failing (wrong path, auth, etc).
-        onFailure?.(`finik_http_${res.status}`);
-        console.info("[FINIK_STATUS_CHECK_FAIL]", {
-          path,
-          status: res.status,
-        });
-        continue;
-      }
-      const rawText = await res.text().catch(() => "");
-      const data = (() => {
-        try {
-          return JSON.parse(rawText) as Record<string, unknown>;
-        } catch {
-          return null;
-        }
-      })();
-      if (!data) {
-        onFailure?.("finik_invalid_response");
-        console.info("[FINIK_STATUS_CHECK_UNPARSEABLE]", { path });
-        continue;
-      }
-      const status = fieldFrom(data, "status", "Status") || fieldFrom((data.fields as Record<string, unknown>) ?? {}, "status");
-      if (!status) {
-        onFailure?.("finik_status_missing");
-        console.info("[FINIK_STATUS_CHECK_NO_STATUS_FIELD]", { path, dataKeys: Object.keys(data) });
-        continue;
-      }
-      const amount = Number(data.amount ?? data.Amount ?? 0);
-      return {
-        paymentId: fieldFrom(data, "paymentId", "PaymentId", "id") || paymentId,
-        status,
-        amount: Number.isFinite(amount) ? amount : undefined,
-      };
-    } catch (error) {
-      onFailure?.(error instanceof Error && error.message === "finik_private_key" ? "finik_private_key" : error instanceof Error && ["TimeoutError", "AbortError"].includes(error.name) ? "finik_timeout" : "finik_network");
-    }
-  }
-  return null;
-}
+// Finik's Web SDK / acquiring API (docs: finik.kg/documentation/web-sdk/reference/)
+// exposes only POST /v1/payment for creating a payment. There is no GET
+// status-lookup endpoint — the webhook is documented as the sole source of
+// truth for a payment's final status. An earlier version of this file
+// guessed at /v1/payment/{id} and /v1/payments/{id}, which Finik correctly
+// rejects with 403 on every call (see confirmReturnPayment in
+// lib/firebaseAdmin.ts, which now relies on the webhook alone).
