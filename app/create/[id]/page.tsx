@@ -51,7 +51,11 @@ function EditorPageInner() {
       return;
     }
     let cancelled = false;
+    let checking = false;
     const sync = async () => {
+      if (checking || cancelled) return;
+      checking = true;
+      try {
       await confirmLastCheckout().catch(() => false);
       if (cancelled) return;
       const access = await fetchTemplateAccess(inv.templateId).catch(() => null);
@@ -63,6 +67,7 @@ function EditorPageInner() {
       const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId));
       const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
       setAllowed(Boolean(user?.auth === "google" && paid && mine));
+      } finally { checking = false; }
     };
     void sync();
     const onSync = () => void sync();

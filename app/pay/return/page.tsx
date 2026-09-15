@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { fetchTemplateAccess } from "@/lib/accessClient";
@@ -16,12 +16,9 @@ function ReturnInner() {
   const { t } = useI18n();
   const router = useRouter();
   const search = useSearchParams();
-  const started = useRef(false);
   const [phase, setPhase] = useState<"wait" | "opening" | "fail">("wait");
 
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
     const pid = search.get("pid") || "";
     const templateHint = search.get("template") || "";
 
@@ -108,7 +105,7 @@ function ReturnInner() {
       setPhase("fail");
     }
 
-    void openEditor();
+    void openEditor().catch(() => { if (!cancelled) setPhase("fail"); });
     return () => {
       cancelled = true;
     };

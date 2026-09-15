@@ -108,8 +108,8 @@ function LoginInner() {
         {error ? <p className="mt-3 text-center text-sm text-rose">{error}</p> : null}
         {error === t.login.googleDomain ? (
           <p className="mt-2 text-center">
-            <a href="https://chakyru.vercel.app/login" className="text-sm underline underline-offset-4">
-              chakyru.vercel.app/login
+            <a href="https://www.toichakyru.com/login" className="text-sm underline underline-offset-4">
+              www.toichakyru.com/login
             </a>
           </p>
         ) : null}

@@ -2,17 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createFinikPayment, finikReady, isPaidPlan } from "@/lib/finik";
 import { quoteCheckout, openCheckout } from "@/lib/server/payments";
 import { attachFinikPaymentId, fulfillPurchase } from "@/lib/server/purchases";
+import { paymentOrigin } from "@/lib/paymentOrigin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 function originOf(req: NextRequest, siteUrl?: string) {
-  const env = (siteUrl || process.env.NEXT_PUBLIC_SITE_URL)?.trim().replace(/\/$/, "");
-  if (env) return env;
-  const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "localhost:3000";
-  const proto = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+  return paymentOrigin(req.url, siteUrl || process.env.NEXT_PUBLIC_SITE_URL);
 }
 
 function fail(err: unknown) {

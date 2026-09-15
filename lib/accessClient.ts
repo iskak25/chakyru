@@ -4,7 +4,9 @@ import { getFirebaseAuth } from "./firebase";
 import type { Invitation, TemplateAccessType } from "./types";
 
 export async function authHeaders(): Promise<HeadersInit> {
-  const token = await getFirebaseAuth()?.currentUser?.getIdToken();
+  const auth = getFirebaseAuth();
+  await auth?.authStateReady();
+  const token = await auth?.currentUser?.getIdToken();
   return token ? { authorization: `Bearer ${token}`, "content-type": "application/json" } : { "content-type": "application/json" };
 }
 

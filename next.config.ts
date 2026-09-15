@@ -12,7 +12,11 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return [{ source: "/designers", destination: "/", permanent: false }];
+    return [
+      { source: "/designers", destination: "/", permanent: false },
+      // Keep API/webhook requests on their original host; preserve old checkout query params.
+      { source: "/pay/return", has: [{ type: "host", value: "chakyru.vercel.app" }], destination: "https://www.toichakyru.com/pay/return", permanent: false },
+    ];
   },
   async rewrites() {
     return [
