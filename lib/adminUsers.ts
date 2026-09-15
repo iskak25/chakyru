@@ -1,5 +1,5 @@
 import { isAdminEmail } from "./auth";
-import { getAdminAuth, getAdminDb } from "./firebaseAdmin";
+import { getAdminDb } from "./firebaseAdmin";
 import { grantProPeriod, type ProPeriod } from "./proAccess";
 import { canonicalAccount } from "./server/users";
 import type { AccountRole, PlanId } from "./types";
@@ -55,22 +55,27 @@ export async function patchAdminUser(uid: string, patch: { accountRole: "guest" 
   if (!["guest", "pro", "admin"].includes(patch.accountRole)) throw new Error("role");
   if (patch.proMonths !== undefined && patch.proMonths !== 1 && patch.proMonths !== 3) throw new Error("months");
   const db = getAdminDb();
-  const auth = await getAdminAuth();
-  if (!db || !auth) throw new Error("firebase-admin-not-configured");
-  const identity = await auth.getUser(uid);
-  if (isAdminEmail(identity.email) && patch.accountRole !== "admin") throw new Error("protected-admin");
+  if (!db) throw new Error("firebase-admin-not-configured");
+  // No Firebase Auth Admin lookup here on purpose: every real user already has a
+  // users/{uid} Firestore doc (name/email/picture/createdAt) written by
+  // /api/me/sync on login, via upsertAuthUser below. Reading that instead of
+  // calling auth.getUser(uid) avoids loading "firebase-admin/auth", whose
+  // jwks-rsa -> jose dependency chain fails to load under Vercel's Node
+  // bundler (ERR_REQUIRE_ESM) -- see listAdminUsers for the same reasoning.
   const ref = db.collection("users").doc(uid);
   await db.runTransaction(async tx => {
     const snap = await tx.get(ref);
     const existing = snap.data() ?? {};
+    const email = String(existing.email ?? "");
+    if (isAdminEmail(email) && patch.accountRole !== "admin") throw new Error("protected-admin");
     const now = new Date().toISOString();
     const account = patch.accountRole === "pro"
       ? grantProPeriod({ ...canonicalAccount(existing, now), accountRole: "guest" }, patch.proMonths ?? 1, now)
       : { accountRole: patch.accountRole, plan: "free", proStartedAt: null, proExpiresAt: null };
     tx.set(ref, {
-      ...account, id: `google:${uid}`, firebaseUid: uid,
-      name: identity.displayName || identity.email || "", email: identity.email || "",
-      picture: identity.photoURL || null, createdAt: existing.createdAt || identity.metadata.creationTime || now,
+      ...account, id: existing.id ?? `google:${uid}`, firebaseUid: uid,
+      name: String(existing.name ?? ""), email,
+      picture: existing.picture ?? null, createdAt: existing.createdAt || now,
       updatedAt: now,
     }, { merge: true });
   });
@@ -78,20 +83,15 @@ export async function patchAdminUser(uid: string, patch: { accountRole: "guest" 
 
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
   const db = getAdminDb();
-  const auth = await getAdminAuth();
-  if (!db || !auth) throw new Error("firebase-admin-not-configured");
-  // Paginate Firebase Authentication; surface errors rather than reporting an empty list.
-  let pageToken: string | undefined;
-  do {
-    const page = await auth.listUsers(1000, pageToken);
-    for (let offset = 0; offset < page.users.length; offset += 20) {
-      await Promise.all(page.users.slice(offset, offset + 20).map(user => upsertAuthUser({
-        firebaseUid: user.uid, name: user.displayName || user.email || "", email: user.email || "",
-        picture: user.photoURL, createdAt: user.metadata.creationTime ? new Date(user.metadata.creationTime).toISOString() : undefined,
-      })));
-    }
-    pageToken = page.pageToken;
-  } while (pageToken);
+  if (!db) throw new Error("firebase-admin-not-configured");
+  // This used to also paginate Firebase Authentication (auth.listUsers()) and
+  // upsert every account into Firestore here, to keep the users collection in
+  // sync. That's unnecessary -- /api/me/sync already upserts every user's doc
+  // on login (see upsertAuthUser) -- and calling into "firebase-admin/auth"
+  // pulls in jwks-rsa, whose CJS require() of jose's ESM-only build crashes
+  // Vercel's Node serverless bundler with ERR_REQUIRE_ESM (this worked in
+  // local dev, which doesn't bundle the same way, masking the bug there).
+  // Reading Firestore directly sidesteps the broken dependency entirely.
   const snap = await db.collection("users").get();
   const rows: AdminUserRow[] = [];
   for (const doc of snap.docs) {

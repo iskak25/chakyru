@@ -5,6 +5,7 @@ import type { RemoteUser } from "@/lib/db";
 import { firebaseIdToken } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
 import { effectiveAccount } from "@/lib/proAccess";
+import { adminUserErrorMessage } from "@/lib/adminUserErrors";
 
 type Role = "guest" | "pro" | "admin";
 export function AdminUsers() {
@@ -23,14 +24,17 @@ export function AdminUsers() {
       const token = await firebaseIdToken();
       if (!token) throw new Error(t.admin.login);
       const res = await fetch("/api/admin/users", { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
-      if (!res.ok) throw new Error(res.status === 401 ? t.admin.login : res.status === 403 ? t.admin.denied : t.admin.needFirestore);
+      if (!res.ok) {
+        const failure = await res.json().catch(() => null);
+        throw new Error(res.status === 401 ? t.admin.login : res.status === 403 ? t.admin.denied : adminUserErrorMessage(failure?.error, ru, t.admin.needFirestore));
+      }
       const data = await res.json();
       setUsers(Array.isArray(data.users) ? data.users : []);
       setError("");
     } catch (err) {
       setError(err instanceof Error ? err.message : t.admin.needFirestore);
     } finally { setReady(true); setLoading(false); }
-  }, [t.admin.login, t.admin.denied, t.admin.needFirestore]);
+  }, [t.admin.login, t.admin.denied, t.admin.needFirestore, ru]);
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callerIsAdmin, listAdminUsers, patchAdminUser } from "@/lib/adminUsers";
 import { sessionFromBearer } from "@/lib/firebaseToken";
+import { adminUserErrorCode } from "@/lib/adminUserErrors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,14 +16,14 @@ async function requireAdmin(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const denied = await requireAdmin(req);
-  if (denied) return denied;
   try {
+    const denied = await requireAdmin(req);
+    if (denied) return denied;
     const users = await listAdminUsers();
     return NextResponse.json({ users }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     console.error("[admin-users]", error instanceof Error ? error.message : "users");
-    return NextResponse.json({ error: "users" }, { status: 500 });
+    return NextResponse.json({ error: adminUserErrorCode(error) }, { status: 500, headers: { "cache-control": "no-store" } });
   }
 }
 
