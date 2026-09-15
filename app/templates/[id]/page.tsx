@@ -21,6 +21,7 @@ import { TemplatePaperPreview } from "@/components/TemplatePaperPreview";
 import { AnniversaryHero } from "@/components/AnniversaryHero";
 import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
 import anniversaryCss from "@/components/AnniversaryInvite.module.css";
+import { GuestResponseLinks } from "@/components/GuestResponseLinks";
 
 // FormatInvite (behind TemplateRenderer) statically pulls in every site-look renderer
 // (Site3D, PinterestInvite, ThemedSiteInvite, FamilySiteInvite, PhotoInvite...) — that's
@@ -186,6 +187,8 @@ export default function TemplatePreviewPage() {
               {locale === "ru" ? "В избранное" : "Тандалмаларга"}
             </button>
           </div>
+
+          {canEdit && <GuestResponseLinks templateId={template.id} locale={locale} />}
 
           <div className="mt-10 space-y-3 border-t border-[var(--line)] pt-8">
             {[t.editor.music, t.editor.addGuest, t.editor.images, t.editor.map, "RSVP"].map((label) => (

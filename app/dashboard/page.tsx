@@ -12,6 +12,7 @@ import { fetchMyInvitationsRemote, pushInvitationRemote } from "@/lib/accessClie
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { formatOf, getTemplate } from "@/lib/templates";
 import type { Invitation, User } from "@/lib/types";
+import { GuestResponseLinks } from "@/components/GuestResponseLinks";
 
 export default function DashboardPage() {
   const { locale, t } = useI18n();
@@ -98,13 +99,12 @@ export default function DashboardPage() {
               const photo = getTemplatePhotos(inv.templateId).hero;
               const template = getTemplate(inv.templateId);
               return (
-                <Link
+                <article
                   key={inv.id}
-                  href={`/create/${inv.id}`}
                   className="group overflow-hidden rounded-[var(--radius-xl)] bg-white transition duration-300 hover:-translate-y-1"
                   style={{ boxShadow: "var(--shadow-soft)" }}
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden">
+                  <Link href={`/create/${inv.id}`} className="relative block aspect-[4/5] overflow-hidden">
                     <img
                       src={photo}
                       alt=""
@@ -114,17 +114,18 @@ export default function DashboardPage() {
                     <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
                       {t.formats[formatOf(inv.templateId)]}
                     </span>
-                  </div>
+                  </Link>
                   <div className="px-5 py-4">
                     <h2 className="font-serif text-2xl tracking-[-0.02em]">{inv.names || template.name[locale]}</h2>
                     <p className="mt-2 text-[12px] text-ink-soft">
                       {inv.date || "—"} · {yes}/{yes + no} RSVP
                     </p>
-                    <p className="mt-4 text-[11px] uppercase tracking-[0.14em] text-meta transition group-hover:text-ink">
+                    <Link href={`/create/${inv.id}`} className="mt-4 inline-block text-[11px] uppercase tracking-[0.14em] text-meta transition group-hover:text-ink">
                       {t.templateView.edit} →
-                    </p>
+                    </Link>
+                    <GuestResponseLinks invitationId={inv.id} locale={locale} />
                   </div>
-                </Link>
+                </article>
               );
             })}
           </div>

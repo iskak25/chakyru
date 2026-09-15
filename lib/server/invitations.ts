@@ -92,8 +92,15 @@ export async function saveInvitationDoc(input: {
     updatedAt: now,
     createdAt: existing?.createdAt || input.invitation.createdAt || now,
   });
-  await db.collection("invitations").doc(id).set(stored, { merge: true });
-  return true;
+  const ref = db.collection("invitations").doc(id);
+  return db.runTransaction(async tx => {
+    const fresh = await tx.get(ref);
+    const current = fresh.data();
+    if (current && !sameInvitationOwner(current, input)) return false;
+    // Guest submissions belong to the server, not a potentially stale editor cache.
+    tx.set(ref, { ...stored, guests: current?.guests ?? [], wishes: current?.wishes ?? [] }, { merge: true });
+    return true;
+  });
 }
 
 export async function addInvitationRsvp(input: {
@@ -107,20 +114,22 @@ export async function addInvitationRsvp(input: {
   const db = getAdminDb();
   if (!db) return null;
   const ref = db.collection("invitations").doc(input.invitationId);
-  const snap = await ref.get();
-  if (!snap.exists) return null;
-  const inv = asInvitation(input.invitationId, (snap.data() ?? {}) as Record<string, unknown>);
-  if (!inv) return null;
-  const guests = Array.isArray(inv.guests) ? inv.guests : [];
-  const existing = guests.find((g) => g.name.trim().toLowerCase() === input.name.trim().toLowerCase());
-  const guest: Guest = existing
-    ? { ...existing, rsvp: input.rsvp, plusOne: input.plusOne }
-    : { id: crypto.randomUUID(), name: input.name, rsvp: input.rsvp, plusOne: input.plusOne };
-  if (input.drinks !== undefined) guest.drinks = input.drinks;
-  if (input.note !== undefined) guest.note = input.note;
-  const next = existing ? guests.map((g) => (g.id === guest.id ? guest : g)) : [...guests, guest];
-  await ref.set({ guests: next, updatedAt: new Date().toISOString() }, { merge: true });
-  return guest;
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return null;
+    const inv = asInvitation(input.invitationId, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!inv) return null;
+    const guests = Array.isArray(inv.guests) ? inv.guests : [];
+    const existing = guests.find((g) => g.name.trim().toLowerCase() === input.name.trim().toLowerCase());
+    const guest: Guest = existing
+      ? { ...existing, rsvp: input.rsvp, plusOne: input.plusOne }
+      : { id: crypto.randomUUID(), name: input.name, rsvp: input.rsvp, plusOne: input.plusOne };
+    if (input.drinks !== undefined) guest.drinks = input.drinks;
+    if (input.note !== undefined) guest.note = input.note;
+    const next = existing ? guests.map((g) => (g.id === guest.id ? guest : g)) : [...guests, guest];
+    tx.set(ref, { guests: next, updatedAt: new Date().toISOString() }, { merge: true });
+    return guest;
+  });
 }
 
 export async function addInvitationWish(input: {
@@ -131,25 +140,27 @@ export async function addInvitationWish(input: {
   const db = getAdminDb();
   if (!db) return null;
   const ref = db.collection("invitations").doc(input.invitationId);
-  const snap = await ref.get();
-  if (!snap.exists) return null;
-  const inv = asInvitation(input.invitationId, (snap.data() ?? {}) as Record<string, unknown>);
-  if (!inv) return null;
-  const wish: Wish = {
-    id: crypto.randomUUID(),
-    name: input.name,
-    text: input.text,
-    likes: 0,
-    createdAt: new Date().toISOString(),
-  };
-  await ref.set(
-    {
-      wishes: [wish, ...(Array.isArray(inv.wishes) ? inv.wishes : [])],
-      updatedAt: new Date().toISOString(),
-    },
-    { merge: true },
-  );
-  return wish;
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return null;
+    const inv = asInvitation(input.invitationId, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!inv) return null;
+    const wish: Wish = {
+      id: crypto.randomUUID(),
+      name: input.name,
+      text: input.text,
+      likes: 0,
+      createdAt: new Date().toISOString(),
+    };
+    tx.set(ref,
+      {
+        wishes: [wish, ...(Array.isArray(inv.wishes) ? inv.wishes : [])],
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true },
+    );
+    return wish;
+  });
 }
 
 export async function likeInvitationWish(invitationId: string, wishId: string) {

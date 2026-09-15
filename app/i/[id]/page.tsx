@@ -8,6 +8,7 @@ import { fetchInvitationRemote } from "@/lib/accessClient";
 import { getInvitation, rememberRemoteInvitation } from "@/lib/store";
 import { formatOf } from "@/lib/templates";
 import type { Invitation } from "@/lib/types";
+import { GuestWishForm } from "@/components/GuestWishForm";
 
 function GuestInviteInner() {
   const params = useParams<{ id: string }>();
@@ -59,14 +60,14 @@ function GuestInviteInner() {
   if (formatOf(inv.templateId) === "site3d") {
     return (
       <div className="bg-page">
-        <div className="mx-auto h-auto w-full max-w-[430px]">{renderer}</div>
+        <div className="mx-auto h-auto w-full max-w-[430px]">{renderer}<GuestWishForm key={inv.id} invitationId={inv.id} locale={locale} /></div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-page">
-      <div className="mx-auto max-w-md overflow-hidden">{renderer}</div>
+      <div className="mx-auto max-w-md overflow-hidden">{renderer}<GuestWishForm key={inv.id} invitationId={inv.id} locale={locale} /></div>
     </div>
   );
 }
