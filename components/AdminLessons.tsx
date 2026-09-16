@@ -6,14 +6,15 @@ import { setLiveLessons } from "@/lib/catalogStore";
 import { youtubeIdFromInput, type Lesson } from "@/lib/lessons";
 import { useI18n } from "@/lib/locale";
 import { useCatalog } from "@/lib/useCatalog";
+import { AppDialog } from "./AppDialog";
 
 export function AdminLessons() {
   const { locale, t } = useI18n();
+  const ru = locale === "ru";
   const { lessons } = useCatalog();
   const [items, setItems] = useState<Lesson[]>(lessons);
   const [selectedId, setSelectedId] = useState(lessons[0]?.id ?? "");
-  const [status, setStatus] = useState("");
-  const [error, setError] = useState("");
+  const [feedback, setFeedback] = useState<"saved" | "error" | null>(null);
   const [busy, setBusy] = useState(false);
   const dirty = useRef(false);
 
@@ -33,24 +34,27 @@ export function AdminLessons() {
   function patch(id: string, partial: Partial<Lesson> | { title?: Lesson["title"]; desc?: Lesson["desc"] }) {
     dirty.current = true;
     setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...partial } : item)));
-    setStatus("");
   }
 
   async function save() {
     setBusy(true);
-    setError("");
     try {
-      const next = items.map((item) => ({
-        ...item,
-        youtubeId: item.youtubeId ? youtubeIdFromInput(item.youtubeId) : undefined,
-      }));
+      // Firestore's setDoc() rejects the whole document if ANY field is
+      // explicitly `undefined` (not just missing) -- so a lesson without a
+      // YouTube link (in either language) must omit the key/language
+      // entirely rather than setting it to undefined or an empty string.
+      const next = items.map(({ youtubeId, ...item }) => {
+        const ky = youtubeId?.ky ? youtubeIdFromInput(youtubeId.ky) : "";
+        const linkRu = youtubeId?.ru ? youtubeIdFromInput(youtubeId.ru) : "";
+        return ky || linkRu ? { ...item, youtubeId: { ...(ky ? { ky } : {}), ...(linkRu ? { ru: linkRu } : {}) } } : item;
+      });
       await saveCatalogLessons(next);
       setLiveLessons(next);
       setItems(next);
       dirty.current = false;
-      setStatus(t.admin.saved);
+      setFeedback("saved");
     } catch {
-      setError(t.admin.error);
+      setFeedback("error");
     } finally {
       setBusy(false);
     }
@@ -59,14 +63,12 @@ export function AdminLessons() {
   function addLesson() {
     const created: Lesson = {
       id: `lesson-${crypto.randomUUID().slice(0, 8)}`,
-      minutes: 3,
       title: { ky: "Жаңы сабак", ru: "Новый урок" },
       desc: { ky: "", ru: "" },
     };
     dirty.current = true;
     setItems((prev) => [...prev, created]);
     setSelectedId(created.id);
-    setStatus("");
   }
 
   function remove() {
@@ -76,12 +78,12 @@ export function AdminLessons() {
     dirty.current = true;
     setItems(next);
     setSelectedId(next[0]?.id ?? "");
-    setStatus("");
   }
 
   const input = "w-full border border-ink/15 bg-transparent px-3 py-2 text-sm";
 
   return (
+    <>
     <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
       <div className="bg-cream-deep p-3">
         <button type="button" onClick={addLesson} className="mb-3 w-full bg-forest px-3 py-2 text-[11px] uppercase tracking-[0.14em] text-cream">
@@ -105,8 +107,6 @@ export function AdminLessons() {
 
       {draft ? (
         <div className="space-y-4 bg-cream-deep p-5">
-          {error ? <p className="text-sm text-rose">{error}</p> : null}
-          {status ? <p className="text-sm text-forest">{status}</p> : null}
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-xs text-ink-soft">
               {t.admin.titleKy}
@@ -124,22 +124,22 @@ export function AdminLessons() {
                 onChange={(e) => patch(draft.id, { title: { ...draft.title, ru: e.target.value } })}
               />
             </label>
-            <label className="text-xs text-ink-soft sm:col-span-2">
-              {t.admin.youtube}
+            <label className="text-xs text-ink-soft">
+              {t.admin.youtubeKy}
               <input
                 className={`${input} mt-1`}
                 placeholder="https://youtube.com/watch?v=…  /  dQw4w9wgGcQ"
-                value={draft.youtubeId ?? ""}
-                onChange={(e) => patch(draft.id, { youtubeId: e.target.value })}
+                value={draft.youtubeId?.ky ?? ""}
+                onChange={(e) => patch(draft.id, { youtubeId: { ...draft.youtubeId, ky: e.target.value } })}
               />
             </label>
             <label className="text-xs text-ink-soft">
-              {t.admin.minutes}
+              {t.admin.youtubeRu}
               <input
-                type="number"
                 className={`${input} mt-1`}
-                value={draft.minutes}
-                onChange={(e) => patch(draft.id, { minutes: Number(e.target.value) || 0 })}
+                placeholder="https://youtube.com/watch?v=…  /  dQw4w9wgGcQ"
+                value={draft.youtubeId?.ru ?? ""}
+                onChange={(e) => patch(draft.id, { youtubeId: { ...draft.youtubeId, ru: e.target.value } })}
               />
             </label>
             <label className="text-xs text-ink-soft sm:col-span-2">
@@ -161,15 +161,36 @@ export function AdminLessons() {
               />
             </label>
           </div>
-          {draft.youtubeId ? (
-            <div className="aspect-video overflow-hidden bg-page">
-              <iframe
-                title={draft.title[locale]}
-                src={`https://www.youtube-nocookie.com/embed/${youtubeIdFromInput(draft.youtubeId)}`}
-                className="h-full w-full border-0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+          {draft.youtubeId?.ky || draft.youtubeId?.ru ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {draft.youtubeId?.ky ? (
+                <div>
+                  <p className="mb-1 text-[10px] uppercase tracking-[0.14em] text-ink-soft">KY</p>
+                  <div className="aspect-video overflow-hidden bg-page">
+                    <iframe
+                      title={`${draft.title.ky} (KY)`}
+                      src={`https://www.youtube-nocookie.com/embed/${youtubeIdFromInput(draft.youtubeId.ky)}`}
+                      className="h-full w-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              ) : null}
+              {draft.youtubeId?.ru ? (
+                <div>
+                  <p className="mb-1 text-[10px] uppercase tracking-[0.14em] text-ink-soft">RU</p>
+                  <div className="aspect-video overflow-hidden bg-page">
+                    <iframe
+                      title={`${draft.title.ru} (RU)`}
+                      src={`https://www.youtube-nocookie.com/embed/${youtubeIdFromInput(draft.youtubeId.ru)}`}
+                      className="h-full w-full border-0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
           ) : null}
           <div className="flex flex-wrap gap-2">
@@ -190,5 +211,17 @@ export function AdminLessons() {
         <p className="text-sm text-ink-soft">{t.admin.emptyLessons}</p>
       )}
     </div>
+    {feedback ? (
+      <AppDialog
+        title={feedback === "saved" ? (ru ? "Сохранено" : "Сакталды") : (ru ? "Не сохранено" : "Сакталган жок")}
+        onClose={() => setFeedback(null)}
+      >
+        <p role="status" className="my-6 text-base leading-7">{feedback === "saved" ? t.admin.saved : t.admin.error}</p>
+        <button type="button" onClick={() => setFeedback(null)} className="w-full rounded-xl bg-[#302a25] p-3 text-white">
+          {ru ? "Понятно" : "Түшүнүктүү"}
+        </button>
+      </AppDialog>
+    ) : null}
+    </>
   );
 }

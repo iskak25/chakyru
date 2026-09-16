@@ -9,18 +9,14 @@ function LessonCard({
   youtubeId,
   title,
   desc,
-  minutes,
   coming,
   watch,
-  minLabel,
 }: {
   youtubeId?: string;
   title: string;
   desc: string;
-  minutes: number;
   coming: string;
   watch: string;
-  minLabel: string;
 }) {
   const ready = Boolean(youtubeId);
   return (
@@ -46,9 +42,6 @@ function LessonCard({
         </div>
       )}
       <div className="pt-5">
-        <p className="text-[10px] uppercase tracking-[0.16em] text-meta">
-          {minutes} {minLabel}
-        </p>
         <h2 className="font-serif mt-2 text-[26px] leading-tight tracking-[-0.02em]">{title}</h2>
         <p className="mt-3 text-[15px] leading-8 text-ink-soft">{desc}</p>
         {ready ? (
@@ -75,13 +68,11 @@ export default function LearnPage() {
         {lessons.map((lesson) => (
           <LessonCard
             key={lesson.id}
-            youtubeId={lesson.youtubeId}
+            youtubeId={lesson.youtubeId?.[locale]}
             title={lesson.title[locale]}
             desc={lesson.desc[locale]}
-            minutes={lesson.minutes}
             coming={t.learn.coming}
             watch={t.learn.watch}
-            minLabel={t.learn.minutes}
           />
         ))}
       </div>
