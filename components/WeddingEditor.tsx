@@ -18,8 +18,76 @@ type EditorContext = {
   invitation: Invitation;
   onChange?: InvitePatch;
   register: (part: WeddingPartInfo) => void;
+  nextSectionIndex: () => number;
 };
 const Context = createContext<EditorContext | null>(null);
+
+// Reveal-on-scroll for guest-facing invitations: each section observes the
+// viewport once, then every element inside cascades in with a short delay
+// based on its order. The entrance style (fade/slide/zoom/rotate/blur) is
+// picked per element so the page doesn't look like one animation repeated,
+// and the slide direction for card-like blocks alternates both across
+// sections and from one card to the next within a section.
+const STAGGER_STEP_MS = 120;
+const STAGGER_MAX_STEPS = 6;
+type StaggerContextValue = { visible: boolean; sectionSide: 0 | 1; nextIndex: () => number };
+const StaggerContext = createContext<StaggerContextValue | null>(null);
+
+function SectionReveal({ sectionSide, children }: { sectionSide: 0 | 1; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const counter = useRef(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const value = useMemo<StaggerContextValue>(() => ({ visible, sectionSide, nextIndex: () => counter.current++ }), [visible, sectionSide]);
+  return (
+    <div ref={ref} className={`rv-fade ${visible ? "is-in" : ""}`}>
+      <StaggerContext.Provider value={value}>{children}</StaggerContext.Provider>
+    </div>
+  );
+}
+
+function isHeadingLike(kind: WeddingPartInfo["kind"], id: string, className: string): boolean {
+  if (kind !== "text") return false;
+  if (/-title$|-heading$|-overline$|(^|-)names$/.test(id)) return true;
+  const size = className.match(/text-\[(\d+)px\]/);
+  return !!size && Number(size[1]) >= 16;
+}
+
+function pickRevealVariant(kind: WeddingPartInfo["kind"], id: string, className: string, side: 0 | 1): string {
+  if (/^(decoration|ornament|mountains|heart)\b/.test(id)) return "rv-blur";
+  if (kind === "image") return "rv-zoom";
+  if (kind === "widget") return "rv-scale";
+  if (kind === "decoration") return "rv-blur";
+  if (/wish|review|testimonial|quote/i.test(id)) return "rv-rotate";
+  if (isHeadingLike(kind, id, className)) return "rv-down";
+  if (kind === "block") return side === 0 ? "rv-left" : "rv-right";
+  return "rv-fade";
+}
+
+function useReveal(kind: WeddingPartInfo["kind"], id: string, className: string): { className: string; style?: CSSProperties } {
+  const ctx = useContext(StaggerContext);
+  const indexRef = useRef<number | null>(null);
+  if (ctx && indexRef.current === null) indexRef.current = ctx.nextIndex();
+  if (!ctx || indexRef.current === null) return { className: "" };
+  const side: 0 | 1 = (ctx.sectionSide + indexRef.current) % 2 === 0 ? 0 : 1;
+  const variant = pickRevealVariant(kind, id, className, side);
+  const delay = Math.min(indexRef.current, STAGGER_MAX_STEPS) * STAGGER_STEP_MS;
+  return { className: `${variant} ${ctx.visible ? "is-in" : ""}`, style: { transitionDelay: `${delay}ms` } };
+}
 
 export function WeddingEditor({ invitation, onChange, selected: controlledSelected, onSelect, onPartsChange, locale, children }: {
   invitation: Invitation; onChange?: InvitePatch; selected?: string | null; onSelect?: (id: string | null) => void; onPartsChange?: (parts: WeddingPartInfo[]) => void; locale: string; children: ReactNode;
@@ -35,7 +103,9 @@ export function WeddingEditor({ invitation, onChange, selected: controlledSelect
     });
   }, []);
   const select = useCallback((id: string | null) => { setLocalSelected(id); onSelect?.(id); }, [onSelect]);
-  const context = useMemo(() => ({ invitation, onChange, register, locale }), [invitation, onChange, register, locale]);
+  const sectionCounter = useRef(0);
+  const nextSectionIndex = useCallback(() => sectionCounter.current++, []);
+  const context = useMemo(() => ({ invitation, onChange, register, locale, nextSectionIndex }), [invitation, onChange, register, locale, nextSectionIndex]);
   useEffect(() => { onPartsChange?.(parts); }, [parts, onPartsChange]);
   return (
     <Context.Provider value={context}>
@@ -52,7 +122,7 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
 }) {
   const context = useContext(Context);
   if (!context) throw new Error("WeddingPart requires WeddingEditor");
-  const { invitation, onChange, register, locale } = context;
+  const { invitation, onChange, register, locale, nextSectionIndex } = context;
   const imageInputRef = useRef<HTMLInputElement>(null);
   const imageDownPos = useRef<{ x: number; y: number } | null>(null);
   const translatedFallback = fallback === undefined ? undefined : invitationText(fallback, locale);
@@ -77,7 +147,11 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const rawValue = weddingValue(invitation, { id, label, kind, fallback, field, slot });
   const restored = restoredTemplateImage(crop);
   const value = kind === "text" ? invitationText(rawValue, locale) : rawValue;
-  return (
+  const revealSection = !onChange && kind === "block" && id.startsWith("section-");
+  const sectionSideRef = useRef<0 | 1 | null>(null);
+  if (revealSection && sectionSideRef.current === null) sectionSideRef.current = (nextSectionIndex() % 2) as 0 | 1;
+  const reveal = useReveal(kind, id, className);
+  const rendered = (
     <Selectable flat id={id} className={onChange ? className.replaceAll("overflow-hidden", "overflow-visible") : className} style={partStyle}>
       {kind === "text" ? onChange ? (
         <WeddingInlineText
@@ -136,6 +210,9 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
       ) : children}
     </Selectable>
   );
+  if (revealSection) return <SectionReveal sectionSide={sectionSideRef.current ?? 0}>{rendered}</SectionReveal>;
+  if (reveal.className) return <div className={reveal.className} style={reveal.style}>{rendered}</div>;
+  return rendered;
 }
 
 function WeddingInlineText({ dataId, value, placeholder, onChange }: {

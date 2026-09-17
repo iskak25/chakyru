@@ -86,20 +86,10 @@ export type SearchTrack = {
 export async function searchOnlineMusic(query: string): Promise<SearchTrack[]> {
   const q = query.trim();
   if (!q || /^https?:\/\//i.test(q)) return [];
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=20`;
-  const res = await fetch(url);
+  const res = await fetch(`/api/music/search?q=${encodeURIComponent(q)}`);
   if (!res.ok) return [];
-  const data = (await res.json()) as {
-    results?: { trackId: number; trackName: string; artistName: string; previewUrl?: string }[];
-  };
-  return (data.results ?? [])
-    .filter((item) => item.previewUrl)
-    .map((item) => ({
-      id: String(item.trackId),
-      title: item.trackName,
-      artist: item.artistName,
-      url: item.previewUrl as string,
-    }));
+  const data = (await res.json()) as { results?: SearchTrack[] };
+  return data.results ?? [];
 }
 
 export function youtubeId(url: string): string | null {

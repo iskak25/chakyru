@@ -939,6 +939,83 @@ textarea {
   transform: none;
 }
 
+/* Reveal-on-scroll variants: each picks a different entrance so a page of
+   many elements doesn't look like one repeated fade. All animate only
+   opacity/transform/filter (GPU-friendly) and settle within 0.4-0.8s. */
+.rv-fade,
+.rv-up,
+.rv-down,
+.rv-left,
+.rv-right,
+.rv-zoom,
+.rv-scale,
+.rv-rotate,
+.rv-blur {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.rv-fade {
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-up {
+  transform: translateY(26px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-down {
+  transform: translateY(-22px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-left {
+  transform: translateX(38px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-right {
+  transform: translateX(-38px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-zoom {
+  transform: scale(0.92);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-scale {
+  transform: scale(0.9);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-rotate {
+  transform: rotate(-3deg) scale(0.96);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-blur {
+  filter: blur(10px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rv-fade.is-in,
+.rv-up.is-in,
+.rv-down.is-in,
+.rv-left.is-in,
+.rv-right.is-in,
+.rv-zoom.is-in,
+.rv-scale.is-in,
+.rv-rotate.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.rv-blur.is-in {
+  opacity: 1;
+  filter: blur(0);
+}
+
 .fam-rom-arch {
   border-radius: 0 0 50% 50% / 0 0 22% 22%;
 }
@@ -1294,9 +1371,28 @@ textarea {
   }
 
   .fam-reveal,
-  .fam-reveal.is-in {
+  .fam-reveal.is-in,
+  .rv-fade,
+  .rv-up,
+  .rv-down,
+  .rv-left,
+  .rv-right,
+  .rv-zoom,
+  .rv-scale,
+  .rv-rotate,
+  .rv-blur,
+  .rv-fade.is-in,
+  .rv-up.is-in,
+  .rv-down.is-in,
+  .rv-left.is-in,
+  .rv-right.is-in,
+  .rv-zoom.is-in,
+  .rv-scale.is-in,
+  .rv-rotate.is-in,
+  .rv-blur.is-in {
     opacity: 1;
     transform: none;
+    filter: none;
     transition: none;
   }
 

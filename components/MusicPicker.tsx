@@ -41,6 +41,7 @@ export function MusicPicker({
   const [error, setError] = useState("");
 
   const current = useMemo(() => musicLabel(value, locale), [value, locale]);
+  const searching = mode === "online" && query.trim().length >= 2 && !isLink(query);
 
   function chooseTrack(url: string) {
     preview.current?.pause();
@@ -164,8 +165,13 @@ export function MusicPicker({
               {locale === "ru" ? "Поиск…" : "Издөө…"}
             </p>
           ) : null}
+          {searching && !loading && hits.length === 0 ? (
+            <p className="text-[11px] text-ink-soft">
+              {locale === "ru" ? "Ничего не найдено." : "Эч нерсе табылган жок."}
+            </p>
+          ) : null}
           <div className="max-h-64 space-y-1 overflow-y-auto">
-            {[...ONLINE_TRACKS].sort((a, b) => Number(!!eventType && !!b.events?.includes(eventType)) - Number(!!eventType && !!a.events?.includes(eventType))).map((track) => {
+            {searching ? null : [...ONLINE_TRACKS].sort((a, b) => Number(!!eventType && !!b.events?.includes(eventType)) - Number(!!eventType && !!a.events?.includes(eventType))).map((track) => {
               const on = value === track.url;
               const name = locale === "ru" ? track.ru : track.ky;
               return (
