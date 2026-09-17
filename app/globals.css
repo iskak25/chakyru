@@ -940,8 +940,16 @@ textarea {
 }
 
 /* Reveal-on-scroll variants: each picks a different entrance so a page of
-   many elements doesn't look like one repeated fade. All animate only
-   opacity/transform/filter (GPU-friendly) and settle within 0.4-0.8s. */
+   many elements doesn't look like one repeated fade. These are applied
+   directly to invitation elements that may themselves be absolutely
+   positioned (full-bleed photos, decorations) or already carry a `transform`
+   for canvas drag placement, so the entrance motion uses the individual
+   `translate`/`scale`/`rotate` properties instead of the `transform`
+   shorthand: they compose with an existing `transform` instead of
+   overwriting it, and — unlike wrapping the element in an extra positioned
+   ancestor — leave its own containing block untouched. Only opacity/filter/
+   these individual transform properties are animated (GPU-friendly),
+   settling within 0.4-0.8s. */
 .rv-fade,
 .rv-up,
 .rv-down,
@@ -952,7 +960,6 @@ textarea {
 .rv-rotate,
 .rv-blur {
   opacity: 0;
-  will-change: opacity, transform;
 }
 
 .rv-fade {
@@ -960,38 +967,39 @@ textarea {
 }
 
 .rv-up {
-  transform: translateY(26px);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  translate: 0 26px;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), translate 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-down {
-  transform: translateY(-22px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  translate: 0 -22px;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), translate 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-left {
-  transform: translateX(38px);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  translate: 38px 0;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), translate 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-right {
-  transform: translateX(-38px);
-  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  translate: -38px 0;
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), translate 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-zoom {
-  transform: scale(0.92);
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  scale: 0.92;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), scale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-scale {
-  transform: scale(0.9);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  scale: 0.9;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), scale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-rotate {
-  transform: rotate(-3deg) scale(0.96);
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  rotate: -3deg;
+  scale: 0.96;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), rotate 0.6s cubic-bezier(0.16, 1, 0.3, 1), scale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .rv-blur {
@@ -1008,7 +1016,9 @@ textarea {
 .rv-scale.is-in,
 .rv-rotate.is-in {
   opacity: 1;
-  transform: none;
+  translate: none;
+  scale: none;
+  rotate: none;
 }
 
 .rv-blur.is-in {
@@ -1391,7 +1401,9 @@ textarea {
   .rv-rotate.is-in,
   .rv-blur.is-in {
     opacity: 1;
-    transform: none;
+    translate: none;
+    scale: none;
+    rotate: none;
     filter: none;
     transition: none;
   }

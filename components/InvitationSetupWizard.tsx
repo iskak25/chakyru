@@ -34,11 +34,13 @@ export function InvitationSetupWizard({
 }) {
   const { t } = useI18n();
   const s = t.setup;
+  const isWedding = invitation.eventType === "wedding";
   const [step, setStep] = useState<(typeof STEPS)[number]>(1);
   const [eventTitle, setEventTitle] = useState(invitation.copy?.eventTitle ?? "");
   const initialNames = splitNames(invitation.names);
   const [groom, setGroom] = useState(initialNames.groom);
   const [bride, setBride] = useState(initialNames.bride);
+  const [soloName, setSoloName] = useState(invitation.names || "");
   const [date, setDate] = useState(invitation.date || "");
   const [time, setTime] = useState(invitation.time || "");
   const [city, setCity] = useState(invitation.city || "");
@@ -46,7 +48,7 @@ export function InvitationSetupWizard({
   const [mapUrl, setMapUrl] = useState(invitation.mapUrl || "");
   const [hosts, setHosts] = useState(invitation.hosts || "");
 
-  const canNext1 = groom.trim().length > 0 && bride.trim().length > 0;
+  const canNext1 = isWedding ? groom.trim().length > 0 && bride.trim().length > 0 : soloName.trim().length > 0;
   const canNext2 = date.trim().length > 0 && time.trim().length > 0;
   const canNext3 = city.trim().length > 0 && address.trim().length > 0;
   const canNext4 = hosts.trim().length > 0;
@@ -55,7 +57,7 @@ export function InvitationSetupWizard({
   function finish() {
     if (!canFinish) return;
     onComplete({
-      names: `${groom.trim()} & ${bride.trim()}`,
+      names: isWedding ? `${groom.trim()} & ${bride.trim()}` : soloName.trim(),
       date,
       time,
       city: city.trim(),
@@ -68,7 +70,7 @@ export function InvitationSetupWizard({
 
   const previewGreeting = [
     hosts.trim() || s.hostsPh,
-    `${groom.trim() || s.groomPh} & ${bride.trim() || s.bridePh}`,
+    isWedding ? `${groom.trim() || s.groomPh} & ${bride.trim() || s.bridePh}` : soloName.trim() || s.singleNamePh[invitation.eventType],
     [city.trim(), address.trim()].filter(Boolean).join(", "),
     [date, time].filter(Boolean).join(" · "),
   ].filter(Boolean);
@@ -108,14 +110,23 @@ export function InvitationSetupWizard({
                 <span className={labelCss}>{s.eventTitleLabel}</span>
                 <input className={inputCss} value={eventTitle} onChange={(e) => setEventTitle(e.target.value)} placeholder={s.eventTitlePh} />
               </label>
-              <label className="block space-y-1.5">
-                <span className={labelCss}>{s.groomLabel} *</span>
-                <input className={inputCss} value={groom} onChange={(e) => setGroom(e.target.value)} placeholder={s.groomPh} />
-              </label>
-              <label className="block space-y-1.5">
-                <span className={labelCss}>{s.brideLabel} *</span>
-                <input className={inputCss} value={bride} onChange={(e) => setBride(e.target.value)} placeholder={s.bridePh} />
-              </label>
+              {isWedding ? (
+                <>
+                  <label className="block space-y-1.5">
+                    <span className={labelCss}>{s.groomLabel} *</span>
+                    <input className={inputCss} value={groom} onChange={(e) => setGroom(e.target.value)} placeholder={s.groomPh} />
+                  </label>
+                  <label className="block space-y-1.5">
+                    <span className={labelCss}>{s.brideLabel} *</span>
+                    <input className={inputCss} value={bride} onChange={(e) => setBride(e.target.value)} placeholder={s.bridePh} />
+                  </label>
+                </>
+              ) : (
+                <label className="block space-y-1.5">
+                  <span className={labelCss}>{s.singleNameLabel[invitation.eventType]} *</span>
+                  <input className={inputCss} value={soloName} onChange={(e) => setSoloName(e.target.value)} placeholder={s.singleNamePh[invitation.eventType]} />
+                </label>
+              )}
             </div>
           ) : null}
 

@@ -43,7 +43,7 @@ const seedTemplates: InvitationTemplate[] = [
     name: { ky: "Бешик нур", ru: "Свет колыбели" },
     designer: "Studio Nur",
     format: "photo",
-    priceSom: 250,
+    priceSom: 199,
     eventTypes: ["beshik", "birthday"],
     style: style(
       "linear-gradient(165deg, #3d4a2c 0%, #1e2616 100%)",
@@ -58,7 +58,7 @@ const seedTemplates: InvitationTemplate[] = [
     name: { ky: "nike", ru: "nike" },
     designer: "Studio Nur",
     format: "photo",
-    priceSom: 250,
+    priceSom: 199,
     eventTypes: ["wedding"],
     style: style(
       "linear-gradient(165deg, #4a6a8a 0%, #243848 100%)",
@@ -73,7 +73,7 @@ const seedTemplates: InvitationTemplate[] = [
     name: { ky: "Ак жоолук", ru: "Белый платок" },
     designer: "Meerim Design",
     format: "photo",
-    priceSom: 250,
+    priceSom: 199,
     eventTypes: ["wedding", "kyz", "toi"],
     style: style(
       "linear-gradient(165deg, #f3e6d8 0%, #c9b49a 100%)",
@@ -88,7 +88,7 @@ const seedTemplates: InvitationTemplate[] = [
     name: { ky: "Минимал", ru: "Минимал" },
     designer: "Toichakyru Studio",
     format: "photo",
-    priceSom: 250,
+    priceSom: 199,
     eventTypes: ["wedding", "birthday", "anniversary"],
     style: style(
       "linear-gradient(165deg, #f7f4ef 0%, #e4ddd2 100%)",
@@ -103,7 +103,7 @@ const seedTemplates: InvitationTemplate[] = [
     name: { ky: "Кыз узатуу", ru: "Кыз узатуу" },
     designer: "Meerim Design",
     format: "photo",
-    priceSom: 250,
+    priceSom: 199,
     eventTypes: ["kyz", "wedding"],
     style: style(
       "linear-gradient(165deg, #8a3a4a 0%, #4a1c28 100%)",
@@ -130,13 +130,13 @@ const seedTemplates: InvitationTemplate[] = [
 ];
 
 const FORMAT_PRICE = {
-  photo: { priceSom: 250 },
-  site3d: { priceSom: 590 },
+  photo: { priceSom: 199 },
+  site3d: { priceSom: 990 },
 } as const;
 
 export const FREE_TEMPLATE_IDS = new Set<string>([]);
 
-/** Keep these at the seed price instead of the format default (590 for site3d). */
+/** Keep these at the seed price instead of the format default (990 for site3d). */
 const SEED_PRICE_IDS = new Set<string>([]);
 
 export function isFreeTemplate(templateId: string, basePrice?: number) {
@@ -154,7 +154,7 @@ function applyCatalogPrices(list: InvitationTemplate[]): InvitationTemplate[] {
 
 export function pickStoredPrice(live: number | undefined, seed: number, templateId?: string, format?: InviteFormat) {
   if (templateId && SEED_PRICE_IDS.has(templateId)) {
-    const formatDefault = format ? FORMAT_PRICE[format].priceSom : 590;
+    const formatDefault = format ? FORMAT_PRICE[format].priceSom : FORMAT_PRICE.site3d.priceSom;
     if (typeof live !== "number" || !Number.isFinite(live) || live < 0 || live === formatDefault) {
       return seed;
     }

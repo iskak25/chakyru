@@ -151,8 +151,11 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const sectionSideRef = useRef<0 | 1 | null>(null);
   if (revealSection && sectionSideRef.current === null) sectionSideRef.current = (nextSectionIndex() % 2) as 0 | 1;
   const reveal = useReveal(kind, id, className);
+  const baseClassName = onChange ? className.replaceAll("overflow-hidden", "overflow-visible") : className;
+  const finalClassName = reveal.className ? `${baseClassName} ${reveal.className}`.trim() : baseClassName;
+  const finalStyle: CSSProperties = reveal.style ? { ...partStyle, ...reveal.style } : partStyle;
   const rendered = (
-    <Selectable flat id={id} className={onChange ? className.replaceAll("overflow-hidden", "overflow-visible") : className} style={partStyle}>
+    <Selectable flat id={id} className={finalClassName} style={finalStyle}>
       {kind === "text" ? onChange ? (
         <WeddingInlineText
           dataId={id}
@@ -211,7 +214,6 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
     </Selectable>
   );
   if (revealSection) return <SectionReveal sectionSide={sectionSideRef.current ?? 0}>{rendered}</SectionReveal>;
-  if (reveal.className) return <div className={reveal.className} style={reveal.style}>{rendered}</div>;
   return rendered;
 }
 
