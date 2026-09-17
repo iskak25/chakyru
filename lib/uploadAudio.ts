@@ -3,8 +3,8 @@ import { firebaseIdToken } from "./firebase";
 
 export async function uploadInvitationAudio(file: File, locale: string): Promise<string> {
   const ru = locale === "ru";
-  if (!file.size || file.size > 4 * 1024 * 1024 || !/\.(mp3|m4a|ogg|wav)$/i.test(file.name)) {
-    throw new Error(ru ? "Выберите MP3, M4A, OGG или WAV размером до 4 МБ." : "4 МБ чейин MP3, M4A, OGG же WAV файлын тандаңыз.");
+  if (!file.size || file.size > 10 * 1024 * 1024 || !/\.(mp3|m4a|ogg|wav)$/i.test(file.name)) {
+    throw new Error(ru ? "Выберите MP3, M4A, OGG или WAV размером до 10 МБ." : "10 МБ чейин MP3, M4A, OGG же WAV файлын тандаңыз.");
   }
   const token = await firebaseIdToken();
   if (!token) throw new Error(ru ? "Войдите в аккаунт, чтобы загрузить музыку." : "Музыка жүктөө үчүн аккаунтка кириңиз.");

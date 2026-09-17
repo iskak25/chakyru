@@ -5,7 +5,7 @@ import { sessionFromBearer } from "@/lib/firebaseToken";
 import { getAdminStorageBucket } from "@/lib/firebaseAdmin";
 
 export const runtime = "nodejs";
-const MAX_AUDIO_SIZE = 4 * 1024 * 1024;
+const MAX_AUDIO_SIZE = 10 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
   const session = await sessionFromBearer(req.headers.get("authorization"));
@@ -21,7 +21,9 @@ export async function POST(req: NextRequest) {
     const format = bytes.toString("ascii", 0, 3) === "ID3" || (bytes[0] === 255 && (bytes[1] & 0xe6) === 0xe2) ? { mime: "audio/mpeg", ext: "mp3" }
       : bytes.toString("ascii", 0, 4) === "OggS" ? { mime: "audio/ogg", ext: "ogg" }
       : bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WAVE" ? { mime: "audio/wav", ext: "wav" }
-      : bytes.toString("ascii", 4, 8) === "ftyp" && ["M4A ", "M4B "].includes(bytes.toString("ascii", 8, 12)) ? { mime: "audio/mp4", ext: "m4a" } : null;
+      // Real M4A files vary in the ftyp major_brand: Apple's encoders write "M4A ", but common
+      // Android recorders and ffmpeg builds write generic MP4 brands like "isom"/"mp42" instead.
+      : bytes.toString("ascii", 4, 8) === "ftyp" && ["M4A ", "M4B ", "isom", "iso2", "mp41", "mp42"].includes(bytes.toString("ascii", 8, 12)) ? { mime: "audio/mp4", ext: "m4a" } : null;
     if (!format) return NextResponse.json({ error: "format" }, { status: 400 });
     const stored = bucket.file(`invitation-audio/${encodeURIComponent(session.uid)}/${randomUUID()}.${format.ext}`);
     await stored.save(bytes, { resumable: false, metadata: { contentType: format.mime, cacheControl: "public,max-age=31536000,immutable", metadata: { firebaseStorageDownloadTokens: randomUUID() } } });

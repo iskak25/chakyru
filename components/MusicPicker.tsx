@@ -236,7 +236,7 @@ export function MusicPicker({
       ) : (
         <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-ink/15 px-3 py-4 text-xs">
           <Smartphone size={14} />
-          {uploading ? (locale === "ru" ? "Загрузка…" : "Жүктөлүүдө…") : `${labels.pickFile} (MP3, M4A, OGG, WAV · 4 МБ)`}
+          {uploading ? (locale === "ru" ? "Загрузка…" : "Жүктөлүүдө…") : `${labels.pickFile} (MP3, M4A, OGG, WAV · 10 МБ)`}
           <input
             type="file"
             accept=".mp3,.m4a,.ogg,.wav,audio/*"

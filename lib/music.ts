@@ -5,15 +5,18 @@ function wikiMp3(dir: string, file: string) {
   return `https://upload.wikimedia.org/wikipedia/commons/transcoded/${dir}/${enc}/${enc}.mp3`;
 }
 
-export const ONLINE_TRACKS: { id: string; ky: string; ru: string; url: string; events?: EventType[] }[] = [
+export const ONLINE_TRACKS: { id: string; ky: string; ru: string; url: string; source?: string; events?: EventType[] }[] = [
   {
     id: "sadyraliev-eki-zhas",
     ky: "Эки жаш · Султан Садыралиев",
     ru: "Эки жаш · Султан Садыралиев",
-    url: "https://www.super.kg/media/download/99449",
+    // super.kg claims Accept-Ranges but ignores the Range header, which breaks <audio> seeking/loading
+    // in most browsers, so this (and the track below) are streamed through /api/music/proxy instead.
+    url: "/api/music/proxy?id=sadyraliev-eki-zhas",
+    source: "https://www.super.kg/media/download/99449",
     events: ["toi", "wedding"],
   },
-  { id: "kyz-uzatuu", ky: "Кыз узатуу · Роза Шакирова", ru: "Кыз узатуу · Роза Шакирова", url: "https://www.super.kg/media/download/152669", events: ["kyz"] },
+  { id: "kyz-uzatuu", ky: "Кыз узатуу · Роза Шакирова", ru: "Кыз узатуу · Роза Шакирова", url: "/api/music/proxy?id=kyz-uzatuu", source: "https://www.super.kg/media/download/152669", events: ["kyz"] },
   { id: "bachelorette-party", ky: "Девочка гуляет · Хабиб", ru: "Девочка гуляет · Хабиб", url: "https://muzem.net/uploads/music/2024/02/Habib_Devochka_gulyaet.mp3", events: ["bachelorette"] },
   { id: "beshik-yry", ky: "Бешик ыры · Салтанат Аширова", ru: "Бешик ыры · Салтанат Аширова", url: "https://kyrgyz-audio.com/wp-content/uploads/mp3/a_153837.mp3", events: ["beshik", "jentek"] },
   { id: "tushoo-kesuu", ky: "Тушоо кесүү · Айпери Кулбаева", ru: "Тушоо кесүү · Айпери Кулбаева", url: "https://kyrgyz-audio.com/wp-content/uploads/mp3/a_275911.mp3", events: ["tushoo"] },
