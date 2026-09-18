@@ -193,6 +193,7 @@ function EditorPageInner() {
             stockMore: t.editor.stockMore,
             stockCredit: t.editor.stockCredit,
             anim: t.editor.anim,
+            save: t.editor.save,
           }}
         />
         <div className="min-w-0 flex-1 px-4 py-6">

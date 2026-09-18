@@ -129,6 +129,7 @@ export function EditorDock({
     stockMore: string;
     stockCredit: string;
     anim: string;
+    save: string;
   };
   speak?: (text: string) => void;
 }) {
@@ -655,6 +656,14 @@ export function EditorDock({
             />
           ) : null}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setTab(null)}
+            className="mt-3 w-full shrink-0 rounded-xl bg-espresso px-4 py-2.5 text-[11px] uppercase tracking-[0.12em] text-cream"
+          >
+            {labels.save}
+          </button>
         </div>
         {tab === "templates" && templatesDetail ? (
           <div className="absolute inset-y-0 left-[84px] z-20 flex w-[min(320px,calc(100vw-84px))] flex-col overflow-hidden border-r border-ink/10 bg-page p-3 md:static md:w-[320px]">

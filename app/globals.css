@@ -123,7 +123,7 @@ html {
     inset: auto 0 64px;
     z-index: 2;
     width: 100% !important;
-    max-height: min(68svh, 560px);
+    height: min(68svh, 560px) !important;
     border-right: 0;
     border-top: 1px solid var(--line);
     padding: 1rem;

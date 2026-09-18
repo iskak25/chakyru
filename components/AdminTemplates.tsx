@@ -288,6 +288,7 @@ export function AdminTemplates() {
     stockMore: t.editor.stockMore,
     stockCredit: t.editor.stockCredit,
     anim: t.editor.anim,
+    save: t.editor.save,
   };
 
   return (
