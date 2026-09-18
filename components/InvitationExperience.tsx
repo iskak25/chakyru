@@ -24,6 +24,8 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
   const [audioError, setAudioError] = useState(false);
   const src = effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType);
   const yt = youtubeId(src);
+  const trimStart = invitation.musicStart || 0;
+  const trimEnd = invitation.musicEnd;
   const ru = locale === "ru";
 
   const play = useCallback(() => {
@@ -69,21 +71,47 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
       if (disposed) return;
       player = new api.Player(mount, {
         videoId: yt, host: "https://www.youtube-nocookie.com", width: 240, height: 200,
-        playerVars: { autoplay: 0, playsinline: 1, controls: 1, loop: 1, playlist: yt, origin: window.location.origin },
+        playerVars: trimEnd != null
+          ? { autoplay: 0, playsinline: 1, controls: 1, origin: window.location.origin, start: Math.floor(trimStart), end: Math.floor(trimEnd) }
+          : { autoplay: 0, playsinline: 1, controls: 1, loop: 1, playlist: yt, origin: window.location.origin },
         events: {
           onReady: event => {
             if (disposed) return;
             youtubePlayer.current = event.target;
             if (desired.current) event.target.playVideo();
           },
-          onStateChange: event => { if (!disposed) setPlaying(event.data === 1); },
+          onStateChange: event => {
+            if (disposed) return;
+            setPlaying(event.data === 1);
+            // With a trimmed end, YouTube "ends" the video there instead of looping it.
+            if (trimEnd != null && event.data === 0) { youtubePlayer.current?.seekTo(trimStart, true); youtubePlayer.current?.playVideo(); }
+          },
           onError: () => { if (!disposed) { setPlaying(false); setAudioError(true); } },
           onAutoplayBlocked: () => { if (!disposed) { desired.current = false; setPlaying(false); } },
         },
       });
     }).catch(() => { if (!disposed) setAudioError(true); });
     return () => { disposed = true; youtubePlayer.current = null; player?.destroy(); host.replaceChildren(); };
-  }, [yt]);
+  }, [yt, trimStart, trimEnd]);
+
+  // With a trimmed end, native `loop` restarts at 0 instead of `trimStart`, so the
+  // range is looped manually via timeupdate instead.
+  useEffect(() => {
+    if (yt) return;
+    const el = audio.current;
+    if (!el) return;
+    const seek = () => { if (trimStart) el.currentTime = trimStart; };
+    if (el.readyState >= 1) seek();
+    else el.addEventListener("loadedmetadata", seek, { once: true });
+    function onTime() {
+      if (trimEnd != null && el!.currentTime >= trimEnd) el!.currentTime = trimStart;
+    }
+    el.addEventListener("timeupdate", onTime);
+    return () => {
+      el.removeEventListener("loadedmetadata", seek);
+      el.removeEventListener("timeupdate", onTime);
+    };
+  }, [src, trimStart, trimEnd, yt]);
 
   useEffect(() => {
     if (!opened || !scrolling || !root.current) return;
@@ -125,7 +153,7 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
   }, [opened, scrolling, embedded]);
 
   return <div ref={root} className={`${css.root} ${embedded ? css.embedded : ""}`} data-invitation-experience>
-    {src && !yt && <audio ref={audio} src={src} loop playsInline preload="auto" onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { setPlaying(false); setAudioError(true); }} />}
+    {src && !yt && <audio ref={audio} src={src} loop={trimEnd == null} playsInline preload="auto" onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { setPlaying(false); setAudioError(true); }} />}
     {yt && <div ref={youtubeHost} className={css.youtube} style={{ visibility: opened ? "visible" : "hidden" }} data-export-hide />}
     {intro ? <EnvelopeIntro variant={variant} names={invitation.names} date={invitation.date} locale={locale} embedded={embedded} onOpen={play} onOpened={reveal}>{children}</EnvelopeIntro> : children}
     {opened && <div className={css.controls} data-invitation-controls data-export-hide>

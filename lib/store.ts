@@ -156,7 +156,9 @@ function queueInvitationSync(invitation: Invitation) {
             ? "pending"
             : result.reason === "owner"
               ? "forbidden"
-              : "error";
+              : result.reason === "expired"
+                ? "expired"
+                : "error";
         window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state } }));
       })
       .catch(() => {

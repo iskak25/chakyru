@@ -98,7 +98,7 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
       </div>
     </WeddingEditor>
     {musicSrc ? <>
-      <InviteAudio src={musicSrc} playing={playing} />
+      <InviteAudio src={musicSrc} playing={playing} start={inv.musicStart} end={inv.musicEnd} />
       <button
         type="button"
         data-export-hide

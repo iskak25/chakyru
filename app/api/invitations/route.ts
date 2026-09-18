@@ -47,6 +47,7 @@ export async function PUT(req: NextRequest) {
     existing: Boolean(existing),
     owns,
     accessAllowed: access.allowed,
+    accessExpired: access.expired,
   });
 
   console.info("[INVITATION_UPDATE]", {

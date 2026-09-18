@@ -15,6 +15,8 @@ export type TemplateAccessResponse = {
   accessType: TemplateAccessType | null;
   owned: boolean;
   isFree: boolean;
+  expired: boolean;
+  expiresAt: string | null;
   price: number | null;
 };
 

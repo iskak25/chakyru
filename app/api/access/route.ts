@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
         accessType: access.accessType,
         owned: access.owned,
         isFree: access.isFree,
+        expired: access.expired,
+        expiresAt: access.expiresAt,
         price,
       },
       { headers: { "cache-control": "no-store" } },

@@ -462,7 +462,7 @@ export function Site3D({
 
       {musicSrc ? (
         <>
-          <InviteAudio src={musicSrc} audioRef={audioRef} playing={playing} />
+          <InviteAudio src={musicSrc} audioRef={audioRef} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
           {open && !opening ? (
             <button
               type="button"

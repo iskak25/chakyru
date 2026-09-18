@@ -139,7 +139,7 @@ export function ReferenceWedding({ invitation, design, locale, onChange, selecte
   return <div className={`${css.root} ${css[d]}`} style={{ "--ref-paper": invitation.blockColors?.page || design.paper, "--ref-ink": design.ink, "--ref-accent": design.accent } as CSSProperties} data-reference-design={d}>
     <WeddingEditor invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale}>{content}</WeddingEditor>
     {musicSrc ? <>
-      <InviteAudio src={musicSrc} playing={playing} />
+      <InviteAudio src={musicSrc} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
       <button
         type="button"
         onClick={() => setPlaying(p => !p)}

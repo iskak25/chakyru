@@ -7,6 +7,7 @@ import {
   canUserAccessTemplateFromFacts,
   isPaidPurchaseStatus,
   resolveTemplatePriceForUser,
+  templateAccessExpiresAt,
   userTemplatePriceId,
 } from "./accessLogic";
 import { getCatalogBasePrice, getCatalogTemplate } from "./templates";
@@ -14,11 +15,11 @@ import { loadUserProfile } from "./users";
 
 export { canUserAccessTemplateFromFacts, resolveTemplatePriceForUser };
 
-async function hasTemplateAccessDoc(uid: string, templateId: string) {
+async function getTemplateAccessDoc(uid: string, templateId: string): Promise<TemplateAccess | null> {
   const db = getAdminDb();
-  if (!db) return false;
+  if (!db) return null;
   const snap = await db.collection("users").doc(uid).collection("templateAccess").doc(templateId).get();
-  return snap.exists;
+  return snap.exists ? (snap.data() as TemplateAccess) : null;
 }
 
 function purchaseMatchesTemplate(
@@ -55,6 +56,9 @@ async function hasPaidTemplatePurchase(uid: string, templateId: string) {
 export async function ensurePaidTemplateAccess(uid: string, templateId: string, email?: string) {
   let access = await canUserAccessTemplate(uid, templateId, email);
   if (access.allowed) return access;
+  // Access already granted once and now past its 2-week window — never self-heal/renew it from
+  // here just because someone loaded the editor or hit save; only a fresh purchase renews it.
+  if (access.expired) return access;
   const paid = (await listUserCommerceDocs(uid)).find((doc) =>
     purchaseMatchesTemplate(doc.data() as { templateId?: string; status?: string; plan?: string }, templateId),
   );
@@ -73,10 +77,13 @@ export async function ensurePaidTemplateAccess(uid: string, templateId: string, 
 export async function canUserAccessTemplate(uid: string, templateId: string, email?: string) {
   const profile = await loadUserProfile(uid);
   const template = await getCatalogTemplate(templateId);
-  if (!template) return { allowed: false, accessType: null, owned: false, isFree: false, profile, template: null };
+  if (!template) {
+    return { allowed: false, accessType: null, expired: false, expiresAt: null, owned: false, isFree: false, profile, template: null };
+  }
   const basePrice = template?.priceSom ?? 0;
   const free = isFreeTemplate(templateId, basePrice);
-  const hasAccessDoc = await hasTemplateAccessDoc(uid, templateId);
+  const accessDoc = await getTemplateAccessDoc(uid, templateId);
+  const hasAccessDoc = Boolean(accessDoc);
   const hasLegacy = Boolean(profile?.templates?.includes(templateId));
   const hasPaid = await hasPaidTemplatePurchase(uid, templateId);
   const decision = canUserAccessTemplateFromFacts({
@@ -87,9 +94,12 @@ export async function canUserAccessTemplate(uid: string, templateId: string, ema
     isFreeTemplate: free,
     hasPaidPurchase: hasPaid,
     hasTemplateAccess: hasAccessDoc || hasLegacy,
+    templateAccessExpiresAt: accessDoc?.expiresAt ?? null,
   });
   return {
     ...decision,
+    expired: Boolean(decision.expired),
+    expiresAt: accessDoc?.expiresAt ?? null,
     owned: decision.accessType === "purchase" || hasAccessDoc || hasLegacy || hasPaid,
     isFree: free,
     profile,
@@ -130,6 +140,7 @@ export async function grantTemplateAccess(input: {
     accessType: input.accessType,
     purchaseId: input.purchaseId,
     grantedAt,
+    expiresAt: templateAccessExpiresAt(input.accessType, grantedAt),
   };
   const userRef = db.collection("users").doc(input.uid);
   const accessRef = userRef.collection("templateAccess").doc(input.templateId);

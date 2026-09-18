@@ -114,6 +114,7 @@ export type TemplateAccess = {
   accessType: TemplateAccessType;
   purchaseId?: string;
   grantedAt: string;
+  expiresAt?: string | null;
 };
 
 export type UserTemplatePrice = {
@@ -211,6 +212,9 @@ export type Invitation = {
   adultsOnly: boolean;
   music: boolean;
   musicUrl: string;
+  musicTitle?: string;
+  musicStart?: number;
+  musicEnd?: number;
   mapUrl: string;
   coverImage: string;
   layout: LayoutMap;

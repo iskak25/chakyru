@@ -91,6 +91,6 @@ export function AnniversaryInvite({ invitation: inv, design, locale, onChange, s
       {section("countdown", "До праздника", <>{text("countdown-label", tr("ДО НАШЕЙ ВСТРЕЧИ", "ЖОЛУГУШУУГА ЧЕЙИН"), css.overline)}<div className={css.timer}><PinterestTimer invitation={inv} locale={locale} /></div></>)}
       {section("footer", "Завершение", <>{title("footer", "Жду встречи!", "Жолугушууну күтөм!")}{text("footer-note", tr("С теплом и благодарностью", "Жылуу сезим жана ыраазычылык менен"))}{text("footer-name", design.names, css.signature, "names")}</>, css.footer)}
     </WeddingEditor>
-    {music && <><InviteAudio src={music} playing={playing} /><button type="button" data-export-hide className={css.music} aria-label={playing ? tr("Выключить музыку", "Музыканы өчүрүү") : tr("Включить музыку", "Музыканы күйгүзүү")} onClick={() => setPlaying(value => !value)}>{playing ? <Volume2 size={18} /> : <VolumeX size={18} />}</button></>}
+    {music && <><InviteAudio src={music} playing={playing} start={inv.musicStart} end={inv.musicEnd} /><button type="button" data-export-hide className={css.music} aria-label={playing ? tr("Выключить музыку", "Музыканы өчүрүү") : tr("Включить музыку", "Музыканы күйгүзүү")} onClick={() => setPlaying(value => !value)}>{playing ? <Volume2 size={18} /> : <VolumeX size={18} />}</button></>}
   </div>;
 }

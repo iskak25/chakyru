@@ -8,7 +8,7 @@ import type { Invitation } from "@/lib/types";
 const LIMIT = 40;
 const BURST_MS = 500;
 
-export type InviteSaveState = "idle" | "saving" | "saved" | "pending" | "forbidden" | "error";
+export type InviteSaveState = "idle" | "saving" | "saved" | "pending" | "forbidden" | "expired" | "error";
 
 export function useInviteHistory(id: string) {
   const [inv, setInv] = useState<Invitation | null>(() => getInvitation(id) ?? null);

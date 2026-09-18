@@ -34,6 +34,7 @@ function EditorPageInner() {
   const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [saving, setSaving] = useState(false);
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [expired, setExpired] = useState(false);
   const [showSetup, setShowSetup] = useState(searchParams.get("setup") === "1");
 
   function closeSetup() {
@@ -65,8 +66,11 @@ function EditorPageInner() {
         unlockPaidTemplate(inv.templateId, access.accessType === "pro" ? "pro" : "standard");
       }
       const user = getUser();
-      const paid = Boolean(access?.allowed || canEditTemplate(user, inv.templateId));
+      // Trust a successful server check fully (including a denial) — only fall back to the
+      // local/offline heuristic when the network call itself failed (access === null).
+      const paid = access ? access.allowed : canEditTemplate(user, inv.templateId);
       const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
+      setExpired(Boolean(access?.expired));
       setAllowed(Boolean(user?.auth === "google" && paid && mine));
       } finally { checking = false; }
     };
@@ -111,7 +115,7 @@ function EditorPageInner() {
         <div className="mx-auto max-w-[1400px] px-5 py-12">
           <p className="label">{t.formats[format]}</p>
           <h1 className="font-serif mt-2 text-4xl uppercase">{t.editor.title}</h1>
-          <p className="mt-4 max-w-md text-sm leading-7 text-ink-soft">{t.templateView.paywall}</p>
+          <p className="mt-4 max-w-md text-sm leading-7 text-ink-soft">{expired ? t.templateView.editExpired : t.templateView.paywall}</p>
           <Link
             href={`/templates/${encodeURIComponent(inv.templateId)}`}
             className="mt-6 inline-block bg-forest px-5 py-2 text-[11px] uppercase tracking-[0.14em] text-cream"
@@ -209,6 +213,8 @@ function EditorPageInner() {
                 <p className="mt-2 text-xs text-ink-soft">{t.editor.savePending}</p>
               ) : saveState === "forbidden" ? (
                 <p className="mt-2 text-xs text-ink-soft">{t.editor.saveForbidden}</p>
+              ) : saveState === "expired" ? (
+                <p className="mt-2 text-xs text-ink-soft">{t.editor.saveExpired}</p>
               ) : saveState === "error" ? (
                 <p className="mt-2 text-xs text-ink-soft">{t.editor.saveError}</p>
               ) : null}
@@ -237,7 +243,7 @@ function EditorPageInner() {
                   >
                     {t.editor.share}
                   </button>
-                  {shareOpen && <ShareInvitationDialog invitationId={inv.id} names={inv.names} locale={locale} onClose={() => setShareOpen(false)} />}
+                  {shareOpen && <ShareInvitationDialog invitation={inv} locale={locale} onClose={() => setShareOpen(false)} />}
                   <Link
                     href={`/i/${inv.id}`}
                     className="inline-flex h-10 items-center rounded-[12px] bg-espresso px-4 text-[11px] uppercase tracking-[0.12em] text-cream"

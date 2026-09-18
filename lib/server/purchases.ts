@@ -2,7 +2,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "../firebaseAdmin";
 import type { PlanId, Purchase, PurchaseSource, PurchaseStatus } from "../types";
 import { grantTemplateAccess } from "./access";
-import { isFinikSucceeded, isPaidPurchaseStatus, purchasePriceLocked } from "./accessLogic";
+import { isFinikSucceeded, isPaidPurchaseStatus, purchasePriceLocked, templateAccessExpiresAt } from "./accessLogic";
 import { grantProPeriod, hasActivePro } from "../proAccess";
 import { canonicalAccount } from "./users";
 
@@ -243,6 +243,7 @@ export async function fulfillPurchase(input: {
       }, { merge: true });
       if (templateId) tx.set(userRef.collection("templateAccess").doc(templateId), {
         templateId, accessType: "purchase", purchaseId: id, grantedAt: paidAt,
+        expiresAt: templateAccessExpiresAt("purchase", paidAt),
       }, { merge: true });
     }
     const paidPayload = {

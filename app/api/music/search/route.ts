@@ -2,16 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-type Track = { id: string; title: string; artist: string; url: string };
+type Track = { id: string; title: string; artist: string; url: string; cover?: string; duration?: number };
 
 async function searchDeezer(q: string): Promise<Track[]> {
   try {
     const res = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(q)}&limit=15`);
     if (!res.ok) return [];
-    const data = (await res.json()) as { data?: { id: number; title: string; preview?: string; artist?: { name?: string } }[] };
+    const data = (await res.json()) as {
+      data?: { id: number; title: string; preview?: string; duration?: number; artist?: { name?: string }; album?: { cover_medium?: string; cover_small?: string } }[];
+    };
     return (data.data ?? [])
       .filter((item) => item.preview)
-      .map((item) => ({ id: `deezer-${item.id}`, title: item.title, artist: item.artist?.name ?? "", url: item.preview as string }));
+      .map((item) => ({
+        id: `deezer-${item.id}`,
+        title: item.title,
+        artist: item.artist?.name ?? "",
+        url: item.preview as string,
+        cover: item.album?.cover_medium ?? item.album?.cover_small,
+        duration: item.duration,
+      }));
   } catch {
     return [];
   }
@@ -21,10 +30,19 @@ async function searchItunes(q: string): Promise<Track[]> {
   try {
     const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=15`);
     if (!res.ok) return [];
-    const data = (await res.json()) as { results?: { trackId: number; trackName: string; artistName: string; previewUrl?: string }[] };
+    const data = (await res.json()) as {
+      results?: { trackId: number; trackName: string; artistName: string; previewUrl?: string; artworkUrl100?: string; trackTimeMillis?: number }[];
+    };
     return (data.results ?? [])
       .filter((item) => item.previewUrl)
-      .map((item) => ({ id: `itunes-${item.trackId}`, title: item.trackName, artist: item.artistName, url: item.previewUrl as string }));
+      .map((item) => ({
+        id: `itunes-${item.trackId}`,
+        title: item.trackName,
+        artist: item.artistName,
+        url: item.previewUrl as string,
+        cover: item.artworkUrl100,
+        duration: item.trackTimeMillis ? Math.round(item.trackTimeMillis / 1000) : undefined,
+      }));
   } catch {
     return [];
   }

@@ -1,6 +1,17 @@
 import type { AccountRole, PlanId, TemplateAccessType } from "../types";
 import { hasActivePro } from "../proAccess";
 
+// A standard (non-pro) template purchase grants editing access for this long from the grant.
+export const TEMPLATE_ACCESS_TTL_MS = 14 * 24 * 60 * 60 * 1000;
+
+/** Only a plain "purchase" grant expires; free/pro/vip/admin access never carries a per-template deadline. */
+export function templateAccessExpiresAt(accessType: TemplateAccessType, grantedAt: string): string | null {
+  if (accessType !== "purchase") return null;
+  const granted = Date.parse(grantedAt);
+  if (!Number.isFinite(granted)) return null;
+  return new Date(granted + TEMPLATE_ACCESS_TTL_MS).toISOString();
+}
+
 export type AccessFacts = {
   accountRole: AccountRole;
   plan: PlanId;
@@ -9,11 +20,13 @@ export type AccessFacts = {
   isFreeTemplate: boolean;
   hasPaidPurchase: boolean;
   hasTemplateAccess: boolean;
+  templateAccessExpiresAt?: string | null;
 };
 
 export type AccessDecision = {
   allowed: boolean;
   accessType: TemplateAccessType | null;
+  expired?: boolean;
 };
 
 export function canUserAccessTemplateFromFacts(facts: AccessFacts): AccessDecision {
@@ -27,6 +40,8 @@ export function canUserAccessTemplateFromFacts(facts: AccessFacts): AccessDecisi
     return { allowed: true, accessType: "free" };
   }
   if (facts.hasPaidPurchase || facts.hasTemplateAccess) {
+    const expired = Boolean(facts.templateAccessExpiresAt && Date.parse(facts.templateAccessExpiresAt) <= Date.now());
+    if (expired) return { allowed: false, accessType: null, expired: true };
     return { allowed: true, accessType: "purchase" };
   }
   return { allowed: false, accessType: null };
@@ -65,8 +80,9 @@ export function canSaveInvitation(facts: {
   existing: boolean;
   owns: boolean;
   accessAllowed: boolean;
-}): { ok: boolean; reason?: "owner" | "access" } {
+  accessExpired?: boolean;
+}): { ok: boolean; reason?: "owner" | "access" | "expired" } {
   if (facts.existing && !facts.owns) return { ok: false, reason: "owner" };
-  if (!facts.accessAllowed) return { ok: false, reason: "access" };
+  if (!facts.accessAllowed) return { ok: false, reason: facts.accessExpired ? "expired" : "access" };
   return { ok: true };
 }

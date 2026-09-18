@@ -119,7 +119,7 @@ export function PinterestInvite({ invitation: inv, design, locale, onChange, sel
   return <div className={`${css.root} ${photo?css.photoRoot:css.siteRoot} ${css[key]}`} style={{"--pin-paper":inv.blockColors?.page || design.paper,"--pin-ink":design.ink,"--pin-accent":design.accent} as CSSProperties} data-pinterest-design={key} data-invitation-card={photo ? "" : undefined}>
     <WeddingEditor key={design.key} invitation={inv} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale}>{content}</WeddingEditor>
     {musicSrc ? <>
-      <InviteAudio src={musicSrc} playing={playing} />
+      <InviteAudio src={musicSrc} playing={playing} start={inv.musicStart} end={inv.musicEnd} />
       <button
         type="button"
         data-export-hide

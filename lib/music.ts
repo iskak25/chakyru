@@ -84,7 +84,42 @@ export type SearchTrack = {
   title: string;
   artist: string;
   url: string;
+  cover?: string;
+  duration?: number;
 };
+
+export function formatDuration(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return "";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+export function loadAudioDuration(url: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    if (!url || youtubeId(url)) {
+      reject(new Error("no-duration"));
+      return;
+    }
+    const el = new Audio();
+    el.preload = "metadata";
+    el.src = url;
+    const cleanup = () => {
+      el.removeEventListener("loadedmetadata", onLoaded);
+      el.removeEventListener("error", onError);
+    };
+    function onLoaded() {
+      cleanup();
+      resolve(el.duration);
+    }
+    function onError() {
+      cleanup();
+      reject(new Error("duration-failed"));
+    }
+    el.addEventListener("loadedmetadata", onLoaded);
+    el.addEventListener("error", onError);
+  });
+}
 
 export async function searchOnlineMusic(query: string): Promise<SearchTrack[]> {
   const q = query.trim();

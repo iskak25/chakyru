@@ -124,7 +124,7 @@ export function PhotoInvite({
       </MoveCanvas>
       {musicSrc ? (
         <>
-          <InviteAudio src={musicSrc} playing={playing} />
+          <InviteAudio src={musicSrc} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
           <button
             type="button"
             data-export-hide

@@ -1,4 +1,11 @@
-export type YoutubePlayer = { playVideo(): void; pauseVideo(): void; destroy(): void };
+export type YoutubePlayer = {
+  playVideo(): void;
+  pauseVideo(): void;
+  seekTo(seconds: number, allowSeekAhead: boolean): void;
+  getDuration(): number;
+  getCurrentTime(): number;
+  destroy(): void;
+};
 type YoutubeAPI = { Player: new (element: HTMLElement, options: {
   videoId: string;
   host: string;
