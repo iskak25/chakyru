@@ -5,10 +5,12 @@ import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
-import { ArrowDown, Baby, Camera, Footprints, Heart, MapPin, Sparkles, Utensils } from "lucide-react";
+import { ArrowDown, Baby, Camera, Footprints, Heart, MapPin, Sparkles, Utensils, Volume2, VolumeX } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import type { PinterestDesign } from "@/lib/pinterestTemplates";
+import { effectiveMusicUrl } from "@/lib/music";
 import { safeWeddingLink, weddingStyle, type WeddingPartInfo } from "@/lib/weddingEditor";
+import { InviteAudio } from "./InviteAudio";
 import { WeddingEditor, WeddingPart } from "./WeddingEditor";
 import { PinterestCalendar, PinterestTimer } from "./PinterestInvite";
 import type { InvitePatch } from "./CanvasEdit";
@@ -27,6 +29,8 @@ export function FamilySiteInvite({invitation:inv,design,locale,onChange,selected
   const detailsId=useId();
   const steps=design.eventType==="tushoo", ky=locale==="ky";
   const tr=(ru:string,kyrgyz:string)=>ky?kyrgyz:ru;
+  const musicSrc=effectiveMusicUrl(inv.musicUrl, inv.music, inv.eventType);
+  const [playing,setPlaying]=useState(false);
   const opened=!!onChange||!!startOpen||expanded;
   const preview=inv.id==="demo"||inv.id.startsWith("preview");
   const date=new Date(`${inv.date}T12:00:00`);
@@ -98,5 +102,17 @@ export function FamilySiteInvite({invitation:inv,design,locale,onChange,selected
         {section("footer","Завершение",<><Heart className={css.footerHeart} fill="currentColor" strokeWidth={0}/><div className={css.farewell}>{text("footer-heading",tr("До встречи на нашем празднике!","Тоюбузда жолугушканча!"),css.title)}<WeddingPart id="footer-names" label="Имя ребёнка внизу" kind="text" field="names" fallback={design.names} className={css.parents}/>{text("footer-event",event,css.caption)}</div></>,css.footer)}
       </div>
     </WeddingEditor>
+    {musicSrc ? <>
+      <InviteAudio src={musicSrc} playing={playing} />
+      <button
+        type="button"
+        data-export-hide
+        onClick={() => setPlaying(p => !p)}
+        aria-label={tr(playing ? "Выключить музыку" : "Включить музыку", playing ? "Музыканы өчүрүү" : "Музыканы күйгүзүү")}
+        className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
+      >
+        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
+      </button>
+    </> : null}
   </div>;
 }

@@ -5,10 +5,12 @@ import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
-import { ArrowDown, Camera, Gem, Heart, MapPin, Music2, Sparkles, Utensils, Wine } from "lucide-react";
+import { ArrowDown, Camera, Gem, Heart, MapPin, Music2, Sparkles, Utensils, Volume2, VolumeX, Wine } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import type { PinterestDesign } from "@/lib/pinterestTemplates";
+import { effectiveMusicUrl } from "@/lib/music";
 import { safeWeddingLink, weddingStyle, type WeddingPartInfo } from "@/lib/weddingEditor";
+import { InviteAudio } from "./InviteAudio";
 import { WeddingEditor, WeddingPart } from "./WeddingEditor";
 import { PinterestCalendar, PinterestTimer } from "./PinterestInvite";
 import { invitationText, invitationDateLocale } from "@/lib/inviteTranslations";
@@ -23,8 +25,11 @@ function after(time:string,minutes:number) {
 }
 export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected,onSelect,onPartsChange,startOpen}:Props) {
   const tr = (value: string) => invitationText(value, locale);
+  const ru = locale === "ru";
   const [expanded,setExpanded]=useState(false);
   const [reply,setReply]=useState<"idle"|"sending"|"sent"|"error">("idle");
+  const musicSrc=effectiveMusicUrl(inv.musicUrl, inv.music, inv.eventType);
+  const [playing,setPlaying]=useState(false);
   const detailsId=useId(), formId=useId();
   const opened=!!onChange || !!startOpen || expanded;
   const girls=design.eventType==="bachelorette", glam=design.key==="glam", paper=design.key==="newspaperSite", nikah=design.key==="nikahSite";
@@ -92,5 +97,17 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
         {section("footer",<>{text("footer-heading",girls?"До встречи, девочки!":"С любовью к вам",css.script)}{names("footer-names")}<Heart className={css.footerHeart} fill="currentColor" strokeWidth={0}/><WeddingPart id="footer-date" label="Дата" kind="date" className={css.caption}>{formatted}</WeddingPart></>,css.footer)}
       </div>
     </WeddingEditor>
+    {musicSrc ? <>
+      <InviteAudio src={musicSrc} playing={playing} />
+      <button
+        type="button"
+        data-export-hide
+        onClick={() => setPlaying(p => !p)}
+        aria-label={playing ? (ru ? "Выключить музыку" : "Музыканы өчүрүү") : (ru ? "Включить музыку" : "Музыканы күйгүзүү")}
+        className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
+      >
+        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
+      </button>
+    </> : null}
   </div>;
 }
