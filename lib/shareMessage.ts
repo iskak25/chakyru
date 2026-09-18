@@ -47,30 +47,33 @@ export function buildShareMessage(invitation: ShareInvitationInfo, locale: strin
   const venue = [invitation.venue, invitation.city].filter(Boolean).join(", ");
   const dateLine = formatShareDate(invitation.date, locale);
 
+  // Only symbols made of a single UTF-16 code unit are used here (no 🎉-style surrogate-pair
+  // emoji): WhatsApp/Telegram desktop on Windows can mangle surrogate pairs into "�" when handing
+  // the shared text off from the browser to the app, while these single-unit symbols survive.
   const info = [
-    dateLine ? `📅 ${dateLine}` : null,
-    invitation.time ? `🕐 ${invitation.time}` : null,
-    venue ? `📍 ${venue}` : null,
+    dateLine ? `${ru ? "Дата" : "Күнү"}: ${dateLine}` : null,
+    invitation.time ? `${ru ? "Время" : "Убактысы"}: ${invitation.time}` : null,
+    venue ? `${ru ? "Место" : "Жери"}: ${venue}` : null,
   ].filter((line): line is string => Boolean(line));
 
   const blocks = ru
     ? [
-        "💌 Приглашение!",
+        "✉️ Приглашение!",
         "Дорогой гость!",
         invitation.names || null,
-        `Приглашаем Вас на ${phrase} от всего сердца 🤍\nБудем рады разделить с Вами радость этого особенного дня и видеть Вас почётным гостем нашего праздника. ✨`,
+        `Приглашаем Вас на ${phrase} от всего сердца ♡\nБудем рады разделить с Вами радость этого особенного дня и видеть Вас почётным гостем нашего праздника. ✨`,
         info.length ? info.join("\n") : null,
-        `На странице приглашения Вы найдёте всю информацию о празднике и адрес.\nОткрыть приглашение 👇\n${url}`,
-        "Ждём Вас! 🤍",
+        `На странице приглашения Вы найдёте всю информацию о празднике и адрес.\nОткрыть приглашение →\n${url}`,
+        "Ждём Вас! ♡",
       ]
     : [
-        "💌 Сизге чакыруу!",
+        "✉️ Сизге чакыруу!",
         "Урматтуу конок!",
         invitation.names || null,
-        `Сизди ${phrase} чын жүрөктөн чакырабыз 🤍\nБул өзгөчө күндүн кубанычын сиз менен бирге бөлүшүп, майрамыбыздын кадырлуу коногу болушуңузду каалайбыз. ✨`,
+        `Сизди ${phrase} чын жүрөктөн чакырабыз ♡\nБул өзгөчө күндүн кубанычын сиз менен бирге бөлүшүп, майрамыбыздын кадырлуу коногу болушуңузду каалайбыз. ✨`,
         info.length ? info.join("\n") : null,
-        `Чакыруу баракчасынан майрам тууралуу толук маалыматты жана даректи көрө аласыз.\nЧакырууну ачуу 👇\n${url}`,
-        "Сизди күтөбүз! 🤍",
+        `Чакыруу баракчасынан майрам тууралуу толук маалыматты жана даректи көрө аласыз.\nЧакырууну ачуу →\n${url}`,
+        "Сизди күтөбүз! ♡",
       ];
 
   return blocks.filter((block): block is string => Boolean(block)).join("\n\n");

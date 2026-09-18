@@ -42,6 +42,7 @@ function compile(file, imports = require, fetchMock) {
   assert(expectedText.includes('нашу свадьбу'));
   assert(expectedText.includes('25 сентября'));
   assert(expectedText.includes(url));
+  assert(![...expectedText].some(ch => ch.codePointAt(0) > 0xffff), 'share text must avoid surrogate-pair emoji — WhatsApp/Telegram desktop on Windows can mangle them into "�" when handing the link off from the browser');
   const links = nodes(tree).filter(n => n.type === 'a');
   assert.equal(links.length, 2);
   const whatsapp = new URL(links.find(n => n.props.children === 'WhatsApp').props.href);
