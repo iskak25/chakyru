@@ -630,7 +630,7 @@ export function FooterBlock({ kit, withLove }: { kit: LayoutKit; withLove?: bool
         ) : null}
         <Selectable id="hosts">
           <CanvasText
-            value={invitation.hosts || `${a} & ${b}`}
+            value={invitation.hosts}
             placeholder={`${a} & ${b}`}
             onChange={onChange ? (v) => onChange({ hosts: v }) : undefined}
             className="font-ceremonial text-[40px] leading-tight text-black"

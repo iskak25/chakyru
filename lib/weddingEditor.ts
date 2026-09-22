@@ -6,7 +6,7 @@ export type WeddingPartInfo = {
   label: string;
   kind: WeddingPartKind;
   fallback?: string;
-  field?: "names" | "message" | "venue" | "address" | "city" | "dressCode";
+  field?: "names" | "hosts" | "message" | "venue" | "address" | "city" | "dressCode";
   slot?: string;
 };
 

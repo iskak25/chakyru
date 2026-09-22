@@ -39,7 +39,7 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
   const text=(id:string,fallback:string,className="",field?:WeddingPartInfo["field"]) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} className={className} field={field}/>;
   const section=(id:string,children:ReactNode,className="") => <WeddingPart id={`section-${id}`} label={`Блок: ${id}`} kind="block" className={`${css.section} ${className}`}>{children}</WeddingPart>;
   const title=(id:string,fallback:string) => text(`${id}-title`,fallback,css.title);
-  const names=(id="names") => <WeddingPart id={id} label="Имена" kind="text" field="names" fallback={design.names} className={css.names} renderText={value=>{
+  const names=(id="names",field:WeddingPartInfo["field"]="names") => <WeddingPart id={id} label="Имена" kind="text" field={field} fallback={design.names} className={css.names} renderText={value=>{
     const [a,...rest]=value.split(/\s*&\s*/); return <><span>{a}</span>{rest.length?<><i>&</i><span>{rest.join(" & ")}</span></>:null}</>;
   }}/>;
   const picture=(slot:string,className="",id=`photo-${slot}`) => {
@@ -94,7 +94,7 @@ export function ThemedSiteInvite({invitation:inv,design,locale,onChange,selected
             {reply==="sent"?<p role="status">{inv.id==="demo"||inv.id.startsWith("preview")?tr("Это предпросмотр. Ответ не отправлен."):tr("Спасибо! Ваш ответ отправлен.")}</p>:null}{reply==="error"?<p role="alert">{tr("Не удалось отправить ответ. Попробуйте ещё раз.")}</p>:null}
           </form>
         </>,css.rsvp)}
-        {section("footer",<>{text("footer-heading",girls?"До встречи, девочки!":"С любовью к вам",css.script)}{names("footer-names")}<Heart className={css.footerHeart} fill="currentColor" strokeWidth={0}/><WeddingPart id="footer-date" label="Дата" kind="date" className={css.caption}>{formatted}</WeddingPart></>,css.footer)}
+        {section("footer",<>{text("footer-heading",girls?"До встречи, девочки!":"С любовью к вам",css.script)}{names("footer-names","hosts")}<Heart className={css.footerHeart} fill="currentColor" strokeWidth={0}/><WeddingPart id="footer-date" label="Дата" kind="date" className={css.caption}>{formatted}</WeddingPart></>,css.footer)}
       </div>
     </WeddingEditor>
     {musicSrc ? <>
