@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import type { CanvasItem, Invitation, InviteFormat, LayoutBox, ShapeKind } from "@/lib/types";
 import { extraBox } from "./ExtraLayer";
-import { dropBox, hasCanvasPoint, setPendingPlace } from "@/lib/canvasPointer";
+import { dropBox } from "@/lib/canvasPointer";
 import { STICKERS, STICKER_GROUPS, StickerGlyph } from "@/lib/stickers";
 import { CLIPART, CLIPART_GROUPS } from "@/lib/clipart";
 import { useCatalog } from "@/lib/useCatalog";
@@ -138,10 +138,6 @@ export function EditorDock({
   const { templates } = useCatalog();
 
   function add(item: Omit<CanvasItem, "id">, box: LayoutBox) {
-    if (!hasCanvasPoint()) {
-      setPendingPlace({ item, w: box.w, h: box.h, z: box.z ?? 30 });
-      return;
-    }
     const id = newId();
     onChange({
       extras: [...extras, { ...item, id }],

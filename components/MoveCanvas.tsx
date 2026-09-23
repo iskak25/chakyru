@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useRef,
   useMemo,
   useState,
@@ -15,7 +14,7 @@ import { Copy, Lock, RefreshCw, Trash2, Unlock } from "lucide-react";
 import type { Invitation, LayoutBox, LayoutMap } from "@/lib/types";
 import type { InvitePatch } from "./CanvasEdit";
 import { deleteCanvasId, duplicateCanvasId, toggleLockId } from "@/lib/canvasOps";
-import { rememberCanvasPointer, dropBox, getPendingPlace, pointOnCanvas, setPendingPlace, subscribePendingPlace } from "@/lib/canvasPointer";
+import { rememberCanvasPointer } from "@/lib/canvasPointer";
 
 type Handle = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 type DragMode = { kind: "move" } | { kind: "resize"; handle: Handle } | { kind: "rotate" };
@@ -186,23 +185,6 @@ export function MoveCanvas({
   const selected = controlledSelected === undefined ? localSelected : controlledSelected;
   const [draft, setDraft] = useState<LayoutMap>({});
   const [dragging, setDragging] = useState(false);
-  const [placing, setPlacing] = useState(false);
-
-  useEffect(() => {
-    if (!editable) return;
-    const sync = () => setPlacing(!!getPendingPlace());
-    sync();
-    return subscribePendingPlace(sync);
-  }, [editable]);
-
-  useEffect(() => {
-    if (!placing) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPendingPlace(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [placing]);
 
   const select = useCallback(
     (id: string | null) => {
@@ -379,7 +361,7 @@ export function MoveCanvas({
       <div
         ref={ref}
         data-invite-canvas
-        className={`relative ${placing ? "cursor-crosshair" : ""} ${height === "auto" ? "" : "h-full"} ${className}`}
+        className={`relative ${height === "auto" ? "" : "h-full"} ${className}`}
         style={{
           ...(height === "auto"
             ? { height: "auto" }
@@ -387,22 +369,6 @@ export function MoveCanvas({
               ? { height, minHeight: height }
               : { height: "100%" }),
           background,
-        }}
-        onPointerDownCapture={(e) => {
-          const p = getPendingPlace();
-          if (!p || !editable || !onChange) return;
-          const canvas = ref.current;
-          if (!canvas) return;
-          const at = pointOnCanvas(e.clientX, e.clientY, canvas);
-          const id = crypto.randomUUID();
-          onChange({
-            extras: [...(invitation?.extras ?? []), { ...p.item, id }],
-            layout: { ...(invitation?.layout ?? {}), [id]: dropBox(p.w, p.h, p.z, at) },
-          });
-          setPendingPlace(null);
-          select(id);
-          e.preventDefault();
-          e.stopPropagation();
         }}
         onPointerDown={() => {
           if (editable) select(null);
