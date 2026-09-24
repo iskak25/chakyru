@@ -165,7 +165,7 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
           placeholder={translatedFallback || translatedLabel}
           onChange={next => onChange(weddingTextPatch(invitation, { id, label, kind, fallback, field, slot }, next))}
         />
-      ) : renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{id === "names" ? value.replace(/\s*&\s*/g, "\n&\n") : value}</p> : kind === "image" ? (
+      ) : renderText ? renderText(value) : <p className="whitespace-pre-line" data-wedding-text={id}>{value}</p> : kind === "image" ? (
         <div className="relative h-full w-full">
           {restored && !invitation.gallery?.[slot || id] ? <img src={restored.source} width={restored.width} height={restored.height} alt={translatedLabel} draggable={false} className="absolute inset-0 h-full w-full" style={{ objectFit: restored.fit, objectPosition: weddingStyle(invitation, id, "objectPosition") || "center", borderRadius: "inherit" }} /> : crop && !invitation.gallery?.[slot || id] ? <div className="relative h-full w-full overflow-hidden" style={{ borderRadius: "inherit" }}>
             <img src={templateImageSource(crop.source)} alt={translatedLabel} draggable={false} style={{ position: "absolute", maxWidth: "none", width: `${crop.width / crop.w * 100}%`, height: `${crop.height / crop.h * 100}%`, left: `${-crop.x / crop.w * 100}%`, top: `${-crop.y / crop.h * 100}%` }} />
