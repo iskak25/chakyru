@@ -3,6 +3,9 @@
 /* eslint-disable @next/next/no-img-element -- User-selected media is displayed directly, including Firebase download URLs. */
 
 import { useEffect, useRef, useState } from "react";
+import { Cloud, Smartphone } from "lucide-react";
+import { StockPhotos } from "./StockPhotos";
+import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
 import { deleteCanvasId } from "@/lib/canvasOps";
 import { restoreWeddingPart, weddingStyle, weddingStylePatch, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
@@ -13,6 +16,8 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
   invitation: Invitation; onChange: InvitePatch; selected: string | null; select: (id: string | null) => void; parts: WeddingPartInfo[]; locale: string;
 }) {
   const ru = locale === "ru";
+  const { t } = useI18n();
+  const [photoSource, setPhotoSource] = useState<"online" | "device">("online");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const latest = useRef(invitation);
@@ -47,13 +52,37 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
       </label>
       {isText ? <label className="block text-xs">{ru ? "Текст элемента" : "Элементтин тексти"}<textarea aria-label={ru ? "Текст элемента" : "Элементтин тексти"} rows={3} className={css} value={textValue} onChange={e => part ? onChange(weddingTextPatch(invitation, part, e.target.value)) : onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, text: e.target.value } : item) })} /></label> : null}
       {isImage ? <div className="space-y-2">
+        <div role="group" aria-label={ru ? "Источник фотографии" : "Сүрөт булагы"} className="flex rounded-full bg-black/5 p-1">
+          {(["online", "device"] as const).map(source => <button
+            key={source}
+            type="button"
+            aria-pressed={photoSource === source}
+            onClick={() => { setPhotoSource(source); setError(""); }}
+            className={`flex min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${photoSource === source ? "bg-ink text-cream" : "text-ink-soft"}`}
+          >
+            {source === "online" ? <Cloud size={16} /> : <Smartphone size={16} />}
+            {source === "online" ? "Онлайн" : ru ? "С устройства" : "Түзмөктөн"}
+          </button>)}
+        </div>
+        {photoSource === "online" ? <>
+          <StockPhotos locale={locale} onAdd={src => image(src)} labels={{
+            search: t.editor.stockSearch,
+            photos: t.editor.stockPhotos,
+            cover: t.editor.stockCover,
+            empty: t.editor.stockEmpty,
+            more: t.editor.stockMore,
+            credit: t.editor.stockCredit,
+          }} />
         <label className="block text-xs">{ru ? "Адрес изображения" : "Сүрөттүн дареги"}<input aria-label="Адрес изображения" className={css} value={part ? invitation.gallery?.[part.slot || part.id] ?? part.fallback ?? "" : extra?.src || ""} onChange={e => image(e.target.value)} /></label>
+        </> : <>
         <label className="block text-xs">{uploading ? (ru ? "Загрузка…" : "Жүктөлүүдө…") : (ru ? "Загрузить фотографию" : "Сүрөт жүктөө")}<input type="file" accept="image/jpeg,image/png,image/webp" disabled={uploading} className="mt-1 block w-full text-xs" onChange={async e => {
           const file = e.target.files?.[0]; if (!file) return;
+          e.target.value = "";
           const target = selected, imagePart = part;
           setUploading(true); setError("");
           try { image(await uploadInvitationImage(file), target, imagePart); } catch (err) { setError(err instanceof Error ? err.message : "Не удалось загрузить фотографию"); } finally { setUploading(false); }
         }} /></label>
+        </>}
         {part ? <label className="block text-xs">{ru ? "Кадрирование" : "Кадр"}<select aria-label="Кадрирование" className={css} value={weddingStyle(invitation, selected || "", "objectPosition") || "center"} onChange={e => style("objectPosition", e.target.value)}><option value="center">Центр</option><option value="top">Верх</option><option value="bottom">Низ</option><option value="left">Слева</option><option value="right">Справа</option></select></label> : null}
       </div> : null}
       {part?.kind === "date" || part?.id === "countdown" ? <div className="grid grid-cols-2 gap-2"><label className="text-xs">Дата<input aria-label="Дата мероприятия" type="date" className={css} value={invitation.date} onChange={e => onChange({ date: e.target.value })} /></label><label className="text-xs">Время<input aria-label="Время мероприятия" type="time" className={css} value={invitation.time} onChange={e => onChange({ time: e.target.value })} /></label></div> : null}

@@ -20,7 +20,7 @@ export function StockPhotos({
     credit: string;
   };
   onAdd: (src: string) => void;
-  onCover: (src: string) => void;
+  onCover?: (src: string) => void;
 }) {
   const [q, setQ] = useState<string>(STOCK_CATEGORIES[0].q);
   const [cat, setCat] = useState<string>(STOCK_CATEGORIES[0].id);
@@ -101,7 +101,7 @@ export function StockPhotos({
               <button type="button" onClick={() => onAdd(photo.src)} className="h-full w-full" title={photo.alt}>
                 <img src={photo.thumb} alt="" className="h-full w-full object-cover" loading="lazy" />
               </button>
-              <button
+              {onCover && <button
                 type="button"
                 title={labels.cover}
                 onClick={(e) => {
@@ -111,7 +111,7 @@ export function StockPhotos({
                 className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-white"
               >
                 <ImagePlus size={12} />
-              </button>
+              </button>}
             </div>
           ))}
         </div>

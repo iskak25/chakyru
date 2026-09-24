@@ -43,6 +43,7 @@ export function InvitationSetupWizard({
   const [soloName, setSoloName] = useState(invitation.names || "");
   const [date, setDate] = useState(invitation.date || "");
   const [time, setTime] = useState(invitation.time || "");
+  const [venue, setVenue] = useState(invitation.venue || "");
   const [city, setCity] = useState(invitation.city || "");
   const [address, setAddress] = useState(invitation.address || "");
   const [mapUrl, setMapUrl] = useState(invitation.mapUrl || "");
@@ -60,17 +61,19 @@ export function InvitationSetupWizard({
       names: isWedding ? `${groom.trim()} & ${bride.trim()}` : soloName.trim(),
       date,
       time,
+      venue: venue.trim(),
       city: city.trim(),
       address: address.trim(),
       mapUrl: mapUrl.trim(),
       hosts: hosts.trim(),
-      copy: { ...invitation.copy, eventTitle: eventTitle.trim() },
+      copy: { ...invitation.copy, venue: venue.trim(), eventTitle: eventTitle.trim() },
     });
   }
 
   const previewGreeting = [
     hosts.trim() || s.hostsPh,
     isWedding ? `${groom.trim() || s.groomPh} & ${bride.trim() || s.bridePh}` : soloName.trim() || s.singleNamePh[invitation.eventType],
+    venue.trim(),
     [city.trim(), address.trim()].filter(Boolean).join(", "),
     [date, time].filter(Boolean).join(" · "),
   ].filter(Boolean);
@@ -151,6 +154,10 @@ export function InvitationSetupWizard({
           {step === 3 ? (
             <div className="space-y-5">
               <h2 className="font-serif text-xl uppercase text-ink">{s.step3Title}</h2>
+              <label className="block space-y-1.5">
+                <span className={labelCss}>{s.venueLabel}</span>
+                <input className={inputCss} value={venue} onChange={(e) => setVenue(e.target.value)} placeholder={s.venuePh} />
+              </label>
               <label className="block space-y-1.5">
                 <span className={labelCss}>{s.cityLabel} *</span>
                 <input className={inputCss} value={city} onChange={(e) => setCity(e.target.value)} placeholder={s.cityPh} />
