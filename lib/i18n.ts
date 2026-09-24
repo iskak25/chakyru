@@ -107,6 +107,14 @@ const dict = {
         feat: ["Чексиз сайт-чакыруу", "Бардык Pro мүмкүнчүлүктөр", "Дизайнерлер жана агенттиктер үчүн", "Приоритеттүү колдоо"],
       },
     },
+    customOffer: {
+      title: "Жеке чакыруу каалайсызбы? ✨",
+      desc: "Шаблон жакты, бирок аны өзүңүзгө ылайыкташтыргыңыз келеби?",
+      descMore: "Биздин дизайнер тандалган шаблонду каалооңузга жараша ыңгайлаштырат: сүрөттөрдү, текстти, түстөрдү жана көркөмдөө деталдарын өзгөртүп, толугу менен даяр чакырууну даярдап берет.",
+      priceLabel: "Кызматтын баасы —",
+      after: "Сизге даяр шилтемени алып, коноктарга жөнөтүү гана калат 💌",
+      cta: "Дизайнерге заказ берүү",
+    },
     perInvite: "чакырууга",
     perMonth: "айга",
     popular: "Популярдуу",
@@ -751,6 +759,14 @@ const dict = {
         feat: ["Безлимит сайт-приглашений", "Все возможности Pro", "Для агентств и дизайнеров", "Приоритетная поддержка"],
       },
     },
+    customOffer: {
+      title: "Хотите индивидуальное приглашение? ✨",
+      desc: "Понравился шаблон, но хотите изменить его под себя?",
+      descMore: "Наш дизайнер адаптирует выбранный шаблон под ваши пожелания: изменит фотографии, текст, цвета и детали оформления и подготовит полностью готовое приглашение под ключ.",
+      priceLabel: "Стоимость услуги —",
+      after: "Вам останется только получить готовую ссылку и отправить её гостям 💌",
+      cta: "Заказать у дизайнера",
+    },
     perInvite: "за приглашение",
     perMonth: "в месяц",
     popular: "Популярный",
@@ -1355,6 +1371,32 @@ export function formatInviteDay(iso: string) {
 export function formatPrice(locale: Locale, som: number) {
   if (som === 0) return locale === "ru" ? "Бесплатно" : "Акысыз";
   return `${som.toLocaleString("ru-RU")} сом`;
+}
+
+export const CUSTOM_DESIGN_PRICE_SOM = 1500;
+export const CUSTOM_DESIGN_WHATSAPP_NUMBER = "996555662021";
+
+export function buildCustomOfferMessage(locale: Locale, templateName?: string, templateLink?: string) {
+  const ru = locale === "ru";
+  const price = formatPrice(locale, CUSTOM_DESIGN_PRICE_SOM);
+  const blocks = ru
+    ? [
+        "Здравствуйте! 👋",
+        templateName
+          ? `Я выбрал(а) шаблон «${templateName}» на ToiChakyru и хочу заказать его индивидуальную доработку дизайнером за ${price}.`
+          : `Хочу заказать индивидуальное приглашение у дизайнера на ToiChakyru за ${price}.`,
+        templateLink ? `Шаблон: ${templateLink}` : null,
+        "Хочу адаптировать приглашение под наше мероприятие. Подскажите, пожалуйста, что нужно отправить для начала работы?",
+      ]
+    : [
+        "Салам! 👋",
+        templateName
+          ? `Мен ToiChakyru сайтынан «${templateName}» шаблонун тандадым жана аны дизайнер тарабынан жеке ыңгайлаштырууну ${price} баасына заказ бергим келет.`
+          : `ToiChakyru сайтынан дизайнерге жеке чакыруу заказ бергим келет, баасы — ${price}.`,
+        templateLink ? `Шаблон: ${templateLink}` : null,
+        "Чакырууну биздин иш-чарага ылайыкташтыргым келет. Иштин башталышы үчүн эмнени жөнөтүшүм керектигин айтып бере аласызбы?",
+      ];
+  return blocks.filter((block): block is string => Boolean(block)).join("\n\n");
 }
 
 export function planPrice(locale: Locale, plan: "standard" | "pro" | "unlimited") {

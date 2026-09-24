@@ -5,7 +5,7 @@ import { PlanBuyButton } from "@/components/PlanBuyButton";
 import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess } from "@/lib/accessClient";
-import { formatPrice } from "@/lib/i18n";
+import { buildCustomOfferMessage, CUSTOM_DESIGN_PRICE_SOM, CUSTOM_DESIGN_WHATSAPP_NUMBER, formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
 import { setPendingTemplate } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
@@ -16,10 +16,12 @@ export default function PricingPage() {
   const [from, setFrom] = useState("");
   const [userPrice, setUserPrice] = useState<number | null>(null);
   const [proMonths, setProMonths] = useState(1);
+  const [origin, setOrigin] = useState("");
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("from") || "";
     setProMonths(new URLSearchParams(window.location.search).get("months") === "3" ? 3 : 1);
+    setOrigin(window.location.origin);
     if (id) setPendingTemplate(id);
     setFrom(id);
     if (!id) return;
@@ -70,6 +72,30 @@ export default function PricingPage() {
           <PlanBuyButton plan="pro" templateId={template?.id} proMonths={proMonths} className="mt-10 inline-flex min-h-12 w-full items-center justify-center rounded-[12px] bg-cream px-5 text-[11px] uppercase tracking-[0.14em] text-espresso" />
         </article>
       </div>
+
+      <article className="mt-5 rounded-[var(--radius-xl)] border border-[var(--gold)]/40 bg-white p-7 sm:p-10" style={{ boxShadow: "var(--shadow-soft)" }}>
+        <h2 className="font-serif text-[26px] tracking-[-0.02em] sm:text-[30px]">{t.customOffer.title}</h2>
+        <p className="mt-4 text-[15px] leading-7 text-ink-soft">{t.customOffer.desc}</p>
+        <p className="mt-3 text-[15px] leading-7 text-ink-soft">{t.customOffer.descMore}</p>
+        <p className="mt-5 text-[15px] text-ink-soft">
+          {t.customOffer.priceLabel} <span className="font-serif text-[20px] text-ink">{formatPrice(locale, CUSTOM_DESIGN_PRICE_SOM)}</span>
+        </p>
+        <p className="mt-3 text-[15px] leading-7 text-ink-soft">{t.customOffer.after}</p>
+        <a
+          href={`https://wa.me/${CUSTOM_DESIGN_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+            buildCustomOfferMessage(
+              locale,
+              template?.name[locale],
+              template ? `${origin}/templates/${template.id}` : undefined
+            )
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-[12px] bg-espresso px-5 text-center text-[11px] uppercase tracking-[0.14em] text-cream sm:w-auto"
+        >
+          {t.customOffer.cta} — {formatPrice(locale, CUSTOM_DESIGN_PRICE_SOM)}
+        </a>
+      </article>
     </SiteShell>
   );
 }
