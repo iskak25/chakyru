@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getInvitation, rememberRemoteInvitation, saveInvitation } from "@/lib/store";
+import { getInvitation, hasUnsavedInvitation, rememberRemoteInvitation, saveInvitation } from "@/lib/store";
 import { fetchInvitationRemote } from "@/lib/accessClient";
 import type { Invitation } from "@/lib/types";
 
@@ -48,7 +48,15 @@ export function useInviteHistory(id: string) {
     setSaveState("idle");
     void fetchInvitationRemote(id).then((remote) => {
       if (cancelled) return;
-      if (remote) {
+      // The initial GET may finish after an edit (or even after its PUT).
+      if (now.current !== local) {
+        setReady(true);
+        return;
+      }
+      const newerLocal = local?.updatedAt && remote?.updatedAt && local.updatedAt > remote.updatedAt;
+      if ((hasUnsavedInvitation(id) || newerLocal) && now.current) {
+        saveInvitation(now.current);
+      } else if (remote) {
         rememberRemoteInvitation(remote);
         past.current = [];
         future.current = [];
@@ -57,7 +65,7 @@ export function useInviteHistory(id: string) {
         saveInvitation(local);
       }
       setReady(true);
-    });
+    }).catch(() => { if (!cancelled) setReady(true); });
     return () => {
       cancelled = true;
       if (burst.current) window.clearTimeout(burst.current);

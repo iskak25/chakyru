@@ -57,11 +57,7 @@ function newId() {
   return crypto.randomUUID();
 }
 
-function fileToData(file: File, cb: (url: string) => void) {
-  const reader = new FileReader();
-  reader.onload = () => cb(String(reader.result ?? ""));
-  reader.readAsDataURL(file);
-}
+
 
 export function EditorDock({
   invitation,
@@ -365,14 +361,14 @@ export function EditorDock({
                       void uploadInvitationImage(file).then(src => applyPhoto(src)).catch(error => window.alert(error instanceof Error ? error.message : "Не удалось загрузить фотографию"));
                       return;
                     }
-                    fileToData(file, (src) => {
+                    void uploadInvitationImage(file).then((src) => {
                       if (selected?.startsWith("photo-") || invitation.coverImage) applyPhoto(src);
                       else
                         onChange({
                           coverImage: src,
                           gallery: { ...(invitation.gallery ?? {}), hero: src },
                         });
-                    });
+                    }).catch(error => window.alert(error instanceof Error ? error.message : "Image upload failed"));
                   }}
                 />
               </label>

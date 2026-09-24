@@ -1,5 +1,7 @@
 "use client";
 
+import { uploadInvitationImage } from "@/lib/uploadImage";
+
 import { useEffect, useRef } from "react";
 import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
@@ -146,9 +148,7 @@ export function PhotoLayer({ onChange }: { onChange?: InvitePatch }) {
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          const reader = new FileReader();
-          reader.onload = () => onChange({ coverImage: String(reader.result ?? "") });
-          reader.readAsDataURL(file);
+          void uploadInvitationImage(file).then(src => onChange({ coverImage: src })).catch(error => window.alert(error instanceof Error ? error.message : "Image upload failed"));
         }}
       />
       <span className="pointer-events-none absolute inset-0 flex items-start justify-center pt-16 opacity-0 transition group-hover/photo:opacity-100">

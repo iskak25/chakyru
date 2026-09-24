@@ -1,5 +1,7 @@
 "use client";
 
+import { uploadInvitationImage } from "@/lib/uploadImage";
+
 import { useRef } from "react";
 import { ImagePlus } from "lucide-react";
 import type { CanvasItem, Invitation, LayoutBox } from "@/lib/types";
@@ -155,9 +157,7 @@ function ExtraImage({ item, onChange, patchItem }: { item: CanvasItem; onChange?
             onChange={e => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const reader = new FileReader();
-              reader.onload = () => patchItem({ src: String(reader.result ?? "") });
-              reader.readAsDataURL(file);
+              void uploadInvitationImage(file).then(src => patchItem({ src })).catch(error => window.alert(error instanceof Error ? error.message : "Image upload failed"));
             }}
           />
           <div

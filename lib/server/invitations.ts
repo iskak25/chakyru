@@ -37,7 +37,8 @@ export async function listUserInvitations(uid: string, ownerId?: string): Promis
 }
 
 function forStore(inv: Invitation): Invitation {
-  return {
+  // Firestore rejects undefined, including optional fields inside extra items.
+  return JSON.parse(JSON.stringify({
     ...inv,
     coverImage: inv.coverImage?.startsWith("data:") ? "" : inv.coverImage,
     musicUrl: inv.musicUrl?.startsWith("data:") || inv.musicUrl?.startsWith("blob:") ? "" : inv.musicUrl,
@@ -49,7 +50,7 @@ function forStore(inv: Invitation): Invitation {
       src: extra.src?.startsWith("data:") || extra.src?.startsWith("blob:") ? "" : extra.src,
       url: extra.url?.startsWith("data:") || extra.url?.startsWith("blob:") ? "" : extra.url,
     })),
-  };
+  })) as Invitation;
 }
 
 export function sameInvitationOwner(
@@ -98,7 +99,8 @@ export async function saveInvitationDoc(input: {
     const current = fresh.data();
     if (current && !sameInvitationOwner(current, input)) return false;
     // Guest submissions belong to the server, not a potentially stale editor cache.
-    tx.set(ref, { ...stored, guests: current?.guests ?? [], wishes: current?.wishes ?? [] }, { merge: true });
+    // Replace editor maps as a whole so removed photos/text styles stay removed.
+    tx.set(ref, { ...current, ...stored, guests: current?.guests ?? [], wishes: current?.wishes ?? [] });
     return true;
   });
 }

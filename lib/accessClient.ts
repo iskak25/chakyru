@@ -51,6 +51,8 @@ export async function pushInvitationRemote(invitation: Invitation): Promise<Invi
     return { ok: false, error: "auth" };
   }
   try {
+    const { persistInvitationImages } = await import("./uploadImage");
+    invitation = await persistInvitationImages(invitation);
     const res = await fetch("/api/invitations", {
       method: "PUT",
       headers,

@@ -130,41 +130,72 @@ function writeInvitations(list: Invitation[]) {
   window.dispatchEvent(new Event("chakyru-sync"));
 }
 
-let remoteSyncTimer: number | null = null;
-let remoteSyncPending: Invitation | null = null;
+type SyncEntry = {
+  pending: Invitation | null;
+  timer?: number;
+  running?: Promise<boolean>;
+};
+const invitationSync = new Map<string, SyncEntry>();
+const dirtyKey = (id: string) => `chakyru-unsaved:${id}`;
+
+export function hasUnsavedInvitation(id: string) {
+  return typeof window !== "undefined" && localStorage.getItem(dirtyKey(id)) === "1";
+}
+
+function saveEvent(id: string, state: string) {
+  window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id, state } }));
+}
 
 function queueInvitationSync(invitation: Invitation) {
-  if (typeof window === "undefined") return;
-  if (invitation.id === "demo" || invitation.id.startsWith("preview-")) return;
-  remoteSyncPending = invitation;
-  window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: invitation.id, state: "saving" } }));
-  if (remoteSyncTimer) window.clearTimeout(remoteSyncTimer);
-  remoteSyncTimer = window.setTimeout(() => {
-    const next = remoteSyncPending;
-    remoteSyncPending = null;
-    if (!next) return;
-    void import("./accessClient")
-      .then(async ({ pushInvitationRemote }) => {
+  if (typeof window === "undefined" || invitation.id === "demo" || invitation.id.startsWith("preview-")) return;
+  localStorage.setItem(dirtyKey(invitation.id), "1");
+  const entry = invitationSync.get(invitation.id) ?? { pending: null };
+  invitationSync.set(invitation.id, entry);
+  entry.pending = invitation;
+  saveEvent(invitation.id, "saving");
+  if (entry.timer) window.clearTimeout(entry.timer);
+  entry.timer = window.setTimeout(() => { void flushInvitationSync(invitation.id); }, 700);
+}
+
+// Drain edits in order; an older response must never overwrite a newer draft.
+export async function flushInvitationSync(id: string): Promise<boolean> {
+  const entry = invitationSync.get(id);
+  if (!entry) return !hasUnsavedInvitation(id);
+  if (entry.timer) window.clearTimeout(entry.timer);
+  entry.timer = undefined;
+  if (entry.running) return entry.running;
+  entry.running = (async () => {
+    while (entry.pending) {
+      const next = entry.pending;
+      entry.pending = null;
+      try {
+        const { pushInvitationRemote } = await import("./accessClient");
         const result = await pushInvitationRemote(next);
-        if (result.ok) {
-          if (result.invitation) mergeInvitation(result.invitation);
-          window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state: "saved" } }));
-          return;
+        if (!result.ok) {
+          entry.pending ??= next;
+          saveEvent(id, result.pending ? "pending" : result.reason === "owner" ? "forbidden" : result.reason === "expired" ? "expired" : "error");
+          return false;
         }
-        const state =
-          result.pending || result.reason === "access"
-            ? "pending"
-            : result.reason === "owner"
-              ? "forbidden"
-              : result.reason === "expired"
-                ? "expired"
-                : "error";
-        window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state } }));
-      })
-      .catch(() => {
-        window.dispatchEvent(new CustomEvent("chakyru-save", { detail: { id: next.id, state: "error" } }));
-      });
-  }, 700);
+        if (!entry.pending) {
+          if (result.invitation) mergeInvitation(result.invitation);
+          localStorage.removeItem(dirtyKey(id));
+          saveEvent(id, "saved");
+        }
+      } catch {
+        entry.pending ??= next;
+        saveEvent(id, "error");
+        return false;
+      }
+    }
+    return true;
+  })();
+  try { return await entry.running; }
+  finally { entry.running = undefined; }
+}
+
+export async function ensureInvitationSaved(invitation: Invitation) {
+  queueInvitationSync(invitation);
+  return flushInvitationSync(invitation.id);
 }
 
 function mergeInvitation(inv: Invitation) {
@@ -176,6 +207,7 @@ function mergeInvitation(inv: Invitation) {
 }
 
 export function rememberRemoteInvitation(inv: Invitation) {
+  if (hasUnsavedInvitation(inv.id)) return;
   mergeInvitation(inv);
 }
 

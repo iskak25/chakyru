@@ -1,5 +1,7 @@
 "use client";
 
+import { uploadInvitationImage } from "@/lib/uploadImage";
+
 import { useRef } from "react";
 import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
@@ -90,9 +92,7 @@ export function SlotPhoto({
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => onChange(patchGallery(invitation, slot, String(reader.result ?? "")));
-                reader.readAsDataURL(file);
+                void uploadInvitationImage(file).then(src => onChange(patchGallery(invitation, slot, src))).catch(error => window.alert(error instanceof Error ? error.message : "Image upload failed"));
               }}
             />
             {/* Covers the whole photo so tapping anywhere opens the device

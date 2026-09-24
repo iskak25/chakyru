@@ -1,5 +1,7 @@
 "use client";
 
+import { uploadInvitationImage } from "@/lib/uploadImage";
+
 /* eslint-disable @next/next/no-img-element -- User-selected media is displayed directly, including Firebase download URLs. */
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -178,9 +180,7 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
                 onChange={e => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = () => onChange({ gallery: { ...(invitation.gallery ?? {}), [slot || id]: String(reader.result ?? "") } });
-                  reader.readAsDataURL(file);
+                  void uploadInvitationImage(file).then(src => onChange({ gallery: { ...(invitation.gallery ?? {}), [slot || id]: src } })).catch(error => window.alert(error instanceof Error ? error.message : "Image upload failed"));
                 }}
               />
               {/* Full-area tap target so clicking anywhere on the photo opens

@@ -18,7 +18,7 @@ import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
 import { fetchTemplateAccess } from "@/lib/accessClient";
 import { confirmLastCheckout, unlockPaidTemplate } from "@/lib/payAccess";
-import { getUser } from "@/lib/store";
+import { ensureInvitationSaved, getUser } from "@/lib/store";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
 import { ShareInvitationDialog } from "@/components/ShareInvitationDialog";
@@ -33,6 +33,8 @@ function EditorPageInner() {
   const [selected, setSelected] = useState<string | null>(null);
   const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [expired, setExpired] = useState(false);
   const [showSetup, setShowSetup] = useState(searchParams.get("setup") === "1");
@@ -84,6 +86,21 @@ function EditorPageInner() {
   }, [inv, router]);
 
   const onSelect = useCallback((id: string | null) => setSelected(id), []);
+
+  async function openPublished(share: boolean) {
+    if (!inv || publishing) return;
+    setPublishing(true);
+    setPublishError("");
+    try {
+      if (!await ensureInvitationSaved(inv)) throw new Error("save");
+      if (share) setShareOpen(true);
+      else router.push(`/i/${inv.id}`);
+    } catch {
+      setPublishError(locale === "ru"
+        ? "Изменения не сохранены на сервере. Проверьте подключение и попробуйте ещё раз."
+        : "Өзгөртүүлөр серверде сакталган жок. Интернетти текшерип, кайра аракет кылыңыз.");
+    } finally { setPublishing(false); }
+  }
 
   async function download() {
     if (!inv || saving) return;
@@ -238,18 +255,21 @@ function EditorPageInner() {
                 <>
                   <button
                     type="button"
-                    onClick={() => setShareOpen(true)}
+                    onClick={() => void openPublished(true)}
+                    disabled={publishing}
                     className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
                   >
                     {t.editor.share}
                   </button>
                   {shareOpen && <ShareInvitationDialog invitation={inv} locale={locale} onClose={() => setShareOpen(false)} />}
-                  <Link
-                    href={`/i/${inv.id}`}
+                  <button
+                    type="button"
+                    onClick={() => void openPublished(false)}
+                    disabled={publishing}
                     className="inline-flex h-10 items-center rounded-[12px] bg-espresso px-4 text-[11px] uppercase tracking-[0.12em] text-cream"
                   >
                     {t.editor.openGuest}
-                  </Link>
+                  </button>
                 </>
               ) : (
                 <button
@@ -265,6 +285,7 @@ function EditorPageInner() {
             </div>
           </div>
 
+          {publishError && <p role="alert" className="mb-4 text-sm text-red-700">{publishError}</p>}
           <p className="mb-6 text-center text-sm text-ink-soft">{t.editor.tapHint}</p>
 
           <div className={isSite ? "mx-auto w-full" : "mx-auto w-fit"}>
