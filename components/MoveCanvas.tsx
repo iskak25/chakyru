@@ -507,7 +507,10 @@ export function Selectable({
         ...style,
         transform: `translate(${(box.x / 100) * cw}px, ${(box.y / 100) * cw}px)${flat ? ` rotate(${box.r ?? 0}deg)` : ""}`,
         width: customSize || box.w !== 100 ? `${(box.w / 100) * cw}px` : undefined,
-        height: customSize ? `${(box.h / 100) * cw}px` : undefined,
+        // A resized block's height is a floor, not a ceiling: if its content later needs
+        // more room (e.g. a bigger font size), the block must grow and push the flow below
+        // it down, rather than clipping/overlapping — a fixed `height` would do the latter.
+        minHeight: customSize ? `${(box.h / 100) * cw}px` : undefined,
         cursor: ctx.editable && !locked ? (selected ? "move" : "pointer") : undefined,
       }}
       onPointerDownCapture={(e) => {

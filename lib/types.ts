@@ -147,6 +147,8 @@ export type Wish = {
   text: string;
   likes: number;
   createdAt: string;
+  /** Hidden by the host: not shown to guests on the invitation. */
+  hidden?: boolean;
 };
 
 export type LayoutBox = {

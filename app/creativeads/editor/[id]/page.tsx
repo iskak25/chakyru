@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Suspense, useEffect, useMemo, useState } from "react";
+import { CardGridSkeleton } from "@/components/Skeleton";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { authHeaders } from "@/lib/accessClient";
 import type { CreativeAd } from "@/lib/creativeAds/types";
@@ -73,7 +74,7 @@ function EditorInner() {
   }
 
   if (!ad || !variant) {
-    return <div className="py-24 text-center text-[var(--ca-muted)]">{copy.loading}</div>;
+    return <div className="py-12"><CardGridSkeleton count={3} label={copy.loading} /></div>;
   }
 
   return (

@@ -91,6 +91,9 @@ const dict = {
       editExpired: "Бул чакырууну өзгөртүү мөөнөтү бүттү (төлөмдөн кийин 2 жума берилет). Чакыруу шилтеме аркылуу коноктор үчүн иштей берет. Кайра өзгөртүү үчүн шаблонду дагы бир жолу ачыңыз.",
       pay: "Төлөмдү ачуу",
       purchased: "Сатылып алынган",
+      createInvitation: "Тойго чакыруу түзүү",
+      myInvitations: "Бул шаблон боюнча чакыруулар",
+      myInvitationsEmpty: "Бул шаблон боюнча азырынча чакыруу жок",
     },
     plans: {
       standard: {
@@ -743,6 +746,9 @@ const dict = {
       editExpired: "Срок редактирования этого приглашения истёк (2 недели после оплаты). Приглашение по-прежнему открывается для гостей по ссылке. Чтобы снова его редактировать, откройте шаблон и оформите доступ заново.",
       pay: "Перейти к оплате",
       purchased: "Куплено",
+      createInvitation: "Создать приглашение для Тоя",
+      myInvitations: "Приглашения по этому шаблону",
+      myInvitationsEmpty: "Пока нет приглашений по этому шаблону",
     },
     plans: {
       standard: {
@@ -1373,7 +1379,7 @@ export function formatPrice(locale: Locale, som: number) {
   return `${som.toLocaleString("ru-RU")} сом`;
 }
 
-export const CUSTOM_DESIGN_PRICE_SOM = 1500;
+export const CUSTOM_DESIGN_PRICE_SOM = 2000;
 export const CUSTOM_DESIGN_WHATSAPP_NUMBER = "996555662021";
 
 export function buildCustomOfferMessage(locale: Locale, templateName?: string, templateLink?: string) {

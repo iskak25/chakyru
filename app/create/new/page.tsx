@@ -7,6 +7,7 @@ import { canEditTemplate } from "@/lib/auth";
 import { unlockPaidTemplate } from "@/lib/payAccess";
 import { getUser, openPaidInvitation, startInvitation } from "@/lib/store";
 import { useI18n } from "@/lib/locale";
+import { InviteSkeleton } from "@/components/Skeleton";
 import { checkoutReturn, paymentReturnHref } from "@/lib/checkoutReturn";
 
 function CreateNewInner() {
@@ -57,7 +58,9 @@ function CreateNewInner() {
       {failed ? <div className="max-w-md px-5 text-center">
         <p>{locale === "ru" ? "Не удалось сохранить приглашение. Повторите попытку — повторная оплата не нужна." : "Чакыруу сакталган жок. Кайра аракет кылыңыз — кайра төлөөнүн кереги жок."}</p>
         <button type="button" className="mt-4 underline" onClick={() => setAttempt(value => value + 1)}>{locale === "ru" ? "Повторить" : "Кайра аракет кылуу"}</button>
-      </div> : "..."}
+      </div> : <div className="w-full">
+        <InviteSkeleton label={locale === "ru" ? "Готовим приглашение…" : "Чакыруу даярдалууда…"} />
+      </div>}
     </div>
   );
 }

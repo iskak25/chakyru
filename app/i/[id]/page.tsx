@@ -9,6 +9,7 @@ import { getInvitation, rememberRemoteInvitation } from "@/lib/store";
 import { formatOf } from "@/lib/templates";
 import type { Invitation } from "@/lib/types";
 import { GuestWishForm } from "@/components/GuestWishForm";
+import { InviteSkeleton } from "@/components/Skeleton";
 
 function GuestInviteInner() {
   const params = useParams<{ id: string }>();
@@ -36,7 +37,7 @@ function GuestInviteInner() {
   }, [params.id]);
 
   if (inv === undefined) {
-    return <div className="min-h-screen bg-page" />;
+    return <InviteSkeleton />;
   }
 
   if (!inv) {
@@ -74,7 +75,7 @@ function GuestInviteInner() {
 
 export default function GuestInvitePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-page" />}>
+    <Suspense fallback={<InviteSkeleton />}>
       <GuestInviteInner />
     </Suspense>
   );

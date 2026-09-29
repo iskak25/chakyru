@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { ENVELOPE_TIMING, envelopeVariants, type EnvelopeVariant } from "@/lib/envelopes";
+import { ENVELOPE_TIMING, envelopeVariants, type EnvelopeVariant, type EnvelopeColors } from "@/lib/envelopes";
 import css from "./EnvelopeIntro.module.css";
 
 function Ornament({ motif, className = "" }: { motif: string; className?: string }) {
@@ -13,9 +13,9 @@ function Ornament({ motif, className = "" }: { motif: string; className?: string
   </svg>;
 }
 
-type Props = { variant: EnvelopeVariant; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
+type Props = { variant: EnvelopeVariant; colors?: EnvelopeColors; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
 
-export function EnvelopeIntro({ variant, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
+export function EnvelopeIntro({ variant, colors, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
   const [stage, setStage] = useState<"closed" | "opening" | "revealing" | "open">("closed");
   const [reduced, setReduced] = useState(false);
   const started = useRef(false);
@@ -23,7 +23,7 @@ export function EnvelopeIntro({ variant, names, date, locale, children, embedded
   const button = useRef<HTMLButtonElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const active = stage !== "open";
-  const theme = envelopeVariants[variant];
+  const theme = { ...envelopeVariants[variant], ...colors };
   const ru = locale === "ru";
   const title = ru ? "Вам приглашение" : "Сизге чакыруу";
   const openLabel = ru ? "Открыть приглашение" : "Чакырууну ачуу";

@@ -64,6 +64,20 @@ html {
   overflow-x: hidden;
 }
 
+/* Loading skeletons (components/Skeleton.tsx) */
+.skeleton {
+  background: linear-gradient(90deg, #e8e4df 25%, #f4f1ed 45%, #e8e4df 65%);
+  background-size: 250% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
 @media (max-width: 639px) {
   body {
     min-width: 320px;

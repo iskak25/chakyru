@@ -15,6 +15,15 @@ export const envelopeVariants = {
 } as const;
 
 export type EnvelopeVariant = keyof typeof envelopeVariants;
+export const envelopeColorKeys = ["paper", "light", "shade", "background", "ink", "foil", "lining", "seal"] as const;
+export type EnvelopeColors = Partial<Record<(typeof envelopeColorKeys)[number], string>>;
+
+export function invitationEnvelopeColors(copy?: Record<string, string>): EnvelopeColors {
+  return Object.fromEntries(envelopeColorKeys.flatMap(key => {
+    const value = copy?.[`envelope.color.${key}`];
+    return value && /^#[0-9a-f]{6}$/i.test(value) ? [[key, value]] : [];
+  }));
+}
 export type EnvelopeConfig = { enabled: boolean; variant: EnvelopeVariant };
 
 // Explicit art direction for every built-in 3D design; unrelated to routes or filenames.

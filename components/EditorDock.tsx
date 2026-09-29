@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Calendar,
+  Mail,
   CloudUpload,
   Image as ImageIcon,
   LayoutGrid,
@@ -23,13 +24,14 @@ import { CLIPART, CLIPART_GROUPS } from "@/lib/clipart";
 import { useCatalog } from "@/lib/useCatalog";
 import type { InvitePatch } from "./CanvasEdit";
 import { ElementInspector } from "./ElementInspector";
+import { EnvelopeEditor } from "./EnvelopeEditor";
 import { MusicPicker } from "./MusicPicker";
 import { StockPhotos } from "./StockPhotos";
 import { uploadInvitationImage } from "@/lib/uploadImage";
 import { defaultMusicForEvent, effectiveMusicUrl, templateMusicUrl } from "@/lib/music";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 
-type Tab = "templates" | "media" | "music" | "extras" | "text" | "element";
+type Tab = "templates" | "media" | "music" | "extras" | "text" | "element" | "envelope";
 
 function MediaGlyph() {
   return (
@@ -69,6 +71,7 @@ export function EditorDock({
   onSelect,
   parts,
   hideTemplates,
+  onReset,
   stickyClass,
   templatesPanel,
   templatesDetail,
@@ -83,6 +86,7 @@ export function EditorDock({
   onSelect?: (id: string | null) => void;
   parts?: WeddingPartInfo[];
   hideTemplates?: boolean;
+  onReset?: () => void;
   stickyClass?: string;
   templatesPanel?: ReactNode;
   templatesDetail?: ReactNode;
@@ -209,6 +213,7 @@ export function EditorDock({
     ...(format === "site3d" ? [{ id: "music" as const, label: labels.music, icon: <Music size={20} strokeWidth={1.6} /> }] : []),
     { id: "extras", label: labels.extras, icon: <ExtrasGlyph /> },
     { id: "text", label: labels.text, icon: <Type size={22} strokeWidth={1.6} /> },
+    ...(format === "site3d" ? [{ id: "envelope" as const, label: "Конверт", icon: <Mail size={20} strokeWidth={1.6} /> }] : []),
   ];
   const tabs: { id: Tab; label: string; icon: ReactNode }[] = templatesPanel
     ? [...mainTabs, templateTab]
@@ -273,7 +278,7 @@ export function EditorDock({
         }`}>
           <div className="mb-3 flex shrink-0 items-center justify-between">
             <p className="font-medium">
-              {tab === "templates"
+              {tab === "envelope" ? "Конверт" : tab === "templates"
                 ? labels.templates
                 : tab === "music" ? labels.music : tab === "media"
                   ? labels.media
@@ -289,6 +294,7 @@ export function EditorDock({
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
+          {tab === "envelope" && <EnvelopeEditor invitation={invitation} onChange={onChange} locale={locale} />}
           {tab === "music" && format === "site3d" && <div className="space-y-4">
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={invitation.music} onChange={e => onChange({ music: e.target.checked, musicUrl: effectiveMusicUrl(invitation.musicUrl, true, invitation.eventType), musicTitle: undefined, musicStart: undefined, musicEnd: undefined })} />
@@ -652,13 +658,24 @@ export function EditorDock({
           ) : null}
           </div>
 
-          <button
-            type="button"
-            onClick={() => setTab(null)}
-            className="mt-3 w-full shrink-0 rounded-xl bg-espresso px-4 py-2.5 text-[11px] uppercase tracking-[0.12em] text-cream"
-          >
-            {labels.save}
-          </button>
+          <div className="mt-3 flex shrink-0 gap-2">
+            {onReset ? (
+              <button
+                type="button"
+                onClick={onReset}
+                className="shrink-0 rounded-xl border border-ink/20 px-3 py-2.5 text-[11px] uppercase tracking-[0.12em] text-ink transition hover:bg-black/[0.04]"
+              >
+                {locale === "ru" ? "Сбросить" : "Баштан"}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setTab(null)}
+              className="w-full rounded-xl bg-espresso px-4 py-2.5 text-[11px] uppercase tracking-[0.12em] text-cream"
+            >
+              {labels.save}
+            </button>
+          </div>
         </div>
         {tab === "templates" && templatesDetail ? (
           <div className="absolute inset-y-0 left-[84px] z-20 flex w-[min(320px,calc(100vw-84px))] flex-col overflow-hidden border-r border-ink/10 bg-page p-3 md:static md:w-[320px]">

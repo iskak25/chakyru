@@ -105,6 +105,22 @@ export async function saveInvitationDoc(input: {
   });
 }
 
+export async function deleteInvitationDoc(
+  id: string,
+  owner: { ownerUid: string; ownerId: string; email?: string },
+  isAdmin: boolean,
+): Promise<boolean> {
+  const db = getAdminDb();
+  if (!db || !id || id === "demo" || id.startsWith("preview-")) return false;
+  const ref = db.collection("invitations").doc(id);
+  const snap = await ref.get();
+  if (!snap.exists) return true;
+  const existing = asInvitation(id, (snap.data() ?? {}) as Record<string, unknown>);
+  if (!isAdmin && !sameInvitationOwner(existing, owner)) return false;
+  await ref.delete();
+  return true;
+}
+
 export async function addInvitationRsvp(input: {
   invitationId: string;
   name: string;
@@ -182,6 +198,31 @@ export async function likeInvitationWish(invitationId: string, wishId: string) {
     tx.set(ref,
       {
         wishes: (inv.wishes ?? []).map((wish) => (wish.id === wishId ? { ...wish, likes: wish.likes + 1 } : wish)),
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true },
+    );
+    return true;
+  });
+}
+
+export async function setInvitationWishHidden(
+  invitationId: string,
+  wishId: string,
+  hidden: boolean,
+  owner: { ownerId: string; ownerUid: string; email?: string },
+) {
+  const db = getAdminDb();
+  if (!db) return false;
+  const ref = db.collection("invitations").doc(invitationId);
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return false;
+    const inv = asInvitation(invitationId, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!inv || !sameInvitationOwner(inv, owner)) return false;
+    tx.set(ref,
+      {
+        wishes: (inv.wishes ?? []).map((wish) => (wish.id === wishId ? { ...wish, hidden } : wish)),
         updatedAt: new Date().toISOString(),
       },
       { merge: true },

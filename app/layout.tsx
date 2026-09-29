@@ -1,56 +1,76 @@
 import type { Metadata } from "next";
-import { Caveat, Cormorant_Garamond, Great_Vibes, Manrope, Marck_Script, Philosopher, Playfair_Display, Unbounded } from "next/font/google";
+import localFont from "next/font/local";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 
-const sans = Manrope({
+// Bundled fonts keep builds independent of Google Fonts and its remote URL format.
+const sans = localFont({
   variable: "--font-manrope",
-  subsets: ["latin", "cyrillic"],
+  display: "swap",
+  src: [
+    { path: "./fonts/manrope/Manrope-wght.ttf", weight: "200 800", style: "normal" }
+  ],
 });
 
-const display = Cormorant_Garamond({
+const display = localFont({
   variable: "--font-cormorant",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  display: "swap",
+  src: [
+    { path: "./fonts/cormorantgaramond/CormorantGaramond-wght.ttf", weight: "400 700", style: "normal" },
+    { path: "./fonts/cormorantgaramond/CormorantGaramond-Italic-wght.ttf", weight: "400 700", style: "italic" }
+  ],
 });
 
-const vibes = Great_Vibes({
+const vibes = localFont({
   variable: "--font-vibes",
-  subsets: ["latin"],
-  weight: "400",
+  display: "swap",
+  src: [
+    { path: "./fonts/greatvibes/GreatVibes-Regular.ttf", weight: "400", style: "normal" }
+  ],
 });
 
-const ceremonial = Marck_Script({
+const ceremonial = localFont({
   variable: "--font-ceremonial",
-  subsets: ["latin", "cyrillic"],
-  weight: "400",
+  display: "swap",
+  src: [
+    { path: "./fonts/marckscript/MarckScript-Regular.ttf", weight: "400", style: "normal" }
+  ],
 });
 
-const playfair = Playfair_Display({
+const playfair = localFont({
   variable: "--font-playfair",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
+  display: "swap",
+  src: [
+    { path: "./fonts/playfairdisplay/PlayfairDisplay-wght.ttf", weight: "400 700", style: "normal" },
+    { path: "./fonts/playfairdisplay/PlayfairDisplay-Italic-wght.ttf", weight: "400 700", style: "italic" }
+  ],
 });
 
-const unbounded = Unbounded({
+const unbounded = localFont({
   variable: "--font-unbounded",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  src: [
+    { path: "./fonts/unbounded/Unbounded-wght.ttf", weight: "400 700", style: "normal" }
+  ],
 });
 
-const caveat = Caveat({
+const caveat = localFont({
   variable: "--font-caveat",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  src: [
+    { path: "./fonts/caveat/Caveat-wght.ttf", weight: "400 700", style: "normal" }
+  ],
 });
 
-const philosopher = Philosopher({
+const philosopher = localFont({
   variable: "--font-philosopher",
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
+  display: "swap",
+  src: [
+    { path: "./fonts/philosopher/Philosopher-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/philosopher/Philosopher-Italic.ttf", weight: "400", style: "italic" },
+    { path: "./fonts/philosopher/Philosopher-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/philosopher/Philosopher-BoldItalic.ttf", weight: "700", style: "italic" },
+  ],
 });
 
 export const metadata: Metadata = {

@@ -382,6 +382,16 @@ export function saveInvitation(next: Invitation) {
   queueInvitationSync(stored);
 }
 
+export async function deleteInvitation(id: string): Promise<boolean> {
+  if (!id || id === "demo" || id.startsWith("preview-")) return false;
+  const { deleteInvitationRemote } = await import("./accessClient");
+  const ok = await deleteInvitationRemote(id);
+  if (!ok) return false;
+  writeInvitations(readInvitations().filter((inv) => inv.id !== id));
+  localStorage.removeItem(dirtyKey(id));
+  return true;
+}
+
 export async function addRsvp(
   invitationId: string,
   name: string,

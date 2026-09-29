@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { ListSkeleton, Skeleton } from "@/components/Skeleton";
 import Link from "next/link";
 import { Banknote, LayoutGrid, PlayCircle, Settings, Users } from "lucide-react";
 import { AdminLessons } from "@/components/AdminLessons";
@@ -42,7 +43,13 @@ export default function AdminPage() {
 
   return (
     <SiteShell footer={false}>
-      {!ready ? null : !user ? (
+      {!ready ? (
+        <div className="mx-auto max-w-[1400px] space-y-6 px-5 py-16">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-10 w-64" />
+          <ListSkeleton rows={5} />
+        </div>
+      ) : !user ? (
         <div className="mx-auto max-w-[1400px] px-5 py-16">
           <p className="eyebrow text-left">{t.admin.kicker}</p>
           <h1 className="font-serif mt-4 text-4xl uppercase">{t.admin.title}</h1>

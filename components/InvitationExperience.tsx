@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowDown, Pause, Volume2, VolumeX } from "lucide-react";
 import type { Invitation } from "@/lib/types";
-import type { EnvelopeVariant } from "@/lib/envelopes";
+import { invitationEnvelopeColors, type EnvelopeVariant } from "@/lib/envelopes";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
 import { loadYoutubePlayer, type YoutubePlayer } from "@/lib/youtubePlayer";
 import { startInvitationScroll } from "@/lib/invitationScroll";
@@ -155,7 +155,7 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
   return <div ref={root} className={`${css.root} ${embedded ? css.embedded : ""}`} data-invitation-experience>
     {src && !yt && <audio ref={audio} src={src} loop={trimEnd == null} playsInline preload="auto" onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { setPlaying(false); setAudioError(true); }} />}
     {yt && <div ref={youtubeHost} className={css.youtube} style={{ visibility: opened ? "visible" : "hidden" }} data-export-hide />}
-    {intro ? <EnvelopeIntro variant={variant} names={invitation.names} date={invitation.date} locale={locale} embedded={embedded} onOpen={play} onOpened={reveal}>{children}</EnvelopeIntro> : children}
+    {intro ? <EnvelopeIntro variant={variant} colors={invitationEnvelopeColors(invitation.copy)} names={invitation.names} date={invitation.date} locale={locale} embedded={embedded} onOpen={play} onOpened={reveal}>{children}</EnvelopeIntro> : children}
     {opened && <div className={css.controls} data-invitation-controls data-export-hide>
       {audioError && <span role="status" className={css.error}>{ru ? "Музыка недоступна" : "Музыка жеткиликсиз"}</span>}
       {src && <button type="button" onClick={playing ? pause : play} aria-pressed={playing} aria-label={playing ? (ru ? "Выключить музыку" : "Музыканы өчүрүү") : (ru ? "Включить музыку" : "Музыканы күйгүзүү")} title={playing ? (ru ? "Выключить музыку" : "Музыканы өчүрүү") : (ru ? "Включить музыку" : "Музыканы күйгүзүү")}>

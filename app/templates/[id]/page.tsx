@@ -4,14 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Heart, Play } from "lucide-react";
+import { Heart, Pencil, Play, Trash2 } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
 import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
-import { canEditTemplate } from "@/lib/auth";
-import { getUser, openPaidInvitation, previewInvitation, pricingHref, startInvitation } from "@/lib/store";
+import { canEditTemplate, isAdminUser, ownsInvitation } from "@/lib/auth";
+import { hasActivePro } from "@/lib/proAccess";
+import { deleteInvitation, getInvitations, getUser, openPaidInvitation, previewInvitation, pricingHref, startInvitation } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { referenceWedding } from "@/lib/referenceWeddings";
@@ -44,6 +45,8 @@ export default function TemplatePreviewPage() {
   const paperPreview = template?.id === "minimal-white" || (invitation && getPinterestDesign(invitation)?.key === "pearl");
   const [access, setAccess] = useState<TemplateAccessResponse | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [syncTick, setSyncTick] = useState(0);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   // The interactive renderer (Site3D / PinterestInvite / ThemedSiteInvite / etc.) pulls in
   // a lot of code. Show a lightweight static photo first and only mount the real,
   // heavy renderer once the person actually asks to see it.
@@ -71,36 +74,71 @@ export default function TemplatePreviewPage() {
       });
     };
     load();
-    window.addEventListener("chakyru-sync", load);
+    const onSync = () => {
+      load();
+      setSyncTick((n) => n + 1);
+    };
+    window.addEventListener("chakyru-sync", onSync);
     return () => {
       cancelled = true;
-      window.removeEventListener("chakyru-sync", load);
+      window.removeEventListener("chakyru-sync", onSync);
     };
   }, [id]);
 
   // getUser() reads localStorage, which is unavailable during SSR — gate on
   // `mounted` so the first client render matches the server render exactly
   // and React doesn't report a hydration mismatch.
+  const user = mounted ? getUser() : null;
   const canEdit = mounted && Boolean(
-    access?.allowed || canEditTemplate(getUser(), id) || (template && getUser() && template.priceSom <= 0),
+    access?.allowed || canEditTemplate(user, id) || (template && user && template.priceSom <= 0),
   );
   const displayPrice = access?.price ?? template?.priceSom ?? 0;
+  // Admin/pro accounts aren't limited to one invitation per template: `access.accessType`
+  // (from the server, refreshed on every sync) is the source of truth once it has loaded,
+  // with a local fallback so the button doesn't flash the single-invitation label first.
+  const multiRole = access
+    ? access.accessType === "admin" || access.accessType === "pro"
+    : mounted && (isAdminUser(user) || hasActivePro(user));
+
+  const myTemplateInvitations = useMemo(() => {
+    if (!mounted || !template || !user || !multiRole) return [];
+    void syncTick;
+    return getInvitations().filter(
+      (inv) => inv.templateId === template.id && inv.id !== "demo" && !inv.id.startsWith("preview-") && ownsInvitation(user, inv),
+    );
+  }, [mounted, template, user, multiRole, syncTick]);
 
   async function onEdit() {
     if (!template) return;
     const latest = await fetchTemplateAccess(template.id);
-    if (latest?.allowed || canEditTemplate(getUser(), template.id)) {
-      const started = latest?.allowed ? openPaidInvitation(template.id) : startInvitation(template.id);
+    const freshUser = getUser();
+    const freshMultiRole = latest
+      ? latest.accessType === "admin" || latest.accessType === "pro"
+      : isAdminUser(freshUser) || hasActivePro(freshUser);
+    if (latest?.allowed || canEditTemplate(freshUser, template.id)) {
+      const started = freshMultiRole ? startInvitation(template.id) : latest?.allowed ? openPaidInvitation(template.id) : startInvitation(template.id);
       if ("invitation" in started) router.push(`/create/${started.invitation.id}?setup=1`);
       else router.push(started.href);
       return;
     }
-    const user = getUser();
-    if (!user || user.auth !== "google") {
+    if (!freshUser || freshUser.auth !== "google") {
       router.push(`/login?google=1&next=${encodeURIComponent(`/templates/${template.id}`)}`);
       return;
     }
     router.push(pricingHref(template.id));
+  }
+
+  async function onDelete(invitationId: string) {
+    const msg = locale === "ru"
+      ? "Удалить это приглашение? Ответы и пожелания гостей будут потеряны безвозвратно."
+      : "Бул чакырууну өчүрөсүзбү? Коноктордун жооптору жана каалоолору кайра жаралгыс жоголот.";
+    if (!window.confirm(msg)) return;
+    setDeletingId(invitationId);
+    const ok = await deleteInvitation(invitationId);
+    setDeletingId(null);
+    if (!ok) {
+      window.alert(locale === "ru" ? "Не удалось удалить приглашение" : "Чакырууну өчүрүү оңунан чыккан жок");
+    }
   }
 
   if (!template || !invitation) {
@@ -177,7 +215,7 @@ export default function TemplatePreviewPage() {
               onClick={() => void onEdit()}
               className="inline-flex h-11 items-center rounded-[12px] bg-espresso px-5 text-[11px] uppercase tracking-[0.14em] text-cream transition hover:opacity-90"
             >
-              {canEdit ? t.templateView.edit : t.templateView.pay}
+              {canEdit ? (multiRole ? t.templateView.createInvitation : t.templateView.edit) : t.templateView.pay}
             </button>
             <button
               type="button"
@@ -187,6 +225,47 @@ export default function TemplatePreviewPage() {
               {locale === "ru" ? "В избранное" : "Тандалмаларга"}
             </button>
           </div>
+
+          {canEdit && multiRole && (
+            <div className="mt-8 space-y-3 border-t border-[var(--line)] pt-6">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-meta">{t.templateView.myInvitations}</p>
+              {myTemplateInvitations.length === 0 ? (
+                <p className="text-sm text-ink-soft">{t.templateView.myInvitationsEmpty}</p>
+              ) : (
+                <ul className="space-y-2">
+                  {myTemplateInvitations.map((inv) => (
+                    <li
+                      key={inv.id}
+                      className="flex items-center justify-between rounded-[12px] border border-[var(--line)] px-4 py-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate text-sm text-ink">{inv.names || template.name[locale]}</p>
+                        <p className="text-[12px] text-ink-soft">{inv.date || "—"}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Link
+                          href={`/create/${inv.id}`}
+                          aria-label={t.templateView.edit}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-ink-soft transition hover:text-ink"
+                        >
+                          <Pencil size={14} />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => void onDelete(inv.id)}
+                          disabled={deletingId === inv.id}
+                          aria-label={locale === "ru" ? "Удалить" : "Өчүрүү"}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-ink-soft transition hover:border-red-300 hover:text-red-600 disabled:opacity-50"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           {canEdit && <GuestResponseLinks templateId={template.id} locale={locale} />}
 

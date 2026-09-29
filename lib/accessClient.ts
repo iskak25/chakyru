@@ -80,6 +80,19 @@ export async function pushInvitationRemote(invitation: Invitation): Promise<Invi
   }
 }
 
+export async function deleteInvitationRemote(id: string): Promise<boolean> {
+  const headers = await authHeaders();
+  if (!("authorization" in headers)) return false;
+  try {
+    const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { method: "DELETE", headers });
+    if (!res.ok) return false;
+    const data = (await res.json().catch(() => null)) as { success?: boolean } | null;
+    return Boolean(data?.success);
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchInvitationRemote(id: string): Promise<Invitation | null> {
   const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { cache: "no-store" });
   if (!res.ok) return null;
@@ -94,4 +107,13 @@ export async function fetchMyInvitationsRemote(): Promise<Invitation[]> {
   if (!res.ok) return [];
   const data = (await res.json()) as { invitations?: Invitation[] };
   return Array.isArray(data.invitations) ? data.invitations : [];
+}
+
+export async function setWishHiddenRemote(invitationId: string, wishId: string, hidden: boolean): Promise<boolean> {
+  const headers = await authHeaders();
+  if (!("authorization" in headers)) return false;
+  const res = await fetch(`/api/invitations/${encodeURIComponent(invitationId)}/wish`, {
+    method: "PATCH", headers, body: JSON.stringify({ wishId, hidden }),
+  }).catch(() => null);
+  return Boolean(res?.ok);
 }

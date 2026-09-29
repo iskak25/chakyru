@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { CardGridSkeleton } from "@/components/Skeleton";
 import { useParams, useRouter } from "next/navigation";
 import { Download, Heart, Pencil, Trash2 } from "lucide-react";
 import { authHeaders } from "@/lib/accessClient";
@@ -79,7 +80,7 @@ export default function CreativeAdsResultsPage() {
   }
 
   if (!ad) {
-    return <div className="py-24 text-center text-[var(--ca-muted)]">{copy.loading}</div>;
+    return <div className="py-12"><CardGridSkeleton count={3} label={copy.loading} /></div>;
   }
 
   const current = variants[activeIndex] || variants[0];
@@ -132,7 +133,7 @@ export default function CreativeAdsResultsPage() {
       </div>
 
       {variants.length === 0 ? (
-        <p className="mt-16 text-center text-[var(--ca-muted)]">{copy.loading}</p>
+        <div className="mt-10"><CardGridSkeleton count={3} label={copy.loading} /></div>
       ) : (
         <>
           <div className="mt-10">

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { CardGridSkeleton } from "@/components/Skeleton";
 import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { authHeaders } from "@/lib/accessClient";
@@ -81,7 +82,7 @@ export default function CreativeAdsMyPage() {
       </div>
 
       {loading ? (
-        <div className="mt-16 text-[var(--ca-muted)]">{copy.loading}</div>
+        <div className="mt-10"><CardGridSkeleton count={3} label={copy.loading} /></div>
       ) : filtered.length === 0 ? (
         <div className="mt-16 rounded-3xl border border-[var(--ca-line)] bg-white/70 px-6 py-16 text-center">
           <p className="font-serif text-3xl">{copy.empty}</p>

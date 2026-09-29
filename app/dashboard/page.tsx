@@ -13,12 +13,14 @@ import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { formatOf, getTemplate } from "@/lib/templates";
 import type { Invitation, User } from "@/lib/types";
 import { GuestResponseLinks } from "@/components/GuestResponseLinks";
+import { CardGridSkeleton, Skeleton } from "@/components/Skeleton";
 
 export default function DashboardPage() {
   const { locale, t } = useI18n();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [list, setList] = useState<Invitation[]>([]);
+  const [syncing, setSyncing] = useState(true);
 
   useEffect(() => {
     const sync = () => {
@@ -34,7 +36,7 @@ export default function DashboardPage() {
         remote.forEach(rememberRemoteInvitation);
         setList(getInvitations());
       }),
-    );
+    ).catch(() => {}).finally(() => setSyncing(false));
     window.addEventListener("chakyru-sync", sync);
     return () => window.removeEventListener("chakyru-sync", sync);
   }, [router]);
@@ -42,7 +44,11 @@ export default function DashboardPage() {
   if (!user) {
     return (
       <SiteShell>
-        <div className="py-24 text-center text-ink-soft">…</div>
+        <Skeleton className="h-64 w-full !rounded-[var(--radius-xl)]" />
+        <div className="mt-12">
+          <Skeleton className="mb-6 h-9 w-56" />
+          <CardGridSkeleton count={3} />
+        </div>
       </SiteShell>
     );
   }
@@ -81,7 +87,9 @@ export default function DashboardPage() {
           }
         />
 
-        {shown.length === 0 ? (
+        {shown.length === 0 && syncing ? (
+          <CardGridSkeleton count={3} />
+        ) : shown.length === 0 ? (
           <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white px-6 py-20 text-center">
             <p className="font-serif text-3xl">{t.dash.empty}</p>
             <Link

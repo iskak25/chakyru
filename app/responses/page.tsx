@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
+import { ListSkeleton } from "@/components/Skeleton";
 import { firebaseIdToken } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
@@ -51,6 +52,7 @@ function Responses() {
       {items.length > 1 && <label className="text-sm">{tr("Приглашение", "Чакыруу")} <select className="ml-2 rounded-xl border p-3" value={selected} onChange={e => setSelected(e.target.value)}>{items.map(inv => <option key={inv.id} value={inv.id}>{inv.names || inv.id} · {inv.date}</option>)}</select></label>}
       <button type="button" disabled={loading} onClick={() => void load()} className="rounded-xl border bg-white px-4 py-3 text-sm disabled:opacity-50">{loading ? tr("Загрузка…", "Жүктөлүүдө…") : tr("Обновить", "Жаңыртуу")}</button>
     </div>
+    {loading && !invitation && <ListSkeleton rows={4} label={tr("Загрузка…", "Жүктөлүүдө…")} />}
     {error && <p role="alert" className="mb-5 text-rose">{error}</p>}
     {login ? <Link className="underline" href={`/login?next=${encodeURIComponent(`/responses?${params.toString()}`)}`}>{tr("Войдите, чтобы посмотреть ответы своих гостей", "Конокторуңуздун жоопторун көрүү үчүн кириңиз")}</Link> : !loading && !error && !invitation ? <p>{tr("У вас пока нет сохранённых приглашений для этого шаблона. Создайте приглашение и поделитесь ссылкой с гостями.", "Бул шаблон үчүн сакталган чакырууларыңыз жок. Чакыруу түзүп, шилтемени конокторго жөнөтүңүз.")}</p> : null}
     {invitation && <>
@@ -66,4 +68,4 @@ function Responses() {
   </SiteShell>;
 }
 
-export default function ResponsesPage() { return <Suspense fallback={<div className="p-8">…</div>}><Responses /></Suspense>; }
+export default function ResponsesPage() { return <Suspense fallback={<div className="p-8"><ListSkeleton rows={4} /></div>}><Responses /></Suspense>; }

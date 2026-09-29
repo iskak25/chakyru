@@ -10,10 +10,11 @@ import { FormatInvite } from "@/components/FormatInvite";
 import { InvitationSetupWizard } from "@/components/InvitationSetupWizard";
 import { PhoneFrame } from "@/components/InviteCard";
 import { SiteShell } from "@/components/SiteShell";
+import { EditorSkeleton } from "@/components/Skeleton";
 import { StepArrow } from "@/components/StepArrow";
 import { useI18n } from "@/lib/locale";
 import { useInviteHistory } from "@/lib/useInviteHistory";
-import { formatOf } from "@/lib/templates";
+import { formatOf, getTemplate } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
 import { fetchTemplateAccess } from "@/lib/accessClient";
@@ -85,6 +86,35 @@ function EditorPageInner() {
     };
   }, [inv, router]);
 
+  function resetTemplate() {
+    if (!inv) return;
+    const msg = locale === "ru"
+      ? "Сбросить шаблон? Все ваши изменения будут удалены, и вы начнёте с начала."
+      : "Шаблонду баштан баштайсызбы? Бардык өзгөртүүлөр өчүрүлөт.";
+    if (!window.confirm(msg)) return;
+    const c = getTemplate(inv.templateId).canvas;
+    setSelected(null);
+    patch({
+      names: c?.names || "Айбек & Айгүл",
+      hosts: "",
+      date: c?.date ?? inv.date,
+      time: c?.time ?? inv.time,
+      venue: c?.venue ?? inv.venue,
+      address: c?.address ?? inv.address,
+      city: c?.city ?? inv.city,
+      message: c?.message ?? "",
+      dressCode: c?.dressCode ?? "",
+      mapUrl: c?.mapUrl ?? inv.mapUrl,
+      coverImage: c?.coverImage ?? "",
+      layout: { ...(c?.layout ?? {}) },
+      extras: [...(c?.extras ?? [])],
+      blockColors: { ...(c?.blockColors ?? {}) },
+      copy: { ...(c?.copy ?? {}) },
+      gallery: { ...(c?.gallery ?? {}) },
+    });
+    setShowSetup(true);
+  }
+
   const onSelect = useCallback((id: string | null) => setSelected(id), []);
 
   async function openPublished(share: boolean) {
@@ -120,11 +150,11 @@ function EditorPageInner() {
     }
   }
 
-  if (!inv) return null;
+  if (!inv) return <SiteShell><EditorSkeleton /></SiteShell>;
 
   const format = formatOf(inv.templateId);
   const isSite = format === "site3d";
-  if (allowed === null) return null;
+  if (allowed === null) return <SiteShell><EditorSkeleton /></SiteShell>;
 
   if (!allowed) {
     return (
@@ -177,6 +207,7 @@ function EditorPageInner() {
           onSelect={onSelect}
           parts={isSite || getPinterestDesign(inv) ? parts : undefined}
           hideTemplates
+          onReset={resetTemplate}
           labels={{
             templates: t.editor.dockTemplates,
             media: t.editor.dockMedia,
