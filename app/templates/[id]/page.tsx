@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Heart, Pencil, Play, Trash2 } from "lucide-react";
+import { Eye, Heart, Pencil, Play, Trash2 } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
@@ -243,6 +243,15 @@ export default function TemplatePreviewPage() {
                         <p className="text-[12px] text-ink-soft">{inv.date || "—"}</p>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
+                        <Link
+                          href={`/i/${inv.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={locale === "ru" ? "Посмотреть" : "Көрүү"}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-ink-soft transition hover:text-ink"
+                        >
+                          <Eye size={14} />
+                        </Link>
                         <Link
                           href={`/create/${inv.id}`}
                           aria-label={t.templateView.edit}
