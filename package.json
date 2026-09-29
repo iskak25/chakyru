@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "migrate:commerce": "npx --yes tsx --env-file=.env.local scripts/migrate-chakyru-data.ts",
     "verify:commerce": "npx --yes tsx scripts/verify-commerce.ts",
     "verify:pro": "node scripts/verify-pro-access.cjs",
@@ -26,13 +28,18 @@
   "devDependencies": {
     "@stagewise/toolbar": "^0.6.3",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
+    "jsdom": "^30.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
   },
   "allowScripts": {
     "@firebase/util@1.15.3": true,
