@@ -77,9 +77,15 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://toichakyru.com"),
   title: "Toichakyru — Тойго чакыруу",
   description:
-    "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
+    "Той чакыруу 3D жана онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
   keywords: [
     "чакыруу",
+    "той чакыруу",
+    "той чакыруу 3d",
+    "3d чакыруу",
+    "3д чакыруу",
+    "тойго чакыруу 3d",
+    "3d приглашение на той",
     "чакыруу сайты",
     "тойго чакыруу",
     "үйлөнүү тойго чакыруу",
@@ -116,6 +122,29 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${sans.variable} ${display.variable} ${vibes.variable} ${ceremonial.variable} ${playfair.variable} ${unbounded.variable} ${caveat.variable} ${philosopher.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-page text-ink">
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  name: "Toichakyru",
+                  url: "https://toichakyru.com",
+                  logo: "https://toichakyru.com/icon.png",
+                },
+                {
+                  "@type": "WebSite",
+                  name: "Toichakyru",
+                  url: "https://toichakyru.com",
+                  inLanguage: ["ky", "ru"],
+                },
+              ],
+            }),
+          }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>
