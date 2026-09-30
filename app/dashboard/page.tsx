@@ -7,9 +7,10 @@ import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { canCreateInvitation, myInvitations } from "@/lib/auth";
 import { useI18n } from "@/lib/locale";
-import { getInvitations, getUser, rememberRemoteInvitation } from "@/lib/store";
+import { Trash2 } from "lucide-react";
+import { InvitePreviewThumb } from "@/components/InvitePreviewThumb";
+import { deleteInvitation, getInvitations, getUser, rememberRemoteInvitation } from "@/lib/store";
 import { fetchMyInvitationsRemote, pushInvitationRemote } from "@/lib/accessClient";
-import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { formatOf, getTemplate } from "@/lib/templates";
 import type { Invitation, User } from "@/lib/types";
 import { GuestResponseLinks } from "@/components/GuestResponseLinks";
@@ -21,6 +22,19 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [list, setList] = useState<Invitation[]>([]);
   const [syncing, setSyncing] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  async function onDelete(id: string) {
+    const msg = locale === "ru"
+      ? "Удалить это приглашение? Ответы и пожелания гостей будут потеряны безвозвратно."
+      : "Бул чакырууну өчүрөсүзбү? Коноктордун жооптору жана каалоолору кайра жаралгыс жоголот.";
+    if (!window.confirm(msg)) return;
+    setDeletingId(id);
+    const ok = await deleteInvitation(id);
+    setDeletingId(null);
+    if (ok) setList(getInvitations());
+    else window.alert(locale === "ru" ? "Не удалось удалить приглашение" : "Чакырууну өчүрүү оңунан чыккан жок");
+  }
 
   useEffect(() => {
     const sync = () => {
@@ -104,7 +118,6 @@ export default function DashboardPage() {
             {shown.map((inv) => {
               const yes = inv.guests.filter((g) => g.rsvp === "yes").length;
               const no = inv.guests.filter((g) => g.rsvp === "no").length;
-              const photo = getTemplatePhotos(inv.templateId).hero;
               const template = getTemplate(inv.templateId);
               return (
                 <article
@@ -112,17 +125,15 @@ export default function DashboardPage() {
                   className="group overflow-hidden rounded-[var(--radius-xl)] bg-white transition duration-300 hover:-translate-y-1"
                   style={{ boxShadow: "var(--shadow-soft)" }}
                 >
-                  <Link href={`/create/${inv.id}`} className="relative block aspect-[4/5] overflow-hidden">
-                    <img
-                      src={photo}
-                      alt=""
-                      className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-                    <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
+                  {/* The preview contains its own links, so the card link is a sibling overlay, not a parent. */}
+                  <div className="relative aspect-[4/5] overflow-hidden">
+                    <InvitePreviewThumb invitation={inv} locale={locale} />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                    <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] uppercase tracking-[0.14em]">
                       {t.formats[formatOf(inv.templateId)]}
                     </span>
-                  </Link>
+                    <Link href={`/create/${inv.id}`} aria-label={inv.names || template.name[locale]} className="absolute inset-0 z-10" />
+                  </div>
                   <div className="px-5 py-4">
                     <h2 className="font-serif text-2xl tracking-[-0.02em]">{inv.names || template.name[locale]}</h2>
                     <p className="mt-2 text-[12px] text-ink-soft">
@@ -132,6 +143,15 @@ export default function DashboardPage() {
                       {t.templateView.edit} →
                     </Link>
                     <GuestResponseLinks invitationId={inv.id} locale={locale} />
+                    <button
+                      type="button"
+                      disabled={deletingId === inv.id}
+                      onClick={() => void onDelete(inv.id)}
+                      className="mt-4 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.14em] text-red-700 transition hover:text-red-900 disabled:opacity-50"
+                    >
+                      <Trash2 size={13} />
+                      {deletingId === inv.id ? (locale === "ru" ? "Удаляем…" : "Өчүрүлүүдө…") : locale === "ru" ? "Удалить" : "Өчүрүү"}
+                    </button>
                   </div>
                 </article>
               );

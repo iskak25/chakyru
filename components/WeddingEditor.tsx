@@ -4,7 +4,7 @@ import { uploadInvitationImage } from "@/lib/uploadImage";
 
 /* eslint-disable @next/next/no-img-element -- User-selected media is displayed directly, including Firebase download URLs. */
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import { weddingStyle, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
@@ -227,7 +227,23 @@ function WeddingInlineText({ dataId, value, placeholder, onChange }: {
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
   }, []);
-  useEffect(() => { fit(); }, [value, fit]);
+  // Re-fit on every render: a font-size/family/alignment change re-renders this component but
+  // leaves `value` untouched, and the textarea (overflow-hidden) would otherwise clip the larger
+  // text inside its old height instead of growing the block.
+  useLayoutEffect(() => { fit(); });
+  // Width changes (block resized, viewport change, webfont swap) re-wrap the text without a render.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let width = el.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (el.clientWidth === width) return;
+      width = el.clientWidth;
+      fit();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [fit]);
   return (
     <textarea
       ref={ref}
