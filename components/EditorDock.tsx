@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   Calendar,
   Mail,
@@ -23,6 +23,9 @@ import { STICKERS, STICKER_GROUPS, StickerGlyph } from "@/lib/stickers";
 import { CLIPART, CLIPART_GROUPS } from "@/lib/clipart";
 import { useCatalog } from "@/lib/useCatalog";
 import type { InvitePatch } from "./CanvasEdit";
+import { CLOSE_EDIT_EVENT, EDIT_EVENT } from "./MoveCanvas";
+import { useIsMobile } from "@/lib/useIsMobile";
+import { MobileSheet } from "./MobileSheet";
 import { ElementInspector } from "./ElementInspector";
 import { EnvelopeEditor } from "./EnvelopeEditor";
 import { MusicPicker } from "./MusicPicker";
@@ -77,7 +80,12 @@ export function EditorDock({
   templatesDetail,
   templatesDetailTitle,
   onCloseTemplatesDetail,
+  onUndo,
+  mobileNavigator,
 }: {
+  onUndo?: () => void;
+  /** Телефон: навигатор секций над вкладками (когда лист закрыт). */
+  mobileNavigator?: ReactNode;
   invitation: Invitation;
   format: InviteFormat;
   onChange: InvitePatch;
@@ -221,9 +229,127 @@ export function EditorDock({
       ? mainTabs
       : [templateTab, ...mainTabs];
 
+  const mobile = useIsMobile();
+  const mobileEditing = mobile && tab === "element";
+  const sheetOpen = mobile && tab !== null;
+  const invRef = useRef(invitation);
+  invRef.current = invitation;
+
+  // Десктоп: выбор элемента сразу открывает панель. Телефон: только явное намерение
+  // (плашка «Өзгөртүү» или второй тап) — иначе случайный тап при скролле открывал бы редактор.
   useEffect(() => {
-    if (selected && parts) setTab("element");
+    if (selected && parts && !window.matchMedia("(max-width: 639px)").matches) setTab("element");
   }, [selected, parts]);
+
+  useEffect(() => {
+    const onEdit = (e: Event) => {
+      const id = (e as CustomEvent<string>).detail;
+      if (id) onSelect?.(id);
+      if (parts) setTab("element");
+    };
+    const onClose = () => setTab(null);
+    window.addEventListener(EDIT_EVENT, onEdit);
+    window.addEventListener(CLOSE_EDIT_EVENT, onClose);
+    return () => {
+      window.removeEventListener(EDIT_EVENT, onEdit);
+      window.removeEventListener(CLOSE_EDIT_EVENT, onClose);
+    };
+  }, [onSelect, parts]);
+
+  // Телефон: скролл пальцем снимает выделение (если панель закрыта).
+  useEffect(() => {
+    if (!mobile || mobileEditing || !selected) return;
+    let touching = false;
+    const down = () => { touching = true; };
+    const up = () => { touching = false; };
+    const scroll = () => { if (touching) onSelect?.(null); };
+    window.addEventListener("touchstart", down, { passive: true });
+    window.addEventListener("touchend", up, { passive: true });
+    window.addEventListener("touchcancel", up, { passive: true });
+    window.addEventListener("scroll", scroll, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", down);
+      window.removeEventListener("touchend", up);
+      window.removeEventListener("touchcancel", up);
+      window.removeEventListener("scroll", scroll);
+    };
+  }, [mobile, mobileEditing, selected, onSelect]);
+
+  // Затемнение холста (globals.css: [data-editing]).
+  useEffect(() => {
+    if (!mobileEditing) return;
+    document.documentElement.dataset.editing = "1";
+    return () => { delete document.documentElement.dataset.editing; };
+  }, [mobileEditing]);
+
+  // Лист открыт: тап по пустому холсту закрывает его (см. MoveCanvas).
+  useEffect(() => {
+    if (!sheetOpen) return;
+    document.documentElement.dataset.sheet = "1";
+    return () => { delete document.documentElement.dataset.sheet; };
+  }, [sheetOpen]);
+
+  // На телефоне лист не открывается сам при загрузке страницы.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 639px)").matches) setTab(null);
+  }, []);
+
+  // Прокрутка выбранного элемента над панелью.
+  useEffect(() => {
+    if (!mobileEditing || !selected) return;
+    const timer = window.setTimeout(() => {
+      const el = document.querySelector(`[data-box="${CSS.escape(selected)}"]`);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const visibleBottom = window.innerHeight * 0.55; // панель занимает нижние ~45%
+      if (r.bottom > visibleBottom || r.top < 0) {
+        window.scrollBy({ top: Math.min(r.top - 16, r.bottom - visibleBottom + 16), behavior: "smooth" });
+      }
+    }, 80);
+    return () => window.clearTimeout(timer);
+  }, [mobileEditing, selected]);
+
+  // Системная «Назад» на телефоне закрывает лист, а не уходит со страницы.
+  useEffect(() => {
+    if (!sheetOpen) return;
+    let pushed = true;
+    window.history.pushState({ ...(window.history.state ?? {}), chakyruPanel: true }, "");
+    const onPop = () => {
+      pushed = false;
+      setTab(null);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      // закрыли кнопкой/свайпом: убираем нашу запись из истории
+      if (pushed && window.history.state?.chakyruPanel) window.history.back();
+    };
+  }, [sheetOpen]);
+
+  // Закрытие: без изменений — молча; с изменениями — тост с отменой.
+  const [toast, setToast] = useState(false);
+  const openSnap = useRef<string | null>(null);
+  useEffect(() => {
+    if (mobileEditing) {
+      openSnap.current = JSON.stringify(invRef.current);
+      setToast(false);
+      return;
+    }
+    if (openSnap.current === null) return;
+    const changed = JSON.stringify(invRef.current) !== openSnap.current;
+    openSnap.current = null;
+    if (changed) setToast(true);
+  }, [mobileEditing]);
+  useEffect(() => {
+    if (!toast) return;
+    const timer = window.setTimeout(() => setToast(false), 5000);
+    return () => window.clearTimeout(timer);
+  }, [toast]);
+
+  const selectedPart = selected ? parts?.find((p) => p.id === selected) : undefined;
+  const elementTitle = selectedPart
+    ? `${locale === "ru" ? "Правка" : "Түзөтүү"}: ${selectedPart.label}`
+    : labels.element;
 
   const snippets = {
     toi: [
@@ -247,7 +373,7 @@ export function EditorDock({
   };
 
   return (
-    <div className={`editor-dock ${stickyClass ?? "relative sticky top-16 z-30 flex h-[calc(100vh-4rem)] shrink-0 self-start"}`}>
+    <div className={`editor-dock ${stickyClass ?? "relative sticky top-16 z-[45] flex h-[calc(100vh-4rem)] shrink-0 self-start"}`}>
       <nav className="editor-dock-tabs z-20 flex w-[84px] shrink-0 flex-col gap-0.5 border-r border-ink/10 bg-page py-2">
         {tabs.map((item) => {
           const on = tab === item.id;
@@ -268,16 +394,25 @@ export function EditorDock({
           );
         })}
       </nav>
+      {mobile && !tab ? mobileNavigator : null}
 
-      {tab ? (
+      {((panelNode) =>
+        mobile ? (
+          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle}>
+            {panelNode}
+          </MobileSheet>
+        ) : (
+          panelNode
+        ))(tab ? (
         <>
         <div className={`editor-dock-panel absolute left-[84px] top-0 z-10 flex h-full flex-col overflow-hidden border-r border-ink/10 bg-page p-3 md:static ${
           templatesPanel && tab === "templates"
             ? "w-[min(320px,calc(100vw-84px))] md:w-[320px]"
             : "w-[min(288px,calc(100vw-84px))] md:w-[288px]"
-        }`}>
+        }`}
+        >
           <div className="mb-3 flex shrink-0 items-center justify-between">
-            <p className="font-medium">
+            <p className="min-w-0 truncate font-medium">
               {tab === "envelope" ? "Конверт" : tab === "templates"
                 ? labels.templates
                 : tab === "music" ? labels.music : tab === "media"
@@ -285,11 +420,16 @@ export function EditorDock({
                   : tab === "extras"
                     ? labels.extrasTitle
                     : tab === "element"
-                      ? labels.element
+                      ? elementTitle
                       : labels.text}
             </p>
-            <button type="button" onClick={() => setTab(null)} className="text-ink-soft">
-              <X size={16} />
+            <button
+              type="button"
+              aria-label="close"
+              onClick={() => setTab(null)}
+              className="flex h-11 w-11 shrink-0 items-center justify-center text-ink-soft max-sm:-mr-2"
+            >
+              <X size={20} />
             </button>
           </div>
 
@@ -659,7 +799,7 @@ export function EditorDock({
           </div>
 
           <div className="mt-3 flex shrink-0 gap-2">
-            {onReset ? (
+            {onReset && !mobileEditing ? (
               <button
                 type="button"
                 onClick={onReset}
@@ -671,9 +811,11 @@ export function EditorDock({
             <button
               type="button"
               onClick={() => setTab(null)}
-              className="w-full rounded-xl bg-espresso px-4 py-2.5 text-[11px] uppercase tracking-[0.12em] text-cream"
+              className={`w-full rounded-xl bg-espresso px-4 text-cream ${
+                mobileEditing ? "h-12 text-sm font-medium" : "py-2.5 text-[11px] uppercase tracking-[0.12em]"
+              }`}
             >
-              {labels.save}
+              {mobileEditing ? (locale === "ru" ? "Готово ✓" : "Даяр ✓") : labels.save}
             </button>
           </div>
         </div>
@@ -693,6 +835,24 @@ export function EditorDock({
           </div>
         ) : null}
       </>
+      ) : null)}
+      {toast ? (
+        <div
+          role="status"
+          className="fixed inset-x-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-[70] flex items-center justify-between gap-3 rounded-xl bg-espresso px-4 py-2 text-sm text-cream shadow-lg sm:hidden"
+        >
+          <span>{locale === "ru" ? "Изменения сохранены" : "Өзгөртүү сакталды"}</span>
+          <button
+            type="button"
+            onClick={() => {
+              onUndo?.();
+              setToast(false);
+            }}
+            className="h-10 shrink-0 px-1 font-medium text-gold underline underline-offset-4"
+          >
+            {locale === "ru" ? "Отменить" : "Артка кайтаруу"}
+          </button>
+        </div>
       ) : null}
     </div>
   );

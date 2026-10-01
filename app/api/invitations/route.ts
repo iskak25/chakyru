@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
-import { canSaveInvitation } from "@/lib/server/accessLogic";
+import { canEditBeforePayment, canSaveInvitation } from "@/lib/server/accessLogic";
+import { isInvitationPaid } from "@/lib/server/invitationAccess";
 import { ensurePaidTemplateAccess } from "@/lib/server/access";
 import { getInvitationDoc, listUserInvitations, sameInvitationOwner, saveInvitationDoc } from "@/lib/server/invitations";
 import { loadUserProfile } from "@/lib/server/users";
@@ -46,7 +47,8 @@ export async function PUT(req: NextRequest) {
   const gate = canSaveInvitation({
     existing: Boolean(existing),
     owns,
-    accessAllowed: access.allowed,
+    // Editing is free before payment; payment unlocks the public link, not the editor.
+    accessAllowed: canEditBeforePayment({ allowed: access.allowed, expired: access.expired, templateKnown: Boolean(access.template) }),
     accessExpired: access.expired,
   });
 
@@ -74,7 +76,7 @@ export async function PUT(req: NextRequest) {
 
   const next = (await getInvitationDoc(invitation.id)) || invitation;
   return NextResponse.json(
-    { success: true, ok: true, invitation: next },
+    { success: true, ok: true, invitation: next, paid: await isInvitationPaid(next) },
     { headers: { "cache-control": "no-store" } },
   );
 }

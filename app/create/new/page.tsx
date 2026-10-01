@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchTemplateAccess, pushInvitationRemote } from "@/lib/accessClient";
 import { canEditTemplate } from "@/lib/auth";
 import { unlockPaidTemplate } from "@/lib/payAccess";
-import { getUser, openPaidInvitation, startInvitation } from "@/lib/store";
+import { getUser, openPaidInvitation } from "@/lib/store";
 import { useI18n } from "@/lib/locale";
 import { InviteSkeleton } from "@/components/Skeleton";
 import { checkoutReturn, paymentReturnHref } from "@/lib/checkoutReturn";
@@ -35,12 +35,14 @@ function CreateNewInner() {
       if (access?.allowed) {
         unlockPaidTemplate(template, access.accessType === "pro" ? "pro" : "standard");
       }
-      const canOpen = Boolean(access?.allowed || canEditTemplate(getUser(), template));
-      if (!canOpen) {
-        router.replace(`/templates/${encodeURIComponent(template)}`);
+      // Editing is free: payment only removes the «ДЕМО» mark and opens the public link.
+      const user = getUser();
+      if (!user || user.auth !== "google") {
+        router.replace(`/login?google=1&next=${encodeURIComponent(`/create/new?template=${template}`)}`);
         return;
       }
-      const started = access?.allowed ? openPaidInvitation(template) : startInvitation(template);
+      const paidAccess = Boolean(access?.allowed || canEditTemplate(user, template));
+      const started = openPaidInvitation(template, { grant: paidAccess });
       if ("invitation" in started) {
         const saved = await pushInvitationRemote(started.invitation);
         if (cancelled) return;

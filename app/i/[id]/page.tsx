@@ -4,7 +4,8 @@ import { Suspense, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { TemplateRenderer } from "@/components/TemplateRenderer";
 import { useI18n } from "@/lib/locale";
-import { fetchInvitationRemote } from "@/lib/accessClient";
+import { fetchInvitationRemoteMeta } from "@/lib/accessClient";
+import { DemoWatermark, demoNote } from "@/components/DemoMark";
 import { getInvitation, rememberRemoteInvitation } from "@/lib/store";
 import { formatOf } from "@/lib/templates";
 import type { Invitation } from "@/lib/types";
@@ -15,14 +16,18 @@ function GuestInviteInner() {
   const params = useParams<{ id: string }>();
   const { locale } = useI18n();
   const [inv, setInv] = useState<Invitation | null | undefined>(undefined);
+  // Anything but a server-confirmed payment is shown as a demo (also when we only have the local copy).
+  const [demo, setDemo] = useState(true);
 
   async function reload() {
-    const remote = await fetchInvitationRemote(params.id);
+    const remote = await fetchInvitationRemoteMeta(params.id);
     if (remote) {
-      rememberRemoteInvitation(remote);
-      setInv(remote);
+      rememberRemoteInvitation(remote.invitation);
+      setInv(remote.invitation);
+      setDemo(!remote.paid);
       return;
     }
+    setDemo(true);
     setInv(getInvitation(params.id) ?? null);
   }
 
@@ -61,6 +66,8 @@ function GuestInviteInner() {
   if (formatOf(inv.templateId) === "site3d") {
     return (
       <div className="bg-page">
+        {demo ? <DemoWatermark /> : null}
+        {demo ? <p className="mx-auto max-w-[430px] px-4 py-3 text-center text-xs text-ink-soft">{demoNote(locale)}</p> : null}
         <div className="mx-auto h-auto w-full max-w-[430px]">{renderer}<GuestWishForm key={inv.id} invitationId={inv.id} locale={locale} /></div>
       </div>
     );
@@ -68,6 +75,8 @@ function GuestInviteInner() {
 
   return (
     <div className="min-h-screen bg-page">
+      {demo ? <DemoWatermark /> : null}
+      {demo ? <p className="mx-auto max-w-md px-4 py-3 text-center text-xs text-ink-soft">{demoNote(locale)}</p> : null}
       <div className="mx-auto max-w-md overflow-hidden">{renderer}<GuestWishForm key={inv.id} invitationId={inv.id} locale={locale} /></div>
     </div>
   );

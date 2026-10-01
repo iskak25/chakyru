@@ -3,6 +3,8 @@ import { sessionFromBearer } from "@/lib/firebaseToken";
 import { addInvitationWish, setInvitationWishHidden } from "@/lib/server/invitations";
 import { loadUserProfile } from "@/lib/server/users";
 
+import { guestMayWrite } from "@/lib/server/guestAccess";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -12,6 +14,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
   const name = typeof body?.name === "string" ? body.name.trim() : "";
   const text = typeof body?.text === "string" ? body.text.trim() : "";
   if (!id || id === "demo" || id.startsWith("preview-") || !name || !text || name.length > 120 || text.length > 2000) return NextResponse.json({ error: "input" }, { status: 400 });
+  if (!(await guestMayWrite(id))) return NextResponse.json({ error: "not found" }, { status: 404 });
   const wish = await addInvitationWish({ invitationId: id, name, text });
   if (!wish) return NextResponse.json({ error: "not found" }, { status: 404 });
   return NextResponse.json({ wish });

@@ -7,6 +7,7 @@ import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import { invitationText } from "@/lib/inviteTranslations";
 import { useInvitationLanguage } from "./InvitationLanguage";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 export type InvitePatch = (partial: Partial<Invitation>) => void;
 
@@ -29,6 +30,7 @@ export function CanvasText({
   multiline?: boolean;
 }) {
   const locale = useInvitationLanguage();
+  const mobile = useIsMobile();
   const displayedValue = locale ? invitationText(value, locale) : value;
   const displayedPlaceholder = locale ? invitationText(placeholder, locale) : placeholder;
   if (!onChange) {
@@ -52,7 +54,8 @@ export function CanvasText({
   if (multiline) {
     return <GrowTextarea {...shared} />;
   }
-  return <input type="text" {...shared} />;
+  // на телефоне текст вводится только в нижней панели — иначе вылезает клавиатура
+  return <input type="text" {...shared} {...(mobile ? { readOnly: true, tabIndex: -1, inputMode: "none" as const } : {})} />;
 }
 
 function GrowTextarea({
@@ -69,6 +72,7 @@ function GrowTextarea({
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
+  const mobile = useIsMobile();
 
   function fit() {
     const el = ref.current;
@@ -89,6 +93,9 @@ function GrowTextarea({
       placeholder={placeholder}
       onChange={onChange}
       onInput={fit}
+      readOnly={mobile}
+      tabIndex={mobile ? -1 : undefined}
+      inputMode={mobile ? "none" : undefined}
       className={`${className} resize-none overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
       style={style}
     />

@@ -84,10 +84,14 @@ html {
     overflow-x: hidden;
   }
 
-  input,
-  select,
-  textarea {
+  /* 16px только в полях панели — иначе iOS зумит страницу при фокусе */
+  .editor-dock-panel :is(input, select, textarea) {
     font-size: 16px;
+  }
+
+  /* поля внутри холста сохраняют заданный шаблоном размер */
+  article :is(input, textarea) {
+    font-size: inherit;
   }
 
   button,
@@ -108,7 +112,7 @@ html {
   }
 
   .editor-page {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
   }
 
   .editor-dock-tabs {
@@ -119,7 +123,7 @@ html {
     flex-direction: row;
     justify-content: space-around;
     gap: 0;
-    overflow-x: auto;
+    overflow: hidden;
     border-right: 0;
     border-top: 1px solid var(--line);
     padding: 0.25rem 0.5rem;
@@ -128,20 +132,31 @@ html {
 
   .editor-dock-tabs > button {
     min-height: 56px;
-    min-width: 72px;
-    flex: 1 0 72px;
+    min-width: 0;
+    flex: 1 1 0;
   }
 
+  /* Панель живёт внутри нижнего листа (MobileSheet / vaul) */
   .editor-dock-panel {
-    position: absolute !important;
-    inset: auto 0 64px;
-    z-index: 2;
+    position: static !important;
     width: 100% !important;
-    height: min(68svh, 560px) !important;
+    height: 100% !important;
     border-right: 0;
-    border-top: 1px solid var(--line);
-    padding: 1rem;
-    box-shadow: 0 -12px 28px rgba(15, 12, 10, 0.08);
+    padding: 0.25rem 1rem 1rem;
+  }
+
+  /* Открыта панель редактирования (html[data-editing], см. EditorDock):
+     холст затемнён, выделенный элемент (z-index 90) остаётся ярким. */
+  [data-editing] [data-invite-canvas]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 80;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  [data-editing] .edit-badge {
+    display: none;
   }
 
   .site3d-sticky {

@@ -73,7 +73,12 @@ service cloud.firestore {
     }
 
     match /invitations/{id} {
-      allow read: if true;
+      // Pages are served only by the server API (it enforces the paid/unpaid rule). A direct read
+      // would bypass that, so only the owner or an admin may read the document directly.
+      allow read: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid
+          || resource.data.ownerId == 'google:' + request.auth.uid
+          || admin());
       allow create, update, delete: if false;
     }
 

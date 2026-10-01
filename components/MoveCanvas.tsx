@@ -15,6 +15,7 @@ import type { Invitation, LayoutBox, LayoutMap } from "@/lib/types";
 import type { InvitePatch } from "./CanvasEdit";
 import { deleteCanvasId, duplicateCanvasId, toggleLockId } from "@/lib/canvasOps";
 import { rememberCanvasPointer } from "@/lib/canvasPointer";
+import { useI18n } from "@/lib/locale";
 
 type Handle = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 type DragMode = { kind: "move" } | { kind: "resize"; handle: Handle } | { kind: "rotate" };
@@ -34,9 +35,34 @@ type MoveCtxValue = {
     space?: DragSpace,
   ) => void;
   canvas: () => HTMLDivElement | null;
+  /** Запомнить начало касания (pointerdown) для проверки «чистого» тапа. */
+  tapDown: (e: React.PointerEvent, id: string) => void;
   onChange?: InvitePatch;
   invitation?: Invitation;
 };
+
+/** Окно (window) получает id элемента: открыть панель редактирования. */
+export const EDIT_EVENT = "chakyru:edit";
+/** Закрыть панель редактирования (тап по затемнённому холсту). */
+export const CLOSE_EDIT_EVENT = "chakyru:close-edit";
+
+// Время последнего scroll: тап во время инерционной прокрутки не считается чистым.
+let lastScroll = 0;
+if (typeof window !== "undefined") {
+  window.addEventListener("scroll", () => { lastScroll = Date.now(); }, { passive: true, capture: true });
+}
+
+const TAP_MAX_MOVE = 8;
+const TAP_MAX_MS = 400;
+const TAP_AFTER_SCROLL_MS = 300;
+
+// На таче текст на холсте readOnly (см. useIsMobile в CanvasEdit/WeddingEditor),
+// поэтому input[type=text] и textarea не считаются «контролами» — их можно тащить.
+function isControl(t: HTMLElement, touch: boolean) {
+  return !!t.closest(
+    touch ? "select, a, button, label, input:not([type='text'])" : "input, textarea, select, a, button, label",
+  );
+}
 
 const FLOW_BOX: LayoutBox = { x: 0, y: 0, w: 100, h: 0, z: 8 };
 const HANDLES: Handle[] = ["n", "s", "e", "w", "ne", "nw", "se", "sw"];
@@ -79,7 +105,8 @@ function BoxHandles({
           type="button"
           aria-label={handle}
           data-export-hide
-          className={`absolute z-[91] h-3 w-3 rounded-full border border-white bg-[#c4a35e] shadow ${HANDLE_CLASS[handle]}`}
+          // визуально 12px, зона касания 44px (after:-inset-4)
+          className={`resize-handle absolute z-[91] h-3 w-3 touch-none rounded-full border border-white bg-[#c4a35e] shadow after:absolute after:-inset-4 after:content-[''] ${HANDLE_CLASS[handle]}`}
           onPointerDown={(e) => {
             e.stopPropagation();
             ctx.begin(e, id, defaults, { kind: "resize", handle }, space);
@@ -108,6 +135,7 @@ function BoxToolbar({
   onAct: (kind: "lock" | "delete" | "copy") => void;
 }) {
   const ctx = useContext(MoveCtx);
+  const { locale } = useI18n();
   if (!ctx) return null;
   return (
     <>
@@ -116,7 +144,7 @@ function BoxToolbar({
           type="button"
           aria-label="rotate"
           data-export-hide
-          className="absolute left-1/2 z-[92] flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border bg-white shadow"
+          className="absolute left-1/2 z-[92] flex h-10 w-10 touch-none -translate-x-1/2 items-center justify-center rounded-full border bg-white shadow"
           style={{
             borderColor: BLUE,
             color: BLUE,
@@ -131,22 +159,34 @@ function BoxToolbar({
           <RefreshCw size={14} strokeWidth={2.4} />
         </button>
       ) : null}
+      {/* Мобилка: вместо плавающей панели — плашка «Өзгөртүү», открывает редактор */}
+      <button
+        type="button"
+        data-export-hide
+        aria-label="edit"
+        className="edit-badge absolute left-1/2 z-[93] flex h-10 -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full bg-[#c4a35e] px-4 text-[13px] font-medium text-white shadow-md sm:hidden"
+        style={{ top: nearTop ? (locked ? "calc(100% + 8px)" : "calc(100% + 52px)") : locked ? "-60px" : "-108px" }}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={() => window.dispatchEvent(new CustomEvent(EDIT_EVENT, { detail: id }))}
+      >
+        ✏️ {locale === "ru" ? "Изменить" : "Өзгөртүү"}
+      </button>
       {ctx.onChange && ctx.invitation ? (
         <div
           data-export-hide
-          className="absolute left-1/2 z-[93] flex -translate-x-1/2 items-center gap-3 rounded-xl bg-white px-3 py-2 shadow-md"
+          className="absolute left-1/2 z-[93] hidden -translate-x-1/2 sm:flex items-center gap-1 rounded-xl bg-white p-1 shadow-md"
           style={{
-            top: nearTop ? (locked ? "calc(100% + 8px)" : "calc(100% + 40px)") : locked ? "-52px" : "-84px",
+            top: nearTop ? (locked ? "calc(100% + 8px)" : "calc(100% + 52px)") : locked ? "-60px" : "-108px",
           }}
           onPointerDown={(e) => e.stopPropagation()}
         >
-          <button type="button" aria-label="lock" className="text-[#2b7fff]" onClick={() => onAct("lock")}>
+          <button type="button" aria-label="lock" className="flex h-10 min-w-10 items-center justify-center text-[#2b7fff]" onClick={() => onAct("lock")}>
             {locked ? <Lock size={18} /> : <Unlock size={18} />}
           </button>
-          <button type="button" aria-label="delete" className="text-[#2b7fff]" onClick={() => onAct("delete")}>
+          <button type="button" aria-label="delete" className="flex h-10 min-w-10 items-center justify-center text-[#2b7fff]" onClick={() => onAct("delete")}>
             <Trash2 size={18} />
           </button>
-          {canDuplicate ? <button type="button" aria-label="duplicate" className="text-[#2b7fff]" onClick={() => onAct("copy")}>
+          {canDuplicate ? <button type="button" aria-label="duplicate" className="flex h-10 min-w-10 items-center justify-center text-[#2b7fff]" onClick={() => onAct("copy")}>
             <Copy size={18} />
           </button> : null}
         </div>
@@ -202,6 +242,7 @@ export function MoveCanvas({
     start: LayoutBox;
     cw: number;
     ch: number;
+    scale: number;
     box: LayoutBox;
     active: boolean;
     cx: number;
@@ -227,12 +268,14 @@ export function MoveCanvas({
         return;
       }
       const t = e.target as HTMLElement;
-      const onControl = !!t.closest("input, textarea, select, a, button, label");
+      const onControl = isControl(t, e.pointerType !== "mouse");
       e.stopPropagation();
       select(id);
       const rect = canvas.getBoundingClientRect();
-      const cw = Math.max(rect.width, 1);
-      const ch = Math.max(rect.height, 1);
+      // cw/ch — в собственных (немасштабированных) пикселях холста; scale — transform: scale предков
+      const scale = canvas.offsetWidth ? rect.width / canvas.offsetWidth : 1;
+      const cw = Math.max(canvas.offsetWidth || rect.width, 1);
+      const ch = Math.max(canvas.offsetHeight || rect.height, 1);
       if (space === "flow" && mode.kind === "resize") {
         const node = canvas.querySelector(`[data-box="${id}"]`) as HTMLElement | null;
         if (node && (!start.h || start.h === 0)) {
@@ -256,6 +299,7 @@ export function MoveCanvas({
         start,
         cw,
         ch,
+        scale,
         box: start,
         active: mode.kind === "resize" || mode.kind === "rotate",
         cx,
@@ -271,10 +315,11 @@ export function MoveCanvas({
   function applyMove(e: React.PointerEvent) {
     const d = drag.current;
     if (!d) return;
-    const px = e.clientX - d.startX;
-    const py = e.clientY - d.startY;
+    // координаты указателя делим на scale холста
+    const px = (e.clientX - d.startX) / d.scale;
+    const py = (e.clientY - d.startY) / d.scale;
     if (!d.active) {
-      if (Math.hypot(px, py) < 5) return;
+      if (Math.hypot(px, py) * d.scale < 5) return;
       d.active = true;
       setDragging(true);
       ref.current?.setPointerCapture(e.pointerId);
@@ -344,6 +389,38 @@ export function MoveCanvas({
     onLayout?.(next);
   }
 
+  const tap = useRef<{ id: string; x: number; y: number; t: number } | null>(null);
+  const tapDown = useCallback((e: React.PointerEvent, id: string) => {
+    tap.current = { id, x: e.clientX, y: e.clientY, t: Date.now() };
+  }, []);
+
+  // pointerup: чистый тап по невыделенному элементу выделяет его,
+  // по уже выделенному — открывает редактор (второй тап).
+  function onUp(e: React.PointerEvent) {
+    const tp = tap.current;
+    tap.current = null;
+    const dragged = !!drag.current?.active;
+    endDrag();
+    if (!tp || dragged || !editable) return;
+    const now = Date.now();
+    const clean =
+      Math.hypot(e.clientX - tp.x, e.clientY - tp.y) < TAP_MAX_MOVE &&
+      now - tp.t < TAP_MAX_MS &&
+      now - lastScroll > TAP_AFTER_SCROLL_MS;
+    if (!clean) return;
+    if (selected === tp.id) window.dispatchEvent(new CustomEvent(EDIT_EVENT, { detail: tp.id }));
+    else select(tp.id);
+  }
+
+  // pointercancel (системный жест, скролл): откатываем черновик, без «прыжка»
+  function cancelDrag() {
+    tap.current = null;
+    if (!drag.current) return;
+    drag.current = null;
+    setDragging(false);
+    setDraft({});
+  }
+
   return (
     <MoveCtx.Provider
       value={{
@@ -354,6 +431,7 @@ export function MoveCanvas({
         get,
         begin,
         canvas: () => ref.current,
+        tapDown,
         onChange,
         invitation,
       }}
@@ -371,7 +449,13 @@ export function MoveCanvas({
           background,
         }}
         onPointerDown={() => {
-          if (editable) select(null);
+          if (!editable) return;
+          // пока открыт лист, тап по пустому месту холста закрывает его
+          if (document.documentElement.dataset.sheet) {
+            window.dispatchEvent(new Event(CLOSE_EDIT_EVENT));
+            return;
+          }
+          select(null);
         }}
         onPointerMove={(e) => {
           if (editable && !drag.current) {
@@ -379,8 +463,8 @@ export function MoveCanvas({
           }
           applyMove(e);
         }}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
+        onPointerUp={onUp}
+        onPointerCancel={cancelDrag}
       >
         {children}
       </div>
@@ -424,7 +508,7 @@ export function FreeMove({
   return (
     <div
       data-box={id}
-      className={`absolute overflow-visible ${move.editable && move.dragging && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${className}`}
+      className={`absolute overflow-visible ${move.editable && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${className}`}
       style={{
         left: `${box.x}%`,
         top: `${box.y}%`,
@@ -436,8 +520,15 @@ export function FreeMove({
       onPointerDown={(e) => {
         e.stopPropagation();
         if (!move.editable) return;
-        move.select(id);
-        if (!locked) move.begin(e, id, defaults, { kind: "move" });
+        if (e.pointerType === "mouse") {
+          move.select(id);
+          if (!locked) move.begin(e, id, defaults, { kind: "move" });
+          return;
+        }
+        // тач/перо: выделение — по «чистому» тапу (pointerup), а не по касанию,
+        // иначе листание страницы выделяло бы элементы. Тащить можно только выделенный.
+        move.tapDown(e, id);
+        if (selected && !locked) move.begin(e, id, defaults, { kind: "move" });
       }}
     >
       <div
@@ -502,7 +593,7 @@ export function Selectable({
   return (
     <div
       data-box={id}
-      className={`relative overflow-visible ${ctx.editable && ctx.dragging && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${ctx.editable && !selected ? "hover:ring-1 hover:ring-[#c4a35e]/70" : ""} ${className}`}
+      className={`relative overflow-visible ${ctx.editable && selected && !locked ? "touch-none" : ""} ${selected ? "z-[90]" : ""} ${ctx.editable && !selected ? "hover:ring-1 hover:ring-[#c4a35e]/70" : ""} ${className}`}
       style={{
         ...style,
         transform: `translate(${(box.x / 100) * cw}px, ${(box.y / 100) * cw}px)${flat ? ` rotate(${box.r ?? 0}deg)` : ""}`,
@@ -514,7 +605,7 @@ export function Selectable({
         cursor: ctx.editable && !locked ? (selected ? "move" : "pointer") : undefined,
       }}
       onPointerDownCapture={(e) => {
-        if (!ctx.editable) return;
+        if (!ctx.editable || e.pointerType !== "mouse") return;
         const hit = (e.target as HTMLElement).closest("[data-box]");
         if (hit && hit !== e.currentTarget) return;
         ctx.select(id);
@@ -524,8 +615,13 @@ export function Selectable({
         const hit = (e.target as HTMLElement).closest("[data-box]");
         if (hit && hit !== e.currentTarget) return;
         e.stopPropagation();
-        const onControl = !!(e.target as HTMLElement).closest("input, textarea, select, a, button, label");
-        if (!locked && !onControl) ctx.begin(e, id, FLOW_BOX, { kind: "move" }, "flow");
+        const touch = e.pointerType !== "mouse";
+        const onControl = isControl(e.target as HTMLElement, touch);
+        // тач/перо: выделение — по «чистому» тапу (pointerup); тащить можно только выделенный
+        if (touch) ctx.tapDown(e, id);
+        if (!locked && !onControl && (!touch || selected)) {
+          ctx.begin(e, id, FLOW_BOX, { kind: "move" }, "flow");
+        }
       }}
     >
       <div

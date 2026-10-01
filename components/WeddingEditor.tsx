@@ -13,6 +13,7 @@ import { ExtraLayer } from "./ExtraLayer";
 import type { InvitePatch } from "./CanvasEdit";
 import type { ReferenceCrop } from "@/lib/referenceWeddings";
 import { invitationText } from "@/lib/inviteTranslations";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
 
 type EditorContext = {
@@ -221,6 +222,7 @@ function WeddingInlineText({ dataId, value, placeholder, onChange }: {
   dataId: string; value: string; placeholder: string; onChange: (value: string) => void;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
+  const mobile = useIsMobile();
   const fit = useCallback(() => {
     const el = ref.current;
     if (!el) return;
@@ -253,6 +255,9 @@ function WeddingInlineText({ dataId, value, placeholder, onChange }: {
       placeholder={placeholder}
       onChange={e => onChange(e.target.value)}
       onInput={fit}
+      readOnly={mobile}
+      tabIndex={mobile ? -1 : undefined}
+      inputMode={mobile ? "none" : undefined}
       className="w-full resize-none overflow-hidden whitespace-pre-line rounded-sm border-none bg-transparent p-0 font-[inherit] leading-[inherit] outline-none ring-1 ring-transparent scrollbar-none hover:ring-gold/60 focus:ring-gold"
     />
   );

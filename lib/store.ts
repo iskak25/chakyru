@@ -305,13 +305,17 @@ export function startInvitation(
   }
 }
 
-export function openPaidInvitation(templateId: string): { invitation: Invitation; created: boolean } | { href: string } {
+/**
+ * Opens the user's one page for a template, creating it if needed. `grant: false` is the free-editing
+ * path before payment: nothing is unlocked locally, the page just starts out as a private demo.
+ */
+export function openPaidInvitation(templateId: string, opts: { grant?: boolean } = {}): { invitation: Invitation; created: boolean } | { href: string } {
   const user = getUser();
   if (!user) return { href: createStartHref(templateId) };
   if (user.auth !== "google") {
     return { href: `/login?google=1&next=${encodeURIComponent(`/create/new?template=${templateId}&paid=1`)}` };
   }
-  grantLocalTemplate(templateId);
+  if (opts.grant !== false) grantLocalTemplate(templateId);
   const host = getUser();
   const mine = readInvitations().find(
     (inv) =>

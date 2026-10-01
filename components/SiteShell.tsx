@@ -21,10 +21,13 @@ export function SiteShell({
   children,
   footer = true,
   forceMarketing = false,
+  mobileFullscreen = false,
 }: {
   children: ReactNode;
   footer?: boolean;
   forceMarketing?: boolean;
+  /** Телефон: без шапки и подвала сайта (редактор на весь экран). */
+  mobileFullscreen?: boolean;
 }) {
   const pathname = usePathname();
   const appChrome = !forceMarketing && shouldUseAppChrome(pathname);
@@ -35,9 +38,9 @@ export function SiteShell({
 
   return (
     <>
-      <Header />
+      <div className={mobileFullscreen ? "max-sm:hidden sm:contents" : "contents"}><Header /></div>
       <main className="flex-1">{children}</main>
-      {footer ? <Footer /> : null}
+      {footer ? <div className={mobileFullscreen ? "max-sm:hidden sm:contents" : "contents"}><Footer /></div> : null}
     </>
   );
 }

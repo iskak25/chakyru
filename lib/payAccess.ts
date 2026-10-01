@@ -125,3 +125,36 @@ export async function confirmLastCheckout() {
     return false;
   }
 }
+
+export type TemplateCheckoutResult =
+  | { ok: true; granted: boolean }
+  | { ok: false; error: "auth" | "config" | "failed"; detail?: string };
+
+/**
+ * Starts the existing Finik checkout for a template. Payment itself is confirmed by the server
+ * (/api/pay/confirm and the webhook); the return page alone never unlocks anything.
+ */
+export async function startTemplateCheckout(templateId: string): Promise<TemplateCheckoutResult> {
+  const auth = getFirebaseAuth();
+  await auth?.authStateReady();
+  const token = await auth?.currentUser?.getIdToken();
+  if (!token) return { ok: false, error: "auth" };
+  try {
+    const res = await fetch("/api/pay", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+      body: JSON.stringify({ plan: "standard", templateId, proMonths: 1 }),
+    });
+    const data = (await res.json().catch(() => null)) as { paymentUrl?: string; paymentId?: string; granted?: boolean; error?: string } | null;
+    rememberCheckout({ paymentId: data?.paymentId, templateId, plan: "standard" });
+    if (data?.granted) return { ok: true, granted: true };
+    if (!res.ok || !data?.paymentUrl) {
+      // 503 = ключи Finik не заданы; остальное — код ошибки сервера, чтобы причину было видно
+      return { ok: false, error: res.status === 503 ? "config" : "failed", detail: data?.error || `HTTP ${res.status}` };
+    }
+    window.location.href = data.paymentUrl;
+    return { ok: true, granted: false };
+  } catch {
+    return { ok: false, error: "failed" };
+  }
+}

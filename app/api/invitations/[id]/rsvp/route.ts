@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { addInvitationRsvp } from "@/lib/server/invitations";
 import type { RsvpStatus } from "@/lib/types";
 
+import { guestMayWrite } from "@/lib/server/guestAccess";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ id: st
   if (!id || id === "demo" || id === "preview" || id.startsWith("preview-") || !name || name.length > 120 || (rsvp !== "yes" && rsvp !== "no" && rsvp !== "maybe") || (body?.wish !== undefined && (typeof body.wish !== "string" || body.wish.length > 2000))) {
     return NextResponse.json({ error: "input" }, { status: 400 });
   }
+  if (!(await guestMayWrite(id))) return NextResponse.json({ error: "not found" }, { status: 404 });
   const guest = await addInvitationRsvp({
     invitationId: id,
     name,

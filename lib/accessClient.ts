@@ -93,11 +93,28 @@ export async function deleteInvitationRemote(id: string): Promise<boolean> {
   }
 }
 
+export type InvitationRemote = {
+  invitation: Invitation;
+  /** Server verdict: the owner has paid, so the page is public and carries no «ДЕМО» mark. */
+  paid: boolean;
+  viewer: "owner" | "public";
+};
+
+/**
+ * Sends the session token when there is one: before payment the server shows a page only to its
+ * owner, so an anonymous request for it gets 404.
+ */
+export async function fetchInvitationRemoteMeta(id: string): Promise<InvitationRemote | null> {
+  const headers = await authHeaders();
+  const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { cache: "no-store", headers }).catch(() => null);
+  if (!res?.ok) return null;
+  const data = (await res.json().catch(() => null)) as { invitation?: Invitation; paid?: boolean; viewer?: string } | null;
+  if (!data?.invitation) return null;
+  return { invitation: data.invitation, paid: data.paid === true, viewer: data.viewer === "owner" ? "owner" : "public" };
+}
+
 export async function fetchInvitationRemote(id: string): Promise<Invitation | null> {
-  const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { cache: "no-store" });
-  if (!res.ok) return null;
-  const data = (await res.json()) as { invitation?: Invitation };
-  return data.invitation ?? null;
+  return (await fetchInvitationRemoteMeta(id))?.invitation ?? null;
 }
 
 export async function fetchMyInvitationsRemote(): Promise<Invitation[]> {

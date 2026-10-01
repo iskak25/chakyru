@@ -5,12 +5,14 @@ const sessionFromBearer = vi.fn();
 const setInvitationWishHidden = vi.fn();
 const addInvitationWish = vi.fn();
 const loadUserProfile = vi.fn();
+const guestMayWrite = vi.fn();
 
 vi.mock("@/lib/firebaseToken", () => ({ sessionFromBearer: (...a: unknown[]) => sessionFromBearer(...a) }));
 vi.mock("@/lib/server/invitations", () => ({
   setInvitationWishHidden: (...a: unknown[]) => setInvitationWishHidden(...a),
   addInvitationWish: (...a: unknown[]) => addInvitationWish(...a),
 }));
+vi.mock("@/lib/server/guestAccess", () => ({ guestMayWrite: (...a: unknown[]) => guestMayWrite(...a) }));
 vi.mock("@/lib/server/users", () => ({ loadUserProfile: (...a: unknown[]) => loadUserProfile(...a) }));
 
 import { PATCH, POST } from "@/app/api/invitations/[id]/wish/route";
@@ -28,6 +30,16 @@ beforeEach(() => {
   setInvitationWishHidden.mockReset();
   addInvitationWish.mockReset();
   loadUserProfile.mockReset().mockResolvedValue({ id: "google:uid1", email: "u@e.c" });
+  guestMayWrite.mockReset().mockResolvedValue(true);
+});
+
+describe("POST /wish on an unpaid page", () => {
+  it("answers 404 and stores nothing", async () => {
+    guestMayWrite.mockResolvedValue(false);
+    const res = await POST(request("POST", { name: "A", text: "Hi" }), ctx());
+    expect(res.status).toBe(404);
+    expect(addInvitationWish).not.toHaveBeenCalled();
+  });
 });
 
 describe("PATCH /wish (hide/show)", () => {

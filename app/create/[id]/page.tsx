@@ -12,13 +12,18 @@ import { PhoneFrame } from "@/components/InviteCard";
 import { SiteShell } from "@/components/SiteShell";
 import { EditorSkeleton } from "@/components/Skeleton";
 import { StepArrow } from "@/components/StepArrow";
+import { ScaledCanvas } from "@/components/ScaledCanvas";
+import { EditorTour, TOUR_FLAG } from "@/components/EditorTour";
+import { EditorTopBar } from "@/components/EditorTopBar";
+import { SectionNavigator } from "@/components/SectionNavigator";
+import { DemoWatermark, demoNote } from "@/components/DemoMark";
 import { useI18n } from "@/lib/locale";
 import { useInviteHistory } from "@/lib/useInviteHistory";
 import { formatOf, getTemplate } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
-import { fetchTemplateAccess } from "@/lib/accessClient";
-import { confirmLastCheckout, unlockPaidTemplate } from "@/lib/payAccess";
+import { fetchInvitationRemoteMeta, fetchTemplateAccess } from "@/lib/accessClient";
+import { confirmLastCheckout, startTemplateCheckout, unlockPaidTemplate } from "@/lib/payAccess";
 import { ensureInvitationSaved, getUser } from "@/lib/store";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
@@ -38,7 +43,37 @@ function EditorPageInner() {
   const [publishError, setPublishError] = useState("");
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [expired, setExpired] = useState(false);
+  // Server verdict. Anything but a confirmed `true` keeps the «ДЕМО» mark and the private mode.
+  const [paid, setPaid] = useState(false);
+  const [payBusy, setPayBusy] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [showSetup, setShowSetup] = useState(searchParams.get("setup") === "1");
+
+  const [tourOpen, setTourOpen] = useState(false);
+
+  // Первый вход на телефоне: показать подсказку один раз (флаг в localStorage)
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 639px)").matches) return;
+    try {
+      if (!window.localStorage.getItem(TOUR_FLAG)) setTourOpen(true);
+    } catch {}
+  }, []);
+
+  function closeTour() {
+    setTourOpen(false);
+    try {
+      window.localStorage.setItem(TOUR_FLAG, "1");
+    } catch {}
+  }
+
+  function exitEditor() {
+    const unsaved = saveState === "saving" || saveState === "pending" || saveState === "error";
+    if (unsaved) {
+      const msg = locale === "ru" ? "Есть несохранённые изменения. Выйти?" : "Сакталбаган өзгөртүүлөр бар. Чыгасызбы?";
+      if (!window.confirm(msg)) return;
+    }
+    router.push("/dashboard");
+  }
 
   function closeSetup() {
     setShowSetup(false);
@@ -71,10 +106,10 @@ function EditorPageInner() {
       const user = getUser();
       // Trust a successful server check fully (including a denial) — only fall back to the
       // local/offline heuristic when the network call itself failed (access === null).
-      const paid = access ? access.allowed : canEditTemplate(user, inv.templateId);
       const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
       setExpired(Boolean(access?.expired));
-      setAllowed(Boolean(user?.auth === "google" && paid && mine));
+      // Editing is free; payment only unlocks the public link and removes the demo mark.
+      setAllowed(Boolean(user?.auth === "google" && mine && !access?.expired));
       } finally { checking = false; }
     };
     void sync();
@@ -85,6 +120,23 @@ function EditorPageInner() {
       window.removeEventListener("chakyru-sync", onSync);
     };
   }, [inv, router]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = () => {
+      void fetchInvitationRemoteMeta(params.id).then((meta) => {
+        if (!cancelled) setPaid(meta?.paid === true);
+      });
+    };
+    load();
+    window.addEventListener("chakyru-sync", load);
+    window.addEventListener("focus", load);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("chakyru-sync", load);
+      window.removeEventListener("focus", load);
+    };
+  }, [params.id]);
 
   function resetTemplate() {
     if (!inv) return;
@@ -117,13 +169,48 @@ function EditorPageInner() {
 
   const onSelect = useCallback((id: string | null) => setSelected(id), []);
 
+  async function payNow() {
+    if (!inv || payBusy) return;
+    setPayBusy(true);
+    setPublishError("");
+    try {
+      // Keep every edit: the checkout is bound to this template and this page.
+      await ensureInvitationSaved(inv);
+      const result = await startTemplateCheckout(inv.templateId);
+      if (!result.ok) {
+        if (result.error === "auth") {
+          router.push(`/login?google=1&next=${encodeURIComponent(`/create/${inv.id}`)}`);
+        } else {
+          const detail = result.detail ? ` (${result.detail})` : "";
+          setPublishError(result.error === "config" ? t.pay.notConfigured + detail : t.pay.fail + detail);
+        }
+        return;
+      }
+      if (result.granted) {
+        const meta = await fetchInvitationRemoteMeta(inv.id);
+        setPaid(meta?.paid === true);
+      }
+    } finally { setPayBusy(false); }
+  }
+
+  async function copyLink() {
+    if (!inv) return;
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/i/${inv.id}`);
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      setShareOpen(true);
+    }
+  }
+
   async function openPublished(share: boolean) {
     if (!inv || publishing) return;
     setPublishing(true);
     setPublishError("");
     try {
       if (!await ensureInvitationSaved(inv)) throw new Error("save");
-      if (share) setShareOpen(true);
+      if (share && paid) setShareOpen(true);
       else router.push(`/i/${inv.id}`);
     } catch {
       setPublishError(locale === "ru"
@@ -134,6 +221,11 @@ function EditorPageInner() {
 
   async function download() {
     if (!inv || saving) return;
+    // The exported file would not carry the on-screen demo mark, so export needs payment.
+    if (!paid) {
+      void payNow();
+      return;
+    }
     setSelected(null);
     setSaving(true);
     try {
@@ -186,7 +278,7 @@ function EditorPageInner() {
   }
 
   return (
-    <SiteShell>
+    <SiteShell mobileFullscreen>
       {showSetup ? (
         <InvitationSetupWizard
           invitation={inv}
@@ -197,6 +289,24 @@ function EditorPageInner() {
           onSkip={closeSetup}
         />
       ) : null}
+      {!paid ? <DemoWatermark editor /> : null}
+      {tourOpen && !showSetup ? <EditorTour locale={locale} onClose={closeTour} /> : null}
+      <EditorTopBar
+        locale={locale}
+        saveState={saveState}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        onUndo={undo}
+        onRedo={redo}
+        onExit={exitEditor}
+        onPreview={isSite ? () => void openPublished(false) : undefined}
+        onShare={isSite && paid ? () => void openPublished(true) : undefined}
+        onDownload={isSite ? undefined : download}
+        onReset={resetTemplate}
+        onHelp={() => setTourOpen(true)}
+        onPay={paid ? undefined : () => void payNow()}
+        busy={publishing || saving}
+      />
       <div className="editor-page flex min-h-[calc(100vh-4rem)] pb-20 lg:pb-0">
         <EditorDock
           invitation={inv}
@@ -208,6 +318,8 @@ function EditorPageInner() {
           parts={isSite || getPinterestDesign(inv) ? parts : undefined}
           hideTemplates
           onReset={resetTemplate}
+          onUndo={undo}
+          mobileNavigator={<SectionNavigator parts={parts} locale={locale} />}
           labels={{
             templates: t.editor.dockTemplates,
             media: t.editor.dockMedia,
@@ -248,8 +360,8 @@ function EditorPageInner() {
             save: t.editor.save,
           }}
         />
-        <div className="min-w-0 flex-1 px-4 py-6">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0 flex-1 px-4 py-6 max-sm:pt-3">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 max-sm:hidden">
             <div>
               <p className="label">{t.formats[format]}</p>
               <h1 className="font-serif text-4xl uppercase">{t.editor.title}</h1>
@@ -284,15 +396,24 @@ function EditorPageInner() {
               />
               {isSite ? (
                 <>
-                  <button
+                  {paid ? (
+                    <button
+                      type="button"
+                      onClick={() => void copyLink()}
+                      className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
+                    >
+                      {linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү")}
+                    </button>
+                  ) : null}
+                  {paid ? <button
                     type="button"
                     onClick={() => void openPublished(true)}
                     disabled={publishing}
                     className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
                   >
                     {t.editor.share}
-                  </button>
-                  {shareOpen && <ShareInvitationDialog invitation={inv} locale={locale} onClose={() => setShareOpen(false)} />}
+                  </button> : null}
+                  {shareOpen && paid && <ShareInvitationDialog invitation={inv} locale={locale} onClose={() => setShareOpen(false)} />}
                   <button
                     type="button"
                     onClick={() => void openPublished(false)}
@@ -316,15 +437,36 @@ function EditorPageInner() {
             </div>
           </div>
 
+          {!paid ? (
+            <div className="mx-auto mb-5 flex max-w-[430px] flex-col gap-3 rounded-[12px] border border-[var(--line)] bg-white p-4 text-sm leading-6">
+              <p>{demoNote(locale)}</p>
+              <button
+                type="button"
+                onClick={() => void payNow()}
+                disabled={payBusy}
+                className="h-11 rounded-[12px] bg-espresso px-4 text-[12px] font-medium uppercase tracking-[0.1em] text-cream disabled:opacity-60"
+              >
+                {payBusy ? t.pay.processing : (locale === "ru" ? "Оплатить и открыть публичный доступ" : "Төлөп, ачык жеткиликтүүлүктү ачуу")}
+              </button>
+            </div>
+          ) : (
+            <div className="mx-auto mb-5 flex max-w-[430px] items-center justify-between gap-3 rounded-[12px] border border-[var(--line)] bg-white p-4 text-sm">
+              <span>{locale === "ru" ? "Страница опубликована" : "Барак жарыяланды"}</span>
+              <button type="button" onClick={() => void copyLink()} className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.1em]">
+                {linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү")}
+              </button>
+            </div>
+          )}
+
           {publishError && <p role="alert" className="mb-4 text-sm text-red-700">{publishError}</p>}
-          <p className="mb-6 text-center text-sm text-ink-soft">{t.editor.tapHint}</p>
+          <p className="mb-6 text-center text-sm text-ink-soft max-sm:hidden">{t.editor.tapHint}</p>
 
           <div className={isSite ? "mx-auto w-full" : "mx-auto w-fit"}>
-            <p className="mb-3 text-center text-[10px] uppercase tracking-[0.16em] text-meta">
+            <p className="mb-3 text-center text-[10px] uppercase tracking-[0.16em] text-meta max-sm:hidden">
               {t.editor.live}
             </p>
             <div className="flex items-start justify-center gap-1 sm:gap-3">
-              <div className="sticky top-[50vh] -translate-y-1/2">
+              <div className="sticky top-[50vh] hidden -translate-y-1/2 sm:block">
                 <StepArrow
                   dir="left"
                   onClick={undo}
@@ -335,14 +477,16 @@ function EditorPageInner() {
               {isSite ? (
                 <div className="min-w-0 flex-1">
                   <div className="mx-auto h-auto w-full max-w-[430px]">
-                    <FormatInvite
-                      invitation={inv}
-                      locale={locale}
-                      onChange={patch}
-                      selected={selected}
-                      onSelect={onSelect}
-                      onPartsChange={setParts}
-                    />
+                    <ScaledCanvas>
+                      <FormatInvite
+                        invitation={inv}
+                        locale={locale}
+                        onChange={patch}
+                        selected={selected}
+                        onSelect={onSelect}
+                        onPartsChange={setParts}
+                      />
+                    </ScaledCanvas>
                   </div>
                 </div>
               ) : (
@@ -356,7 +500,7 @@ function EditorPageInner() {
                   />
                 </PhoneFrame>
               )}
-              <div className="sticky top-[50vh] -translate-y-1/2">
+              <div className="sticky top-[50vh] hidden -translate-y-1/2 sm:block">
                 <StepArrow
                   dir="right"
                   onClick={redo}

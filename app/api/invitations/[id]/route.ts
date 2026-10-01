@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
 import { deleteInvitationDoc, getInvitationDoc } from "@/lib/server/invitations";
+import { invitationViewer } from "@/lib/server/invitationAccess";
 import { isAdminUser, loadUserProfile } from "@/lib/server/users";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   if (!id) return NextResponse.json({ error: "not found" }, { status: 404 });
   const invitation = await getInvitationDoc(id);
   if (!invitation) return NextResponse.json({ error: "not found" }, { status: 404 });
-  return NextResponse.json({ invitation }, { headers: { "cache-control": "no-store" } });
+  // Before payment only the owner (or an admin) may read the page. Everyone else gets the same
+  // 404 as for a page that does not exist, so a copied address reveals nothing.
+  const session = await sessionFromBearer(req.headers.get("authorization"));
+  const { viewer, paid } = await invitationViewer(invitation, session);
+  if (viewer === "none") {
+    return NextResponse.json({ error: "not found" }, { status: 404, headers: { "cache-control": "no-store" } });
+  }
+  return NextResponse.json({ invitation, paid, viewer }, { headers: { "cache-control": "no-store" } });
 }
 
 export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {

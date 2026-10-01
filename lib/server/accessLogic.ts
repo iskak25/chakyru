@@ -86,3 +86,25 @@ export function canSaveInvitation(facts: {
   if (!facts.accessAllowed) return { ok: false, reason: facts.accessExpired ? "expired" : "access" };
   return { ok: true };
 }
+
+/**
+ * A page loses its «ДЕМО» mark and goes public only once the owner holds a paid claim on its
+ * template (purchase, Pro, admin) or the template is free. Expiry of the 2-week editing window
+ * does not make an already paid page private again.
+ */
+export function invitationIsPaid(facts: {
+  templateKnown: boolean;
+  isFree: boolean;
+  allowed: boolean;
+  owned: boolean;
+}): boolean {
+  // Pages of templates that were later removed from the catalog stay as they were (legacy).
+  if (!facts.templateKnown) return true;
+  return facts.isFree || facts.allowed || facts.owned;
+}
+
+/** Saving is free before payment; only an expired paid editing window or an unknown template blocks it. */
+export function canEditBeforePayment(access: { allowed: boolean; expired?: boolean; templateKnown: boolean }): boolean {
+  if (access.expired) return false;
+  return access.allowed || access.templateKnown;
+}

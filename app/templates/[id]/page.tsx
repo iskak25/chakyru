@@ -12,7 +12,7 @@ import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
 import { canEditTemplate, isAdminUser, ownsInvitation } from "@/lib/auth";
 import { hasActivePro } from "@/lib/proAccess";
-import { deleteInvitation, getInvitations, getUser, openPaidInvitation, previewInvitation, pricingHref, startInvitation } from "@/lib/store";
+import { deleteInvitation, getInvitations, getUser, openPaidInvitation, previewInvitation, startInvitation } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { referenceWedding } from "@/lib/referenceWeddings";
@@ -125,7 +125,8 @@ export default function TemplatePreviewPage() {
       router.push(`/login?google=1&next=${encodeURIComponent(`/templates/${template.id}`)}`);
       return;
     }
-    router.push(pricingHref(template.id));
+    // Editing is free: open the editor now, pay later to remove the demo mark and share the page.
+    router.push(`/create/new?template=${encodeURIComponent(template.id)}`);
   }
 
   async function onDelete(invitationId: string) {
@@ -159,7 +160,7 @@ export default function TemplatePreviewPage() {
       <PageHeader
         eyebrow={t.preview}
         title={template.name[locale]}
-        description={canEdit ? t.editor.tapHint : t.templateView.paywall}
+        description={t.editor.tapHint}
       />
 
       <div className="grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
@@ -204,9 +205,14 @@ export default function TemplatePreviewPage() {
             {t.events[template.eventTypes[0] ?? "wedding"]}
           </p>
           <h2 className="font-serif mt-3 text-4xl tracking-[-0.03em]">{template.name[locale]}</h2>
-          <p className="mt-4 text-[15px] leading-7 text-ink-soft">
-            {canEdit ? t.templateView.purchased : t.templateView.paywall}
-          </p>
+          {canEdit ? <p className="mt-4 text-[15px] leading-7 text-ink-soft">{t.templateView.purchased}</p> : null}
+          {!canEdit ? (
+            <p className="mt-4 rounded-[12px] bg-black/[0.04] px-4 py-3 text-sm leading-6 text-ink">
+              {locale === "ru"
+                ? "Редактирование бесплатно. Страница без отметки «ДЕМО» и публичный доступ — после оплаты"
+                : "Түзөтүү акысыз. «ДЕМО» белгисиз барак жана ачык жеткиликтүүлүк — төлөгөндөн кийин"}
+            </p>
+          ) : null}
           <p className="mt-6 font-serif text-3xl">{canEdit ? t.templateView.purchased : formatPrice(locale, displayPrice)}</p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -215,7 +221,7 @@ export default function TemplatePreviewPage() {
               onClick={() => void onEdit()}
               className="inline-flex h-11 items-center rounded-[12px] bg-espresso px-5 text-[11px] uppercase tracking-[0.14em] text-cream transition hover:opacity-90"
             >
-              {canEdit ? (multiRole ? t.templateView.createInvitation : t.templateView.edit) : t.templateView.pay}
+              {canEdit && multiRole ? t.templateView.createInvitation : t.templateView.edit}
             </button>
             <button
               type="button"
