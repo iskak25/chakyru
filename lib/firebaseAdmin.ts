@@ -1,7 +1,8 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getStorage } from "firebase-admin/storage";
 import { getFirestore } from "firebase-admin/firestore";
-import { mergeSettings, type PublicPricing } from "./settings";
+import { type PublicPricing } from "./settings";
+import { proPlanPrice } from "./proPlans";
 import type { PlanId } from "./types";
 import { getPaymentSettings, type PaymentSettings } from "./server/paymentSettings";
 export { uidFromBearer } from "./firebaseToken";
@@ -104,13 +105,8 @@ export async function getAdminSettings(): Promise<PaymentSettings & { proPriceSo
 
 export async function publicProPricing(): Promise<PublicPricing> {
   const app = adminApp();
-  if (!app) return { proPriceSom: 1990 };
-  try {
-    const snap = await getFirestore(app).collection("catalog").doc("pricing").get();
-    return { proPriceSom: mergeSettings(snap.data()).proPriceSom };
-  } catch {
-    return { proPriceSom: 1990 };
-  }
+  // Цена Pro за месяц задана в lib/proPlans.ts и одна для сайта и оплаты.
+  return { proPriceSom: proPlanPrice(1) };
 }
 
 export async function templatePriceSom(templateId: string): Promise<number | null> {

@@ -4,6 +4,7 @@ import type { PlanId, Purchase, PurchaseSource, PurchaseStatus } from "../types"
 import { grantTemplateAccess } from "./access";
 import { isFinikSucceeded, isPaidPurchaseStatus, purchasePriceLocked, templateAccessExpiresAt } from "./accessLogic";
 import { grantProPeriod, hasActivePro } from "../proAccess";
+import { normalizeStoredProMonths, proGrantMonths } from "../proPlans";
 import { canonicalAccount } from "./users";
 
 function pickText(...values: unknown[]) {
@@ -41,7 +42,7 @@ function purchaseFromPayment(id: string, data: Record<string, unknown>): Purchas
     finikTransactionId: pickText(data.finikTransactionId) || undefined,
     createdAt: pickText(data.createdAt) || new Date().toISOString(),
     paidAt: pickText(data.paidAt) || undefined,
-    proMonths: data.proMonths === 3 ? 3 : 1,
+    proMonths: normalizeStoredProMonths(data.proMonths),
     proExpiresAt: pickText(data.proExpiresAt) || undefined,
     source: (pickText(data.source) as PurchaseSource) || sourceOf(plan, templateId),
   };
@@ -231,7 +232,8 @@ export async function fulfillPurchase(input: {
     if (isPaidPurchaseStatus(record.status)) return true;
     if (record.status !== "pending") return false;
     const current = canonicalAccount(userSnap.data() ?? {}, paidAt);
-    const months = record.proMonths === 3 ? 3 : 1;
+    const storedMonths = normalizeStoredProMonths(record.proMonths);
+    const months = proGrantMonths(storedMonths);
     const pro = plan === "pro" || plan === "unlimited";
     const grant = pro ? grantProPeriod(current, months, paidAt, true) : null;
     if (grant) {
@@ -249,7 +251,7 @@ export async function fulfillPurchase(input: {
     const paidPayload = {
       uid, userId: uid, plan, amount: frozenPrice, price: frozenPrice, currency: "KGS",
       templateId: templateId ?? null, status: "paid", paidAt,
-      proMonths: pro ? months : null, proExpiresAt: grant?.proExpiresAt ?? null,
+      proMonths: pro ? storedMonths : null, proExpiresAt: grant?.proExpiresAt ?? null,
       finikPaymentId: found.finikPaymentId || id,
       finikTransactionId: pickText(input.transactionId) || found.finikTransactionId || null,
       source: found.source,

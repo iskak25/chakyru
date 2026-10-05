@@ -1,18 +1,20 @@
 import { canUserAccessTemplate, getTemplatePriceForUser } from "./access";
 import { createPurchase, findOpenPurchase } from "./purchases";
 import type { PlanId } from "../types";
+import { isProPlanMonths, proPlanPrice } from "../proPlans";
 
 export async function quoteCheckout(input: {
   uid: string;
   plan: Exclude<PlanId, "free">;
   templateId?: string;
-  proPriceSom: number;
+  proPriceSom?: number;
   proMonths?: number;
 }) {
   if (input.plan === "pro" || input.plan === "unlimited") {
     const months = input.proMonths ?? 1;
-    if (months !== 1 && months !== 3) return { error: "months" as const };
-    return { amount: input.proPriceSom * months, granted: false as const };
+    if (!isProPlanMonths(months)) return { error: "months" as const };
+    // Цена — из таблицы тарифов (1500 / 10 000 с подарком), а не из настройки месячной цены.
+    return { amount: proPlanPrice(months), granted: false as const };
   }
   const templateId = input.templateId?.trim() || "";
   if (!templateId) return { error: "template" as const };

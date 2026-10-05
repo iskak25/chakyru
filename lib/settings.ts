@@ -1,4 +1,5 @@
 import type { SiteSettings } from "./types";
+import { proPlanPrice } from "./proPlans";
 
 export const DEFAULT_PRO_SOM = 1990;
 
@@ -30,6 +31,7 @@ export type PublicPricing = {
   proPriceSom: number;
 };
 
-export function publicPricing(settings: SiteSettings): PublicPricing {
-  return { proPriceSom: settings.proPriceSom };
+// Цена Pro за месяц задана тарифной таблицей (lib/proPlans.ts); сохранённая настройка её не меняет.
+export function publicPricing(_settings?: SiteSettings): PublicPricing {
+  return { proPriceSom: proPlanPrice(1) };
 }

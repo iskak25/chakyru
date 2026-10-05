@@ -3,6 +3,7 @@ import { createFinikPayment, finikReady, isPaidPlan } from "@/lib/finik";
 import { quoteCheckout, openCheckout } from "@/lib/server/payments";
 import { attachFinikPaymentId, fulfillPurchase } from "@/lib/server/purchases";
 import { paymentOrigin } from "@/lib/paymentOrigin";
+import { isProPlanMonths } from "@/lib/proPlans";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
     }
     const templateId = typeof body.templateId === "string" ? body.templateId.trim() : "";
     const proMonths = body.proMonths ?? 1;
-    if (proMonths !== 1 && proMonths !== 3) return NextResponse.json({ error: "months" }, { status: 400 });
+    if (!isProPlanMonths(proMonths)) return NextResponse.json({ error: "months" }, { status: 400 });
     const quoted = await quoteCheckout({
       uid,
       plan: body.plan,
