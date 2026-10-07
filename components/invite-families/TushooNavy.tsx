@@ -1,23 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { Invitation, RsvpStatus } from "@/lib/types";
+import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import type { InvitePatch } from "../CanvasEdit";
-import { CanvasText } from "../CanvasEdit";
-import { Field, SlotPhoto } from "../SiteEdit";
+import { WeddingEditor, WeddingPart } from "../WeddingEditor";
 import type { LayoutKit, Site3DLabels } from "../Site3DLayouts";
 import { CalendarGrid, KyalRule, MountainSilhouette } from "./Ornaments";
 import { addHour, mapsEmbedUrl, monthLabel, pad } from "./shared";
-import { Reveal } from "./Reveal";
 import { RsvpForm } from "./RsvpForm";
 import css from "./TushooNavy.module.css";
 
 const ART = "/images/templates/tushoo-ayat/hero.webp";
 
-type TushooKit = Pick<LayoutKit, "invitation" | "onChange" | "labels" | "event" | "count" | "mapHref" | "mapQuery" | "venuePhoto" | "locale" | "variant" | "rsvp" | "setRsvp" | "rsvpName" | "setRsvpName" | "rsvpDone" | "setRsvpDone" | "onReload">;
+type TushooKit = Pick<LayoutKit, "invitation" | "onChange" | "labels" | "event" | "count" | "mapHref" | "mapQuery" | "venuePhoto" | "locale" | "variant" | "rsvp" | "setRsvp" | "rsvpName" | "setRsvpName" | "rsvpDone" | "setRsvpDone" | "onReload"> & {
+  selected?: string | null;
+  onSelect?: (id: string | null) => void;
+  onPartsChange?: (parts: WeddingPartInfo[]) => void;
+};
 
-export function TushooNavyInvite({ invitation, locale, labels, onChange, onReload, compact }: {
+export function TushooNavyInvite({ invitation, locale, labels, onChange, onReload, compact, selected, onSelect, onPartsChange }: {
   invitation: Invitation; locale: string; labels: Site3DLabels; onChange?: InvitePatch; onReload?: () => void; compact?: boolean;
+  selected?: string | null; onSelect?: (id: string | null) => void; onPartsChange?: (parts: WeddingPartInfo[]) => void;
 }) {
   const [count, setCount] = useState<LayoutKit["count"]>(null);
   const [rsvp, setRsvp] = useState<RsvpStatus>("yes");
@@ -40,7 +44,7 @@ export function TushooNavyInvite({ invitation, locale, labels, onChange, onReloa
   return <div className="mx-auto w-full max-w-[430px]" data-family="tushooNavy"><TushooNavyFamily kit={{
     invitation, locale, labels, onChange, onReload, event: new Date(target), count, mapQuery, mapHref,
     venuePhoto: invitation.gallery?.venue || "", variant: onChange ? "editor" : "guest",
-    rsvp, setRsvp, rsvpName, setRsvpName, rsvpDone, setRsvpDone,
+    rsvp, setRsvp, rsvpName, setRsvpName, rsvpDone, setRsvpDone, selected, onSelect, onPartsChange,
   }} /></div>;
 }
 
@@ -52,123 +56,139 @@ export function TushooNavyThumb({ name = "Аят" }: { name?: string }) {
 }
 
 export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
-  const { invitation, onChange, labels, event, count, mapHref, mapQuery, venuePhoto } = kit;
+  const { invitation, onChange, labels, event, count, mapHref, mapQuery, selected, onSelect, onPartsChange } = kit;
   const ru = kit.locale === "ru";
-  const instant = !!onChange;
+  const editing = !!onChange;
   const title = invitation.eventType === "birthday" ? (ru ? "День рождения" : "Туулган күн") : "Тушоо той";
+  const tr = (a: string, b: string) => (ru ? a : b);
+  const text = (id: string, fallback: string, className = "", field?: WeddingPartInfo["field"], label?: string) =>
+    <WeddingPart id={id} label={label || fallback || id} kind="text" fallback={fallback} className={className} field={field} />;
+  const block = (id: string, label: string, className: string, children: ReactNode) =>
+    <WeddingPart id={`section-${id}`} label={label} kind="block" className={className}>{children}</WeddingPart>;
+  const photo = (slot: string, label: string, className: string, fallback = "") =>
+    (editing || invitation.gallery?.[slot] || fallback) ? <WeddingPart id={`photo-${slot}`} label={label} kind="image" slot={slot} fallback={fallback} className={className} /> : null;
   const steps = [
-    [invitation.time || "15:00", ru ? "Встречаем дорогих гостей" : "Конокторду тосуп алуу"],
-    [addHour(invitation.time, 1), ru ? "Первые шаги — тушоо кесүү" : "Тушоо кесүү"],
-    [addHour(invitation.time, 2), ru ? "Праздничный дасторкон" : "Майрамдык дасторкон"],
-    [addHour(invitation.time, 3), ru ? "Торт, улыбки и добрые пожелания" : "Торт жана жакшы тилектер"],
+    [invitation.time || "15:00", tr("Встречаем дорогих гостей", "Конокторду тосуп алуу")],
+    [addHour(invitation.time, 1), tr("Первые шаги — тушоо кесүү", "Тушоо кесүү")],
+    [addHour(invitation.time, 2), tr("Праздничный дасторкон", "Майрамдык дасторкон")],
+    [addHour(invitation.time, 3), tr("Торт, улыбки и добрые пожелания", "Торт жана жакшы тилектер")],
+  ];
+  const story = [
+    [tr("Первая улыбка", "Биринчи жылмаюу"), tr("Она осветила наш дом", "Үйүбүздү нурга бөгөн")],
+    [tr("Первое слово", "Биринчи сөз"), tr("«Апа» — самое дорогое слово", "«Апа» — эң кымбат сөз")],
+    [tr("Первые шаги", "Алгачкы кадам"), tr("Сегодня мы делаем их вместе с вами", "Бүгүн аларды силер менен чогуу жасайбыз")],
+  ];
+  const wishes = [
+    ["✦", "Ак бата", tr("Тёплые слова и благословение от родных и близких", "Жакындардан жылуу сөз жана ак бата")],
+    ["♥", "Тушоо кесүү", tr("Малыш сделает первые шаги — пусть дорога будет лёгкой", "Бөбөктүн алгачкы кадамы — жолу шыдыр болсун")],
+    ["❖", tr("Дресс-код", "Кийим стили"), tr("Нежные оттенки: синий, молочный, золотой", "Назик түстөр: көк, ак, алтын")],
   ];
   return <div className={css.root}>
-    <section className={css.hero}>
-      <img src={ART} alt="" className={css.art} fetchPriority="high" />
-      <div className={css.heroText}>
-        <p className={css.eyebrow}>{ru ? "Маленькие шаги · большое счастье" : "Кичинекей кадам · чоң бакыт"}</p>
-        <h1 className="font-tra-script"><CanvasText value={invitation.names || "Аят"} placeholder="Аят" onChange={onChange ? names => onChange({ names }) : undefined} className="bg-transparent" multiline /></h1>
-        <Field invitation={invitation} onChange={onChange} id="eventTitle" fallback={title} className={css.title} />
-        <p className={css.date}>{event.getDate()} {monthLabel(kit)} {event.getFullYear()}</p>
-        <span className={css.heart} aria-hidden="true">♥</span>
-      </div>
-    </section>
+    <WeddingEditor invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={kit.locale}>
+      {block("hero", "Обложка", css.hero, <>
+        <WeddingPart id="photo-hero" label="Иллюстрация обложки" kind="image" slot="hero" fallback={ART} className={css.art} style={{ position: "absolute", inset: 0 }} />
+        <div className={css.heroText}>
+          {text("hero-overline", tr("Маленькие шаги · большое счастье", "Кичинекей кадам · чоң бакыт"), css.eyebrow)}
+          <WeddingPart id="names" label="Имя ребёнка" kind="text" field="names" fallback="Аят" className={`${css.name} font-tra-script`} />
+          {text("eventTitle", title, css.title, undefined, "Название праздника")}
+          <WeddingPart id="event-date" label="Дата праздника" kind="date" className={css.date}>{event.getDate()} {monthLabel(kit)} {event.getFullYear()}</WeddingPart>
+          <WeddingPart id="hero-heart" label="Сердечко" kind="decoration" className={css.heart}>♥</WeddingPart>
+        </div>
+      </>)}
 
-    <Reveal instant={instant} className={css.section}>
-      <p className={css.eyebrow}>{ru ? "Приглашение с любовью" : "Сүйүү менен чакырабыз"}</p>
-      <h2 className={css.heading}>{labels.dearGuests}</h2>
-      <KyalRule className={css.rule} />
-      <Field invitation={invitation} onChange={onChange} id="message" fallback={invitation.message || (ru ? "Приглашаем вас разделить радость первых шагов нашего малыша! Пусть этот день наполнится вашими улыбками, тёплыми словами и добрыми пожеланиями." : "Бөбөгүбүздүн тушоо тоюна келип, кубанычыбызды тең бөлүшүүгө чакырабыз! Ак батаңыздар менен анын алгачкы кадамдарына күбө болуп кетиңиздер.")} className={css.message} multiline />
-      <Field invitation={invitation} onChange={onChange} id="hosts" fallback={invitation.hosts} className={css.hosts} />
-    </Reveal>
+      {block("intro", "Приглашение", css.section, <>
+        {text("intro-overline", tr("Приглашение с любовью", "Сүйүү менен чакырабыз"), css.eyebrow)}
+        {text("intro-title", labels.dearGuests, css.heading)}
+        <KyalRule className={css.rule} />
+        {text("message", tr("Приглашаем вас разделить радость первых шагов нашего малыша! Пусть этот день наполнится вашими улыбками, тёплыми словами и добрыми пожеланиями.", "Бөбөгүбүздүн тушоо тоюна келип, кубанычыбызды тең бөлүшүүгө чакырабыз! Ак батаңыздар менен анын алгачкы кадамдарына күбө болуп кетиңиздер."), css.message, "message", "Текст приглашения")}
+        {(editing || invitation.hosts) ? text("hosts", invitation.hosts || "С любовью, родители", css.hosts, "hosts", "Хозяева праздника") : null}
+      </>)}
 
-    <Reveal instant={instant} className={css.section}>
-      <p className={css.eyebrow}>{ru ? "Отметьте в календаре" : "Календарга белгилеп коюңуз"}</p>
-      <h2 className={css.heading}>{event.getDate()} {monthLabel(kit)}</h2>
-      <div className={css.calendar}>
-        <CalendarGrid
-          date={event}
-          monthLabel={monthLabel(kit)}
-          cellClassName="text-[#102e50]"
-          headClassName="text-[#8b6938]"
-          highlightClassName="bg-[#102e50] text-[#e6c991] ring-2 ring-[#bd9455] ring-offset-2 ring-offset-[#fff9ef]"
-        />
-        <p className={css.calendarTime}>♥ {invitation.time || "15:00"}</p>
-      </div>
-    </Reveal>
+      {block("calendar", "Календарь", css.section, <>
+        {text("calendar-overline", tr("Отметьте в календаре", "Календарга белгилеп коюңуз"), css.eyebrow)}
+        {text("calendar-title", `${event.getDate()} ${monthLabel(kit)}`, css.heading, undefined, "Заголовок календаря")}
+        <WeddingPart id="calendar-widget" label="Календарь" kind="widget" className={css.calendar}>
+          <CalendarGrid
+            date={event}
+            monthLabel={monthLabel(kit)}
+            cellClassName="text-[#102e50]"
+            headClassName="text-[#8b6938]"
+            highlightClassName="bg-[#102e50] text-[#e6c991] ring-2 ring-[#bd9455] ring-offset-2 ring-offset-[#fff9ef]"
+          />
+          <p className={css.calendarTime}>♥ {invitation.time || "15:00"}</p>
+        </WeddingPart>
+      </>)}
 
-    <Reveal instant={instant} className={css.countdown}>
-      <p className={css.eyebrow}>{ru ? "До нашего праздника" : "Тойго чейин"}</p>
-      {count ? <div className={css.digits}>{[[count.d, labels.days], [count.h, labels.hours], [count.m, labels.mins], [count.s, labels.secs]].map(([value, label]) => <div key={String(label)}><strong>{pad(Number(value))}</strong><span>{label}</span></div>)}</div> : <p className={css.heading}>{labels.started}</p>}
-      <KyalRule className={css.rule} />
-    </Reveal>
+      {block("countdown", "Обратный отсчёт", css.countdown, <>
+        {text("countdown-overline", tr("До нашего праздника", "Тойго чейин"), css.eyebrow)}
+        <WeddingPart id="countdown-widget" label="Таймер" kind="widget">
+          {count ? <div className={css.digits}>{[[count.d, labels.days], [count.h, labels.hours], [count.m, labels.mins], [count.s, labels.secs]].map(([value, label]) => <div key={String(label)}><strong>{pad(Number(value))}</strong><span>{label}</span></div>)}</div> : <p className={css.heading}>{labels.started}</p>}
+        </WeddingPart>
+        <KyalRule className={css.rule} />
+      </>)}
 
-    {(invitation.gallery?.child || onChange) && <Reveal instant={instant} className={css.section}>
-      <SlotPhoto invitation={invitation} onChange={onChange} slot="child" src={invitation.gallery?.child || ""} className={css.childPhoto} imgClass="h-full w-full object-cover" />
-    </Reveal>}
+      {(editing || invitation.gallery?.child) ? block("child", "Фото малыша", css.section, photo("child", "Фото малыша", css.childPhoto)) : null}
 
-    <Reveal instant={instant} className={css.section}>
-      <p className={css.eyebrow}>{ru ? "Наша маленькая история" : "Биздин кичинекей баян"}</p>
-      <h2 className={css.heading}>{ru ? "Как мы росли" : "Кантип чоңойдук"}</h2>
-      <KyalRule className={css.rule} />
-      <ul className={css.story}>{[
-        [ru ? "Первая улыбка" : "Биринчи жылмаюу", ru ? "Она осветила наш дом" : "Үйүбүздү нурга бөгөн"],
-        [ru ? "Первое слово" : "Биринчи сөз", ru ? "«Апа» — самое дорогое слово" : "«Апа» — эң кымбат сөз"],
-        [ru ? "Первые шаги" : "Алгачкы кадам", ru ? "Сегодня мы делаем их вместе с вами" : "Бүгүн аларды силер менен чогуу жасайбыз"],
-      ].map(([head, text], i) => <li key={i}>
-        <span className={css.storyDot} aria-hidden="true">{i + 1}</span>
-        <div><strong>{head}</strong><p>{text}</p></div>
-      </li>)}</ul>
-    </Reveal>
+      {block("story", "Наша история", css.section, <>
+        {text("story-overline", tr("Наша маленькая история", "Биздин кичинекей баян"), css.eyebrow)}
+        {text("story-title", tr("Как мы росли", "Кантип чоңойдук"), css.heading)}
+        <KyalRule className={css.rule} />
+        <div className={css.story}>{story.map(([head, note], i) => <div key={i} className={css.storyItem}>
+          <span className={css.storyDot} aria-hidden="true">{i + 1}</span>
+          <div>{text(`story-${i}-title`, head, css.storyHead)}{text(`story-${i}-text`, note, css.storyText)}</div>
+        </div>)}</div>
+      </>)}
 
-    <Reveal instant={instant} className={css.section}>
-      <p className={css.eyebrow}>{ru ? "Счастливые моменты" : "Бактылуу көз ирмемдер"}</p>
-      <h2 className={css.heading}>{labels.program}</h2>
-      <ol className={css.program}>{steps.map(([time, text], i) => <li key={i}>
-        <Field invitation={invitation} onChange={onChange} id={`p${i + 1}t`} fallback={time} className={css.programTime} />
-        <span className={css.star} aria-hidden="true">✦</span>
-        <Field invitation={invitation} onChange={onChange} id={`p${i + 1}`} fallback={text} multiline />
-      </li>)}</ol>
-    </Reveal>
+      {block("program", "Программа дня", css.section, <>
+        {text("program-overline", tr("Счастливые моменты", "Бактылуу көз ирмемдер"), css.eyebrow)}
+        {text("program-title", labels.program, css.heading)}
+        <div className={css.program}>{steps.map(([time, note], i) => <div key={i} className={css.programRow}>
+          {text(`p${i + 1}t`, time, css.programTime, undefined, `Время ${i + 1}`)}
+          <span className={css.star} aria-hidden="true">✦</span>
+          {text(`p${i + 1}`, note, "", undefined, `Пункт программы ${i + 1}`)}
+        </div>)}</div>
+      </>)}
 
-    <Reveal instant={instant} className={css.section}>
-      <p className={css.eyebrow}>{ru ? "Добрые традиции" : "Жакшы салттар"}</p>
-      <h2 className={css.heading}>{ru ? "Пожелания малышу" : "Бөбөккө тилек"}</h2>
-      <KyalRule className={css.rule} />
-      <div className={css.wishes}>{[
-        ["✦", ru ? "Ак бата" : "Ак бата", ru ? "Тёплые слова и благословение от родных и близких" : "Жакындардан жылуу сөз жана ак бата"],
-        ["♥", ru ? "Тушоо кесүү" : "Тушоо кесүү", ru ? "Малыш сделает первые шаги — пусть дорога будет лёгкой" : "Бөбөктүн алгачкы кадамы — жолу шыдыр болсун"],
-        ["❖", ru ? "Дресс-код" : "Кийим стили", ru ? "Нежные оттенки: синий, молочный, золотой" : "Назик түстөр: көк, ак, алтын"],
-      ].map(([icon, head, text], i) => <div key={i} className={css.wish}>
-        <span className={css.star} aria-hidden="true">{icon}</span>
-        <strong>{head}</strong>
-        <p>{text}</p>
-      </div>)}</div>
-    </Reveal>
+      {block("wishes", "Пожелания", css.section, <>
+        {text("wishes-overline", tr("Добрые традиции", "Жакшы салттар"), css.eyebrow)}
+        {text("wishes-title", tr("Пожелания малышу", "Бөбөккө тилек"), css.heading)}
+        <KyalRule className={css.rule} />
+        <div className={css.wishes}>{wishes.map(([icon, head, note], i) => <WeddingPart key={i} id={`wish-${i}`} label={`Карточка: ${head}`} kind="block" className={css.wish}>
+          <span className={css.star} aria-hidden="true">{icon}</span>
+          {text(`wish-${i}-title`, head, css.wishHead)}
+          {text(`wish-${i}-text`, note, css.wishText)}
+        </WeddingPart>)}</div>
+      </>)}
 
-    <Reveal instant={instant} className={css.venue}>
-      <p className={css.eyebrow}>{ru ? "Место нашей встречи" : "Жолугушчу жерибиз"}</p>
-      <h2 className={css.heading}>{labels.location}</h2>
-      <KyalRule className={css.rule} />
-      {(venuePhoto || onChange) && <SlotPhoto invitation={invitation} onChange={onChange} slot="venue" src={venuePhoto || ""} className={css.venuePhoto} imgClass="h-full w-full object-cover" />}
-      <Field invitation={invitation} onChange={onChange} id="venue" fallback={invitation.venue} className={css.venueName} />
-      <Field invitation={invitation} onChange={onChange} id="address" fallback={invitation.address} className={css.message} />
-      <p className={css.message}>{pad(event.getDate())}.{pad(event.getMonth() + 1)}.{event.getFullYear()} · {invitation.time}</p>
-      <a href={mapHref} target="_blank" rel="noopener noreferrer" className={css.mapButton}>{labels.map} ↗</a>
-      <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className={css.map} loading="lazy" />
-    </Reveal>
+      {block("venue", "Место проведения", css.venue, <>
+        {text("venue-overline", tr("Место нашей встречи", "Жолугушчу жерибиз"), css.eyebrow)}
+        {text("venue-title", labels.location, css.heading)}
+        <KyalRule className={css.rule} />
+        {photo("venue", "Фото места", css.venuePhoto)}
+        {text("venue", invitation.venue || "Место проведения", css.venueName, "venue", "Название места")}
+        {text("address", invitation.address || "Адрес", css.message, "address", "Адрес")}
+        <WeddingPart id="venue-date" label="Дата и время" kind="date" className={css.message}>{pad(event.getDate())}.{pad(event.getMonth() + 1)}.{event.getFullYear()} · {invitation.time}</WeddingPart>
+        <WeddingPart id="map-button" label="Кнопка карты" kind="widget">
+          <a href={mapHref} target="_blank" rel="noopener noreferrer" onClick={e => { if (editing) e.preventDefault(); }} className={css.mapButton}>{labels.map} ↗</a>
+        </WeddingPart>
+        <WeddingPart id="map-embed" label="Карта" kind="widget">
+          <iframe title={labels.map} src={mapsEmbedUrl(mapQuery)} className={css.map} loading="lazy" style={editing ? { pointerEvents: "none" } : undefined} />
+        </WeddingPart>
+      </>)}
 
-    <Reveal instant={instant} className={css.section}>
-      <p className={css.eyebrow}>{ru ? "Будем ждать вас" : "Сиздерди күтөбүз"}</p>
-      <h2 className={css.heading}>{ru ? "Вы придёте?" : "Келесизби?"}</h2>
-      <p className={css.message}>{labels.rsvpHint}</p>
-      <div className={css.rsvp}><RsvpForm kit={kit} tone="tushooNavy" /></div>
-    </Reveal>
-    <footer className={css.footer}>
-      <span className={css.heart} aria-hidden="true">♥</span>
-      <p className="font-tra-script">{invitation.names || "Аят"}</p>
-      <p className={css.eyebrow}>{ru ? "Пусть каждый шаг будет счастливым" : "Ар бир кадамың кут болсун"}</p>
-      <MountainSilhouette className={css.mountains} />
-    </footer>
+      {block("rsvp", "Ответ гостя", css.section, <>
+        {text("rsvp-overline", tr("Будем ждать вас", "Сиздерди күтөбүз"), css.eyebrow)}
+        {text("rsvp-title", tr("Вы придёте?", "Келесизби?"), css.heading)}
+        {text("rsvp-hint", labels.rsvpHint, css.message)}
+        <WeddingPart id="rsvp-form" label="Форма ответа" kind="widget" className={css.rsvp}><RsvpForm kit={kit} tone="tushooNavy" /></WeddingPart>
+      </>)}
+
+      {block("footer", "Подвал", css.footer, <>
+        <WeddingPart id="footer-heart" label="Сердечко" kind="decoration" className={css.heart}>♥</WeddingPart>
+        <WeddingPart id="footer-names" label="Имя в подвале" kind="text" field="names" fallback="Аят" className={`${css.footerName} font-tra-script`} />
+        {text("footer-wish", tr("Пусть каждый шаг будет счастливым", "Ар бир кадамың кут болсун"), css.eyebrow)}
+        <MountainSilhouette className={css.mountains} />
+      </>)}
+    </WeddingEditor>
   </div>;
 }
