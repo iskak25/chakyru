@@ -51,3 +51,5 @@
 .thumbText { position: relative; padding: 29% 14% 0; text-align: center; color: #102e50; }
 .thumbText span { font-size: 17cqw; line-height: 1.2; }
 .thumbText p { margin-top: 4px; font-family: Georgia, serif; font-size: 5cqw; letter-spacing: .1em; }
+.guestWishes { color: #102e50; }
+.guestWishes button:first-child { background: #fff9ef; border-color: #bd945566; border-radius: 4px 40px 4px 40px; }

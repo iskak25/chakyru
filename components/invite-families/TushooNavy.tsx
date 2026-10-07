@@ -9,6 +9,7 @@ import type { LayoutKit, Site3DLabels } from "../Site3DLayouts";
 import { CalendarGrid, KyalRule, MountainSilhouette } from "./Ornaments";
 import { addHour, mapsEmbedUrl, monthLabel, pad } from "./shared";
 import { RsvpForm } from "./RsvpForm";
+import { WishesCarousel } from "../WishesCarousel";
 import css from "./TushooNavy.module.css";
 
 const ART = "/images/templates/tushoo-ayat/hero.webp";
@@ -182,6 +183,15 @@ export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
         {text("rsvp-hint", labels.rsvpHint, css.message)}
         <WeddingPart id="rsvp-form" label="Форма ответа" kind="widget" className={css.rsvp}><RsvpForm kit={kit} tone="tushooNavy" /></WeddingPart>
       </>)}
+
+      {(editing || (invitation.wishes || []).some(w => !w.hidden)) ? block("guest-wishes", "Пожелания гостей", css.section, <>
+        {text("guest-wishes-overline", tr("Тёплые слова", "Жылуу сөздөр"), css.eyebrow)}
+        {text("guest-wishes-title", tr("Пожелания гостей", "Коноктордун каалоолору"), css.heading)}
+        <KyalRule className={css.rule} />
+        <WeddingPart id="guest-wishes-widget" label="Пожелания гостей" kind="widget" className={css.guestWishes}>
+          <WishesCarousel invitation={invitation} ru={ru} editable={editing} onChange={onChange} />
+        </WeddingPart>
+      </>) : null}
 
       {block("footer", "Подвал", css.footer, <>
         <WeddingPart id="footer-heart" label="Сердечко" kind="decoration" className={css.heart}>♥</WeddingPart>
