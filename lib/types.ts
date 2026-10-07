@@ -67,7 +67,8 @@ export type TemplateStyle = {
     | "noir"
     | "tuscany"
     | "toiAnket"
-    | "stars";
+    | "stars"
+    | "tushooNavy";
 };
 
 export type InvitationTemplate = {

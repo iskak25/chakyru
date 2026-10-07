@@ -35,6 +35,24 @@ function style(
 }
 
 const seedTemplates: InvitationTemplate[] = [
+  {
+    id: "tushoo-ayat",
+    name: { ky: "Тушоо той — Аят", ru: "Тушоо той — Аят" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 990,
+    eventTypes: ["tushoo", "birthday"],
+    featured: true,
+    envelope: { enabled: true, variant: "midnight" },
+    style: style("#102e50", "#fbf2e2", "#bd9455", "#102e50", "#73664f", {
+      overlay: "#102e50", pageBg: "#fbf2e2", pageLayout: "tushooNavy",
+    }),
+    canvas: {
+      names: "Аят", date: "2026-11-08", time: "15:00", message: "",
+      coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: {},
+      gallery: { hero: "/images/templates/tushoo-ayat/hero.webp" },
+    },
+  },
   ...anniversaryTemplates,
   ...pinterestTemplates,
   ...referenceWeddingTemplates,

@@ -13,6 +13,7 @@ export type TemplatePhotoSet = {
 // Everything else was part of an older "family" template system that's no
 // longer offered -- their photo folders were removed together with this.
 const SETS: Record<string, TemplatePhotoSet> = {
+  "tushoo-ayat": { hero: "/images/templates/tushoo-ayat/hero.webp", c0: "", c1: "", c2: "", venue: "" },
   "klassika": { hero: "/images/templates/klassika/hero.jpg", c0: "/images/templates/klassika/c0.jpg", c1: "/images/templates/klassika/c1.jpg", c2: "/images/templates/klassika/c2.jpg", venue: "" },
   "baxmal": { hero: "/images/hero.jpg", c0: "/images/templates/baxmal/c0.jpg", c1: "/images/templates/baxmal/c1.jpg", c2: "/images/templates/baxmal/c2.jpg", venue: "" },
   "beshik-nur": { hero: "/images/templates/beshik-nur/hero-wedding.webp", c0: "", c1: "", c2: "", venue: "" },

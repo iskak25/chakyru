@@ -22,7 +22,7 @@ export function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
-export function monthLabel(kit: LayoutKit) {
+export function monthLabel(kit: Pick<LayoutKit, "locale" | "event">) {
   const months =
     kit.locale === "ru"
       ? ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"]
