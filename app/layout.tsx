@@ -74,10 +74,10 @@ const philosopher = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://toichakyru.com"),
+  metadataBase: new URL("https://www.toichakyru.com"),
   title: "Toichakyru — Тойго чакыруу",
   description:
-    "Той чакыруу 3D жана онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
+    "Той чакыруу 3D жана онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. Тез жана арзан түзүп, WhatsApp аркылуу жибериңиз.",
   keywords: [
     "чакыруу",
     "той чакыруу",
@@ -99,19 +99,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ky_KG",
     alternateLocale: "ru_RU",
-    url: "https://toichakyru.com",
+    url: "https://www.toichakyru.com",
     siteName: "Toichakyru",
     title: "Toichakyru — Тойго чакыруу",
     description:
-      "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
-    images: ["/icon.png"],
+      "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. Тез жана арзан түзүп, WhatsApp аркылуу жибериңиз.",
+    images: [
+      { url: "/og-image.jpg", width: 1200, height: 630, type: "image/jpeg", alt: "Toichakyru — Тойго чакыруу" },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Toichakyru — Тойго чакыруу",
     description:
-      "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. 5 мүнөттө түзүп, WhatsApp аркылуу жибериңиз.",
-    images: ["/icon.png"],
+      "Онлайн чакыруу каттар: той, үйлөнүү, кыз узатуу, бешик той. Тез жана арзан түзүп, WhatsApp аркылуу жибериңиз.",
+    images: ["/og-image.jpg"],
   },
 };
 
