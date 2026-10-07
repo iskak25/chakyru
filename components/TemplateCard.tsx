@@ -15,6 +15,7 @@ import { inviteFromTemplate } from "@/lib/templateCanvas";
 import { AnniversaryHero } from "./AnniversaryHero";
 import anniversaryCss from "./AnniversaryInvite.module.css";
 import { TushooNavyThumb } from "./invite-families/TushooNavy";
+import { CorporateThumb } from "./invite-families/Corporate";
 
 export function TemplateCard({
   template,
@@ -46,7 +47,7 @@ export function TemplateCard({
       style={{ boxShadow: "var(--shadow-soft)", transitionTimingFunction: "var(--ease-premium)" }}
     >
       <div className={`relative overflow-hidden ${featured ? "h-full min-h-[420px]" : "aspect-[4/5]"}`}>
-        {template.style.pageLayout === "tushooNavy" ? <TushooNavyThumb name={template.canvas?.names || "Аят"} /> : anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
+        {template.style.pageLayout === "corporate" ? <CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /> : template.style.pageLayout === "tushooNavy" ? <TushooNavyThumb name={template.canvas?.names || "Аят"} /> : anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
           <TemplatePaperPreview template={template} locale={locale} eager={eager} />
         ) : <img
           src={restored?.source || templateImageSource(crop?.source || photo)}

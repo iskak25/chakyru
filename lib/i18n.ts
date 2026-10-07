@@ -168,6 +168,7 @@ const dict = {
       bachelorette: "Кыздар кечеси",
       jentek: "Жентек той",
       tushoo: "Тушоо той",
+      corporate: "Корпоратив",
     } satisfies Record<EventType, string>,
     editor: {
       title: "Чакыруу редактору",
@@ -265,6 +266,7 @@ const dict = {
         bachelorette: "Келиндин аты",
         jentek: "Кимдин тою",
         tushoo: "Кимдин тою",
+        corporate: "Иш-чаранын аты",
       } satisfies Record<EventType, string>,
       singleNamePh: {
         toi: "Атын жазыңыз",
@@ -277,6 +279,7 @@ const dict = {
         bachelorette: "Келиндин атын жазыңыз",
         jentek: "Мисалы: баланын аты",
         tushoo: "Мисалы: баланын аты",
+        corporate: "Мисалы: Жаңы жылдык корпоратив",
       } satisfies Record<EventType, string>,
       step2Title: "Өткөрүлүү датасы жана убактысы",
       dateLabel: "Иш-чаранын датасы",
@@ -823,6 +826,7 @@ const dict = {
       bachelorette: "Девичник",
       jentek: "Жентек той",
       tushoo: "Тушоо той",
+      corporate: "Корпоратив",
     } satisfies Record<EventType, string>,
     editor: {
       title: "Редактор приглашения",
@@ -920,6 +924,7 @@ const dict = {
         bachelorette: "Имя невесты",
         jentek: "У кого той",
         tushoo: "У кого той",
+        corporate: "Название мероприятия",
       } satisfies Record<EventType, string>,
       singleNamePh: {
         toi: "Введите имя",
@@ -932,6 +937,7 @@ const dict = {
         bachelorette: "Введите имя невесты",
         jentek: "Например: имя малыша",
         tushoo: "Например: имя малыша",
+        corporate: "Например: Новогодний корпоратив",
       } satisfies Record<EventType, string>,
       step2Title: "Дата и время проведения",
       dateLabel: "Дата мероприятия",

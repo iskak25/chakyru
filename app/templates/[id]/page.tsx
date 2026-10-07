@@ -23,6 +23,7 @@ import { AnniversaryHero } from "@/components/AnniversaryHero";
 import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
 import anniversaryCss from "@/components/AnniversaryInvite.module.css";
 import { GuestResponseLinks } from "@/components/GuestResponseLinks";
+import { CorporateThumb } from "@/components/invite-families/Corporate";
 
 // FormatInvite (behind TemplateRenderer) statically pulls in every site-look renderer
 // (Site3D, PinterestInvite, ThemedSiteInvite, FamilySiteInvite, PhotoInvite...) — that's
@@ -178,7 +179,9 @@ export default function TemplatePreviewPage() {
               onClick={() => setPreviewOpen(true)}
               className="group relative block aspect-[3/5] w-full overflow-hidden rounded-[calc(var(--radius-xl)-8px)]"
             >
-              {anniversary ? (
+              {template.style.pageLayout === "corporate" ? (
+                <div className="h-full w-full"><CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /></div>
+              ) : anniversary ? (
                 <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true">
                   <AnniversaryHero invitation={invitation} design={anniversary} locale={locale} preview eager />
                 </div>

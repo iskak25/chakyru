@@ -13,7 +13,8 @@ export type EventType =
   | "birthday"
   | "bachelorette"
   | "jentek"
-  | "tushoo";
+  | "tushoo"
+  | "corporate";
 
 export type InviteFormat = "photo" | "site3d";
 
@@ -68,7 +69,8 @@ export type TemplateStyle = {
     | "tuscany"
     | "toiAnket"
     | "stars"
-    | "tushooNavy";
+    | "tushooNavy"
+    | "corporate";
 };
 
 export type InvitationTemplate = {

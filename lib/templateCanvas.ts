@@ -69,6 +69,7 @@ export function inviteFromTemplate(tpl: InvitationTemplate): Invitation {
   return {
     ...PREVIEW_INVITE,
     templateId: tpl.id,
+    hosts: tpl.style.pageLayout === "corporate" ? "" : PREVIEW_INVITE.hosts,
     eventType: tpl.eventTypes[0],
     date: c.date ?? PREVIEW_INVITE.date,
     time: c.time ?? PREVIEW_INVITE.time,

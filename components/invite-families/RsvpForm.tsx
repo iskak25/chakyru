@@ -27,6 +27,7 @@ export function RsvpForm({
     | "noir"
     | "stars"
     | "tushooNavy"
+    | "corporate"
     | "toiAnket"
     | "tuscany";
 }) {
@@ -41,6 +42,7 @@ export function RsvpForm({
   );
 
   const input = {
+    corporate: "h-12 w-full rounded border border-[color:var(--c-line)] bg-[color:var(--c-field)] px-4 text-sm text-[color:var(--c-field-ink)] outline-none",
     tushooNavy: "h-12 w-full rounded border border-[#bd9455]/50 bg-[#fff9ef] px-4 text-sm text-[#102e50] outline-none focus:border-[#102e50]",
     luxury: "h-12 w-full border border-[#c4a35e]/40 bg-transparent px-4 text-sm text-[#f4efe6] outline-none placeholder:text-[#f4efe6]/40",
     elegant: "h-12 w-full rounded-none border-b border-[#3a2c20]/25 bg-transparent px-1 text-sm outline-none",
@@ -61,6 +63,7 @@ export function RsvpForm({
 
   const optionCls = (active: boolean) =>
     ({
+      corporate: `flex min-h-12 w-full items-center gap-3 rounded border px-4 py-3 text-left text-sm ${active ? "border-[color:var(--c-accent)] bg-[color:var(--c-accent)] text-[color:var(--c-accent-ink)]" : "border-[color:var(--c-line)] text-[color:var(--c-ink)]"}`,
       tushooNavy: `flex min-h-12 w-full items-center gap-3 rounded border px-4 py-3 text-left text-sm ${active ? "border-[#102e50] bg-[#102e50]/10 text-[#102e50]" : "border-[#bd9455]/40 text-[#102e50]"}`,
       luxury: `flex h-12 w-full items-center justify-between border px-4 text-left text-sm ${active ? "border-[#c4a35e] text-[#c4a35e]" : "border-white/15 text-[#f4efe6]/80"}`,
       elegant: `flex h-11 w-full items-center gap-3 border-b text-left text-sm ${active ? "border-[#3a2c20] font-medium" : "border-[#3a2c20]/15"}`,
@@ -80,6 +83,7 @@ export function RsvpForm({
     })[tone];
 
   const submit = {
+    corporate: "mt-4 flex h-12 w-full items-center justify-center rounded bg-[color:var(--c-accent)] text-[12px] uppercase tracking-[0.14em] text-[color:var(--c-accent-ink)]",
     tushooNavy: "mt-4 flex h-12 w-full items-center justify-center rounded bg-[#102e50] text-[12px] tracking-[0.1em] text-[#fff9ef]",
     luxury: "mt-4 flex h-12 w-full items-center justify-center bg-[#c4a35e] text-[11px] uppercase tracking-[0.22em] text-[#16110c]",
     elegant: "mt-6 flex h-12 w-full items-center justify-center border border-[#3a2c20] text-[11px] uppercase tracking-[0.2em]",

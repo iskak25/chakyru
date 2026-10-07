@@ -11,6 +11,7 @@ const EVENT_PHRASE_KY: Record<EventType, string> = {
   bachelorette: "кыздар кечебизге",
   jentek: "жентек тоюбузга",
   tushoo: "тушоо кесүү тоюбузга",
+  corporate: "корпоративибизге",
 };
 
 const EVENT_PHRASE_RU: Record<EventType, string> = {
@@ -24,6 +25,7 @@ const EVENT_PHRASE_RU: Record<EventType, string> = {
   bachelorette: "девичник",
   jentek: "жентек той",
   tushoo: "тушоо той",
+  corporate: "корпоратив",
 };
 
 const KY_MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];

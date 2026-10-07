@@ -49,7 +49,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
     do {
       out = await sharp(input, { limitInputPixels: 60_000_000 })
         .rotate()
-        .resize(1200, 630, { fit: "cover", position: "centre" })
+        .resize(1200, 630, { fit: "cover", position: sharp.strategy.attention })
         .jpeg({ quality, mozjpeg: true })
         .toBuffer();
       quality -= 8;

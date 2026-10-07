@@ -1,9 +1,13 @@
-export const INVITE_FAMILIES = ["luxury", "elegant", "modern", "romantic", "traditional", "ivory", "mauve", "kyrgyz", "mono", "blush", "frost", "meadow", "noir", "tuscany", "toiAnket", "stars", "tushooNavy"] as const;
+export const INVITE_FAMILIES = ["luxury", "elegant", "modern", "romantic", "traditional", "ivory", "mauve", "kyrgyz", "mono", "blush", "frost", "meadow", "noir", "tuscany", "toiAnket", "stars", "tushooNavy", "corporate"] as const;
 
 export type InviteFamily = (typeof INVITE_FAMILIES)[number];
 
 const FAMILY_BY_TEMPLATE: Record<string, InviteFamily> = {
   "tushoo-ayat": "tushooNavy",
+  "corp-velvet": "corporate",
+  "corp-emerald": "corporate",
+  "corp-winter": "corporate",
+  "corp-noir": "corporate",
   "ak-shumkar": "luxury",
   elegant: "luxury",
   "tun-almaz": "luxury",

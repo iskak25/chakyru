@@ -19,6 +19,7 @@ export const eventTypes: EventType[] = [
   "bachelorette",
   "jentek",
   "tushoo",
+  "corporate",
 ];
 
 export const formats: InviteFormat[] = ["site3d", "photo"];
@@ -51,6 +52,74 @@ const seedTemplates: InvitationTemplate[] = [
       names: "Аят", date: "2026-11-08", time: "15:00", message: "",
       coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: {},
       gallery: { hero: "/images/templates/tushoo-ayat/hero.webp" },
+    },
+  },
+  {
+    id: "corp-velvet",
+    name: { ky: "Жаңы жыл — Кызыл бархыт", ru: "Новый год — Красный бархат" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 990,
+    eventTypes: ["corporate"],
+    envelope: { enabled: true, variant: "burgundy" },
+    style: style("#7a1020", "#4d0813", "#e8c98a", "#fbf7f2", "#8a5a5f", {
+      overlay: "#7a1020", pageBg: "#7a1020", pageLayout: "corporate",
+    }),
+    canvas: {
+      names: "Новогодний бал", date: "2026-12-26", time: "18:00", message: "",
+      coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: { "corp.theme": "velvet" },
+      gallery: {},
+    },
+  },
+  {
+    id: "corp-emerald",
+    name: { ky: "Жаңы жыл — Зымырыт бархыт", ru: "Новый год — Изумрудный бархат" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 990,
+    eventTypes: ["corporate"],
+    envelope: { enabled: true, variant: "forest" },
+    style: style("#0e2a22", "#0b2a21", "#c9a45c", "#f1ecd8", "#6b7a62", {
+      overlay: "#0e2a22", pageBg: "#0e2a22", pageLayout: "corporate",
+    }),
+    canvas: {
+      names: "Новый год 2027", date: "2026-12-26", time: "18:00", message: "",
+      coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: { "corp.theme": "emerald" },
+      gallery: {},
+    },
+  },
+  {
+    id: "corp-winter",
+    name: { ky: "Жаңы жыл — Кышкы жомок", ru: "Новый год — Зимняя сказка" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 990,
+    eventTypes: ["corporate"],
+    envelope: { enabled: true, variant: "midnight" },
+    style: style("#10285a", "#0c1f4a", "#e3c48a", "#f3e9d2", "#a9b4d0", {
+      overlay: "#10285a", pageBg: "#10285a", pageLayout: "corporate",
+    }),
+    canvas: {
+      names: "Зимняя сказка", date: "2026-12-26", time: "18:00", message: "",
+      coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: { "corp.theme": "winter" },
+      gallery: {},
+    },
+  },
+  {
+    id: "corp-noir",
+    name: { ky: "Жаңы жыл — Кара алтын", ru: "Новый год — Чёрное золото" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 990,
+    eventTypes: ["corporate"],
+    envelope: { enabled: true, variant: "blackGold" },
+    style: style("#0b0b0b", "#0a0a0a", "#d9b877", "#eadfc6", "#a79a7f", {
+      overlay: "#0b0b0b", pageBg: "#0b0b0b", pageLayout: "corporate",
+    }),
+    canvas: {
+      names: "Культурный Новый год", date: "2026-12-26", time: "18:00", message: "",
+      coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: { "corp.theme": "noir" },
+      gallery: {},
     },
   },
   ...anniversaryTemplates,

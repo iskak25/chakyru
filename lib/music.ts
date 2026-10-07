@@ -20,7 +20,7 @@ export const ONLINE_TRACKS: { id: string; ky: string; ru: string; url: string; s
   { id: "bachelorette-party", ky: "Девочка гуляет · Хабиб", ru: "Девочка гуляет · Хабиб", url: "https://muzem.net/uploads/music/2024/02/Habib_Devochka_gulyaet.mp3", events: ["bachelorette"] },
   { id: "beshik-yry", ky: "Бешик ыры · Салтанат Аширова", ru: "Бешик ыры · Салтанат Аширова", url: "https://kyrgyz-audio.com/wp-content/uploads/mp3/a_153837.mp3", events: ["beshik", "jentek"] },
   { id: "tushoo-kesuu", ky: "Тушоо кесүү · Айпери Кулбаева", ru: "Тушоо кесүү · Айпери Кулбаева", url: "https://kyrgyz-audio.com/wp-content/uploads/mp3/a_275911.mp3", events: ["tushoo"] },
-  { id: "tuulgan-kun", ky: "Туулган күн · Урмат Усенов, Неля", ru: "Туулган күн · Урмат Усенов, Неля", url: "https://kyrgyz-audio.com/wp-content/uploads/mp3/a_276261.mp3", events: ["birthday", "anniversary"] },
+  { id: "tuulgan-kun", ky: "Туулган күн · Урмат Усенов, Неля", ru: "Туулган күн · Урмат Усенов, Неля", url: "https://kyrgyz-audio.com/wp-content/uploads/mp3/a_276261.mp3", events: ["birthday", "anniversary", "corporate"] },
   { id: "jaramazan", ky: "Жарамазан · Чубак Сатаев", ru: "Жарамазан · Чубак Сатаев", url: "https://kyrgyz-audio.com/wp-content/uploads/2020/07/chubak_sataev_jaramazan.mp3", events: ["iftar"] },
   {
     id: "canon-gigue",

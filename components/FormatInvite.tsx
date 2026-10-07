@@ -20,6 +20,7 @@ import { FamilySiteInvite } from "./FamilySiteInvite";
 import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
 import { AnniversaryInvite } from "./AnniversaryInvite";
 import { TushooNavyInvite } from "./invite-families/TushooNavy";
+import { CorporateInvite } from "./invite-families/Corporate";
 
 export function MediaStage({
   invitation,
@@ -68,6 +69,7 @@ function FormatInviteContent({
   const format = formatOf(invitation.templateId);
   const pinterest = getPinterestDesign(invitation);
   const anniversary = getAnniversaryDesign(invitation);
+  if (getTemplate(invitation.templateId).style.pageLayout === "corporate") return <CorporateInvite invitation={invitation} locale={locale} labels={t.site3d} onChange={onChange} onReload={onReload} compact={compact && !interactive} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (invitation.templateId === "tushoo-ayat" || getTemplate(invitation.templateId).style.pageLayout === "tushooNavy") return <TushooNavyInvite invitation={invitation} locale={locale} labels={t.site3d} onChange={onChange} onReload={onReload} compact={compact && !interactive} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (anniversary) return <AnniversaryInvite invitation={invitation} design={anniversary} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (pinterest?.eventType === "jentek" || pinterest?.eventType === "tushoo") return <FamilySiteInvite invitation={invitation} design={pinterest} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} startOpen={startOpen} />;

@@ -21,9 +21,11 @@ import { ToiAnketFamily } from "./ToiAnket";
 import { TraditionalFamily } from "./Traditional";
 import { TuscanyFamily } from "./Tuscany";
 import { TushooNavyFamily, TushooNavyThumb } from "./TushooNavy";
+import { CorporateFamily, CorporateThumb } from "./Corporate";
 
 export function FamilyLayout({ family, kit }: { family: InviteFamily; kit: LayoutKit }) {
   if (family === "tushooNavy") return <TushooNavyFamily kit={kit} />;
+  if (family === "corporate") return <CorporateFamily kit={kit} />;
   if (family === "luxury") return <LuxuryFamily kit={kit} />;
   if (family === "modern") return <ModernFamily kit={kit} />;
   if (family === "romantic") return <RomanticFamily kit={kit} />;
@@ -56,6 +58,7 @@ export function FamilyThumb({
   const locale = useInvitationLanguage() || "ky";
   const tr = (value: string) => invitationText(value, locale);
   if (family === "tushooNavy") return <TushooNavyThumb name={a} />;
+  if (family === "corporate") return <CorporateThumb name={a} />;
   if (family === "luxury") {
     return (
       <div className="relative h-full overflow-hidden bg-[#120e0c] text-[#c4a35e]">
