@@ -15,6 +15,17 @@ export const envelopeVariants = {
 } as const;
 
 export type EnvelopeVariant = keyof typeof envelopeVariants;
+export const envelopeDesigns = ["classic", "floral", "wave"] as const;
+export type EnvelopeDesign = (typeof envelopeDesigns)[number];
+export function invitationEnvelopeDesign(copy?: Record<string, string>): EnvelopeDesign {
+  const value = copy?.["envelope.design"];
+  return envelopeDesigns.find(design => design === value) ?? "classic";
+}
+export function envelopeDesignPalette(design: EnvelopeDesign, variant: EnvelopeVariant) {
+  if (design === "floral") return { ...envelopeVariants.ivory, paper: "#f1e7da", light: "#fff8ed", shade: "#ccbaa2", background: "#eee5da", foil: "#aa8956", lining: "#713b91", seal: "#bbad92" };
+  if (design === "wave") return { ...envelopeVariants.ice, paper: "#6484ab", light: "#7b98b8", shade: "#47658a", background: "#6484ab", seal: "#d4a787" };
+  return envelopeVariants[variant];
+}
 export const envelopeColorKeys = ["paper", "light", "shade", "background", "ink", "foil", "lining", "seal"] as const;
 export type EnvelopeColors = Partial<Record<(typeof envelopeColorKeys)[number], string>>;
 

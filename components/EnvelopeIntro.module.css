@@ -54,6 +54,38 @@
 @keyframes sceneFade { to { opacity:0; } }
 @keyframes contentEnter { from { opacity:0; } to { opacity:1; } }
 @media (max-height:540px) { .heading { top:max(4dvh,env(safe-area-inset-top)); } .eyebrow,.heading p,.footerDate { display:none; } .heading h1 { font-size:25px; margin:0; } .footer { bottom:max(4dvh,env(safe-area-inset-bottom)); } .trigger { width:min(440px,calc(100vw - 40px),58dvh); } }
+.scene[data-envelope-design="wave"] .heading,.scene[data-envelope-design="floral"] .heading { display:none; }
+.scene[data-envelope-design="wave"] .center,.scene[data-envelope-design="floral"] .center { padding:0; }
+.scene[data-envelope-design="wave"] .trigger,.scene[data-envelope-design="floral"] .trigger { width:min(100%,560px); height:100%; aspect-ratio:auto; transform:none; border-radius:0; }
+.scene[data-envelope-design="wave"] .front,.scene[data-envelope-design="wave"] .flap,.scene[data-envelope-design="floral"] .front,.scene[data-envelope-design="floral"] .flap { display:none; }
+.scene[data-envelope-design="wave"] .envelope,.scene[data-envelope-design="floral"] .envelope { filter:none; }
+.scene[data-envelope-design="wave"] .card,.scene[data-envelope-design="floral"] .card { inset:12% 9%; }
+.door { position:absolute; inset:0; z-index:5; transform-style:preserve-3d; backface-visibility:hidden; }
+.doorPaper { width:100%; height:100%; overflow:visible; filter:drop-shadow(3px 2px 3px #0003); }
+.doorLeft { transform-origin:left center; z-index:6; }
+.doorRight { transform-origin:right center; }
+.flowers { position:absolute; top:3%; left:1%; width:43%; height:94%; filter:drop-shadow(1px 2px 1px #4a2b5733); }
+.doorRight .flowers { left:auto; right:1%; transform:scaleX(-1); }
+.scene[data-envelope-design="floral"] .doorRight .doorPaper { transform:scaleX(-1); }
+.scene[data-envelope-design="wave"] .seal { width:22%; left:65%; top:40%; }
+.scene[data-envelope-design="floral"] .seal { width:20%; left:40%; top:calc(50% - 5.625%); }
+.scene[data-envelope-design="wave"] .footer,.scene[data-envelope-design="floral"] .footer { z-index:8; bottom: max(20px,env(safe-area-inset-bottom)); pointer-events:none; color:var(--env-ink); }
+.scene[data-envelope-design="wave"] .footerDate,.scene[data-envelope-design="floral"] .footerDate { display:none; }
+.scene[data-envelope-design="wave"] .hint,.scene[data-envelope-design="floral"] .hint { padding:7px 12px; border-radius:20px; background:var(--env-light); box-shadow:0 2px 12px #0001; }
+.ribbon { position:absolute; inset:0; z-index:7; pointer-events:none; color:var(--env-lining); }
+.ribbonBand { position:absolute; top:46%; left:0; width:100%; height:9%; background:linear-gradient(0deg,#0006,transparent 25%,#fff3 52%,transparent 78%,#0005),var(--env-lining); box-shadow:0 3px 5px #0004; }
+.bowLeft,.bowRight { position:absolute; top:41%; left:22%; width:29%; height:17%; border-radius:12% 65% 60% 15%; transform:rotate(12deg); background:linear-gradient(125deg,#0009,#fff5 24%,transparent 42%,#0009 82%,#fff4),var(--env-lining); box-shadow:inset 2px 1px 4px #fff5,0 3px 6px #0004; }
+.bowRight { left:49%; transform:scaleX(-1) rotate(12deg); }
+.bowTail,.bowTailRight { position:absolute; top:51%; left:25%; width:23%; height:33%; transform:rotate(17deg); transform-origin:top; clip-path:polygon(10% 0,95% 0,90% 100%,48% 89%,0 99%); background:linear-gradient(90deg,#0008,#fff3 30%,transparent 58%,#0007),var(--env-lining); }
+.bowTailRight { left:52%; transform:rotate(-20deg); }
+.scene[data-envelope-design="floral"] .seal { z-index:8; }
+.scene:not([data-stage="closed"]) .doorLeft { animation:doorLeftOpen 1500ms cubic-bezier(.3,.1,.2,1) 350ms both; }
+.scene:not([data-stage="closed"]) .doorRight { animation:doorRightOpen 1500ms cubic-bezier(.3,.1,.2,1) 350ms both; }
+.scene:not([data-stage="closed"]) .ribbon { animation:sealLift 430ms ease-out both; }
+.scene[data-envelope-design="wave"]:not([data-stage="closed"]) .card,.scene[data-envelope-design="floral"]:not([data-stage="closed"]) .card { animation:portraitCard 2000ms ease-out 350ms both; }
+@keyframes doorLeftOpen { to { transform:perspective(1200px) rotateY(-110deg); opacity:.2; } }
+@keyframes doorRightOpen { to { transform:perspective(1200px) rotateY(110deg); opacity:.2; } }
+@keyframes portraitCard { 0%,40% { transform:scale(.95); } 75% { opacity:1; } 100% { transform:scale(1.08); opacity:0; } }
 @media (prefers-reduced-motion:reduce) { .scene *, .contentEntering { animation:none !important; } .scene[data-stage="revealing"] { animation:sceneFade 140ms linear both; } }
 .scene[data-reduced="true"] *, .scene[data-reduced="true"] ~ * { animation:none !important; }
 .embedded { container-type:inline-size; }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { ENVELOPE_TIMING, envelopeVariants, type EnvelopeVariant, type EnvelopeColors } from "@/lib/envelopes";
+import { ENVELOPE_TIMING, envelopeDesignPalette, type EnvelopeDesign, type EnvelopeVariant, type EnvelopeColors } from "@/lib/envelopes";
 import css from "./EnvelopeIntro.module.css";
 
 function Ornament({ motif, className = "" }: { motif: string; className?: string }) {
@@ -13,9 +13,33 @@ function Ornament({ motif, className = "" }: { motif: string; className?: string
   </svg>;
 }
 
-type Props = { variant: EnvelopeVariant; colors?: EnvelopeColors; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
+function Flowers() {
+  return <svg className={css.flowers} viewBox="0 0 160 600" fill="none" aria-hidden="true">
+    <path d="M48 574C145 433 12 340 94 209S58 100 116 20M62 503C30 457 22 427 29 391M80 389C133 345 132 298 129 271M63 266C25 223 24 188 30 165" stroke="var(--env-foil)" strokeWidth="2"/>
+    {Array.from({ length: 18 }, (_, i) => {
+      const y = 40 + i * 29, x = 78 + Math.sin(i * .7) * 26;
+      return <g key={i} transform={`translate(${x} ${y}) rotate(${i % 2 ? -28 : 25})`}>
+        <path d="M0 18C-33 8-30-15-27-23 0-15 5 0 0 18Z" fill="var(--env-lining)" opacity=".65"/>
+        <path d="M0 18C29 2 25-19 20-25-2-12-7 5 0 18Z" fill="var(--env-lining)" opacity=".4"/>
+        <path d="M-22-16 0 18 17-17" stroke="var(--env-light)" strokeWidth=".7"/>
+        {i % 3 === 1 && <g transform="translate(-10 8)">{[0,72,144,216,288].map(angle => <ellipse key={angle} cy="-9" rx="5.5" ry="11" transform={`rotate(${angle})`} fill="var(--env-lining)" stroke="var(--env-light)" strokeWidth=".8"/>)}<circle r="3" fill="var(--env-foil)"/></g>}
+        <circle cx="34" cy="-12" r="2.4" fill="var(--env-foil)"/><path d="m4 20 30-32" stroke="var(--env-foil)"/>
+      </g>;
+    })}
+  </svg>;
+}
 
-export function EnvelopeIntro({ variant, colors, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
+function PortraitDoors({ floral }: { floral: boolean }) {
+  return <>
+    <span className={`${css.door} ${css.doorRight}`}><svg className={css.doorPaper} viewBox="0 0 360 640" preserveAspectRatio="none"><path d={floral ? "M0 0H90Q128 0 125 30Q155 29 150 59Q178 61 165 90Q188 98 173 125Q190 138 181 160V480Q190 502 173 515Q188 542 165 550Q178 579 150 581Q155 611 125 610Q128 640 90 640H0Z" : "M0 0H360V640H0Z"} fill="var(--env-paper)" stroke="var(--env-shade)" strokeWidth="1.5"/></svg>{floral && <Flowers/>}</span>
+    <span className={`${css.door} ${css.doorLeft}`}><svg className={css.doorPaper} viewBox="0 0 360 640" preserveAspectRatio="none"><path d={floral ? "M0 0H90Q128 0 125 30Q155 29 150 59Q178 61 165 90Q188 98 173 125Q190 138 181 160V480Q190 502 173 515Q188 542 165 550Q178 579 150 581Q155 611 125 610Q128 640 90 640H0Z" : "M0 0H280C350 78 211 151 271 247S226 350 287 451 264 580 216 596L205 640H0Z"} fill="var(--env-paper)" stroke="var(--env-shade)" strokeWidth="1.5"/></svg>{floral && <Flowers/>}</span>
+    {floral && <span className={css.ribbon}><span className={css.ribbonBand}/><span className={css.bowTail}/><span className={css.bowTailRight}/><span className={css.bowLeft}/><span className={css.bowRight}/></span>}
+  </>;
+}
+
+type Props = { variant: EnvelopeVariant; design?: EnvelopeDesign; colors?: EnvelopeColors; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
+
+export function EnvelopeIntro({ variant, design = "classic", colors, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
   const [stage, setStage] = useState<"closed" | "opening" | "revealing" | "open">("closed");
   const [reduced, setReduced] = useState(false);
   const started = useRef(false);
@@ -23,7 +47,7 @@ export function EnvelopeIntro({ variant, colors, names, date, locale, children, 
   const button = useRef<HTMLButtonElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const active = stage !== "open";
-  const theme = { ...envelopeVariants[variant], ...colors };
+  const theme = { ...envelopeDesignPalette(design, variant), ...colors };
   const ru = locale === "ru";
   const title = ru ? "Вам приглашение" : "Сизге чакыруу";
   const openLabel = ru ? "Открыть приглашение" : "Чакырууну ачуу";
@@ -75,7 +99,7 @@ export function EnvelopeIntro({ variant, colors, names, date, locale, children, 
 
   return <div className={`${css.experience} ${embedded ? css.embedded : ""}`} style={variables} data-envelope-experience={variant}>
     {(stage === "revealing" || stage === "open") && <div ref={content} tabIndex={-1} aria-label={title} inert={active} className={`${css.content} ${stage === "revealing" ? css.contentEntering : ""}`}>{children}</div>}
-    {active && <section className={css.scene} data-envelope-intro={variant} data-stage={stage} data-reduced={reduced || undefined} role={embedded ? undefined : "dialog"} aria-modal={embedded ? undefined : true} aria-label={title}>
+    {active && <section className={css.scene} data-envelope-intro={variant} data-envelope-design={design} data-stage={stage} data-reduced={reduced || undefined} role={embedded ? undefined : "dialog"} aria-modal={embedded ? undefined : true} aria-label={title}>
       <div className={css.light} aria-hidden="true"/>
       <header className={css.heading}><span className={css.eyebrow}>{ru ? "Особенный день · особенные люди" : "Өзгөчө күн · өзгөчө адамдар"}</span><h1>{title}</h1><p>{ru ? "Для вас. С теплом и любовью." : "Сиз үчүн. Жылуулук жана сүйүү менен."}</p></header>
       <div className={css.center}>
@@ -88,6 +112,7 @@ export function EnvelopeIntro({ variant, colors, names, date, locale, children, 
               <span className={css.cardTitle}>{ru ? "Приглашение" : "Чакыруу"}</span>
               <span className={css.cardNames}>{names}</span><span className={css.cardDate}>{displayDate}</span>
             </span>
+            {design !== "classic" && <PortraitDoors floral={design === "floral"}/>}
             <span className={`${css.front} ${css.left}`}/><span className={`${css.front} ${css.right}`}/>
             <span className={`${css.front} ${css.bottom}`}><span className={css.address}>{ru ? "Лично для вас" : "Сиз үчүн"}</span><Ornament motif={theme.motif} className={css.frontOrnament}/></span>
             <span className={css.flap}><span className={css.flapOutside}><Ornament motif={theme.motif} className={css.flapOrnament}/></span><span className={css.flapInside}/></span>
