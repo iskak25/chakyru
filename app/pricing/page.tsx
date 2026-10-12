@@ -9,19 +9,16 @@ import { buildCustomOfferMessage, CUSTOM_DESIGN_PRICE_SOM, CUSTOM_DESIGN_WHATSAP
 import { useI18n } from "@/lib/locale";
 import { setPendingTemplate } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
-import { proBonusMonths, proPlanPrice, type ProPlanMonths } from "@/lib/proPlans";
 
 export default function PricingPage() {
   const { locale, t } = useI18n();
   const { templates, pricing } = useCatalog();
   const [from, setFrom] = useState("");
   const [userPrice, setUserPrice] = useState<number | null>(null);
-  const [proMonths, setProMonths] = useState<ProPlanMonths>(1);
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("from") || "";
-    setProMonths(new URLSearchParams(window.location.search).get("months") === "6" ? 6 : 1);
     setOrigin(window.location.origin);
     if (id) setPendingTemplate(id);
     setFrom(id);
@@ -37,7 +34,7 @@ export default function PricingPage() {
     <SiteShell>
       <PageHeader eyebrow="005" title={t.pricingTitle} description={t.pricingSub} />
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5">
         <article className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-7 sm:p-10" style={{ boxShadow: "var(--shadow-soft)" }}>
           <h2 className="font-serif text-[34px] tracking-[-0.02em] sm:text-[40px]">{t.plans.standard.name}</h2>
           <p className="font-serif mt-6 text-[40px] leading-none">
@@ -51,50 +48,6 @@ export default function PricingPage() {
             ))}
           </ul>
           <PlanBuyButton plan="standard" templateId={template?.id} className="mt-10 inline-flex min-h-12 w-full items-center justify-center rounded-[12px] bg-espresso px-5 text-[11px] uppercase tracking-[0.14em] text-cream" />
-        </article>
-
-        <article className="rounded-[var(--radius-xl)] bg-espresso p-7 text-cream sm:p-10" style={{ boxShadow: "var(--shadow-soft)" }}>
-          <p className="text-[10px] uppercase tracking-[0.16em] text-[var(--gold)]">{t.popular}</p>
-          <h2 className="font-serif mt-3 text-[34px] tracking-[-0.02em] sm:text-[40px]">{t.plans.pro.name}</h2>
-          <p className="font-serif mt-6 text-[40px] leading-none">{formatPrice(locale, proPlanPrice(proMonths))}</p>
-          {proBonusMonths(proMonths) > 0 ? (
-            <p className="mt-3 inline-block rounded-full bg-[var(--gold)]/20 px-3 py-1 text-sm text-[var(--gold)]">
-              {locale === "ru"
-                ? `🎁 В подарок +${proBonusMonths(proMonths)} месяцев — всего ${proMonths + proBonusMonths(proMonths)} месяцев Pro`
-                : `🎁 Белекке +${proBonusMonths(proMonths)} ай — бардыгы ${proMonths + proBonusMonths(proMonths)} ай Pro`}
-            </p>
-          ) : null}
-          <div role="radiogroup" aria-label={locale === "ru" ? "Срок Pro" : "Pro мөөнөтү"} className="mt-4 grid gap-2">
-            {([1, 6] as ProPlanMonths[]).map((m) => {
-              const on = proMonths === m;
-              return (
-                <button
-                  key={m}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  onClick={() => setProMonths(m)}
-                  className={`flex min-h-12 items-center justify-between gap-3 rounded-[12px] border px-4 py-2 text-left text-sm transition ${
-                    on ? "border-[var(--gold)] bg-cream/10 text-cream" : "border-cream/25 text-cream/75 hover:border-cream/50"
-                  }`}
-                >
-                  <span>
-                    {m === 1
-                      ? locale === "ru" ? "1 месяц" : "1 ай"
-                      : locale === "ru" ? "6 месяцев + 6 в подарок" : "6 ай + 6 ай белек"}
-                  </span>
-                  <span className="font-serif text-base">{formatPrice(locale, proPlanPrice(m))}</span>
-                </button>
-              );
-            })}
-          </div>
-          <p className="mt-3 text-sm text-cream/70">{locale === "ru" ? "Все шаблоны доступны для редактирования до окончания срока Pro." : "Pro мөөнөтү бүткөнгө чейин бардык шаблондорду өзгөртө аласыз."}</p>
-          <ul className="mt-8 space-y-2 text-[15px] leading-8 text-cream/70">
-            {t.plans.pro.feat.map((f) => (
-              <li key={f}>— {f}</li>
-            ))}
-          </ul>
-          <PlanBuyButton plan="pro" templateId={template?.id} proMonths={proMonths} className="mt-10 inline-flex min-h-12 w-full items-center justify-center rounded-[12px] bg-cream px-5 text-[11px] uppercase tracking-[0.14em] text-espresso" />
         </article>
       </div>
 
