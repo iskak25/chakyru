@@ -80,3 +80,25 @@ describe("static assets", () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe("image paths resolved from template data", () => {
+  function collect(value: unknown, out: Set<string>, depth = 0) {
+    if (depth > 8 || value == null) return;
+    if (typeof value === "string") {
+      if (/^\/(images|stickers)\/.+\.(png|jpe?g|webp|svg)$/i.test(value)) out.add(value);
+      return;
+    }
+    if (Array.isArray(value)) return value.forEach((v) => collect(v, out, depth + 1));
+    if (typeof value === "object") Object.values(value as object).forEach((v) => collect(v, out, depth + 1));
+  }
+
+  it("every local image used by catalogue, themed and reference designs exists", async () => {
+    const { pinterestDesigns, themedSiteDesigns } = await import("@/lib/pinterestTemplates");
+    const { referenceWeddings } = await import("@/lib/referenceWeddings");
+    const paths = new Set<string>();
+    for (const source of [templates, pinterestDesigns, themedSiteDesigns, referenceWeddings]) collect(source, paths);
+    expect(paths.size).toBeGreaterThan(20);
+    const missing = [...paths].filter((p) => !existsSync(join(publicDir, p)));
+    expect(missing).toEqual([]);
+  });
+});

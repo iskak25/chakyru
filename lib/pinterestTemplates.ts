@@ -10,7 +10,7 @@ export type PinterestDesign = {
   themed?: boolean; eventType?: EventType;
 };
 const raw = (pin: string, width: number, height: number, x: number, y: number, w: number, h: number): ReferenceCrop => ({ source: `/images/pinterest-references/${pin}.jpg`, width, height, x, y, w, h });
-const clean = (file: string, width: number, height: number): ReferenceCrop => ({ source: `/images/pinterest-references/${file}-clean.png`, width, height, x: 0, y: 0, w: width, h: height });
+const clean = (file: string, width: number, height: number): ReferenceCrop => ({ source: `/images/pinterest-references/${file}-clean.webp`, width, height, x: 0, y: 0, w: width, h: height });
 export const pinterestDesigns: PinterestDesign[] = [
   { key: "ethno", id: "pin-kyz-ethno", pin: "720998221637252803", title: "Кыз узатуу — Этно", format: "site3d", paper: "#fffdf8", ink: "#864437", accent: "#a7563c", names: "Анель", date: "2026-04-25", time: "16:00", venue: DEFAULT_VENUE.venue, address: DEFAULT_VENUE.address, photos: {
     hero: raw("720998221637252803",736,1308,60,215,275,400), hands: raw("720998221637252803",736,1308,416,312,283,160), women: raw("720998221637252803",736,1308,441,886,236,217), men: raw("720998221637252803",736,1308,442,1149,234,99), flower: raw("720998221637252803",736,1308,200,824,137,111),
