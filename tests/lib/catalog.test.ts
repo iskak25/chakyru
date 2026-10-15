@@ -102,3 +102,19 @@ describe("image paths resolved from template data", () => {
     expect(missing).toEqual([]);
   });
 });
+
+describe("example copy", () => {
+  it("does not hard-code a name that differs from the template's own", async () => {
+    const { eventExamples } = await import("@/lib/collectionTemplates");
+    const own = new Set<string>();
+    const commonWords = new Set(["Кубаныч"]); // also the ordinary word "joy", so a prefix match proves nothing
+    for (const t of templates) for (const n of String(t.canvas?.names || "").split(/\s*(?:&|жана)\s*/)) if (n.length > 3 && !commonWords.has(n)) own.add(n);
+    // Messages are shared by many templates, so they must not mention anyone by name.
+    for (const [event, example] of Object.entries(eventExamples)) {
+      for (const message of example.message) {
+        const hit = [...own].find((name) => message.includes(name.slice(0, Math.max(4, name.length - 2))));
+        expect(hit, `${event}: "${message.slice(0, 60)}…" mentions ${hit}`).toBeUndefined();
+      }
+    }
+  });
+});
