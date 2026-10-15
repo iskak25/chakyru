@@ -26,9 +26,12 @@ export function inviteShareMeta(inv: Invitation): { title: string; description: 
   const date = shortInviteDate(inv.date);
   const title = date ? `${kind} — ${date}` : kind;
   const venue = inv.venue?.trim() ?? "";
+  const address = inv.address?.replace(/[​-‍﻿]/g, "").trim() ?? "";
   const city = inv.city?.trim() ?? "";
-  // Город добавляем, только если он не упомянут в названии места.
-  const place = [venue, city && !venue.toLowerCase().includes(city.toLowerCase()) ? city : ""].filter(Boolean).join(", ");
+  // Адрес — то, что гость видит на странице; поле «город» бывает не видно в шаблоне и хранит
+  // значение по умолчанию, поэтому город берём только когда адреса нет.
+  const where = address || city;
+  const place = [venue, where && !venue.toLowerCase().includes(where.toLowerCase()) ? where : ""].filter(Boolean).join(", ");
   const description = place
     ? `${place}. Чакырууну ачып, баарын көрүңүз 💌`
     : "Чакырууну ачып, баарын көрүңүз 💌";

@@ -29,6 +29,11 @@ describe("inviteShareMeta", () => {
     expect(meta.description).toContain("Ала-Тоо, Бишкек");
     expect(meta.description).toContain("ачып");
   });
+  it("prefers the address over the stored city", () => {
+    const meta = inviteShareMeta({ ...base, address: "ул. Фрунзе 87, с. Беловодское" });
+    expect(meta.description).toContain("Ала-Тоо, ул. Фрунзе 87, с. Беловодское");
+    expect(meta.description).not.toContain("Бишкек");
+  });
   it("drops the date and place when they are missing", () => {
     const meta = inviteShareMeta({ ...base, date: "", venue: "", city: "" });
     expect(meta.title).toBe("Тушоо той");
