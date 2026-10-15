@@ -196,7 +196,7 @@ function EditorPageInner() {
   async function copyLink() {
     if (!inv) return;
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/i/${inv.id}`);
+      await navigator.clipboard.writeText(`${window.location.origin}/i/${inv.id}?lang=${locale}`);
       setLinkCopied(true);
       window.setTimeout(() => setLinkCopied(false), 2000);
     } catch {

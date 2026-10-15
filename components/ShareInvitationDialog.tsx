@@ -7,8 +7,15 @@ import type { Invitation } from "@/lib/types";
 
 export function ShareInvitationDialog({ invitation, locale, onClose }: { invitation: Invitation; locale: string; onClose: () => void }) {
   const ru = locale === "ru";
-  const url = `${window.location.origin}/i/${encodeURIComponent(invitation.id)}`;
+  const [linkLang, setLinkLang] = useState<"ru" | "ky">(ru ? "ru" : "ky");
+  const url = `${window.location.origin}/i/${encodeURIComponent(invitation.id)}?lang=${linkLang}`;
   const [text, setText] = useState(buildShareMessage(invitation, locale, url));
+
+  function pickLang(next: "ru" | "ky") {
+    setLinkLang(next);
+    const nextUrl = `${window.location.origin}/i/${encodeURIComponent(invitation.id)}?lang=${next}`;
+    setText(buildShareMessage(invitation, next, nextUrl));
+  }
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
@@ -38,6 +45,14 @@ export function ShareInvitationDialog({ invitation, locale, onClose }: { invitat
 
   const linkClass = "flex min-h-12 items-center justify-center rounded-xl border bg-white px-4 py-3 text-sm hover:bg-cream";
   return <AppDialog title={ru ? "Поделиться приглашением" : "Чакыруу менен бөлүшүү"} onClose={onClose}>
+    <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label={ru ? "Язык ссылки" : "Шилтеменин тили"}>
+      {(["ru", "ky"] as const).map(l => (
+        <button key={l} type="button" aria-pressed={linkLang === l} onClick={() => pickLang(l)}
+          className={`min-h-11 rounded-xl border px-3 text-sm ${linkLang === l ? "bg-[#302a25] text-white" : "bg-white hover:bg-cream"}`}>
+          {l === "ru" ? "Русский" : "Кыргызча"}
+        </button>
+      ))}
+    </div>
     <p className="mt-4 text-sm leading-6">{ru ? "Текст можно отредактировать перед отправкой." : "Жөнөтөр алдында текстти оңдой аласыз."}</p>
     <textarea
       className="mt-3 w-full rounded-xl border bg-white p-3 text-sm leading-6"

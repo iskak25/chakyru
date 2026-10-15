@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { TemplateRenderer } from "@/components/TemplateRenderer";
 import { useI18n } from "@/lib/locale";
 import { fetchInvitationRemoteMeta } from "@/lib/accessClient";
@@ -14,7 +14,10 @@ import { InviteSkeleton } from "@/components/Skeleton";
 
 function GuestInviteInner() {
   const params = useParams<{ id: string }>();
-  const { locale } = useI18n();
+  const { locale: storedLocale } = useI18n();
+  // Ссылка вида /i/<id>?lang=ru фиксирует язык приглашения независимо от настроек браузера гостя.
+  const forced = useSearchParams().get("lang");
+  const locale = forced === "ru" || forced === "ky" ? forced : storedLocale;
   const [inv, setInv] = useState<Invitation | null | undefined>(undefined);
   // Anything but a server-confirmed payment is shown as a demo (also when we only have the local copy).
   const [demo, setDemo] = useState(true);
