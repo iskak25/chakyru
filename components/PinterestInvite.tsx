@@ -31,7 +31,7 @@ export function PinterestCalendar({ invitation, locale = "ru" }: { invitation: I
   const offset = (new Date(date.getFullYear(), date.getMonth(), 1).getDay() + 6) % 7;
   const days = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   return <WeddingPart id="calendar" label="Календарь" kind="date" className={css.calendar}>
-    <div className={css.month}>{date.toLocaleDateString(locale === "ky" ? "ky-KG" : "ru-RU", { month:"long", year:"numeric" })}</div>
+    <div className={css.month}>{locale === "ky" ? `${["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"][date.getMonth()]} ${date.getFullYear()}` : date.toLocaleDateString("ru-RU", { month:"long", year:"numeric" })}</div>
     <div className={css.days}>{(locale === "ky" ? ["ДҮЙ","ШЕЙ","ШАР","БЕЙ","ЖУМ","ИШЕ","ЖЕК"] : ["ПН","ВТ","СР","ЧТ","ПТ","СБ","ВС"]).map(d => <small key={d}>{d}</small>)}{Array.from({length:offset},(_,i) => <span key={`blank-${i}`} />)}{Array.from({length:days},(_,i) => <span key={i} className={i+1===date.getDate()?css.today:""}>{i+1}</span>)}</div>
   </WeddingPart>;
 }

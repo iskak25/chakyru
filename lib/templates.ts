@@ -5,11 +5,11 @@ import { peekPreview, peekTemplates } from "./catalogStore";
 import { referenceWeddingTemplates } from "./referenceWeddings";
 import { pinterestTemplates } from "./pinterestTemplates";
 import { anniversaryTemplates } from "./anniversaryTemplates";
+import { collectionTemplates, eventExamples, primaryCatalogCategory, type CollectionEvent } from "./collectionTemplates";
 import { invitationText } from "./inviteTranslations";
 import type { EventType, InvitationTemplate, InviteFormat, TemplateStyle } from "./types";
 
 export const eventTypes: EventType[] = [
-  "toi",
   "wedding",
   "kyz",
   "beshik",
@@ -214,6 +214,7 @@ const seedTemplates: InvitationTemplate[] = [
       pageLayout: "velvet",
     }),
   },
+  ...collectionTemplates,
 ];
 
 const FORMAT_PRICE = {
@@ -250,7 +251,23 @@ export function pickStoredPrice(live: number | undefined, seed: number, template
   return live;
 }
 
-export const templates = applyCatalogPrices(seedTemplates).map(withDefaultVenue).map(withEnvelope);
+export const templates = applyCatalogPrices(seedTemplates.map(item => {
+  const category = primaryCatalogCategory(item) as CollectionEvent;
+  const example = eventExamples[category];
+  const canvas = item.canvas;
+  return {
+    ...item,
+    eventTypes: [category],
+    canvas: {
+      layout: {}, extras: [], copy: {}, gallery: {}, blockColors: {}, coverImage: "",
+      ...canvas,
+      names: canvas?.names || example.names,
+      date: canvas?.date || "2027-06-12",
+      time: canvas?.time || example.time,
+      message: canvas?.message || example.message[0],
+    },
+  };
+})).map(withDefaultVenue).map(withEnvelope);
 
 export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): InvitationTemplate[] {
   if (!live?.length) {
@@ -265,6 +282,7 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
     return {
       ...seed,
       ...liveItem,
+      eventTypes: seed.eventTypes,
       name: {
         ky: invitationText(liveItem.name?.ky || seed.name.ky, "ky"),
         ru: invitationText(liveItem.name?.ru || seed.name.ru, "ru"),

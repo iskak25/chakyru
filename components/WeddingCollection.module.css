@@ -1,0 +1,205 @@
+/* Wedding art directions (14 references). Base typography comes from KyzCollection.module.css;
+   each theme only restyles its own cover and the rhythm of the sections below it. */
+.root :global(.wd-bigdate) { font-family:var(--serif); font-size:clamp(70px,22cqw,150px); line-height:1; letter-spacing:-.03em; z-index:2; }
+.root :global(.wd-bigdate small) { display:block; font-size:16px; letter-spacing:.2em; }
+.root :global(.wd-monogram) { display:flex; align-items:center; gap:14px; font-family:var(--serif); font-size:96px; line-height:1; }
+.root :global(.wd-monogram i) { width:2px; height:110px; background:currentColor; }
+.root :global(.wd-seal) { width:84px; margin:0 auto; filter:drop-shadow(0 6px 5px #3a52663f); z-index:3; }
+.root :global(.wd-seal svg) { width:100%; height:auto; }
+
+.root :global(.wd-artbox) { display:grid; place-items:center; background:color-mix(in srgb,var(--c-accent) 18%,var(--c-paper)); }
+.root :global(.wd-artbox svg) { width:56%; height:auto; max-height:88%; }
+.root :global(.wd-motifdecor) { display:grid; place-items:center; background:none; mix-blend-mode:normal; }
+.root :global(.wd-motifdecor svg) { height:100%; width:auto; max-width:60%; opacity:.85; }
+
+/* 01 veil: white drapery, a lace heart around the names, olive script */
+.root[data-kyz-theme="w-veil"] { background:linear-gradient(180deg,var(--wd-light,#f8f6f0),var(--wd-light,#eceadf)); }
+.root[data-kyz-theme="w-veil"] :global(.wd-heart) { display:grid; gap:12px; place-items:center; width:78%; aspect-ratio:10/9; padding:16% 14% 22%; background:var(--wd-light,#e2e2cf); -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 360' preserveAspectRatio='none'%3E%3Cpath d='M200 358C60 250 0 190 0 110 0 40 50 0 105 0c40 0 75 25 95 60C220 25 255 0 295 0c55 0 105 40 105 110 0 80-60 140-200 248Z'/%3E%3C/svg%3E") center/100% 100% no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 360' preserveAspectRatio='none'%3E%3Cpath d='M200 358C60 250 0 190 0 110 0 40 50 0 105 0c40 0 75 25 95 60C220 25 255 0 295 0c55 0 105 40 105 110 0 80-60 140-200 248Z'/%3E%3C/svg%3E") center/100% 100% no-repeat; }
+.root[data-kyz-theme="w-veil"] :global(.kyz-name) { font-size:clamp(40px,10cqw,70px); color:var(--wd-mid,#68754a); }
+.root[data-kyz-theme="w-veil"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="w-veil"] :global([data-kyz-section="calendar"]) { margin:20px 6%; background:var(--wd-light,#fffdf8); border-radius:50% / 14%; }
+.root[data-kyz-theme="w-veil"] :global([data-kyz-section="rsvp"]) { background:var(--wd-light,#fffdf8); margin:20px 6%; border-radius:48px; }
+.root[data-kyz-theme="w-veil"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-mid,#868f60); color:#fff; }
+
+/* 02 toile: blue botanical engraving, oval card, navy panels */
+.root[data-kyz-theme="w-toile"] :global([data-kyz-hero]) { padding-top:70px; }
+.root[data-kyz-theme="w-toile"] :global(.wd-toile) { position:absolute; inset:0; z-index:-1; background:radial-gradient(circle at 18% 20%,var(--wd-mid,#9db5d6) 0 2px,transparent 3px) 0 0/34px 34px,radial-gradient(circle at 70% 60%,var(--wd-mid,#6f8fbc) 0 3px,transparent 4px) 0 0/46px 46px,var(--wd-light,#e8eef7); opacity:.75; }
+.root[data-kyz-theme="w-toile"] :global(.wd-oval) { display:grid; gap:20px; width:76%; padding:80px 8%; border:2px solid var(--wd-dark,#1f4a7a); border-radius:50% / 30%; background:var(--wd-light,#fcf9f2); }
+.root[data-kyz-theme="w-toile"] :global(.kyz-name) { font-family:var(--serif); font-size:clamp(40px,10cqw,64px); letter-spacing:.08em; text-transform:uppercase; }
+.root[data-kyz-theme="w-toile"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="w-toile"] :global([data-kyz-section="rsvp"]) { margin:24px 7%; background:var(--wd-dark,#1f4a7a); color:#fff; border-radius:44px; }
+.root[data-kyz-theme="w-toile"] :global([data-kyz-section="calendar"]) { border:3px double var(--wd-dark,#1f4a7a); margin:24px 7%; }
+.root[data-kyz-theme="w-toile"] :global(.kyz-flowers) { height:110px; }
+
+/* 03 lace: olive field, white lace edge around a monochrome portrait */
+.root[data-kyz-theme="w-lace"] { background:var(--wd-light,#fffff0); }
+.root[data-kyz-theme="w-lace"] :global([data-kyz-hero]) { padding:0; gap:0; background:var(--wd-dark,#4b5a2a); color:#fff; }
+.root[data-kyz-theme="w-lace"] :global(.wd-top) { display:grid; gap:6px; padding:70px 8% 36px; }
+.root[data-kyz-theme="w-lace"] :global(.kyz-name) { font-family:var(--serif); font-size:clamp(34px,8cqw,56px); text-transform:uppercase; letter-spacing:.04em; }
+.root[data-kyz-theme="w-lace"] :global(.wd-lace) { width:100%; padding:44px 18px 56px; background:radial-gradient(circle at 10px 0,var(--wd-light,#f7f5ea) 11px,transparent 12px) 0 0/22px 22px repeat-x,var(--wd-light,#e9e7dc); border-radius:0 0 18px 18px; }
+.root[data-kyz-theme="w-lace"] :global(.kyz-photo) { height:480px; filter:grayscale(1); border:10px solid var(--wd-light,#f7f5ea); }
+.root[data-kyz-theme="w-lace"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="w-lace"] :global([data-kyz-section="location"]) { background:var(--wd-dark,#4b5a2a); color:var(--wd-light,#f7f5ea); }
+.root[data-kyz-theme="w-lace"] :global([data-kyz-section="rsvp"]) { border-top:18px dotted var(--wd-light,#e9e7dc); }
+.root[data-kyz-theme="w-lace"] :global([data-kyz-sections] > section > div:first-child) { font-family:var(--serif); text-transform:uppercase; letter-spacing:.08em; }
+
+/* 04 curtain: rose drapery, cream card, green script and a dress-code palette */
+.root[data-kyz-theme="w-curtain"] { background:var(--wd-light,#fff3e4); }
+.root[data-kyz-theme="w-curtain"] :global(.wd-drape) { position:absolute; inset:0; z-index:-1; background:repeating-linear-gradient(90deg,var(--wd-light,#e7a6a4) 0 38px,var(--wd-light,#f3c1bd) 38px 62px,var(--wd-mid,#dc9594) 62px 90px); }
+.root[data-kyz-theme="w-curtain"] :global(.wd-card) { display:grid; gap:18px; width:84%; padding:46px 8%; background:var(--wd-light,#fff3e4); border-radius:28px; box-shadow:0 18px 50px #6a2d2d33; }
+.root[data-kyz-theme="w-curtain"] :global(.kyz-photo) { height:330px; border-radius:200px 200px 16px 16px; }
+.root[data-kyz-theme="w-curtain"] :global(.kyz-name) { color:var(--wd-mid,#6f8f3d); font-size:clamp(46px,11cqw,76px); }
+.root[data-kyz-theme="w-curtain"] :global([data-kyz-sections] > section) { margin:22px 7%; padding:48px 9%; border:1px solid var(--wd-light,#e9b9b3); border-radius:30px; }
+.root[data-kyz-theme="w-curtain"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-mid,#7a9a45); color:#fff; border-radius:30px; }
+.root[data-kyz-theme="w-curtain"] :global(.kyz-swatches i:nth-child(1)) { background:var(--wd-dark,#6b5445); }
+.root[data-kyz-theme="w-curtain"] :global(.kyz-swatches i:nth-child(2)) { background:var(--wd-mid,#9bb064); }
+.root[data-kyz-theme="w-curtain"] :global(.kyz-swatches i:nth-child(3)) { background:var(--wd-light,#f0b6c2); }
+
+/* 05 torn: pink script, arched photograph, torn toile paper */
+.root[data-kyz-theme="w-torn"] :global([data-kyz-hero]) { padding-top:60px; background:var(--wd-light,#fffbe6); }
+.root[data-kyz-theme="w-torn"] :global(.wd-arch) { width:62%; height:430px; border-radius:200px 200px 0 0; overflow:hidden; }
+.root[data-kyz-theme="w-torn"] :global(.wd-arch .kyz-photo) { height:100%; }
+.root[data-kyz-theme="w-torn"] :global(.wd-paper) { display:grid; gap:20px; width:100%; padding:70px 10%; background:linear-gradient(var(--wd-light,#cfd2a3),var(--wd-light,#bfc48d)); clip-path:polygon(0 4%,10% 1%,22% 5%,36% 1%,50% 4%,64% 0,78% 4%,90% 1%,100% 4%,100% 96%,88% 100%,70% 96%,52% 100%,34% 96%,16% 100%,0 96%); color:var(--wd-dark,#2f3a1f); }
+.root[data-kyz-theme="w-torn"] :global(.kyz-name) { font-size:clamp(52px,12cqw,86px); }
+.root[data-kyz-theme="w-torn"] :global(.kyz-title) { color:var(--wd-mid,#d8578f); }
+.root[data-kyz-theme="w-torn"] :global([data-kyz-sections] > section > div:first-child) { color:var(--wd-mid,#d8578f); }
+.root[data-kyz-theme="w-torn"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-light,#ee9fc0); color:#fff; border-radius:30px; }
+
+/* 06 arch: stone colonnade, floral corners, spaced capitals */
+.root[data-kyz-theme="w-arch"] :global([data-kyz-hero]) { background:linear-gradient(var(--wd-light,#e6e9dd),var(--wd-light,#edebe3) 70%); }
+.root[data-kyz-theme="w-arch"] :global(.wd-stone) { position:absolute; inset:36px 10% 80px; z-index:-1; border:14px double var(--wd-mid,#b8b4a5); border-radius:280px 280px 0 0; background:linear-gradient(var(--wd-light,#f6f8f0),var(--wd-light,#e9ede0)); }
+.root[data-kyz-theme="w-arch"] :global(.wd-stone-text) { display:grid; gap:20px; padding-top:120px; }
+.root[data-kyz-theme="w-arch"] :global(.kyz-name) { font-family:var(--serif); font-size:clamp(40px,10cqw,64px); letter-spacing:.06em; text-transform:uppercase; }
+.root[data-kyz-theme="w-arch"] :global([data-kyz-sections] > section > div:first-child) { font-family:var(--serif); text-transform:uppercase; letter-spacing:.08em; font-size:clamp(26px,6cqw,38px); }
+.root[data-kyz-theme="w-arch"] :global([data-kyz-section="programme"]) { background:transparent; border-top:1px solid var(--wd-mid,#b8b4a5); }
+.root[data-kyz-theme="w-arch"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-dark,#4d4a3a); color:#fff; }
+
+/* 07 leaf: eucalyptus watercolour, framed monogram, white */
+.root[data-kyz-theme="w-leaf"] { background:linear-gradient(var(--wd-light,#fbfdfb),var(--wd-light,#eef3ee)); }
+.root[data-kyz-theme="w-leaf"] :global(.kyz-name) { font-family:var(--serif); font-size:clamp(30px,7cqw,46px); }
+.root[data-kyz-theme="w-leaf"] :global(.kyz-flowers) { height:180px; opacity:.75; }
+.root[data-kyz-theme="w-leaf"] :global([data-kyz-section="programme"]) { background:transparent; border-left:2px solid var(--wd-dark,#34382f); margin:20px 12%; text-align:left; }
+.root[data-kyz-theme="w-leaf"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-mid,#7b9a7c); color:#fff; border-radius:30px; }
+
+/* 08 wine: oversized date, offset photograph, burgundy ground */
+.root[data-kyz-theme="w-wine"] { background:var(--wd-dark,#4a0d12); }
+.root[data-kyz-theme="w-wine"] :global([data-kyz-hero]),.root[data-kyz-theme="w-wine"] :global([data-kyz-sections] > section) { background:#fff; color:var(--wd-dark,#6e1217); }
+.root[data-kyz-theme="w-wine"] :global(.wd-bigdate) { align-self:flex-start; margin-left:4%; }
+.root[data-kyz-theme="w-wine"] :global(.wd-offset) { width:88%; box-shadow:14px 14px 0 var(--wd-dark,#6e1217); }
+.root[data-kyz-theme="w-wine"] :global(.kyz-photo) { height:340px; filter:grayscale(1); }
+.root[data-kyz-theme="w-wine"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-dark,#6e1217); color:#fff; border-radius:30px; }
+.root[data-kyz-theme="w-wine"] :global([data-kyz-section="programme"]) { border-top:1px solid var(--wd-dark,#6e1217); border-bottom:1px solid var(--wd-dark,#6e1217); }
+
+/* 09 mono: tall black-and-white portrait with white script over it */
+.root[data-kyz-theme="w-mono"] { background:var(--wd-light,#f3f3f3); }
+.root[data-kyz-theme="w-mono"] :global([data-kyz-hero]) { padding:0; gap:20px; background:#fff; border-radius:0 0 40px 40px; }
+.root[data-kyz-theme="w-mono"] :global(.wd-tall) { position:relative; width:100%; height:640px; }
+.root[data-kyz-theme="w-mono"] :global(.wd-tall .kyz-photo) { height:100%; filter:grayscale(1) contrast(1.05); }
+.root[data-kyz-theme="w-mono"] :global(.wd-over) { position:absolute; left:0; right:0; bottom:30px; color:#fff; text-shadow:0 2px 20px #0008; }
+.root[data-kyz-theme="w-mono"] :global([data-kyz-sections] > section) { margin:22px 5%; background:#fff; border-radius:34px; box-shadow:0 10px 40px #0001; }
+.root[data-kyz-theme="w-mono"] :global([data-kyz-section="rsvp"] button) { background:#111; color:#fff; border-radius:30px; }
+
+/* 10 silk: ivory satin cover, capital serif names, thin framed sections */
+.root[data-kyz-theme="w-silk"] { background:var(--wd-dark,#2f4260); }
+.root[data-kyz-theme="w-silk"] :global([data-kyz-hero]),.root[data-kyz-theme="w-silk"] :global([data-kyz-sections] > section) { background:var(--wd-light,#e4dfd6); color:var(--wd-dark,#4f4338); }
+.root[data-kyz-theme="w-silk"] :global(.wd-silkbg) { position:absolute; inset:0; z-index:-1; background:radial-gradient(ellipse at 20% 15%,#fff 0,transparent 45%),radial-gradient(ellipse at 80% 70%,#fff 0,transparent 40%),linear-gradient(120deg,var(--wd-light,#f1ede5),var(--wd-light,#d7cfc2) 55%,var(--wd-light,#f3efe7)); }
+.root[data-kyz-theme="w-silk"] :global(.wd-silk) { display:grid; gap:34px; padding:120px 0; }
+.root[data-kyz-theme="w-silk"] :global(.kyz-name) { font-family:var(--serif); font-size:clamp(40px,10cqw,68px); text-transform:uppercase; letter-spacing:.05em; }
+.root[data-kyz-theme="w-silk"] :global([data-kyz-sections] > section) { margin:18px 6%; border:1px solid var(--wd-mid,#b9ad9c); }
+.root[data-kyz-theme="w-silk"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-dark,#4f4338); color:#fff; }
+
+/* 11 pearl: white petals, gold script, soft date block */
+.root[data-kyz-theme="w-pearl"] { background:var(--wd-light,#fffdf9); border-left:14px solid var(--wd-dark,#7c1423); border-right:14px solid var(--wd-dark,#7c1423); }
+.root[data-kyz-theme="w-pearl"] :global(.kyz-photo) { height:360px; mask-image:linear-gradient(#000 70%,transparent); }
+.root[data-kyz-theme="w-pearl"] :global(.kyz-name) { color:var(--wd-mid,#9a7b3f); }
+.root[data-kyz-theme="w-pearl"] :global(.kyz-flowers) { height:160px; opacity:.55; }
+.root[data-kyz-theme="w-pearl"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-mid,#9a7b3f); color:#fff; border-radius:30px; }
+.root[data-kyz-theme="w-pearl"] :global([data-kyz-section="programme"]) { background:transparent; }
+
+/* 12 blossom: sakura branches, lace nameplate, polaroid */
+.root[data-kyz-theme="w-blossom"] { background:var(--wd-light,#f7f5f2); }
+.root[data-kyz-theme="w-blossom"] :global(.wd-frame) { width:82%; padding:44px 6%; border:6px double var(--wd-light,#cfc9c2); background:var(--wd-light,#efecea); }
+.root[data-kyz-theme="w-blossom"] :global(.kyz-flowers) { height:230px; }
+.root[data-kyz-theme="w-blossom"] :global(.wd-polaroid) { width:58%; padding:10px 10px 36px; background:#fff; box-shadow:0 10px 30px #0002; transform:rotate(-3deg); }
+.root[data-kyz-theme="w-blossom"] :global(.wd-polaroid .kyz-photo) { height:260px; }
+.root[data-kyz-theme="w-blossom"] :global([data-kyz-sections] > section > div:first-child) { color:var(--wd-dark,#8a3d4a); }
+.root[data-kyz-theme="w-blossom"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-dark,#8a3d4a); color:#fff; border-radius:30px; }
+
+/* 13 satin: powder-blue drape, lace mirror around the names, wax seal */
+.root[data-kyz-theme="w-satin"] { background:var(--wd-light,#c9dae6); }
+.root[data-kyz-theme="w-satin"] :global(.wd-satin) { position:absolute; inset:0; z-index:-1; background:repeating-linear-gradient(100deg,var(--wd-light,#a9c4d8) 0 30px,var(--wd-light,#cfe0ec) 30px 64px,var(--wd-mid,#9cb9cf) 64px 92px); }
+.root[data-kyz-theme="w-satin"] :global(.wd-mirror) { display:grid; gap:12px; width:78%; padding:90px 10%; border-radius:50%; background:var(--wd-light,#c4c6c9); border:16px solid var(--wd-light,#f7f5f1); box-shadow:0 0 0 4px var(--wd-light,#e3e8ec),0 20px 50px #3a52663a; }
+.root[data-kyz-theme="w-satin"] :global(.kyz-name) { font-size:clamp(40px,10cqw,64px); color:var(--wd-mid,#5a6a78); }
+.root[data-kyz-theme="w-satin"] :global([data-kyz-sections] > section:nth-child(odd)) { background:var(--wd-light,#c9d6dc); }
+.root[data-kyz-theme="w-satin"] :global([data-kyz-sections] > section:nth-child(even)) { background:var(--wd-light,#bfd3e1); }
+.root[data-kyz-theme="w-satin"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-mid,#6f8aa0); color:#fff; border-radius:30px; }
+
+/* 14 frame: silver cameo frame, blue engraved border, programme timeline */
+.root[data-kyz-theme="w-frame"] { background:var(--wd-light,#fbf3ea); }
+.root[data-kyz-theme="w-frame"] :global(.wd-cameo) { width:78%; padding:26px; border-radius:50%; background:radial-gradient(#fff,var(--wd-light,#cfd2d6)); box-shadow:0 0 0 6px var(--wd-mid,#aeb2b8) inset,0 16px 40px #0002; }
+.root[data-kyz-theme="w-frame"] :global(.wd-cameo .kyz-photo) { height:420px; border-radius:50%; }
+.root[data-kyz-theme="w-frame"] :global([data-kyz-sections] > section) { margin:20px 7%; border:2px solid var(--wd-mid,#8fa4c8); border-radius:36px 8px 36px 8px; background:var(--wd-light,#fffaf4); }
+.root[data-kyz-theme="w-frame"] :global([data-kyz-section="rsvp"] button) { background:var(--wd-mid,#8fa4c8); color:#fff; border-radius:30px; }
+/* Wedding-only finishing: consistent palette, legible cards and responsive crops. */
+.root[data-event="wedding"] { --wd-light:var(--c-paper); --wd-dark:var(--c-ink); --wd-mid:var(--c-accent); }
+.root[data-event="wedding"] :global([data-kyz-hero]) { min-height:760px; padding-block:64px; }
+.root[data-event="wedding"] :global(.kyz-name) { text-wrap:balance; overflow-wrap:normal; font-size:clamp(34px,8.5cqw,68px); line-height:1.22; letter-spacing:0; }
+.root[data-event="wedding"] :global(.kyz-title) { font-size:clamp(12px,2.8cqw,18px); letter-spacing:.15em; }
+.root[data-event="wedding"] :global(.kyz-note) { font-size:clamp(17px,4cqw,25px); }
+.root[data-event="wedding"] :global(.kyz-flowers) { height:100px; margin:8px auto; }
+.root[data-event="wedding"] :global(.kyz-memory-photo) { width:82%; height:auto; aspect-ratio:2/3; max-width:540px; border-radius:180px 180px 12px 12px; }
+.root[data-event="wedding"] :global(.kyz-photo img),
+.root[data-event="wedding"] :global(.kyz-memory-photo img) { object-position:50% 42%; }
+.root[data-event="wedding"] :global(.kyz-location-photo) { height:auto; aspect-ratio:2/1; border-radius:100px; }
+.root[data-event="wedding"] :global([data-kyz-sections] > section) { padding-block:52px; }
+.root[data-event="wedding"] :global([data-kyz-section="rsvp"] button) { background:var(--c-ink); color:var(--c-paper); min-height:48px; }
+.root[data-event="wedding"] :global(.wd-heart) { mask:none; -webkit-mask:none; width:90%; aspect-ratio:auto; padding:70px 6%; border:1px solid color-mix(in srgb,var(--c-ink) 35%,transparent); border-radius:45% 45% 12px 12px; background:color-mix(in srgb,var(--c-ink) 6%,var(--c-paper)); }
+.root[data-event="wedding"] :global(.wd-oval) { width:94%; padding:64px 5%; }
+.root[data-event="wedding"] :global(.wd-card) { width:100%; padding:32px 7%; }
+.root[data-event="wedding"] :global(.wd-drape),
+.root[data-event="wedding"] :global(.wd-satin) { background:repeating-linear-gradient(100deg,var(--c-paper) 0 35px,color-mix(in srgb,var(--c-ink) 12%,var(--c-paper)) 65px,var(--c-paper) 95px); }
+.root[data-event="wedding"] :global(.wd-arch) { width:86%; height:auto; aspect-ratio:2/3; }
+.root[data-event="wedding"] :global(.wd-stone-text) { padding-top:50px; }
+.root[data-event="wedding"] :global(.wd-silk) { padding:60px 0; }
+.root[data-event="wedding"] :global(.wd-mirror) { width:96%; padding:70px 5%; border-width:10px; background:var(--c-paper); }
+.root[data-event="wedding"] :global(.wd-cameo) { width:96%; padding:14px; }
+.root[data-event="wedding"] :global(.wd-cameo .kyz-photo) { height:auto; aspect-ratio:2/3; }
+.root[data-event="wedding"] :global(.wd-polaroid) { width:88%; }
+.root[data-event="wedding"] :global(.wd-polaroid .kyz-photo) { height:auto; aspect-ratio:2/3; }
+.root[data-event="wedding"] :global(.wd-tall) { height:auto; aspect-ratio:2/3; }
+.root[data-event="wedding"] :global(.wd-over) { bottom:0; padding:70px 6% 30px; background:linear-gradient(transparent,#0009); }
+.root[data-event="wedding"] :global(.wd-over .kyz-name) { color:#fff; }
+.root[data-event="wedding"][data-kyz-theme="w-pearl"] { border-width:5px; }
+.root[data-event="wedding"][data-kyz-theme="w-mono"] :global(.wd-tall .kyz-photo),
+.root[data-event="wedding"][data-kyz-theme="w-wine"] :global(.kyz-photo),
+.root[data-event="wedding"][data-kyz-theme="w-lace"] :global(.kyz-photo) { filter:none; }
+.root[data-event="wedding"][data-kyz-theme="w-lace"] :global(.wd-top) { padding-top:0; }
+.root[data-event="wedding"][data-kyz-theme="w-curtain"] :global([data-kyz-hero]) { background:var(--c-ink); }
+.root[data-event="wedding"][data-kyz-theme="w-curtain"] :global(.wd-drape) { opacity:.18; }
+.root[data-event="wedding"][data-kyz-theme="w-leaf"] :global(.wd-monogram) { font-size:clamp(60px,16cqw,100px); }
+.root[data-event="wedding"] :global(.kyz-name p) { overflow-wrap:anywhere; }
+@container (max-width:420px) {
+  .root[data-event="wedding"] :global([data-kyz-hero]) { min-height:680px; padding-inline:7%; }
+  .root[data-event="wedding"] :global([data-kyz-sections] > section) { padding-inline:8%; }
+  .root[data-event="wedding"] :global(.wd-paper) { padding-inline:6%; }
+  .root[data-event="wedding"] :global(.wd-lace .kyz-photo) { height:auto; aspect-ratio:2/3; }
+}
+
+/* Tushoo: soft watercolour nursery look from the children references */
+.root[data-event="tushoo"] { background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--wd-mid,#f2b8c6) 38%,transparent) 0 14%,transparent 15%),radial-gradient(circle at 90% 30%,color-mix(in srgb,var(--wd-light,#fde7ec) 90%,#fff) 0 18%,transparent 19%),radial-gradient(circle at 8% 62%,color-mix(in srgb,var(--wd-mid,#f2b8c6) 30%,transparent) 0 16%,transparent 17%),radial-gradient(circle at 92% 88%,color-mix(in srgb,var(--wd-mid,#f2b8c6) 34%,transparent) 0 15%,transparent 16%),linear-gradient(180deg,#fff,color-mix(in srgb,var(--wd-light,#fde7ec) 55%,#fff)); }
+.root[data-event="tushoo"] :global([data-kyz-sections] > section) { position:relative; margin:22px 6%; padding:44px 8%; background:#ffffffd9; border-radius:36px; box-shadow:0 14px 40px color-mix(in srgb,var(--wd-mid,#f2b8c6) 30%,transparent); text-align:center; }
+.root[data-event="tushoo"] :global([data-kyz-sections] > section::before) { content:"★"; position:absolute; top:-12px; right:22px; font-size:26px; color:var(--wd-mid,#f2c14e); transform:rotate(14deg); }
+.root[data-event="tushoo"] :global([data-kyz-sections] > section:nth-child(even)::before) { content:"☁"; left:22px; right:auto; font-size:32px; color:var(--wd-light,#f6d4dc); transform:none; }
+.root[data-event="tushoo"] :global([data-kyz-sections] > section > div:first-child) { font-family:"Cormorant Infant","Playfair Display",Georgia,serif; font-style:italic; font-weight:600; font-size:clamp(26px,7cqw,36px); color:var(--wd-dark,#a8445c); }
+.root[data-event="tushoo"] :global([data-kyz-section="rsvp"] button),.root[data-event="tushoo"] :global(a[class*="button"]) { background:var(--wd-dark,#b04a63); color:#fff; border-radius:999px; }
+.root[data-event="tushoo"] :global([data-kyz-section="dress"] .kyz-swatches) { display:flex; justify-content:center; gap:14px; margin-top:18px; }
+.root[data-event="tushoo"] :global([data-kyz-section="dress"] .kyz-swatches i) { width:52px; height:52px; border-radius:50%; border:3px solid #fff; box-shadow:0 4px 14px #0002; }
+.root[data-event="tushoo"] :global([data-kyz-section="dress"] .kyz-swatches i:nth-child(1)) { background:#fff; }
+.root[data-event="tushoo"] :global([data-kyz-section="dress"] .kyz-swatches i:nth-child(2)) { background:var(--wd-light,#fde7ec); }
+.root[data-event="tushoo"] :global([data-kyz-section="dress"] .kyz-swatches i:nth-child(3)) { background:var(--wd-mid,#f2b8c6); }
+.root[data-event="tushoo"] :global([data-kyz-section="dress"] .kyz-swatches i:nth-child(4)) { background:var(--wd-dark,#b04a63); }
+.root[data-event="wedding"] :global(.wd-portrait) { width:100%; max-width:380px; margin-inline:auto; overflow:hidden; border-radius:180px 180px 8px 8px; }
+.root[data-event="wedding"] :global(.wd-portrait .kyz-photo) { height:auto; aspect-ratio:2/3; }
+.root[data-event="wedding"][data-kyz-theme="w-veil"] :global(.wd-portrait) { width:78%; }
+.root[data-event="wedding"][data-kyz-theme="w-leaf"] :global(.wd-portrait) { border-radius:4px; padding:8px; border:1px solid color-mix(in srgb,var(--c-ink) 30%,transparent); }
+.root[data-event="wedding"][data-kyz-theme="w-silk"] :global(.wd-portrait) { border-radius:160px 160px 2px 2px; }
+.root[data-event="wedding"][data-kyz-theme="w-toile"] :global(.wd-oval) { border-radius:180px 180px 18px 18px; }
+.root[data-event="wedding"][data-kyz-theme="w-toile"] :global([data-kyz-section="rsvp"] button),
+.root[data-event="wedding"][data-kyz-theme="w-lace"] :global([data-kyz-section="location"] a) { border-color:var(--c-paper); }

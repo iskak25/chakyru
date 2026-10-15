@@ -22,9 +22,12 @@ export function invitationEnvelopeDesign(copy?: Record<string, string>): Envelop
   return envelopeDesigns.find(design => design === value) ?? "classic";
 }
 export function envelopeDesignPalette(design: EnvelopeDesign, variant: EnvelopeVariant) {
-  if (design === "floral") return { ...envelopeVariants.ivory, paper: "#f1e7da", light: "#fff8ed", shade: "#ccbaa2", background: "#eee5da", foil: "#aa8956", lining: "#713b91", seal: "#bbad92" };
-  if (design === "wave") return { ...envelopeVariants.ice, paper: "#6484ab", light: "#7b98b8", shade: "#47658a", background: "#6484ab", seal: "#d4a787" };
-  return envelopeVariants[variant];
+  const base = envelopeVariants[variant];
+  // Floral and wave keep their own shapes but take the colours of the template's palette,
+  // so the envelope no longer looks the same on every template.
+  if (design === "floral") return { ...base, lining: variant === "ivory" || variant === "cream" ? "#713b91" : base.foil };
+  if (design === "wave") return { ...base };
+  return base;
 }
 export const envelopeColorKeys = ["paper", "light", "shade", "background", "ink", "foil", "lining", "seal"] as const;
 export type EnvelopeColors = Partial<Record<(typeof envelopeColorKeys)[number], string>>;
@@ -47,13 +50,21 @@ const pinterestVariants: Record<string, EnvelopeVariant> = {
   silkSite: "sage", nikahSite: "ivory", monoSite: "blackGold", newspaperSite: "blackGold",
   glam: "blackGold", blushParty: "blush", jentekCradle: "ethnoCream", tushooGarden: "sage",
 };
+const builtInVariants: Record<string, EnvelopeVariant> = {
+  "tushoo-ayat": "midnight", "corp-velvet": "burgundy", "corp-emerald": "forest",
+  "corp-winter": "midnight", "corp-noir": "blackGold", "beshik-nur": "sage",
+  "baxmal": "burgundy",
+};
 const anniversaryVariants: Record<string, EnvelopeVariant> = { monochrome: "blackGold", evening: "midnight" };
 
 export function envelopeForTemplate(template: InvitationTemplate): EnvelopeConfig {
   if (template.format !== "site3d") return { enabled: false, variant: "cream" };
   if (template.envelope && Object.hasOwn(envelopeVariants, template.envelope.variant)) return template.envelope;
   const copy = template.canvas?.copy;
-  const variant = referenceVariants[copy?.["reference.design"] || ""] || pinterestVariants[copy?.["pinterest.design"] || ""]
+  const theme = copy?.["corp.theme"];
+  const variant = builtInVariants[template.id] || referenceVariants[copy?.["reference.design"] || ""] || pinterestVariants[copy?.["pinterest.design"] || ""]
+    || (template.style.pageLayout === "tushooNavy" ? "midnight" : undefined)
+    || (theme ? ({ velvet: "burgundy", emerald: "forest", winter: "midnight", noir: "blackGold" } as Record<string, EnvelopeVariant>)[theme] : undefined)
     || anniversaryVariants[copy?.["anniversary.design"] || ""]
     || (template.style.pageLayout === "velvet" ? "burgundy" : template.eventTypes.includes("kyz") ? "ethnoCream" : "cream");
   return { enabled: true, variant };

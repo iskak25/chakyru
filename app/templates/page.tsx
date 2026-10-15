@@ -21,6 +21,7 @@ export default function TemplatesPage() {
 
   const list = useMemo(() => {
     let next = templates.filter((tpl) => {
+      if (tpl.priceSom === 199) return false;
       const catOk = category === "all" || tpl.eventTypes.includes(category);
       const fmtOk = format === "all" || tpl.format === format;
       const needle = q.trim().toLowerCase();

@@ -1,6 +1,6 @@
 import { isCatalogTemplate } from "../inviteFormats";
 import { getAdminDb } from "../firebaseAdmin";
-import { isFreeTemplate, pickStoredPrice, templates as seedTemplates } from "../templates";
+import { isFreeTemplate, mergeCatalogTemplates, pickStoredPrice, templates as seedTemplates } from "../templates";
 import type { InvitationTemplate } from "../types";
 
 export async function loadCatalogTemplates(): Promise<InvitationTemplate[]> {
@@ -10,7 +10,7 @@ export async function loadCatalogTemplates(): Promise<InvitationTemplate[]> {
       const snap = await db.collection("catalog").doc("templates").get();
       const items = snap.data()?.items;
       if (Array.isArray(items) && items.length) {
-        return items.filter(isCatalogTemplate);
+        return mergeCatalogTemplates(items.filter(isCatalogTemplate));
       }
     } catch {
       /* seed */

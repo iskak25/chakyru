@@ -1,0 +1,237 @@
+/* Each art direction owns its cover composition and the rhythm of its full page.
+   Photography, copy, calendar and RSVP remain independent editor elements. */
+.root { --script:var(--font-vibes),var(--font-ceremonial),Georgia,serif; --serif:var(--font-cormorant),Georgia,serif; font-family:var(--serif); background:var(--c-paper); color:var(--c-ink); }
+.root :global([data-kyz-hero]) { position:relative; isolation:isolate; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; min-height:800px; padding:70px 9%; overflow:hidden; text-align:center; max-width:900px; margin:auto; }
+.root :global(.kyz-name) { font-family:var(--script); font-size:clamp(64px,15cqw,120px); line-height:1.2; font-weight:400; z-index:2; max-width:100%; }
+.root :global(.kyz-title) { font-size:clamp(14px,3.5cqw,24px); letter-spacing:.2em; text-transform:uppercase; z-index:2; }
+.root :global(.kyz-note) { font-size:clamp(18px,4.3cqw,30px); font-style:italic; max-width:380px; margin:auto; z-index:2; }
+.root :global(.kyz-date) { font-size:clamp(22px,5cqw,34px); letter-spacing:.1em; z-index:2; }
+.root :global(.kyz-date small) { display:block; font-size:.6em; letter-spacing:.2em; margin-top:10px; }
+.root :global(.kyz-venue) { font-size:16px; max-width:310px; z-index:2; }
+.root :global(.kyz-photo) { width:100%; height:450px; flex-shrink:0; overflow:hidden; }
+.root :global(.kyz-photo img) { width:100%; height:100%; object-fit:cover; object-position:50% 30%; }
+.root :global(.kyz-greeting) { font-size:clamp(24px,5cqw,38px); line-height:1.2; }
+.root :global(.kyz-paper) { position:relative; display:flex; flex-direction:column; align-items:center; gap:26px; width:100%; padding:48px 9%; background:var(--c-paper); z-index:2; }
+.root :global(.kyz-flourish) { width:110px; height:65px; margin:0 auto; }
+.root :global(.kyz-flourish svg) { width:100%; height:100%; }
+.root :global(.kyz-flowers) { width:100%; height:150px; background-size:contain; background-position:center; background-repeat:no-repeat; mix-blend-mode:multiply; pointer-events:none; }
+.root :global(.kyz-rule) { width:60%; border-top:1px solid currentColor; opacity:.45; }
+.root :global(.kyz-monogram) { font-size:130px; font-family:var(--serif); line-height:1; }
+.root :global([data-kyz-sections]) { max-width:900px; margin:auto; display:flex; flex-direction:column; }
+.root :global([data-kyz-sections] > section) { position:relative; padding:70px 11%; text-align:center; background:transparent; border:0; }
+.root :global([data-kyz-sections] > section > div:first-child) { font-family:var(--script); font-size:clamp(30px,7cqw,48px); font-weight:400; letter-spacing:0; line-height:1.25; }
+.root :global([data-kyz-section="intro"]) { padding-top:60px; padding-bottom:70px; }
+.root :global([data-kyz-section="intro"] p),.root :global([data-kyz-section="details"] p) { line-height:1.65; }
+.root :global([data-kyz-section="programme"]) { background:color-mix(in srgb,var(--c-ink) 8%,var(--c-paper)); }
+.root :global([data-kyz-section="programme"] > div:nth-child(2) > div) { grid-template-columns:80px 1fr; padding:22px 0; border-color:color-mix(in srgb,var(--c-ink) 25%,transparent); }
+.root :global([data-kyz-section="programme"] > div:nth-child(2) > div > div:first-child) { font-family:var(--serif); font-size:26px; color:inherit; letter-spacing:0; }
+.root :global(.kyz-location-photo) { height:260px; width:100%; margin-bottom:32px; overflow:hidden; }
+.root :global(.kyz-memory-photo) { height:360px; width:75%; margin:40px auto 0; overflow:hidden; }
+.root :global(.kyz-swatches) { display:flex; justify-content:center; gap:12px; margin:24px auto; }
+.root :global(.kyz-swatches i) { width:44px; height:44px; border-radius:50%; background:var(--c-ink); border:1px solid #aaa5; }
+.root :global(.kyz-swatches i:nth-child(2)) { background:color-mix(in srgb,var(--c-ink) 45%,white); }
+.root :global(.kyz-swatches i:nth-child(3)) { background:#e6dcc9; }.root :global(.kyz-swatches i:nth-child(4)) { background:#faf6ec; }
+.root :global([data-kyz-section="rsvp"] input:not([type="radio"])),.root :global([data-kyz-section="rsvp"] textarea) { border:0; border-bottom:1px solid currentColor; background:transparent; border-radius:0; }
+.root :global([data-kyz-section="rsvp"] form) { font-family:var(--font-manrope),sans-serif; font-size:13px; }
+.root :global(footer) { padding:60px 10%; }.root :global(footer > svg) { display:none; }.root :global(footer p) { font-family:var(--script); font-size:32px; }
+
+/* 01: ivory paper sweeping across a large bridal portrait. */
+.root[data-kyz-theme="garden"] :global([data-kyz-hero]) { min-height:1000px; padding:0; background:#344736; }
+.root[data-kyz-theme="garden"] :global(.kyz-photo) { position:absolute; inset:0 0 0 25%; width:75%; height:100%; }
+.root[data-kyz-theme="garden"] :global(.kyz-paper) { align-self:flex-start; width:69%; padding:60px 5% 100px; border-radius:0 45% 18% 0; background:linear-gradient(100deg,#f4efe5 60%,#f4efe5eb); }
+.root[data-kyz-theme="garden"] :global(.kyz-name) { color:#b19152; font-size:clamp(60px,13cqw,100px); }
+.root[data-kyz-theme="garden"] :global(.kyz-flowers) { position:absolute; bottom:0; left:0; width:65%; z-index:3; }
+.root[data-kyz-theme="garden"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="garden"] :global([data-kyz-section="rsvp"]) { background:#344736; color:#fff7e6; border-radius:90px 0 90px 0; margin:20px 5%; }
+.root[data-kyz-theme="garden"] :global([data-kyz-section="location"]) { border-top:1px solid #b19152; border-bottom:1px solid #b19152; }
+
+/* 02: jewellery crop, torn paper, restrained blue national ornament. */
+.root[data-kyz-theme="torn"] :global([data-kyz-hero]) { padding:0; gap:0; }
+.root[data-kyz-theme="torn"] :global(.kyz-photo) { height:360px; }
+.root[data-kyz-theme="torn"] :global(.kyz-paper) { margin-top:-35px; padding-top:85px; clip-path:polygon(0 2%,7% 4%,13% 1%,20% 3%,28% 0,36% 3%,45% 1%,55% 4%,62% 2%,73% 3%,81% 0,91% 2%,100% 0,100% 100%,0 100%); }
+.root[data-kyz-theme="torn"] :global(.kyz-paper)::before,.root[data-kyz-theme="torn"] :global(.kyz-paper)::after { content:'❧'; position:absolute; top:31%; font-size:130px; color:#7fa7b5; left:-30px; }
+.root[data-kyz-theme="torn"] :global(.kyz-paper)::after { left:auto; right:-30px; transform:scaleX(-1); }
+.root[data-kyz-theme="torn"] :global([data-kyz-section="programme"]) { border-top:4px double #7fa7b5; border-bottom:4px double #7fa7b5; }
+.root[data-kyz-theme="torn"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="torn"] :global([data-kyz-section="details"]) { background:#e4eef0; }
+
+/* 03: quiet photographic letter, serif text and generous white space. */
+.root[data-kyz-theme="letter"] :global([data-kyz-hero]) { padding:0; gap:0; }
+.root[data-kyz-theme="letter"] :global(.kyz-photo) { height:630px; filter:grayscale(1); }
+.root[data-kyz-theme="letter"] :global(.kyz-paper) { margin-top:-130px; width:86%; padding:50px 8%; box-shadow:0 12px 40px #554c3912; }
+.root[data-kyz-theme="letter"] :global([data-kyz-section="intro"]) { text-align:left; padding:65px 14%; font-family:var(--serif); }
+.root[data-kyz-theme="letter"] :global([data-kyz-section="programme"]) { background:#ebe8e0; margin:20px 8%; border:1px solid #c9c2b4; }
+.root[data-kyz-theme="letter"] :global(.kyz-memory-photo) { filter:grayscale(1); width:100%; }
+
+/* 04: pink peonies, violet theatrical paper, large asymmetric floral border. */
+.root[data-kyz-theme="theatre"] :global([data-kyz-hero]) { padding-top:100px; }
+.root[data-kyz-theme="theatre"] :global(.kyz-curtain) { position:absolute; inset:0; z-index:-1; background:linear-gradient(130deg,#28145b 0 12%,transparent 12% 80%,#28145b 80%); }
+.root[data-kyz-theme="theatre"] :global(.kyz-name) { font-family:var(--serif); font-size:76px; }
+.root[data-kyz-theme="theatre"] :global(.kyz-flowers) { height:210px; margin:-20px -25% -60px 0; z-index:3; }
+.root[data-kyz-theme="theatre"] :global(.kyz-inset) { padding:30px; background:#28145b; color:#f5c9cb; width:100%; border-radius:45% 0 0 0; }
+.root[data-kyz-theme="theatre"] :global(.kyz-photo) { height:290px; border-radius:45% 0 0 0; margin-bottom:25px; }
+.root[data-kyz-theme="theatre"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="theatre"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="theatre"] :global([data-kyz-section="rsvp"]) { background:#28145b; color:#f9e4dd; border-radius:0 0 50% 3% / 0 0 35px 10px; }
+.root[data-kyz-theme="theatre"] :global([data-kyz-section="location"]) { padding-bottom:110px; background-image:url('/images/template-restored/rose-flowers.webp'); background-size:100% 90px; background-repeat:no-repeat; background-position:bottom; }
+
+/* 05: a real folded-paper envelope with a separate editable card and seal. */
+.root[data-kyz-theme="seal"] { background-image:repeating-linear-gradient(115deg,#fff4 0 3px,transparent 4px 15px); }
+.root[data-kyz-theme="seal"] :global([data-kyz-hero]) { padding:80px 8% 0; }
+.root[data-kyz-theme="seal"] :global(.kyz-envelope) { position:relative; width:100%; padding:60px 10% 100px; background:#fffdf5; box-shadow:0 20px 50px #6d654125; outline:1px solid #b9b389; outline-offset:-13px; display:grid; gap:24px; }
+.root[data-kyz-theme="seal"] :global(.kyz-envelope)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:125px; background:linear-gradient(25deg,#ded7be 49%,transparent 50%),linear-gradient(-25deg,#e9e4cf 49%,transparent 50%); }
+.root[data-kyz-theme="seal"] :global(.kyz-wax) { position:absolute; bottom:2px; left:calc(50% - 45px); width:90px; z-index:4; filter:drop-shadow(0 6px 5px #66502a55); }
+.root[data-kyz-theme="seal"] :global(.kyz-photo) { height:290px; width:65%; border-radius:50% 50% 0 0; margin-top:-80px; }
+.root[data-kyz-theme="seal"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="seal"] :global([data-kyz-section="rsvp"]) { margin:25px 9%; background:#fffdf7; border-radius:45% / 20%; }
+.root[data-kyz-theme="seal"] :global([data-kyz-section="programme"]) { margin:30px 8%; border:8px double #aca880; outline:1px solid #aca880; outline-offset:6px; }
+
+/* 06: floral oval with an offset title and layered bouquet. */
+.root[data-kyz-theme="floral"] :global([data-kyz-hero]) { background:radial-gradient(ellipse,#fff8f5 25%,#e2c6d6); }
+.root[data-kyz-theme="floral"] :global(.kyz-oval) { width:72%; border-radius:50%; padding:12px; border:1px solid #a484a3; }
+.root[data-kyz-theme="floral"] :global(.kyz-photo) { border-radius:50%; height:370px; }
+.root[data-kyz-theme="floral"] :global(.kyz-flowers) { position:absolute; top:280px; height:260px; left:-25%; transform:rotate(-30deg); z-index:3; width:80%; }
+.root[data-kyz-theme="floral"] :global(.kyz-name) { align-self:flex-end; margin-top:-40px; text-shadow:0 2px 12px #fff; }
+.root[data-kyz-theme="floral"] :global([data-kyz-section="programme"]) { margin:25px 6%; border-radius:200px 200px 5px 5px; padding-top:100px; background:#d9c7dc; }
+.root[data-kyz-theme="floral"] :global([data-kyz-section="rsvp"]) { background:#fff7f5; border:1px solid #d9c7dc; margin:30px 6%; }
+
+/* 07: heirloom mirror on white silk. */
+.root[data-kyz-theme="mirror"] { background:repeating-linear-gradient(105deg,#faf9f2 0%,#e8e8df 9%,#fffef8 15%,#f5f4ec 24%); }
+.root[data-kyz-theme="mirror"] :global(.kyz-mirror) { display:grid; gap:25px; width:100%; border:12px double #aaa88c; outline:2px solid #bdbca4; outline-offset:7px; border-radius:48%; padding:70px 10%; background:#fffdf7; box-shadow:0 10px 20px #76735a25; }
+.root[data-kyz-theme="mirror"] :global(.kyz-flowers) { margin-top:-85px; height:180px; z-index:3; }
+.root[data-kyz-theme="mirror"] :global(.kyz-photo) { width:60%; height:300px; border-radius:50%; }
+.root[data-kyz-theme="mirror"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="mirror"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="mirror"] :global([data-kyz-section="rsvp"]) { margin:30px 9%; border-radius:45% / 14%; background:#fffdf8; outline:4px double #bdbca4; padding:85px 10%; }
+
+/* 08: tall white threshold photograph and a restrained ceremonial title. */
+.root[data-kyz-theme="threshold"] :global([data-kyz-hero]) { padding:0; gap:0; }
+.root[data-kyz-theme="threshold"] :global(.kyz-photo) { height:700px; }
+.root[data-kyz-theme="threshold"] :global(.kyz-paper) { margin-top:-100px; background:linear-gradient(transparent,#fffdf8 14%); padding-top:100px; }
+.root[data-kyz-theme="threshold"] :global([data-kyz-section="calendar"]) { margin:30px 12%; border:1px solid #d4c2a1; border-radius:180px 180px 0 0; padding:70px 5%; }
+.root[data-kyz-theme="threshold"] :global([data-kyz-section="programme"]) { background:#e7dbc8; }.root[data-kyz-theme="threshold"] :global(.kyz-location-photo) { border-radius:180px 180px 0 0; }
+
+/* 09: blue photographic card, monogram, torn edges and outlined schedule. */
+.root[data-kyz-theme="azure"] :global([data-kyz-hero]) { padding:30px 6% 50px; }
+.root[data-kyz-theme="azure"] :global(.kyz-blue) { position:relative; width:100%; background:#5582a5; color:white; padding:35px 5% 0; }
+.root[data-kyz-theme="azure"] :global(.kyz-name) { font-family:var(--serif); font-size:70px; text-align:left; padding:20px 0; }
+.root[data-kyz-theme="azure"] :global(.kyz-photo) { height:440px; }
+.root[data-kyz-theme="azure"] :global(.kyz-monogram) { position:absolute; bottom:15px; left:12%; font-size:180px; color:#264d7b; text-shadow:1px 1px #fff8; }
+.root[data-kyz-theme="azure"] :global([data-kyz-section="programme"]) { border:4px double #5582a5; border-radius:160px 160px 12px 12px; margin:25px 10%; }
+.root[data-kyz-theme="azure"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="azure"] :global([data-kyz-section="details"]) { background:#5582a5; color:white; clip-path:polygon(0 1%,10% 0,23% 2%,40% 0,55% 2%,73% 0,90% 2%,100% 0,100% 99%,83% 100%,63% 98%,44% 100%,20% 98%,0 100%); }
+
+/* 10: antique rose cameo, small portrait surrounded by double gold molding. */
+.root[data-kyz-theme="cameo"] :global([data-kyz-hero]) { background:radial-gradient(ellipse at top,#fffaf0,transparent 70%); }
+.root[data-kyz-theme="cameo"] :global(.kyz-name) { font-family:var(--serif); letter-spacing:.08em; font-size:clamp(52px,10cqw,86px); text-transform:uppercase; }
+.root[data-kyz-theme="cameo"] :global(.kyz-mirror) { width:62%; border:13px ridge #b99b6b; outline:3px solid #b99b6b; outline-offset:6px; border-radius:50%; }
+.root[data-kyz-theme="cameo"] :global(.kyz-photo) { border-radius:50%; height:310px; }.root[data-kyz-theme="cameo"] :global(.kyz-flowers) { margin-top:-80px; z-index:3; }
+.root[data-kyz-theme="cameo"] :global([data-kyz-section="location"]) { border-radius:180px 180px 0 0; border:10px double #b99b6b; margin:30px 8%; }
+.root[data-kyz-theme="cameo"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="cameo"] :global([data-kyz-section="rsvp"]) { background:linear-gradient(#f4d2d0,#fff9f0); }
+
+/* 11: blue satin over gold oval cards. */
+.root[data-kyz-theme="sapphire"] :global([data-kyz-hero]) { padding:0 8% 60px; gap:25px; }
+.root[data-kyz-theme="sapphire"] :global(.kyz-photo) { height:530px; width:120%; }
+.root :global(.kyz-satin) { height:120px; width:140%; flex-shrink:0; background:repeating-linear-gradient(170deg,#142111 0%,#506b37 12%,#c0cfa0 15%,#263d1c 19%,#0b1d12 28%); border-radius:50% 12% 45% 15%; box-shadow:0 15px 25px #0004; transform:rotate(-6deg); z-index:3; }
+.root[data-kyz-theme="sapphire"] :global(.kyz-satin) { background:repeating-linear-gradient(170deg,#001728 0%,#005081 12%,#6db7db 15%,#063958 19%,#001527 28%); margin-top:-70px; }
+.root[data-kyz-theme="sapphire"] :global(.kyz-flowers) { height:100px; mix-blend-mode:screen; }
+.root[data-kyz-theme="sapphire"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="sapphire"] :global([data-kyz-section="rsvp"]) { margin:40px 9%; padding:100px 8%; border-radius:50% / 22%; background:#d5b77b; color:#17344b; }
+.root[data-kyz-theme="sapphire"] :global([data-kyz-section="programme"]) { background:#082c48; color:#f7edd9; margin:45px 5%; border-top:20px solid #10486d; border-bottom:20px solid #10486d; }
+.root[data-kyz-theme="sapphire"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="sapphire"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="sapphire"] :global([data-kyz-section="details"]),.root[data-kyz-theme="sapphire"] :global([data-kyz-section="rsvp"]) { background:#d5b77b; color:#17344b; }
+
+/* 12: night-sky orbit, inset photo and a vertical itinerary. */
+.root[data-kyz-theme="moon"] { background-image:radial-gradient(circle at 10% 12%,#e1bf80 0 1px,transparent 2px),radial-gradient(circle at 75% 48%,#e1bf8080 0 1px,transparent 2px); background-size:130px 190px,170px 250px; }
+.root[data-kyz-theme="moon"] :global(.kyz-orbit) { position:relative; border:1px solid #b7a171; padding:25px; width:80%; border-radius:50%; transform:rotate(-12deg); }
+.root[data-kyz-theme="moon"] :global(.kyz-photo) { height:340px; border-radius:50%; transform:rotate(12deg); }.root[data-kyz-theme="moon"] :global(.kyz-orbit span) { position:absolute; right:0; top:0; font-size:65px; }
+.root[data-kyz-theme="moon"] :global([data-kyz-section="calendar"]) { border:1px solid #b7a171; margin:20px 8%; }
+.root[data-kyz-theme="moon"] :global([data-kyz-section="programme"]) { background:#1c2942; }.root[data-kyz-theme="moon"] :global([data-kyz-section="programme"] > div:nth-child(2)) { border-left:1px solid #b7a171; padding-left:25px; }
+.root[data-kyz-theme="moon"] :global([data-kyz-section="rsvp"]) { background:#e7ddc7; color:#1c2942; }
+
+/* 13: camera scrapbook, magenta disco and a photo-strip programme. */
+.root[data-kyz-theme="album"] :global([data-kyz-hero]) { background:white; padding:50px 8% 70px; }
+.root[data-kyz-theme="album"] :global(.kyz-name) { font-size:80px; }
+.root[data-kyz-theme="album"] :global(.kyz-camera) { display:flex; align-items:center; gap:10px; width:100%; padding:18px 14px; background:linear-gradient(120deg,#eee,#b7b8ba,#f8f8f8); border:2px solid #a1a1a1; border-radius:12px; transform:rotate(8deg); box-shadow:0 10px 25px #0002; }
+.root[data-kyz-theme="album"] :global(.kyz-camera span) { color:#555; font-size:40px; }.root[data-kyz-theme="album"] :global(.kyz-photo) { height:260px; width:80%; border:5px solid #333; }
+.root[data-kyz-theme="album"] :global(.kyz-disco) { align-self:flex-end; width:105px; height:105px; border-radius:50%; background:repeating-linear-gradient(0deg,transparent 0 8px,#6f164c 9px 10px),repeating-linear-gradient(90deg,#b33a7c 0 8px,#f39ac5 9px 10px); box-shadow:inset -20px -10px 22px #500c43bb; margin-top:-30px; z-index:3; }
+.root[data-kyz-theme="album"] :global([data-kyz-section="calendar"]) { border:2px solid #ae205b; margin:20px 12%; padding:40px 5%; }
+.root[data-kyz-theme="album"] :global([data-kyz-section="programme"]) { background:#fbe9f0; }.root[data-kyz-theme="album"] :global([data-kyz-section="programme"] > div:nth-child(2)) { border-left:3px dotted #ae205b; padding-left:25px; }
+.root[data-kyz-theme="album"] :global(.kyz-memory-photo) { border:12px solid white; outline:1px solid #ccc; transform:rotate(-5deg); }
+
+/* 14: frosted arched portrait and pearl bow. */
+.root[data-kyz-theme="ice"] :global(.kyz-arch) { width:87%; border-radius:240px 240px 0 0; padding:15px; border:1px solid #a5b7c3; background:#fdfdfb; }
+.root[data-kyz-theme="ice"] :global(.kyz-photo) { height:450px; border-radius:220px 220px 0 0; }.root[data-kyz-theme="ice"] :global(.kyz-flowers) { height:100px; }
+.root[data-kyz-theme="ice"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="ice"] :global([data-kyz-section="rsvp"]) { margin:25px 7%; border:7px double #a5b7c3; border-radius:130px 130px 0 0; padding-top:100px; background:#f7f9f9; }
+.root[data-kyz-theme="ice"] :global([data-kyz-section="details"]) { background:#cad6df; }
+
+/* 15: landscape editorial with a large photograph and topographic illustration. */
+.root[data-kyz-theme="landscape"] :global([data-kyz-hero]) { padding:65px 0 40px; }.root[data-kyz-theme="landscape"] :global(.kyz-landscape) { position:relative; width:100%; }
+.root[data-kyz-theme="landscape"] :global(.kyz-photo) { height:430px; }.root[data-kyz-theme="landscape"] :global(.kyz-flowers) { margin-top:-90px; position:relative; height:150px; mix-blend-mode:normal; background-size:cover; }
+.root[data-kyz-theme="landscape"] :global(.kyz-name) { font-family:var(--serif); font-size:90px; }.root[data-kyz-theme="landscape"] :global([data-kyz-section="location"]) { padding:35px 6% 65px; background:#e1dacb; }
+.root[data-kyz-theme="landscape"] :global(.kyz-location-photo) { height:380px; }.root[data-kyz-theme="landscape"] :global([data-kyz-section="programme"]) { border-top:1px solid #958a6f; border-bottom:1px solid #958a6f; }
+
+/* 16: typographic editorial; oversized name, red rules and asymmetry. */
+.root[data-kyz-theme="editorial"] :global([data-kyz-hero]) { padding:50px 7%; align-items:stretch; text-align:left; }
+.root[data-kyz-theme="editorial"] :global(.kyz-name) { font-family:var(--serif); text-transform:uppercase; font-size:clamp(70px,18cqw,140px); line-height:1; letter-spacing:-.07em; border-top:3px solid currentColor; border-bottom:1px solid currentColor; padding:20px 0; }
+.root[data-kyz-theme="editorial"] :global(.kyz-spread) { display:grid; grid-template-columns:1.5fr 1fr; gap:22px; align-items:center; }.root[data-kyz-theme="editorial"] :global(.kyz-photo) { height:380px; }.root[data-kyz-theme="editorial"] :global(.kyz-date) { font-size:23px; margin-bottom:25px; }.root[data-kyz-theme="editorial"] :global(.kyz-note) { font-size:20px; }
+.root[data-kyz-theme="editorial"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="editorial"] :global([data-kyz-section="rsvp"]) { background:#9d2433; color:#fff9f0; }.root[data-kyz-theme="editorial"] :global([data-kyz-section="programme"]) { text-align:left; border-top:3px solid #9d2433; }
+
+/* 17: illustrated postcard with a perforated portrait stamp. */
+.root[data-kyz-theme="postcard"] :global([data-kyz-hero]) { margin:25px 5%; border:1px solid #aa8f7d; padding:50px 8%; align-items:flex-start; text-align:left; }
+.root[data-kyz-theme="postcard"] :global(.kyz-stamp) { width:130px; padding:10px; border:3px dotted #b39b85; align-self:flex-end; transform:rotate(7deg); background:#fff8e9; }.root[data-kyz-theme="postcard"] :global(.kyz-photo) { height:150px; }
+.root[data-kyz-theme="postcard"] :global(.kyz-name) { font-size:80px; }.root[data-kyz-theme="postcard"] :global(.kyz-note) { margin:0; }.root[data-kyz-theme="postcard"] :global(.kyz-flowers) { height:120px; background-position:right; }
+.root[data-kyz-theme="postcard"] :global([data-kyz-section="intro"]) { text-align:left; background:repeating-linear-gradient(transparent 0 31px,#aa8f7d22 32px 33px); margin:15px 6%; }
+.root[data-kyz-theme="postcard"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="postcard"] :global([data-kyz-section="rsvp"]) { border:1px solid #aa8f7d; margin:25px 6%; background:#fffaee; }
+
+/* 18: deep olive silk and chandelier, then a warm ivory details section. */
+.root[data-kyz-theme="olive"] :global([data-kyz-hero]) { padding:45px 0; gap:25px; }.root[data-kyz-theme="olive"] :global(.kyz-name) { font-size:100px; }.root[data-kyz-theme="olive"] :global(.kyz-photo) { height:530px; }
+.root[data-kyz-theme="olive"] :global(.kyz-satin) { margin-top:-80px; }.root[data-kyz-theme="olive"] :global(.kyz-flowers) { background-image:url('/images/template-restored/winter-chandelier.webp')!important; height:130px; mix-blend-mode:screen; }
+.root[data-kyz-theme="olive"] :global([data-kyz-section="calendar"]) { border:1px solid #d3d5bc; margin:20px 8%; }.root[data-kyz-theme="olive"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="olive"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="olive"] :global([data-kyz-section="details"]),.root[data-kyz-theme="olive"] :global([data-kyz-section="rsvp"]) { background:#f9f5e6; color:#363e27; border-radius:55% 0 0 0 / 45px 0 0 0; }
+.root[data-kyz-theme="olive"] :global([data-kyz-section="programme"]) { border-bottom:12px double #798360; }
+
+/* 19: burgundy heritage panels, geometric trim and ceremonial photography. */
+.root[data-kyz-theme="heritage"] :global([data-kyz-hero]) { padding:25px 7%; }.root[data-kyz-theme="heritage"] :global(.kyz-heritage-border) { padding:40px 8%; width:100%; display:grid; gap:24px; border:12px double #cfae74; outline:1px solid #cfae74; outline-offset:7px; }
+.root[data-kyz-theme="heritage"] :global(.kyz-photo) { height:350px; border-radius:50% 50% 0 0; }.root[data-kyz-theme="heritage"] :global(.kyz-name) { font-family:var(--serif); font-size:70px; }
+.root[data-kyz-theme="heritage"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="heritage"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="heritage"] :global([data-kyz-section="rsvp"]) { margin:25px 7%; background:#f2e5cb; color:#6e1e2b; border:8px double #b48b5a; }
+.root[data-kyz-theme="heritage"] :global([data-kyz-section="programme"]) { background:#511720; }.root[data-kyz-theme="heritage"] :global(.kyz-memory-photo) { outline:4px double #cfae74; outline-offset:10px; }
+
+/* 20: romantic heart portrait, fine gold lines and delicate oval sections. */
+.root[data-kyz-theme="heart"] :global(.kyz-heart) { width:90%; padding:8px; background:#b5996b; clip-path:polygon(50% 95%,10% 55%,0 30%,5% 12%,20% 2%,35% 3%,50% 17%,65% 3%,80% 2%,95% 12%,100% 30%,90% 55%); }
+.root[data-kyz-theme="heart"] :global(.kyz-photo) { height:370px; clip-path:inherit; }.root[data-kyz-theme="heart"] :global(.kyz-flowers) { margin-top:-100px; height:180px; z-index:3; }
+.root[data-kyz-theme="heart"] :global([data-kyz-section="intro"]) { background:linear-gradient(#fbf4ed,#edc9c8); }.root[data-kyz-theme="heart"] :global([data-kyz-section="calendar"]) { border:1px solid #b5996b; border-radius:50% / 15%; margin:35px 8%; }
+.root[data-kyz-theme="heart"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="heart"] :global([data-kyz-section="rsvp"]) { background:#edc9c8; border-radius:45% 45% 0 0 / 40px 40px 0 0; }
+
+/* 21: oversized invitation ticket with perforation and engraved venue. */
+.root[data-kyz-theme="ticket"] :global([data-kyz-hero]) { margin:30px 7%; padding:0; background:#fffaee; box-shadow:0 12px 40px #5c4a2820; gap:0; min-height:780px; }
+.root[data-kyz-theme="ticket"] :global(.kyz-ticket-top) { padding:50px 10%; display:grid; gap:25px; width:100%; }.root[data-kyz-theme="ticket"] :global(.kyz-monogram) { font-style:italic; border:1px solid currentColor; border-radius:50%; width:120px; margin:auto; font-size:100px; }
+.root[data-kyz-theme="ticket"] :global(.kyz-name) { font-size:75px; }.root[data-kyz-theme="ticket"] :global(.kyz-ticket-bottom) { border-top:2px dashed #b5a084; width:100%; display:grid; gap:20px; padding:35px 10%; }
+.root[data-kyz-theme="ticket"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="ticket"] :global([data-kyz-section="programme"]) { background:#fffaee; margin:25px 7%; border-top:2px dashed #b5a084; border-bottom:2px dashed #b5a084; }
+.root[data-kyz-theme="ticket"] :global([data-kyz-section="rsvp"]) { background:#54432c; color:#fffaee; }
+
+/* 22: a folded ribbon across a tall photograph, sage oval interiors. */
+.root[data-kyz-theme="ribbon"] :global([data-kyz-hero]) { padding:0; gap:0; }.root[data-kyz-theme="ribbon"] :global(.kyz-photo) { height:620px; }
+.root[data-kyz-theme="ribbon"] :global(.kyz-paper) { width:85%; margin-top:-230px; padding:50px 8% 70px; border-radius:170px 170px 0 0; background:#f9f8eced; }.root[data-kyz-theme="ribbon"] :global(.kyz-satin) { margin-top:-40px; height:85px; }
+.root[data-kyz-theme="ribbon"] :global(.kyz-flowers) { margin-top:-20px; height:160px; }
+.root[data-kyz-theme="ribbon"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="ribbon"] :global([data-kyz-section="calendar"]),.root[data-kyz-theme="ribbon"] :global([data-kyz-section="rsvp"]) { background:#fbfaf1; border-radius:50% / 12%; margin:25px 8%; padding:80px 8%; }
+.root[data-kyz-theme="ribbon"] :global([data-kyz-section="programme"]) { background:#62745a; color:#fbfaf1; }
+
+/* 23: sweeping petal-shaped photo and violet scalloped sections. */
+.root[data-kyz-theme="petal"] :global([data-kyz-hero]) { align-items:flex-start; text-align:left; padding:70px 8% 0; }.root[data-kyz-theme="petal"] :global(.kyz-name) { font-family:var(--serif); font-size:90px; }
+.root[data-kyz-theme="petal"] :global(.kyz-wave) { width:120%; align-self:center; background:#583a61; padding:30px 0 50px; border-radius:55% 0 0 0; }.root[data-kyz-theme="petal"] :global(.kyz-photo) { height:400px; width:85%; margin-left:auto; border-radius:55% 0 0 0; }
+.root[data-kyz-theme="petal"] :global(.kyz-flowers) { margin-top:-120px; position:relative; z-index:3; height:200px; }.root[data-kyz-theme="petal"] :global(.kyz-note) { margin-bottom:40px; }
+.root[data-kyz-theme="petal"] :global([data-kyz-section="intro"]),.root[data-kyz-theme="petal"] :global([data-kyz-section="programme"]),.root[data-kyz-theme="petal"] :global([data-kyz-section="rsvp"]) { background:#583a61; color:#f7e8e5; border-radius:45% 0 45% 0 / 45px 0 45px 0; margin:20px 0; }
+
+/* 24: sunlit architecture, stepped portrait, terraced programme. */
+.root[data-kyz-theme="sun"] :global([data-kyz-hero]) { align-items:flex-start; text-align:left; }.root[data-kyz-theme="sun"] :global(.kyz-sun) { position:absolute; width:340px; height:340px; border-radius:50%; background:#dfbd79; top:40px; right:-110px; z-index:-1; }
+.root[data-kyz-theme="sun"] :global(.kyz-name) { font-family:var(--serif); font-size:95px; }.root[data-kyz-theme="sun"] :global(.kyz-note) { margin:0; }
+.root[data-kyz-theme="sun"] :global(.kyz-steps) { width:100%; padding:0 0 20px 20px; background:#c5a46a; clip-path:polygon(0 25%,15% 25%,15% 12%,32% 12%,32% 0,100% 0,100% 100%,0 100%); }.root[data-kyz-theme="sun"] :global(.kyz-photo) { height:430px; }
+.root[data-kyz-theme="sun"] :global([data-kyz-section="calendar"]) { border-radius:180px 0 0 0; background:#e4d2b0; padding-top:100px; }
+.root[data-kyz-theme="sun"] :global([data-kyz-section="programme"] > div:nth-child(2) > div:nth-child(even)) { margin-left:25px; }.root[data-kyz-theme="sun"] :global([data-kyz-section="rsvp"]) { background:#785f37; color:#fff6e6; }
+
+/* Mobile keeps real text in flow. Long editable names wrap instead of cropping. */
+@container (max-width:400px) {
+  .root :global([data-kyz-hero]) { min-height:720px; }
+  .root :global(.kyz-name) { font-size:58px; overflow-wrap:anywhere; }
+  .root :global(.kyz-title) { font-size:13px; letter-spacing:.12em; }
+  .root :global(.kyz-note) { font-size:20px; }.root :global(.kyz-date) { font-size:22px; }
+  .root :global([data-kyz-sections] > section) { padding-left:8%; padding-right:8%; }
+  .root :global(.kyz-greeting) { font-size:23px; }
+  .root[data-kyz-theme="garden"] :global(.kyz-paper) { width:72%; padding-left:4%; padding-right:7%; }
+  .root[data-kyz-theme="garden"] :global(.kyz-name) { font-size:54px; }
+  .root[data-kyz-theme="editorial"] :global(.kyz-name) { font-size:65px; }
+  .root[data-kyz-theme="editorial"] :global(.kyz-photo) { height:300px; }
+  .root[data-kyz-theme="editorial"] :global(.kyz-date) { font-size:18px; }
+  .root :global(.kyz-location-photo) { height:220px; }.root :global(.kyz-memory-photo) { width:90%; height:300px; }
+}
+@media (prefers-reduced-motion:reduce) { .root * { scroll-behavior:auto; } }

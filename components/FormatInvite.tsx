@@ -21,6 +21,8 @@ import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
 import { AnniversaryInvite } from "./AnniversaryInvite";
 import { TushooNavyInvite } from "./invite-families/TushooNavy";
 import { CorporateInvite } from "./invite-families/Corporate";
+import { getCollectionDesign } from "@/lib/collectionTemplates";
+import { CollectionInvite } from "./CollectionInvite";
 
 export function MediaStage({
   invitation,
@@ -69,6 +71,8 @@ function FormatInviteContent({
   const format = formatOf(invitation.templateId);
   const pinterest = getPinterestDesign(invitation);
   const anniversary = getAnniversaryDesign(invitation);
+  const collection = getCollectionDesign(invitation);
+  if (collection) return <CollectionInvite invitation={invitation} design={collection} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (getTemplate(invitation.templateId).style.pageLayout === "corporate") return <CorporateInvite invitation={invitation} locale={locale} labels={t.site3d} onChange={onChange} onReload={onReload} compact={compact && !interactive} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (invitation.templateId === "tushoo-ayat" || getTemplate(invitation.templateId).style.pageLayout === "tushooNavy") return <TushooNavyInvite invitation={invitation} locale={locale} labels={t.site3d} onChange={onChange} onReload={onReload} compact={compact && !interactive} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;
   if (anniversary) return <AnniversaryInvite invitation={invitation} design={anniversary} locale={locale} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} />;

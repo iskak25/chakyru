@@ -24,6 +24,8 @@ import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
 import anniversaryCss from "@/components/AnniversaryInvite.module.css";
 import { GuestResponseLinks } from "@/components/GuestResponseLinks";
 import { CorporateThumb } from "@/components/invite-families/Corporate";
+import { getCollectionDesign } from "@/lib/collectionTemplates";
+import { CollectionPreview } from "@/components/CollectionInvite";
 
 // FormatInvite (behind TemplateRenderer) statically pulls in every site-look renderer
 // (Site3D, PinterestInvite, ThemedSiteInvite, FamilySiteInvite, PhotoInvite...) — that's
@@ -43,6 +45,7 @@ export default function TemplatePreviewPage() {
   const template = templates.find((item) => item.id === id);
   const invitation = useMemo(() => (template ? previewInvitation(template.id) : null), [template]);
   const anniversary = invitation ? getAnniversaryDesign(invitation) : undefined;
+  const collection = invitation ? getCollectionDesign(invitation) : undefined;
   const paperPreview = template?.id === "minimal-white" || (invitation && getPinterestDesign(invitation)?.key === "pearl");
   const [access, setAccess] = useState<TemplateAccessResponse | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -174,12 +177,16 @@ export default function TemplatePreviewPage() {
               interactive
             />
           ) : (
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => setPreviewOpen(true)}
-              className="group relative block aspect-[3/5] w-full overflow-hidden rounded-[calc(var(--radius-xl)-8px)]"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setPreviewOpen(true); } }}
+              className="group relative block cursor-pointer aspect-[3/5] w-full overflow-hidden rounded-[calc(var(--radius-xl)-8px)]"
             >
-              {template.style.pageLayout === "corporate" ? (
+              {collection ? (
+                <div className="pointer-events-none h-full w-full overflow-hidden"><CollectionPreview invitation={invitation} design={collection} locale={locale} /></div>
+              ) : template.style.pageLayout === "corporate" ? (
                 <div className="h-full w-full"><CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /></div>
               ) : anniversary ? (
                 <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true">
@@ -199,7 +206,7 @@ export default function TemplatePreviewPage() {
                   {locale === "ru" ? "Смотреть приглашение" : "Чакырууну көрүү"}
                 </span>
               </span>
-            </button>
+            </div>
           )}
         </div>
 

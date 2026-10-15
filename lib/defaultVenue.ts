@@ -12,8 +12,8 @@ export function withDefaultVenue(template: InvitationTemplate): InvitationTempla
     ...template,
     canvas: {
       layout: {}, extras: [], copy: {}, gallery: {}, blockColors: {}, coverImage: "",
-      ...template.canvas,
       ...DEFAULT_VENUE,
+      ...template.canvas,
     },
   };
 }
