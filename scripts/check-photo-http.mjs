@@ -18,7 +18,7 @@ const images = [
   "/images/templates/ivory/hero.jpg",
   "/images/templates/mauve/hero.jpg",
   "/images/templates/rosa/hero.jpg",
-  "/images/templates/minimal-white/hero.jpg",
+  "/images/templates/minimal-white/hero.webp",
   "/images/journal-walk.jpg",
   "/images/editorial-couple.jpg",
 ];

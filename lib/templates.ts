@@ -17,7 +17,6 @@ export const eventTypes: EventType[] = [
   "iftar",
   "birthday",
   "bachelorette",
-  "jentek",
   "tushoo",
   "corporate",
 ];
@@ -251,7 +250,8 @@ export function pickStoredPrice(live: number | undefined, seed: number, template
   return live;
 }
 
-export const templates = applyCatalogPrices(seedTemplates.map(item => {
+const hiddenEvents = ["jentek"]; // removed from the catalogue; types stay valid for saved invitations
+export const templates = applyCatalogPrices(seedTemplates.filter(item => !hiddenEvents.some(e => item.eventTypes.includes(e as EventType) || item.id.includes(e))).map(item => {
   const category = primaryCatalogCategory(item) as CollectionEvent;
   const example = eventExamples[category];
   const canvas = item.canvas;
@@ -274,7 +274,7 @@ export function mergeCatalogTemplates(live?: InvitationTemplate[] | null): Invit
     return templates;
   }
   const seedById = new Map(templates.map((item) => [item.id, item]));
-  const merged = live.filter(isCatalogTemplate).map((item) => {
+  const merged = live.filter(isCatalogTemplate).filter((item) => !hiddenEvents.some((e) => item.id.includes(e) || item.eventTypes?.includes(e as EventType))).map((item) => {
     const seed = seedById.get(item.id);
     if (!seed) return withEnvelope(item);
     const { priceTenge: _tenge, ...liveItem } = item as InvitationTemplate & { priceTenge?: number };

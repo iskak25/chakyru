@@ -10,6 +10,8 @@
 .root :global(.wd-artbox) { display:grid; place-items:center; background:color-mix(in srgb,var(--c-accent) 18%,var(--c-paper)); }
 .root :global(.wd-artbox svg) { width:56%; height:auto; max-height:88%; }
 .root :global(.wd-motifdecor) { display:grid; place-items:center; background:none; mix-blend-mode:normal; }
+.root :global(.wd-artimg img) { width:auto; height:auto; max-width:92%; max-height:92%; object-fit:contain; filter:drop-shadow(0 6px 10px rgb(0 0 0 / .12)); }
+.root :global(.wd-artdecor img) { height:100%; width:auto; max-width:100%; object-fit:contain; }
 .root :global(.wd-motifdecor svg) { height:100%; width:auto; max-width:60%; opacity:.85; }
 
 /* 01 veil: white drapery, a lace heart around the names, olive script */
@@ -203,3 +205,7 @@
 .root[data-event="wedding"][data-kyz-theme="w-toile"] :global(.wd-oval) { border-radius:180px 180px 18px 18px; }
 .root[data-event="wedding"][data-kyz-theme="w-toile"] :global([data-kyz-section="rsvp"] button),
 .root[data-event="wedding"][data-kyz-theme="w-lace"] :global([data-kyz-section="location"] a) { border-color:var(--c-paper); }
+
+/* Anniversary portrait cover: keep the light illustration in colour, with a soft caption scrim. */
+.root[data-event="anniversary"][data-kyz-theme="w-mono"] :global(.wd-tall .kyz-photo) { filter:none; }
+.root[data-event="anniversary"][data-kyz-theme="w-mono"] :global(.wd-over) { bottom:0; padding:70px 6% 30px; background:linear-gradient(transparent,#0006); }

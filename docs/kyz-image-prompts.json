@@ -1,0 +1,126 @@
+{
+  "mode": "built-in image_gen",
+  "constraints": "Photorealistic editorial portrait, no text, watermark, borders or webpage. Generous cropping margins.",
+  "images": [
+    {
+      "slug": "tulip-arch",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-e3d6b09d-9e05-4f54-9c96-656143b7188b.png",
+      "prompt": "Ivory traditional Kyrgyz bride in sage tulip garden, portrait on right, natural morning light."
+    },
+    {
+      "slug": "shyrdak-duet",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-5a0cc3db-8d9f-4895-9c9b-131a29338881.png",
+      "prompt": "Turquoise and ivory closeup of an adult Kyrgyz woman's hands wearing traditional silver bracelets over a teal velvet embroidered sleeve, white felt shyrdak backdrop, delicate natural light, authentic textile detail."
+    },
+    {
+      "slug": "mother-letter",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-fbebdf2e-441f-4b40-9767-07670e905a2b.png",
+      "prompt": "Tender black and white fine art photograph of a Kyrgyz mother gently kissing her adult daughter's forehead near a bright sheer-curtained window. Daughter in ivory embroidered dress and traditional cap with feather, intimate side profiles."
+    },
+    {
+      "slug": "peony-banner",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-dd9d9fbe-dba0-46b0-ac33-352976745e18.png",
+      "prompt": "Adult Kyrgyz woman in a blush silk dress holding one large pink peony, plum velvet theatrical curtain backdrop, three quarter portrait with graceful pose, refined dramatic soft light."
+    },
+    {
+      "slug": "pearl-seal",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-2b279a3d-177c-4d59-b1f5-2d936c19e5bd.png",
+      "prompt": "Elegant still life of ivory silk gloves, pearl necklace and sealed blank cream envelope with sage wax seal beside delicate white blossoms on linen, softly lit, flat lay, no writing."
+    },
+    {
+      "slug": "iris-garden",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-b04a8292-f273-4e93-8930-632cffded4a3.png",
+      "prompt": "Adult Kyrgyz woman in pale lavender embroidered ceremonial dress walking through a garden of purple irises, face in three quarter view, romantic morning haze, pale pink and lilac palette."
+    },
+    {
+      "slug": "lily-frame",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-dab76819-18ca-4528-9402-03886021867d.png",
+      "prompt": "Adult Kyrgyz woman in a simple white silk dress holding white calla lilies in an old ivory room with an antique mirror behind, sage and cream palette, soft side light, elegant waist-up portrait."
+    },
+    {
+      "slug": "tunduk-gate",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-3c687f76-89c9-4b6f-8da9-9c5417baaa86.png",
+      "prompt": "Adult Kyrgyz bride in white and gold traditional dress, seated by bright window as older woman's hands gently place tall traditional shokulo headdress on her head, luminous white veil and warm pale gold, respectful intimate ceremony."
+    },
+    {
+      "slug": "rose-terrace",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-de6743c3-9629-40fe-a25a-3cd9b5f71690.png",
+      "prompt": "Adult Kyrgyz woman in dusty rose dress on an antique stone terrace with climbing blush roses, classical balustrade, waist-up portrait suitable for oval crop, muted pink and warm antique gold light."
+    },
+    {
+      "slug": "swallow-crest",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-1623f128-41b4-41c2-85c8-c04c33709f0a.png",
+      "prompt": "Adult Kyrgyz woman in a pale sky blue dress standing under open blue sky holding a flowing ivory scarf, airy outdoor portrait, cornflower blue and cream palette, soft clouds, natural joyful expression."
+    },
+    {
+      "slug": "silk-fold",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-06630137-e089-416b-880e-34467c34cc0b.png",
+      "prompt": "Adult Kyrgyz woman in deep sapphire blue silk dress with restrained gold embroidery, luxurious midnight blue drapes behind, softly lit face, formal three quarter portrait, cinematic fine art."
+    },
+    {
+      "slug": "moon-orbit",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-3ce958a5-f4e5-4aa2-9469-b4d26b579971.png",
+      "prompt": "Adult Kyrgyz woman in silver-grey flowing dress under a moonlit dark indigo evening sky, tiny distant warm lights, contemplative profile, luminous moon out of focus behind, sophisticated photographic realism."
+    },
+    {
+      "slug": "memory-collage",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-3a7f9513-4b4a-499e-9c8e-0cb4df22a014.png",
+      "prompt": "Candid flash photograph of a laughing adult Kyrgyz woman in white satin with fuchsia ribbon in hair holding a small bouquet of pink flowers, nostalgic party photography, pink studio background with subtle silver reflections."
+    },
+    {
+      "slug": "orchid-window",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-06464a29-a4d6-4e76-bc37-dfd7bd1eacf8.png",
+      "prompt": "Adult Kyrgyz woman in icy blue Kyrgyz embroidered dress and traditional shokulo headdress with white veil in a pale blue elegant interior by an arched window, white orchids nearby, cool luminous daylight."
+    },
+    {
+      "slug": "ala-too-horizon",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-1417400e-0163-4e85-9c76-381a0987506a.png",
+      "prompt": "Adult Kyrgyz woman in ivory traditional embroidered dress seen three quarter length on a green mountain meadow with majestic Ala-Too snow peaks behind, warm natural daylight, cinematic landscape portrait, sage and stone palette."
+    },
+    {
+      "slug": "poppy-type",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-2e765dd4-d01b-4729-8dbe-1e81f51aaf7b.png",
+      "prompt": "Fashion editorial portrait of adult Kyrgyz woman in red silk dress holding a single red poppy before warm cream studio backdrop, striking side profile, clean modern composition, rich scarlet accents, natural skin."
+    },
+    {
+      "slug": "flower-post",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-7c7a9507-e34f-4d8a-ba75-8a50d6e2135b.png",
+      "prompt": "Vintage analogue photograph of an adult Kyrgyz woman in a muted rose dress holding wildflowers by a cottage garden gate, soft sepia and dusty rose tones, romantic faded film grain, candid waist-up."
+    },
+    {
+      "slug": "olive-columns",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-d62a5e27-a03d-4d68-8e6b-cc1b175a0cd4.png",
+      "prompt": "Adult Kyrgyz woman in ivory gown between weathered pale stone columns in a courtyard with olive branches, deep olive shadows, quiet luxurious evening daylight, full three quarter length."
+    },
+    {
+      "slug": "heritage-quilt",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-694f4c40-19fd-4494-b476-b7a683f996ef.png",
+      "prompt": "Adult Kyrgyz woman in rich burgundy traditional embroidered velvet dress and matching cap, heritage Kyrgyz felt shyrdak patterned textile backdrop, silver jewellery, proud gentle portrait, warm cream and wine palette."
+    },
+    {
+      "slug": "lotus-medal",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-28ef626f-c57c-4384-ae54-90427530e388.png",
+      "prompt": "Adult Kyrgyz woman in pale blush silk dress by a tranquil water lily pond holding a pale pink water lily, soft romantic peach light, elegant close three quarter portrait with flowers at lower edge."
+    },
+    {
+      "slug": "spring-ticket",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-2e1e480e-748c-4543-8682-6146c4f026aa.png",
+      "prompt": "Travel-inspired photograph of an adult Kyrgyz woman in light sand linen dress with small spring bouquet on a sunlit old stone villa walkway, warm beige palette, cypress and soft distant hills, candid walking pose."
+    },
+    {
+      "slug": "fern-ribbon",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-dc12d79a-e04f-42f9-8744-96fde3d9f04e.png",
+      "prompt": "Adult Kyrgyz woman in sage green silk dress with ivory ribbon in braided hair standing among lush fern fronds, soft forest light, green and ivory palette, graceful side portrait."
+    },
+    {
+      "slug": "petal-wave",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-2ee37820-bc7e-4c17-86ba-ef4ed57eab49.png",
+      "prompt": "Adult Kyrgyz woman in flowing mauve chiffon dress with gentle fabric movement and scattered blush petals, pink studio background, elegant dynamic three quarter portrait, plum and dusty pink tones."
+    },
+    {
+      "slug": "sun-stairs",
+      "source": "C:\\Users\\user\\.codex\\generated_images\\01a1399d-3fa9-7fd0-8245-7f969bd9bad7\\exec-97f83139-bd0d-42fc-9938-07b41585f531.png",
+      "prompt": "Adult Kyrgyz woman in champagne gold embroidered dress ascending broad sunlit cream stone steps, warm amber afternoon light and clean curved architecture, full figure with ample headroom, luminous hopeful mood."
+    }
+  ]
+}

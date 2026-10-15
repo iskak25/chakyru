@@ -93,7 +93,7 @@
 .form { max-width:440px; margin:30px auto 0; text-align:left; font-size:14px; display:grid; gap:20px; }.form label { display:grid; gap:8px; }.form input:not([type="radio"]),.form textarea { width:100%; border:1px solid var(--c-accent); background:var(--c-paper); color:var(--c-ink); border-radius:3px; padding:12px; font:inherit; }.form input[type="radio"] { accent-color:var(--c-ink); width:18px; height:18px; flex-shrink:0; }.form fieldset { margin:0; padding:0; border:0; }.form legend { margin-bottom:10px; }.form .radio { display:flex; align-items:center; padding:8px 0; gap:10px; }.form .button { width:100%; margin:0; }.footer { padding:25px 9% 70px; text-align:center; }.footer svg { width:85px; margin:auto; }.wishes { grid-column:1/-1; }
 .previewViewport { container-type:inline-size; width:100%; aspect-ratio:480/800; overflow:hidden; pointer-events:none; }
 .preview { width:480px; transform-origin:top left; transform:scale(calc(100cqw / 480px)); }
-.previewFullPageViewport { aspect-ratio:4/5; overflow-y:auto; pointer-events:auto; scrollbar-width:none; }
+.previewFullPageViewport { aspect-ratio:4/5; overflow:hidden; pointer-events:none; }
 .previewFullPageViewport::-webkit-scrollbar { display:none; }
 .previewFullPage { width:480px; transform-origin:top left; transform:scale(calc(100cqw / 480px)); }
 .preview .hero { min-height:780px; }.preview .ticket { min-height:730px; }.preview .names { font-size:40px; }.preview .type .names { font-size:53px; }.preview .duet .names { font-size:31px; }

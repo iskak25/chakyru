@@ -112,8 +112,8 @@ function PhonePill({ kit }: { kit: LayoutKit }) {
 }
 
 const TIMELINE_ICONS = [
-  "/stickers/wedding-glasses.png",
-  "/stickers/wedding-rings-gold.png",
+  "/stickers/wedding-glasses.webp",
+  "/stickers/wedding-rings-gold.webp",
   "/stickers/wedding-couple.png",
   "/stickers/wedding-cake.png",
 ];
@@ -137,12 +137,12 @@ export function LayoutOliveWave({ kit }: { kit: LayoutKit }) {
         <MessageBlock kit={kit} className="mt-5 text-[14px] leading-8 tracking-[0.04em] text-[#fdfcf8]" />
         <Field invitation={invitation} onChange={onChange} id="phoneCta" fallback={labels.phoneCta} className="mt-8 text-[11px] uppercase tracking-[0.2em] text-white/70" />
         <PhonePill kit={kit} />
-        <img src="/stickers/flora-eucalyptus.png" alt="" className="pointer-events-none mx-auto mt-8 h-16 w-28 object-contain opacity-80" />
+        <img src="/stickers/flora-eucalyptus.webp" alt="" className="pointer-events-none mx-auto mt-8 h-16 w-28 object-contain opacity-80" />
       </section>
       <SilkWave fill={CREAM} />
 
       <section className="relative px-10 py-12 text-center">
-        <img src="/stickers/flora-rose.png" alt="" className="pointer-events-none mx-auto mb-4 h-14 w-14 object-contain opacity-80" />
+        <img src="/stickers/flora-rose.webp" alt="" className="pointer-events-none mx-auto mb-4 h-14 w-14 object-contain opacity-80" />
         <Field invitation={invitation} onChange={onChange} id="details" fallback={labels.details} className="font-script text-[44px] leading-none" />
         <Field invitation={invitation} onChange={onChange} id="gifts" fallback={labels.gifts} className="mt-5 text-[14px] leading-7 tracking-[0.04em]" />
         <div className="mt-8 overflow-hidden">

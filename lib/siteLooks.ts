@@ -106,13 +106,13 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "torn",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-peony-wreath.png",
+      src: "/stickers/frame-peony-wreath.webp",
       className: "absolute -left-10 top-8 h-40 w-40 opacity-80",
       spin: "flora-spin-slow",
     },
     floras: [
-      { src: "/stickers/frame-circle-flowers.png", className: "absolute -left-[28%] top-[42%] h-[240px] w-[240px] opacity-80", spin: "flora-spin-slow" },
-      { src: "/stickers/flora-rose.png", className: "absolute -left-4 top-[58%] h-16 w-16 opacity-90" },
+      { src: "/stickers/frame-circle-flowers.webp", className: "absolute -left-[28%] top-[42%] h-[240px] w-[240px] opacity-80", spin: "flora-spin-slow" },
+      { src: "/stickers/flora-rose.webp", className: "absolute -left-4 top-[58%] h-16 w-16 opacity-90" },
     ],
   },
   forest: {
@@ -130,13 +130,13 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-laurel.png",
+      src: "/stickers/frame-laurel.webp",
       className: "absolute -right-8 top-10 h-36 w-36 opacity-80",
       spin: "flora-spin-slow",
     },
     floras: [
-      { src: "/stickers/frame-wreath-leaves.png", className: "absolute -right-[20%] top-[8%] h-[200px] w-[200px] opacity-70", spin: "flora-spin-slow" },
-      { src: "/stickers/frame-laurel.png", className: "absolute -left-[18%] top-[48%] h-[180px] w-[180px] opacity-75" },
+      { src: "/stickers/frame-wreath-leaves.webp", className: "absolute -right-[20%] top-[8%] h-[200px] w-[200px] opacity-70", spin: "flora-spin-slow" },
+      { src: "/stickers/frame-laurel.webp", className: "absolute -left-[18%] top-[48%] h-[180px] w-[180px] opacity-75" },
     ],
   },
   ivory: {
@@ -159,7 +159,7 @@ const looks: Record<SiteLookId, SiteLook> = {
     },
     floras: [
       { src: "/stickers/ornament-flourish.png", className: "absolute left-1/2 top-[4%] h-12 w-36 -translate-x-1/2 opacity-60" },
-      { src: "/stickers/frame-gold-baroque.png", className: "absolute -right-[24%] top-[40%] h-[220px] w-[220px] opacity-50" },
+      { src: "/stickers/frame-gold-baroque.webp", className: "absolute -right-[24%] top-[40%] h-[220px] w-[220px] opacity-50" },
     ],
   },
   navy: {
@@ -178,13 +178,13 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-gold-baroque.png",
+      src: "/stickers/frame-gold-baroque.webp",
       className: "absolute -left-8 top-6 h-40 w-40 opacity-70",
       spin: "flora-spin-slow",
     },
     floras: [
-      { src: "/stickers/frame-gold-baroque.png", className: "absolute -left-[22%] top-[6%] h-[220px] w-[220px] opacity-55", spin: "flora-spin-slow" },
-      { src: "/stickers/frame-diamond-floral.png", className: "absolute -right-[18%] top-[52%] h-[180px] w-[180px] opacity-50" },
+      { src: "/stickers/frame-gold-baroque.webp", className: "absolute -left-[22%] top-[6%] h-[220px] w-[220px] opacity-55", spin: "flora-spin-slow" },
+      { src: "/stickers/frame-diamond-floral.webp", className: "absolute -right-[18%] top-[52%] h-[180px] w-[180px] opacity-50" },
     ],
   },
   blush: {
@@ -202,13 +202,13 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/flora-rose.png",
+      src: "/stickers/flora-rose.webp",
       className: "absolute -right-6 top-12 h-32 w-32 opacity-90",
       spin: "flora-spin",
     },
     floras: [
-      { src: "/stickers/flora-rose.png", className: "absolute -right-[8%] top-[10%] h-24 w-24 opacity-90", spin: "flora-spin" },
-      { src: "/stickers/frame-peony-wreath.png", className: "absolute -left-[30%] top-[38%] h-[260px] w-[260px] opacity-75", spin: "flora-spin-slow" },
+      { src: "/stickers/flora-rose.webp", className: "absolute -right-[8%] top-[10%] h-24 w-24 opacity-90", spin: "flora-spin" },
+      { src: "/stickers/frame-peony-wreath.webp", className: "absolute -left-[30%] top-[38%] h-[260px] w-[260px] opacity-75", spin: "flora-spin-slow" },
     ],
   },
   emerald: {
@@ -226,13 +226,13 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-crescent-flora.png",
+      src: "/stickers/frame-crescent-flora.webp",
       className: "absolute left-1/2 top-8 h-36 w-36 -translate-x-1/2 opacity-80",
       spin: "flora-spin-slow",
     },
     floras: [
-      { src: "/stickers/frame-crescent-flora.png", className: "absolute left-1/2 top-[2%] h-[200px] w-[200px] -translate-x-1/2 opacity-70", spin: "flora-spin-slow" },
-      { src: "/stickers/frame-ornate-round.png", className: "absolute -right-[22%] top-[46%] h-[200px] w-[200px] opacity-55" },
+      { src: "/stickers/frame-crescent-flora.webp", className: "absolute left-1/2 top-[2%] h-[200px] w-[200px] -translate-x-1/2 opacity-70", spin: "flora-spin-slow" },
+      { src: "/stickers/frame-ornate-round.webp", className: "absolute -right-[22%] top-[46%] h-[200px] w-[200px] opacity-55" },
     ],
   },
   sand: {
@@ -250,11 +250,11 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "sharp",
     button: "rounded-xl",
     previewFlora: {
-      src: "/stickers/frame-pampas-oval.png",
+      src: "/stickers/frame-pampas-oval.webp",
       className: "absolute -right-10 bottom-10 h-40 w-40 opacity-60",
     },
     floras: [
-      { src: "/stickers/frame-pampas-oval.png", className: "absolute -right-[16%] top-[12%] h-[180px] w-[180px] opacity-45" },
+      { src: "/stickers/frame-pampas-oval.webp", className: "absolute -right-[16%] top-[12%] h-[180px] w-[180px] opacity-45" },
     ],
   },
   copper: {
@@ -272,12 +272,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "torn",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-gold-baroque.png",
+      src: "/stickers/frame-gold-baroque.webp",
       className: "absolute -left-8 top-8 h-40 w-40 opacity-75",
       spin: "flora-spin-slow",
     },
     floras: [
-      { src: "/stickers/frame-gold-baroque.png", className: "absolute -left-[24%] top-[6%] h-[230px] w-[230px] opacity-65", spin: "flora-spin-slow" },
+      { src: "/stickers/frame-gold-baroque.webp", className: "absolute -left-[24%] top-[6%] h-[230px] w-[230px] opacity-65", spin: "flora-spin-slow" },
       { src: "/stickers/ornament-flourish.png", className: "absolute left-1/2 top-[36%] h-14 w-32 -translate-x-1/2 opacity-70" },
     ],
   },
@@ -296,11 +296,11 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-wreath-leaves.png",
+      src: "/stickers/frame-wreath-leaves.webp",
       className: "absolute left-1/2 top-10 h-36 w-36 -translate-x-1/2 opacity-50",
     },
     floras: [
-      { src: "/stickers/frame-wreath-leaves.png", className: "absolute left-1/2 top-[4%] h-[160px] w-[160px] -translate-x-1/2 opacity-45" },
+      { src: "/stickers/frame-wreath-leaves.webp", className: "absolute left-1/2 top-[4%] h-[160px] w-[160px] -translate-x-1/2 opacity-45" },
     ],
   },
   sky: {
@@ -318,12 +318,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-pampas-oval.png",
+      src: "/stickers/frame-pampas-oval.webp",
       className: "absolute -right-8 top-8 h-36 w-36 opacity-70",
     },
     floras: [
-      { src: "/stickers/frame-oval-botanical.png", className: "absolute -right-[20%] top-[8%] h-[200px] w-[200px] opacity-55" },
-      { src: "/stickers/flora-eucalyptus.png", className: "absolute -left-[12%] top-[50%] h-28 w-28 opacity-70" },
+      { src: "/stickers/frame-oval-botanical.webp", className: "absolute -right-[20%] top-[8%] h-[200px] w-[200px] opacity-55" },
+      { src: "/stickers/flora-eucalyptus.webp", className: "absolute -left-[12%] top-[50%] h-28 w-28 opacity-70" },
     ],
   },
   lilac: {
@@ -341,13 +341,13 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-heart-wreath.png",
+      src: "/stickers/frame-heart-wreath.webp",
       className: "absolute -left-8 top-10 h-36 w-36 opacity-80",
       spin: "flora-spin-slow",
     },
     floras: [
-      { src: "/stickers/frame-heart-wreath.png", className: "absolute -left-[22%] top-[8%] h-[210px] w-[210px] opacity-70", spin: "flora-spin-slow" },
-      { src: "/stickers/frame-peony-wreath.png", className: "absolute -right-[28%] top-[44%] h-[240px] w-[240px] opacity-60" },
+      { src: "/stickers/frame-heart-wreath.webp", className: "absolute -left-[22%] top-[8%] h-[210px] w-[210px] opacity-70", spin: "flora-spin-slow" },
+      { src: "/stickers/frame-peony-wreath.webp", className: "absolute -right-[28%] top-[44%] h-[240px] w-[240px] opacity-60" },
     ],
   },
   ink: {
@@ -365,11 +365,11 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "sharp",
     button: "rounded-xl",
     previewFlora: {
-      src: "/stickers/frame-gold-baroque.png",
+      src: "/stickers/frame-gold-baroque.webp",
       className: "absolute right-[-20px] top-8 h-36 w-36 opacity-60",
     },
     floras: [
-      { src: "/stickers/frame-gold-baroque.png", className: "absolute -right-[20%] top-[6%] h-[200px] w-[200px] opacity-45" },
+      { src: "/stickers/frame-gold-baroque.webp", className: "absolute -right-[20%] top-[6%] h-[200px] w-[200px] opacity-45" },
     ],
   },
   daisy: {
@@ -387,12 +387,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-arch-flowers.png",
+      src: "/stickers/frame-arch-flowers.webp",
       className: "absolute -left-8 top-4 h-36 w-36 opacity-90",
     },
     floras: [
-      { src: "/stickers/frame-arch-flowers.png", className: "absolute -left-[18%] -top-[2%] h-[200px] w-[200px] opacity-90" },
-      { src: "/stickers/frame-bottom-flowers.png", className: "absolute -right-[12%] top-[8%] h-[160px] w-[160px] opacity-85" },
+      { src: "/stickers/frame-arch-flowers.webp", className: "absolute -left-[18%] -top-[2%] h-[200px] w-[200px] opacity-90" },
+      { src: "/stickers/frame-bottom-flowers.webp", className: "absolute -right-[12%] top-[8%] h-[160px] w-[160px] opacity-85" },
     ],
   },
   linen: {
@@ -410,12 +410,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-pampas-oval.png",
+      src: "/stickers/frame-pampas-oval.webp",
       className: "absolute -right-8 top-8 h-36 w-36 opacity-80",
     },
     floras: [
-      { src: "/stickers/frame-pampas-oval.png", className: "absolute -right-[16%] top-[4%] h-[190px] w-[190px] opacity-70" },
-      { src: "/stickers/flora-eucalyptus.png", className: "absolute -left-[10%] top-[42%] h-28 w-28 opacity-75" },
+      { src: "/stickers/frame-pampas-oval.webp", className: "absolute -right-[16%] top-[4%] h-[190px] w-[190px] opacity-70" },
+      { src: "/stickers/flora-eucalyptus.webp", className: "absolute -left-[10%] top-[42%] h-28 w-28 opacity-75" },
     ],
   },
   mist: {
@@ -433,12 +433,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/flora-eucalyptus.png",
+      src: "/stickers/flora-eucalyptus.webp",
       className: "absolute -left-6 top-10 h-32 w-32 opacity-85",
     },
     floras: [
-      { src: "/stickers/flora-eucalyptus.png", className: "absolute -left-[8%] top-[6%] h-28 w-28 opacity-80" },
-      { src: "/stickers/frame-wreath-leaves.png", className: "absolute -right-[18%] top-[40%] h-[180px] w-[180px] opacity-55" },
+      { src: "/stickers/flora-eucalyptus.webp", className: "absolute -left-[8%] top-[6%] h-28 w-28 opacity-80" },
+      { src: "/stickers/frame-wreath-leaves.webp", className: "absolute -right-[18%] top-[40%] h-[180px] w-[180px] opacity-55" },
     ],
   },
   peach: {
@@ -456,12 +456,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/flora-rose.png",
+      src: "/stickers/flora-rose.webp",
       className: "absolute -right-6 top-10 h-32 w-32 opacity-90",
     },
     floras: [
-      { src: "/stickers/flora-rose.png", className: "absolute -right-[6%] top-[8%] h-24 w-24 opacity-90" },
-      { src: "/stickers/frame-peony-wreath.png", className: "absolute -left-[28%] top-[36%] h-[240px] w-[240px] opacity-70" },
+      { src: "/stickers/flora-rose.webp", className: "absolute -right-[6%] top-[8%] h-24 w-24 opacity-90" },
+      { src: "/stickers/frame-peony-wreath.webp", className: "absolute -left-[28%] top-[36%] h-[240px] w-[240px] opacity-70" },
     ],
   },
   porcelain: {
@@ -479,12 +479,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-circle-flowers.png",
+      src: "/stickers/frame-circle-flowers.webp",
       className: "absolute left-1/2 top-6 h-32 w-32 -translate-x-1/2 opacity-80",
     },
     floras: [
-      { src: "/stickers/frame-circle-flowers.png", className: "absolute left-1/2 top-[2%] h-[170px] w-[170px] -translate-x-1/2 opacity-70" },
-      { src: "/stickers/frame-bottom-flowers.png", className: "absolute -right-[14%] top-[48%] h-[150px] w-[150px] opacity-80" },
+      { src: "/stickers/frame-circle-flowers.webp", className: "absolute left-1/2 top-[2%] h-[170px] w-[170px] -translate-x-1/2 opacity-70" },
+      { src: "/stickers/frame-bottom-flowers.webp", className: "absolute -right-[14%] top-[48%] h-[150px] w-[150px] opacity-80" },
     ],
   },
   cocoa: {
@@ -524,12 +524,12 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "torn",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/flora-rose.png",
+      src: "/stickers/flora-rose.webp",
       className: "absolute -right-6 top-8 h-32 w-32 opacity-90",
     },
     floras: [
-      { src: "/stickers/flora-rose.png", className: "absolute -right-[8%] top-[6%] h-24 w-24 opacity-90" },
-      { src: "/stickers/frame-peony-wreath.png", className: "absolute -left-[28%] top-[40%] h-[240px] w-[240px] opacity-75" },
+      { src: "/stickers/flora-rose.webp", className: "absolute -right-[8%] top-[6%] h-24 w-24 opacity-90" },
+      { src: "/stickers/frame-peony-wreath.webp", className: "absolute -left-[28%] top-[40%] h-[240px] w-[240px] opacity-75" },
     ],
   },
   velvet: {
@@ -547,11 +547,11 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-gold-baroque.png",
+      src: "/stickers/frame-gold-baroque.webp",
       className: "absolute left-1/2 top-8 h-32 w-32 -translate-x-1/2 opacity-70",
     },
     floras: [
-      { src: "/stickers/frame-gold-baroque.png", className: "absolute left-1/2 top-[4%] h-[160px] w-[160px] -translate-x-1/2 opacity-50" },
+      { src: "/stickers/frame-gold-baroque.webp", className: "absolute left-1/2 top-[4%] h-[160px] w-[160px] -translate-x-1/2 opacity-50" },
     ],
   },
   gilded: {
@@ -589,11 +589,11 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-xl",
     previewFlora: {
-      src: "/stickers/frame-laurel.png",
+      src: "/stickers/frame-laurel.webp",
       className: "absolute left-1/2 top-8 h-32 w-32 -translate-x-1/2 opacity-80",
     },
     floras: [
-      { src: "/stickers/frame-wreath-leaves.png", className: "absolute -right-[16%] top-[10%] h-[180px] w-[180px] opacity-50" },
+      { src: "/stickers/frame-wreath-leaves.webp", className: "absolute -right-[16%] top-[10%] h-[180px] w-[180px] opacity-50" },
     ],
   },
   graphite: {
@@ -611,7 +611,7 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-wreath-leaves.png",
+      src: "/stickers/frame-wreath-leaves.webp",
       className: "absolute left-1/2 top-8 h-28 w-28 -translate-x-1/2 opacity-40",
     },
     floras: [],
@@ -731,11 +731,11 @@ const looks: Record<SiteLookId, SiteLook> = {
     panel: "round",
     button: "rounded-full",
     previewFlora: {
-      src: "/stickers/frame-gold-baroque.png",
+      src: "/stickers/frame-gold-baroque.webp",
       className: "absolute left-1/2 top-6 h-28 w-28 -translate-x-1/2 opacity-70",
     },
     floras: [
-      { src: "/stickers/frame-gold-baroque.png", className: "absolute left-1/2 top-[2%] h-[140px] w-[140px] -translate-x-1/2 opacity-50" },
+      { src: "/stickers/frame-gold-baroque.webp", className: "absolute left-1/2 top-[2%] h-[140px] w-[140px] -translate-x-1/2 opacity-50" },
     ],
   },
 };

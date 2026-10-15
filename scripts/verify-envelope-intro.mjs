@@ -65,7 +65,7 @@ for (const template of templates) {
   }
   assert.equal(JSON.stringify(inv), before, `${template.id}: invitation data mutated`);
 }
-assert.equal(sites, 25); assert.equal(photos, 9); assert.ok(variants.size >= 9);
+assert.equal(sites, 133); assert.equal(photos, 9); assert.ok(variants.size >= 9);
 assert.ok(mergeCatalogTemplates(templates.map(({ envelope, ...old }) => old)).filter(t => t.format === "site3d").every(t => t.envelope.enabled));
 const { setPreviewTemplate } = load("lib/catalogStore.ts");
 const disabled = { ...templates.find(t => t.id === "baxmal"), envelope: { enabled: false, variant: "burgundy" } };

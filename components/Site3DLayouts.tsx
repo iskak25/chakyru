@@ -711,7 +711,7 @@ function LayoutEditorial({ kit }: { kit: LayoutKit }) {
           invitation={invitation}
           onChange={onChange}
           slot="rings"
-          src="/stickers/wedding-rings-gold.png"
+          src="/stickers/wedding-rings-gold.webp"
           className="mx-auto h-16 w-16"
           imgClass="h-16 w-16 object-contain"
         />
@@ -792,7 +792,7 @@ function LayoutArches({ kit }: { kit: LayoutKit }) {
           invitation={invitation}
           onChange={onChange}
           slot="flora"
-          src="/stickers/flora-rose.png"
+          src="/stickers/flora-rose.webp"
           className="mx-auto mt-6 h-16 w-40"
           imgClass="h-16 w-40 object-contain"
         />
@@ -917,7 +917,7 @@ function LayoutBloom({ kit }: { kit: LayoutKit }) {
           <img key={item.src} src={item.src} alt="" className={`pointer-events-none ${item.className} object-contain`} />
         ))}
         <Selectable id="photo-rings">
-          <img src="/stickers/wedding-rings-gold.png" alt="" className="relative z-[1] mx-auto mt-10 h-14 w-14 object-contain" />
+          <img src="/stickers/wedding-rings-gold.webp" alt="" className="relative z-[1] mx-auto mt-10 h-14 w-14 object-contain" />
         </Selectable>
         <Field
           invitation={invitation}
@@ -946,7 +946,7 @@ function LayoutBloom({ kit }: { kit: LayoutKit }) {
         <div className="relative z-[1] mx-auto mt-8 max-w-[280px]">
           <MessageBlock kit={kit} className="text-center text-[13px] uppercase leading-7 tracking-[0.08em]" />
         </div>
-        <img src="/stickers/frame-bottom-flowers.png" alt="" className="pointer-events-none absolute -bottom-4 left-1/2 h-28 w-40 -translate-x-1/2 object-contain opacity-85" />
+        <img src="/stickers/frame-bottom-flowers.webp" alt="" className="pointer-events-none absolute -bottom-4 left-1/2 h-28 w-40 -translate-x-1/2 object-contain opacity-85" />
       </section>
 
       <div ref={cal.ref} className="relative overflow-hidden text-center" style={{ color: gold }}>

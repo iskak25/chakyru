@@ -23,20 +23,32 @@ import { CollectionPreview } from "./CollectionInvite";
 
 const LiveRenderer = dynamic(() => import("./TemplateRenderer").then(m => m.TemplateRenderer), { ssr: false });
 
-/** Same scrollable full-invitation card as the collection previews, mounted only once the card is near the viewport. */
+/** Static (non-scrolling) full-invitation card as the collection previews, mounted only once the card is near the viewport. */
 function LivePreview({ template, locale }: { template: InvitationTemplate; locale: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setNear(true); io.disconnect(); } }, { rootMargin: "150px" });
+    const io = new IntersectionObserver(([e]) => { setNear(e.isIntersecting); }, { rootMargin: "250px" });
     io.observe(el); return () => io.disconnect();
   }, []);
-  return <div ref={ref} className="absolute inset-0 overflow-y-auto bg-white" style={{ containerType: "inline-size", scrollbarWidth: "none" }}>
+  return <div ref={ref} className="pointer-events-none absolute inset-0 overflow-hidden bg-white" style={{ containerType: "inline-size" }}>
     {near ? <div style={{ width: 480, transformOrigin: "top left", transform: "scale(calc(100cqw / 480px))" }}>
       <LiveRenderer templateId={template.id} data={inviteFromTemplate(template)} locale={locale} startOpen />
     </div> : null}
   </div>;
+}
+
+/** Mounts children only while near the viewport. */
+function InView({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "250px" });
+    io.observe(el); return () => io.disconnect();
+  }, []);
+  return <div ref={ref} className="aspect-[4/5] w-full">{near ? children : null}</div>;
 }
 
 export function TemplateCard({
@@ -70,7 +82,7 @@ export function TemplateCard({
       style={{ boxShadow: "var(--shadow-soft)", transitionTimingFunction: "var(--ease-premium)" }}
     >
       <div className={`relative overflow-hidden ${collection ? "" : featured ? "h-full min-h-[420px]" : "aspect-[4/5]"}`}>
-        {collection ? <CollectionPreview invitation={inviteFromTemplate(template)} design={collection} locale={locale} /> : template.style.pageLayout === "corporate" ? <CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /> : template.style.pageLayout === "tushooNavy" ? <TushooNavyThumb name={template.canvas?.names || "Аят"} /> : anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
+        {collection ? <InView><CollectionPreview invitation={inviteFromTemplate(template)} design={collection} locale={locale} /></InView> : template.style.pageLayout === "corporate" ? <CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /> : template.style.pageLayout === "tushooNavy" ? <TushooNavyThumb name={template.canvas?.names || "Аят"} /> : anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
           <TemplatePaperPreview template={template} locale={locale} eager={eager} />
         ) : <img
           src={restored?.source || templateImageSource(crop?.source || photo)}

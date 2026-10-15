@@ -1,21 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { TemplateCard } from "@/components/TemplateCard";
 import { useI18n } from "@/lib/locale";
-import { eventTypes, formats } from "@/lib/templates";
+import { eventTypes } from "@/lib/templates";
 import { useCatalog } from "@/lib/useCatalog";
-import type { EventType, InviteFormat } from "@/lib/types";
+import type { EventType } from "@/lib/types";
 
 export default function TemplatesPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const PAGE = 12;
+  const [shown, setShown] = useState(PAGE);
   const { templates } = useCatalog();
   const [category, setCategory] = useState<EventType | "all">("all");
-  const [format, setFormat] = useState<InviteFormat | "all">("all");
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<"popular" | "new" | "price">("popular");
 
@@ -23,20 +24,54 @@ export default function TemplatesPage() {
     let next = templates.filter((tpl) => {
       if (tpl.priceSom === 199) return false;
       const catOk = category === "all" || tpl.eventTypes.includes(category);
-      const fmtOk = format === "all" || tpl.format === format;
       const needle = q.trim().toLowerCase();
       const qOk =
         !needle ||
         tpl.name.ky.toLowerCase().includes(needle) ||
         tpl.name.ru.toLowerCase().includes(needle) ||
         tpl.id.includes(needle);
-      return catOk && fmtOk && qOk;
+      return catOk && qOk;
     });
     if (sort === "price") next = [...next].sort((a, b) => a.priceSom - b.priceSom);
     else if (sort === "new") next = [...next].reverse();
     else next = [...next].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
     return next;
-  }, [category, format, q, sort, templates]);
+  }, [category, q, sort, templates]);
+  // Keep filters, "show more" depth and scroll position when returning from a template.
+  const KEY = "chakyru-templates-view";
+  const restored = useRef(false);
+  const scrollTo = useRef<number | null>(null);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(KEY) || "null");
+      if (saved) {
+        setCategory(saved.category ?? "all");
+        setQ(saved.q ?? "");
+        setSort(saved.sort ?? "popular");
+        setShown(Math.max(PAGE, Number(saved.shown) || PAGE));
+        const y = Number(saved.scrollY) || 0;
+        scrollTo.current = y;
+        setTimeout(() => requestAnimationFrame(() => { window.scrollTo(0, y); scrollTo.current = null; }), 60);
+      }
+    } catch {}
+    restored.current = true;
+  }, []);
+  useEffect(() => {
+    if (!restored.current) return;
+    if (scrollTo.current !== null) return; // restoring: keep the saved depth
+    setShown(PAGE);
+  }, [category, q, sort]);
+  const stateRef = useRef({ category, q, sort, shown });
+  stateRef.current = { category, q, sort, shown };
+  useEffect(() => {
+    const save = () => {
+      if (!restored.current) return;
+      try { sessionStorage.setItem(KEY, JSON.stringify({ ...stateRef.current, scrollY: window.scrollY })); } catch {}
+    };
+    document.addEventListener("click", save, true); // before navigation resets the scroll
+    window.addEventListener("pagehide", save);
+    return () => { document.removeEventListener("click", save, true); window.removeEventListener("pagehide", save); };
+  }, []);
 
   const chip = (active: boolean) =>
     `shrink-0 rounded-full px-3.5 py-2 text-[11px] uppercase tracking-[0.14em] transition duration-250 ${
@@ -93,24 +128,13 @@ export default function TemplatesPage() {
         ))}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" onClick={() => setFormat("all")} className={chip(format === "all")}>
-          {t.allTemplates}
-        </button>
-        {formats.map((f) => (
-          <button key={f} type="button" onClick={() => setFormat(f)} className={chip(format === f)}>
-            {t.formats[f]}
-          </button>
-        ))}
-      </div>
-
       {list.length === 0 ? (
         <div className="mt-16 rounded-[var(--radius-xl)] border border-[var(--line)] bg-white px-6 py-20 text-center">
           <p className="font-serif text-3xl">{t.catalogEmpty}</p>
         </div>
       ) : (
         <div className="mt-8 grid auto-rows-[minmax(280px,auto)] grid-cols-1 gap-5 sm:mt-10 sm:grid-cols-2 xl:grid-cols-4">
-          {list.map((tpl, index) => {
+          {list.slice(0, shown).map((tpl, index) => {
             const featured = index === 0 || (tpl.featured && index < 3);
             return (
               <div
@@ -129,6 +153,13 @@ export default function TemplatesPage() {
           })}
         </div>
       )}
+      {list.length > shown ? (
+        <div className="mt-10 flex justify-center">
+          <button type="button" onClick={() => setShown((n) => n + PAGE)} className="inline-flex h-12 items-center rounded-[12px] border border-[var(--line)] bg-white px-8 text-[11px] uppercase tracking-[0.14em] transition hover:border-ink/30">
+            {locale === "ru" ? "Показать ещё" : "Дагы көрсөтүү"} ({list.length - shown})
+          </button>
+        </div>
+      ) : null}
     </SiteShell>
   );
 }

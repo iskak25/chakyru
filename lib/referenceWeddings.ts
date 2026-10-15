@@ -23,7 +23,7 @@ export const referenceWeddings: ReferenceWedding[] = [
     hero: crop("winter", 57, 244, 182, 188), chandelier: crop("winter", 73, 612, 153, 151), venue: crop("winter", 57, 823, 181, 130), flowers: crop("winter", 0, 986, 736, 118), arch: crop("winter", 493, 676, 181, 245), bow: crop("winter", 278, 192, 174, 114),
   } },
   { id: "mountains", title: "Свадьба в горах", names: "Мария & Евгений", date: "2026-08-08", venue: DEFAULT_VENUE.venue, address: DEFAULT_VENUE.address, paper: "#ffffff", ink: "#33332e", accent: "#76503a", colors: ["#a59b96", "#71432b", "#343434"], photos: {
-    hero: { source: "/images/wedding-references/mountains-hero-clean.png", width: 955, height: 1647, x: 0, y: 0, w: 955, h: 1647 }, collage: crop("mountains", 97, 674, 218, 172), table: crop("mountains", 422, 163, 81, 145), fashion: crop("mountains", 422, 454, 214, 114), couple: crop("mountains", 422, 740, 215, 171), footer: crop("mountains", 422, 1112, 215, 83), venue: crop("mountains", 174, 926, 119, 31),
+    hero: { source: "/images/wedding-references/mountains-hero-clean.webp", width: 955, height: 1647, x: 0, y: 0, w: 955, h: 1647 }, collage: crop("mountains", 97, 674, 218, 172), table: crop("mountains", 422, 163, 81, 145), fashion: crop("mountains", 422, 454, 214, 114), couple: crop("mountains", 422, 740, 215, 171), footer: crop("mountains", 422, 1112, 215, 83), venue: crop("mountains", 174, 926, 119, 31),
   } },
   { id: "sage", title: "Шалфей и сердца", names: "Қарлығаш & Тұзақ", date: "2025-12-09", venue: DEFAULT_VENUE.venue, address: DEFAULT_VENUE.address, paper: "#ffffff", ink: "#2a3027", accent: "#91a286", colors: ["#91a286", "#526e47", "#e6e6d9"], photos: {
     hero: crop("sage", 79, 177, 287, 271), couple: crop("sage", 81, 775, 283, 266), hands: crop("sage", 426, 461, 251, 147), footer: crop("sage", 411, 1138, 285, 170),
@@ -38,7 +38,7 @@ export const referenceWeddings: ReferenceWedding[] = [
     hero: crop("tuscany", 212, 345, 147, 199), story: crop("tuscany", 390, 130, 79, 108), villa: crop("tuscany", 386, 389, 148, 59), landscape: crop("tuscany", 213, 889, 144, 90), hotel: crop("tuscany", 385, 799, 150, 137), fashion: crop("tuscany", 583, 286, 101, 174),
   } },
   { id: "stars", title: "Под звёздами", names: "Ethan & Olivia", date: "2027-08-18", venue: DEFAULT_VENUE.venue, address: DEFAULT_VENUE.address, paper: "#151329", ink: "#f0eaf0", accent: "#cdb176", colors: ["#151329", "#cdb176", "#e3d8cc"], photos: {
-    hero: { source: "/images/wedding-references/stars-hero-clean.png", width: 905, height: 1738, x: 0, y: 0, w: 905, h: 1738 }, collage: crop("stars", 290, 62, 155, 280), party: crop("stars", 505, 155, 151, 76), hands: crop("stars", 490, 355, 174, 108), footer: crop("stars", 490, 617, 174, 231),
+    hero: { source: "/images/wedding-references/stars-hero-clean.webp", width: 905, height: 1738, x: 0, y: 0, w: 905, h: 1738 }, collage: crop("stars", 290, 62, 155, 280), party: crop("stars", 505, 155, 151, 76), hands: crop("stars", 490, 355, 174, 108), footer: crop("stars", 490, 617, 174, 231),
   } },
 ];
 export function referenceWedding(inv: Pick<Invitation, "templateId" | "copy">) {

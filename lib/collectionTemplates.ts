@@ -17,6 +17,7 @@ const palettes = {
   lilac: ["#f4f0fa", "#514267", "#88719e", "#ded3e9"],
   mint: ["#edf6ef", "#304e44", "#578477", "#cfe4d9"],
   gold: ["#fff8e9", "#564025", "#937037", "#f0dfb8"],
+  pearl: ["#f7f4ee", "#34302b", "#9b8466", "#e9e2d6"],
   noir: ["#202021", "#f4ede3", "#d6b892", "#393737"],
   cherry: ["#fff1e9", "#762938", "#b44157", "#f6ccd1"],
   sky: ["#eef7fa", "#274958", "#527c8b", "#cde4ed"],
@@ -73,21 +74,21 @@ const briefs: Record<CollectionEvent, readonly Brief[]> = {
   ],
   tushoo: [
     ["first-path", "Алгачкы издер", "Первые следы", "stairs", "steps", "mint"],
-    ["rainbow-road", "Күн желе жолу", "Радужная дорожка", "arch", "rainbow", "ivory"],
-    ["little-traveler", "Кичинекей саякатчы", "Маленький путешественник", "ticket", "train", "blue"],
-    ["kite-flight", "Бийикке уч", "Лети выше", "duet", "kite", "ivory"],
-    ["sunny-step", "Күнөстүү кадам", "Солнечный шаг", "orbit", "sun", "clay"],
-    ["balloon-flight", "Шар менен саякат", "Путешествие на шаре", "banner", "balloon", "rose"],
-    ["step-album", "Бир жаштын сүрөтү", "Портрет первого года", "window", "steps", "blue", "/images/templates/tushoo-ayat/hero.webp"],
-    ["garden-run", "Гүлдүү жолчо", "Цветочная тропинка", "botanical", "daisy", "rose"],
-    ["step-ribbon", "Ак жол, бөбөк!", "Доброго пути, малыш!", "ribbon", "steps", "rose"],
-    ["mountain-kid", "Кичинекей баатыр", "Маленький герой", "landscape", "kite", "clay"],
+    ["rainbow-road", "Тоолордун баласы", "Малыш гор", "arch", "rainbow", "sky"],
+    ["little-traveler", "Гүлдүү шарлар", "Цветы и шары", "ticket", "train", "rose"],
+    ["kite-flight", "Комуздун үнү", "Звуки комуза", "duet", "kite", "cherry"],
+    ["sunny-step", "Көк жана алтын", "Синее и золото", "orbit", "sun", "blue"],
+    ["balloon-flight", "Назик бакча", "Нежный сад", "banner", "balloon", "ivory"],
+    ["step-album", "Таңкы күн", "Восход солнца", "window", "steps", "gold", "/images/templates/tushoo-ayat/hero.webp"],
+    ["garden-run", "Жылуу жыгач", "Тёплое дерево", "botanical", "daisy", "clay"],
+    ["step-ribbon", "Аюу жана шарлар", "Мишка и шарики", "ribbon", "steps", "mint"],
+    ["mountain-kid", "Белектер күнү", "День подарков", "landscape", "kite", "rose"],
   ],
   anniversary: [
     ["gold-number", "Алтын курак", "Золотой возраст", "type", "olive", "gold"],
     ["life-chapters", "Өмүр барактары", "Главы жизни", "columns", "fern", "ivory"],
     ["family-medal", "Үй-бүлө сыймыгы", "Гордость семьи", "medallion", "ornament", "wine"],
-    ["portrait-gallery", "Кадырлуу адам", "Дорогой человек", "duet", "pearl", "noir", "/images/anniversary/portrait.webp"],
+    ["portrait-gallery", "Кадырлуу адам", "Дорогой человек", "duet", "pearl", "pearl", "/images/anniversary/portrait.webp"],
     ["velvet-ticket", "Өзгөчө кечеге билет", "Билет на особенный вечер", "ticket", "star", "ink"],
     ["autumn-letter", "Жылуу эскерүү", "Тёплые воспоминания", "letter", "rose", "clay"],
     ["mountain-years", "Бийик белес", "Высокий рубеж", "terrace", "mountain", "blue"],
@@ -237,7 +238,7 @@ const weddingNames = [
 const weddingName = (slug: string) => weddingNames[briefs.wedding.findIndex(([key]) => key === slug) % weddingNames.length];
 // Per-template names for the remaining events, in catalogue order.
 const eventNames: Partial<Record<CollectionEvent, string[]>> = {
-  tushoo: ["Айбар", "Арууке", "Нурислам", "Айлин", "Алихан", "Сезим", "Билал", "Нурайым", "Амир", "Айпери"],
+  tushoo: ["Айбар", "Нурислам", "Арууке", "Айлин", "Алихан", "Сезим", "Билал", "Нурайым", "Амир", "Айпери"],
   anniversary: ["Өмүрбек", "Гүлмира", "Бакыт", "Айгүл", "Кубаныч", "Жылдыз", "Талант", "Гүлнара"],
   beshik: ["Нурайым", "Алихан", "Айлин", "Нурислам", "Арууке", "Амир", "Айпери", "Айбар", "Сафия"],
   birthday: ["Арууке", "Айдана", "Эмир", "Сезим", "Бекзат", "Айсулуу", "Адилет", "Мээрим", "Нурсултан", "Алтынай"],
@@ -287,7 +288,7 @@ const weddingEnvelope = (slug: string) => {
 // Other events: the three envelope designs in turn, palette matched to the design colour.
 const eventEnvelopePalette: Record<string, EnvelopeVariant> = {
   mint: "sage", clay: "ethnoCream", blue: "ice", sky: "ice", gold: "cream", lilac: "blush", rose: "blush",
-  ivory: "ivory", wine: "burgundy", noir: "blackGold", ink: "midnight", cherry: "burgundy",
+  ivory: "ivory", pearl: "cream", wine: "burgundy", noir: "blackGold", ink: "midnight", cherry: "burgundy",
 };
 const eventEnvelope = (id: string, event: CollectionEvent) => {
   const list = briefs[event];
@@ -301,7 +302,7 @@ const kyzMusicUrl = (slug: string) => {
 };
 
 /** Only these collections are published; the other events stay hidden until they are approved. */
-const publishedEvents: CollectionEvent[] = ["wedding", "kyz", "tushoo", "anniversary", "beshik", "birthday", "jentek", "bachelorette", "corporate", "iftar"]; // local preview: all events
+const publishedEvents: CollectionEvent[] = ["wedding", "kyz", "tushoo", "anniversary", "beshik", "birthday", "bachelorette", "corporate", "iftar"]; // local preview: all events
 
 export function collectionTemplate(d: CollectionDesign): InvitationTemplate {
   const example = eventExamples[d.event];
