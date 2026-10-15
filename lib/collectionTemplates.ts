@@ -301,9 +301,9 @@ const kyzMusicUrl = (slug: string) => {
 };
 
 /** Only these collections are published; the other events stay hidden until they are approved. */
-const publishedEvents: CollectionEvent[] = ["wedding", "kyz"];
+const publishedEvents: CollectionEvent[] = ["wedding", "kyz", "tushoo", "anniversary", "beshik", "birthday", "jentek", "bachelorette", "corporate", "iftar"]; // local preview: all events
 
-export const collectionTemplates: InvitationTemplate[] = collectionDesigns.filter(d => publishedEvents.includes(d.event)).map((d): InvitationTemplate => {
+export function collectionTemplate(d: CollectionDesign): InvitationTemplate {
   const example = eventExamples[d.event];
   const gallery: TemplateCanvas["gallery"] = d.photo ? { hero: d.photo } : {};
   return {
@@ -312,12 +312,14 @@ export const collectionTemplates: InvitationTemplate[] = collectionDesigns.filte
     style: { bg: d.paper, panel: d.paper, text: d.ink, accent: d.accent, muted: d.ink, ornament: d.accent, pageBg: d.paper },
     canvas: {
       names: d.event === "kyz" ? kyzName(d.id.replace("collection-kyz-", "")) : d.event === "wedding" ? weddingName(d.id.replace("collection-wedding-", "")) : eventName(d.id, d.event, example.names), date: d.event === "corporate" ? "2026-12-26" : d.event === "iftar" ? "2027-02-20" : "2027-06-12", time: example.time,
-      venue: "«Ала-Тоо» салтанат залы", address: "Чүй проспекти, 120", city: "Бишкек", mapUrl: "", message: d.event === "kyz" ? example.message[0].replace("Кызыбыз Айперинин", `Кызыбыз ${kyzName(d.id.replace("collection-kyz-", ""))}`) : example.message[0],
+      venue: "«Ала-Тоо» салтанат залы", address: "Чүй проспекти, 120", city: "", mapUrl: "", message: d.event === "kyz" ? example.message[0].replace("Кызыбыз Айперинин", `Кызыбыз ${kyzName(d.id.replace("collection-kyz-", ""))}`) : example.message[0],
       coverImage: "", musicUrl: d.event === "kyz" ? kyzMusicUrl(d.id.replace("collection-kyz-", "")) : d.event === "wedding" ? weddingMusicUrl(d.id.replace("collection-wedding-", "")) : eventMusicUrl(d.id, d.event), layout: {}, extras: [], blockColors: {}, gallery,
       copy: { "collection.design": d.id, ...(d.event === "kyz" ? { "envelope.design": kyzEnvelope(d.id.replace("collection-kyz-", "")).design } : {}), ...(d.event === "wedding" ? { "envelope.design": weddingEnvelope(d.id.replace("collection-wedding-", "")).design } : {}), ...(otherEvent(d.event) ? { "envelope.design": eventEnvelope(d.id, d.event).design } : {}), ...(d.event === "anniversary" ? { "collection-age": "60" } : {}) },
     },
   };
-});
+}
+
+export const collectionTemplates = collectionDesigns.filter(d => publishedEvents.includes(d.event)).map(collectionTemplate);
 
 /** One catalogue category; the legacy EventType remains valid for saved invitations. */
 export function primaryCatalogCategory(template: InvitationTemplate): EventType {

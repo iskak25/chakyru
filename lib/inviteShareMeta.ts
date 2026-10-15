@@ -25,7 +25,10 @@ export function inviteShareMeta(inv: Invitation): { title: string; description: 
   const kind = events[inv.eventType] || "Той";
   const date = shortInviteDate(inv.date);
   const title = date ? `${kind} — ${date}` : kind;
-  const place = [inv.venue, inv.city].map((x) => x?.trim()).filter(Boolean).join(", ");
+  const venue = inv.venue?.trim() ?? "";
+  const city = inv.city?.trim() ?? "";
+  // Город добавляем, только если он не упомянут в названии места.
+  const place = [venue, city && !venue.toLowerCase().includes(city.toLowerCase()) ? city : ""].filter(Boolean).join(", ");
   const description = place
     ? `${place}. Чакырууну ачып, баарын көрүңүз 💌`
     : "Чакырууну ачып, баарын көрүңүз 💌";
