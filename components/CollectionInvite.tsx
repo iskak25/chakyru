@@ -19,6 +19,7 @@ import { weddingDirection } from "@/lib/weddingRedesign";
 import weddingCss from "./WeddingCollection.module.css";
 import { WeddingCollectionHero } from "./WeddingCollectionHero";
 import { eventPresentation, eventMediaSource } from "@/lib/eventPresentation";
+import { eventArt } from "@/lib/eventArt";
 import { EventCollectionHero, EventArtwork } from "./EventCollectionHero";
 import eventCss from "./EventCollection.module.css";
 
@@ -138,7 +139,7 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
           {text("details-title", tr("Кеченин маанайы", "Настроение вечера"), undefined, css.heading)}
           <div className="kyz-swatches" aria-hidden="true"><i/><i/><i/><i/></div>
           {text("details-note", tr("Жылуу маанай жана ак тилек менен келиңиздер. Сиздердин катышууңуздар — биз үчүн эң баалуу белек.", "Приходите с добрыми пожеланиями и хорошим настроением. Ваше присутствие — самый дорогой подарок."))}
-          {theme ? <WeddingPart id="photo-memory" label="Вторая фотография" kind="image" slot="memory" fallback={eventMediaSource(undefined, theme.hero)} className={eventCss.memory}><EventArtwork theme={theme}/></WeddingPart> : <WeddingPart id="photo-memory" label="Вторая фотография" kind="image" slot="memory" fallback={kyzAsset(direction.photo)} className="kyz-memory-photo" />}
+          {theme ? <WeddingPart id="photo-memory" label="Вторая фотография" kind="image" slot="memory" fallback={eventMediaSource(undefined, theme.hero)} className={eventCss.memory}><EventArtwork theme={theme}/></WeddingPart> : <WeddingPart id="photo-memory" label="Вторая фотография" kind="image" slot="memory" fallback={direction.photo ? kyzAsset(direction.photo) : eventArt(d.id).hero ?? d.photo} className="kyz-memory-photo" />}
         </section> : null}
         {d.event === "tushoo" ? <section data-kyz-section="dress" key="dress">
           {text("dress-title", tr("Кийим-кече", "Дресс-код"), undefined, css.heading)}
