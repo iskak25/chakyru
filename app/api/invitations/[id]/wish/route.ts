@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
-import { addInvitationWish, setInvitationWishHidden } from "@/lib/server/invitations";
+import { addInvitationWish, deleteInvitationWish, setInvitationWishHidden } from "@/lib/server/invitations";
 import { loadUserProfile } from "@/lib/server/users";
 
 import { guestMayWrite } from "@/lib/server/guestAccess";
@@ -29,6 +29,23 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
   if (!id || !wishId || typeof body?.hidden !== "boolean") return NextResponse.json({ error: "input" }, { status: 400 });
   const profile = await loadUserProfile(session.uid);
   const ok = await setInvitationWishHidden(id, wishId, body.hidden, {
+    ownerUid: session.uid,
+    ownerId: profile?.id || `google:${session.uid}`,
+    email: session.email || profile?.email,
+  });
+  if (!ok) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  const session = await sessionFromBearer(req.headers.get("authorization"));
+  if (!session) return NextResponse.json({ error: "auth" }, { status: 401 });
+  const body = (await req.json().catch(() => null)) as { wishId?: string } | null;
+  const wishId = typeof body?.wishId === "string" ? body.wishId.trim() : "";
+  if (!id || !wishId) return NextResponse.json({ error: "input" }, { status: 400 });
+  const profile = await loadUserProfile(session.uid);
+  const ok = await deleteInvitationWish(id, wishId, {
     ownerUid: session.uid,
     ownerId: profile?.id || `google:${session.uid}`,
     email: session.email || profile?.email,

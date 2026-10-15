@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { SiteShell } from "@/components/SiteShell";
 import { ListSkeleton } from "@/components/Skeleton";
 import { firebaseIdToken } from "@/lib/firebase";
+import { deleteWishRemote, setWishHiddenRemote } from "@/lib/accessClient";
 import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
 
@@ -39,6 +40,16 @@ function Responses() {
     finally { setLoading(false); }
   }, [templateId, invitationId, ru]);
   useEffect(() => { void load(); }, [load]);
+  const updateWishes = (id: string, fn: (w: NonNullable<Invitation["wishes"]>) => NonNullable<Invitation["wishes"]>) => setItems(list => list.map(inv => inv.id === selected ? { ...inv, wishes: fn(inv.wishes || []) } : inv));
+  async function toggleWish(id: string, hidden: boolean) {
+    if (await setWishHiddenRemote(selected, id, hidden)) updateWishes(id, w => w.map(x => x.id === id ? { ...x, hidden } : x));
+    else setError(ru ? "Не удалось сохранить." : "Сакталган жок.");
+  }
+  async function removeWish(id: string) {
+    if (!window.confirm(ru ? "Удалить это пожелание навсегда?" : "Бул каалоону биротоло өчүрөсүзбү?")) return;
+    if (await deleteWishRemote(selected, id)) updateWishes(id, w => w.filter(x => x.id !== id));
+    else setError(ru ? "Не удалось удалить." : "Өчүрүлгөн жок.");
+  }
   const invitation = items.find(inv => inv.id === selected);
   const guests = invitation?.guests || [];
   const wishes = invitation?.wishes || [];
@@ -63,7 +74,7 @@ function Responses() {
       {tab === "answers" ? <section>
         <p className="mb-5 text-sm text-ink-soft">{tr("Придут", "Келет")}: {yes.length} · {tr("Не придут", "Келбейт")}: {guests.filter(g => g.rsvp === "no").length} · {tr("Возможно", "Балким")}: {guests.filter(g => g.rsvp === "maybe").length} · {tr("Всего ожидается людей", "Жалпы күтүлгөн адам саны")}: {total}</p>
         {!guests.length ? <p>{tr("Ответов пока нет. Поделитесь приглашением с гостями.", "Жооптор азырынча жок. Чакырууну конокторго жөнөтүңүз.")}</p> : <div className="overflow-x-auto rounded-2xl border bg-white"><table className="w-full min-w-[650px] text-left text-sm"><thead className="border-b bg-cream"><tr>{[tr("Имя", "Аты"), tr("Ответ", "Жооп"), tr("Доп. гости", "Кошумча коноктор"), tr("Напитки", "Суусундуктар"), tr("Комментарий / питание", "Комментарий / тамак-аш")].map(label => <th className="p-4 font-medium" key={label}>{label}</th>)}</tr></thead><tbody>{guests.map(g => <tr className="border-b last:border-0" key={g.id}><td className="p-4">{g.name}</td><td className="p-4">{g.rsvp === "yes" ? tr("Придёт", "Келет") : g.rsvp === "no" ? tr("Не придёт", "Келбейт") : g.rsvp === "maybe" ? tr("Возможно", "Балким") : tr("Нет ответа", "Жооп жок")}</td><td className="p-4">{g.plusOne || 0}</td><td className="p-4">{g.drinks || "—"}</td><td className="max-w-sm whitespace-pre-wrap break-words p-4">{g.note || "—"}</td></tr>)}</tbody></table></div>}
-      </section> : <section className="space-y-4">{!wishes.length ? <p>{tr("Пожеланий пока нет.", "Каалоолор азырынча жок.")}</p> : wishes.map(wish => <article className="rounded-2xl border bg-white p-5" key={wish.id}><h3 className="font-medium">{wish.name}</h3><p className="mt-3 whitespace-pre-wrap break-words text-ink-soft">{wish.text}</p></article>)}</section>}
+      </section> : <section className="space-y-4">{!wishes.length ? <p>{tr("Пожеланий пока нет.", "Каалоолор азырынча жок.")}</p> : wishes.map(wish => <article className={`rounded-2xl border bg-white p-5 ${wish.hidden ? "opacity-60" : ""}`} key={wish.id}><h3 className="font-medium">{wish.name}</h3><p className="mt-3 whitespace-pre-wrap break-words text-ink-soft">{wish.text}</p><div className="mt-4 flex gap-2"><button type="button" onClick={() => void toggleWish(wish.id, !wish.hidden)} className="rounded-xl border px-4 py-2 text-sm">{wish.hidden ? tr("Показать гостям", "Конокторго көрсөтүү") : tr("Скрыть", "Жашыруу")}</button><button type="button" onClick={() => void removeWish(wish.id)} className="rounded-xl border px-4 py-2 text-sm hover:border-red-300 hover:text-red-600">{tr("Удалить", "Өчүрүү")}</button></div></article>)}</section>}
     </>}
   </SiteShell>;
 }

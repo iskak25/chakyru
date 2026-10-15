@@ -134,3 +134,12 @@ export async function setWishHiddenRemote(invitationId: string, wishId: string, 
   }).catch(() => null);
   return Boolean(res?.ok);
 }
+
+export async function deleteWishRemote(invitationId: string, wishId: string): Promise<boolean> {
+  const headers = await authHeaders();
+  if (!("authorization" in headers)) return false;
+  const res = await fetch(`/api/invitations/${encodeURIComponent(invitationId)}/wish`, {
+    method: "DELETE", headers, body: JSON.stringify({ wishId }),
+  }).catch(() => null);
+  return Boolean(res?.ok);
+}

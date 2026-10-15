@@ -230,3 +230,21 @@ export async function setInvitationWishHidden(
     return true;
   });
 }
+
+export async function deleteInvitationWish(
+  invitationId: string,
+  wishId: string,
+  owner: { ownerId: string; ownerUid: string; email?: string },
+) {
+  const db = getAdminDb();
+  if (!db) return false;
+  const ref = db.collection("invitations").doc(invitationId);
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return false;
+    const inv = asInvitation(invitationId, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!inv || !sameInvitationOwner(inv, owner)) return false;
+    tx.set(ref, { wishes: (inv.wishes ?? []).filter(wish => wish.id !== wishId), updatedAt: new Date().toISOString() }, { merge: true });
+    return true;
+  });
+}
