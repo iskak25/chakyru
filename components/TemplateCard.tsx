@@ -23,15 +23,37 @@ import { CollectionPreview } from "./CollectionInvite";
 
 const LiveRenderer = dynamic(() => import("./TemplateRenderer").then(m => m.TemplateRenderer), { ssr: false });
 
-/** Static (non-scrolling) full-invitation card as the collection previews, mounted only once the card is near the viewport. */
-function LivePreview({ template, locale }: { template: InvitationTemplate; locale: string }) {
-  const ref = useRef<HTMLDivElement>(null);
+/** True while the element is within 250px of the viewport. Re-checked on history return and tab refocus, because the observer can miss the restored scroll position. */
+function useNear(ref: React.RefObject<HTMLElement | null>) {
   const [near, setNear] = useState(false);
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => { setNear(e.isIntersecting); }, { rootMargin: "250px" });
-    io.observe(el); return () => io.disconnect();
-  }, []);
+    const check = () => {
+      const r = el.getBoundingClientRect();
+      const visible = r.width > 0 && r.height > 0;
+      setNear(visible && r.bottom > -250 && r.top < window.innerHeight + 250);
+    };
+    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "250px" });
+    io.observe(el);
+    const raf = requestAnimationFrame(check);
+    const late = window.setTimeout(check, 400);
+    window.addEventListener("pageshow", check);
+    window.addEventListener("popstate", check);
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      io.disconnect(); cancelAnimationFrame(raf); window.clearTimeout(late);
+      window.removeEventListener("pageshow", check);
+      window.removeEventListener("popstate", check);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [ref]);
+  return near;
+}
+
+/** Static (non-scrolling) full-invitation card as the collection previews, mounted only once the card is near the viewport. */
+function LivePreview({ template, locale }: { template: InvitationTemplate; locale: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const near = useNear(ref);
   return <div ref={ref} className="pointer-events-none absolute inset-0 overflow-hidden bg-white" style={{ containerType: "inline-size" }}>
     {near ? <div style={{ width: 480, transformOrigin: "top left", transform: "scale(calc(100cqw / 480px))" }}>
       <LiveRenderer templateId={template.id} data={inviteFromTemplate(template)} locale={locale} startOpen />
@@ -42,12 +64,7 @@ function LivePreview({ template, locale }: { template: InvitationTemplate; local
 /** Mounts children only while near the viewport. */
 function InView({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [near, setNear] = useState(false);
-  useEffect(() => {
-    const el = ref.current; if (!el) return;
-    const io = new IntersectionObserver(([e]) => setNear(e.isIntersecting), { rootMargin: "250px" });
-    io.observe(el); return () => io.disconnect();
-  }, []);
+  const near = useNear(ref);
   return <div ref={ref} className="aspect-[4/5] w-full">{near ? children : null}</div>;
 }
 
