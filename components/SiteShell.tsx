@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { AppShell } from "./app/AppShell";
+import { WhatsAppButton } from "./WhatsAppButton";
 
 const MARKETING = new Set(["/", "/terms"]);
 
@@ -33,7 +34,7 @@ export function SiteShell({
   const appChrome = !forceMarketing && shouldUseAppChrome(pathname);
 
   if (appChrome) {
-    return <AppShell>{children}</AppShell>;
+    return <AppShell>{children}<WhatsAppButton aboveNavigation /></AppShell>;
   }
 
   return (
@@ -41,6 +42,7 @@ export function SiteShell({
       <div className={mobileFullscreen ? "max-sm:hidden sm:contents" : "contents"}><Header /></div>
       <main className="flex-1">{children}</main>
       {footer ? <div className={mobileFullscreen ? "max-sm:hidden sm:contents" : "contents"}><Footer /></div> : null}
+      {!mobileFullscreen && !/^\/(i|create|admin|pay)(\/|$)/.test(pathname) ? <WhatsAppButton /> : null}
     </>
   );
 }
