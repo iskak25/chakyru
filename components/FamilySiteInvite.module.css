@@ -65,6 +65,17 @@
 .garden .countdown { border-radius:18px; }
 .garden .intro,.garden .farewell { background-image:radial-gradient(ellipse at 0 35%,#8bb58014,transparent 65%); }
 .cradle .button { border-radius:8px; }
+.garden .heroCopy .overline { font-size:clamp(9px,2.1cqw,11px); letter-spacing:.1em; }
+.garden { overflow-x:clip; }
+.garden .heroDate { font-size:clamp(12px,3cqw,15px); }
+.garden .childName { line-height:1.22; text-wrap:balance; }
+.garden .section { padding-block:42px; }
+.garden .hero { padding:0; }
+.garden .title { font-size:clamp(30px,8cqw,38px); }
+.garden .countdown { border-radius:70px 70px 16px 16px / 24px 24px 16px 16px; }
+.garden .location { background:linear-gradient(145deg,#ffffff90,transparent); }
+.garden .form input:not([type=radio]),.garden .form textarea { font-size:16px; }
+.garden button:focus-visible,.garden a:focus-visible { outline:2px solid var(--family-accent); outline-offset:4px; }
 @keyframes nudge { 0%,100% { transform:translateY(0); } 50% { transform:translateY(5px); } }
 @keyframes reveal { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
 @media(prefers-reduced-motion:reduce) { .openButton svg,.details:not([hidden]) { animation:none; } .tilt { transition:none; transform:none; } }

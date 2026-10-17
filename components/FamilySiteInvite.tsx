@@ -34,7 +34,11 @@ export function FamilySiteInvite({invitation:inv,design,locale,onChange,selected
   const opened=!!onChange||!!startOpen||expanded;
   const preview=inv.id==="demo"||inv.id.startsWith("preview");
   const date=new Date(`${inv.date}T12:00:00`);
-  const formatted=Number.isNaN(date.getTime())?inv.date:date.toLocaleDateString(ky?"ky-KG":"ru-RU",{day:"numeric",month:"long",year:"numeric"});
+  // Chromium may lack ky-KG ICU data and fall back to Russian during hydration.
+  const kyMonths = ["январь","февраль","март","апрель","май","июнь","июль","август","сентябрь","октябрь","ноябрь","декабрь"];
+  const formatted=Number.isNaN(date.getTime())?inv.date:steps && ky
+    ? `${date.getDate()} ${kyMonths[date.getMonth()]} ${date.getFullYear()}`
+    : date.toLocaleDateString(ky?"ky-KG":"ru-RU",{day:"numeric",month:"long",year:"numeric"});
   const event=steps?"Тушоо той":"Жентек той";
   const Mark=steps?Footprints:Baby;
   const text=(id:string,fallback:string,className="",field?:WeddingPartInfo["field"]) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} className={className} field={field}/>;

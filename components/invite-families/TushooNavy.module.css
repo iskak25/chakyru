@@ -47,9 +47,29 @@
 .footerName { margin: 10px 0; font-size: 46px; overflow-wrap: anywhere; }
 .mountains { width: 100%; height: 65px; margin-top: 24px; color: #102e50; }
 .thumb { height: 100%; position: relative; background: #fbf2e2; overflow: hidden; container-type: inline-size; }
-.thumb .art { object-fit: fill; }
+.thumb .art { object-fit: cover; object-position: center; }
 .thumbText { position: relative; padding: 29% 14% 0; text-align: center; color: #102e50; }
 .thumbText span { font-size: 17cqw; line-height: 1.2; }
 .thumbText p { margin-top: 4px; font-family: Georgia, serif; font-size: 5cqw; letter-spacing: .1em; }
 .guestWishes { color: #102e50; }
 .guestWishes button:first-child { background: #fff9ef; border-color: #bd945566; border-radius: 4px 40px 4px 40px; }
+
+.root { container-type:inline-size; overflow-wrap:anywhere; }
+.root * { min-width:0; }
+.heroText { padding-inline:12%; }
+.name,.footerName { font-family:var(--font-cormorant),Georgia,serif; font-weight:500; }
+.heading { font-family:var(--font-cormorant),Georgia,serif; font-size:32px; text-wrap:balance; }
+.section { background:radial-gradient(ellipse at 0 50%,#bd94550c,transparent 70%); }
+.message { font-size:15px; }
+.wish { box-shadow:0 8px 24px #102e5008; }
+.mapButton { padding:12px 16px; border-radius:24px; text-wrap:balance; }
+.root input,.root textarea { font-size:16px; }
+.root button:focus-visible,.root a:focus-visible { outline:2px solid #bd9455; outline-offset:4px; }
+.thumbText span { display:block; overflow-wrap:anywhere; font-family:var(--font-cormorant),Georgia,serif; }
+@container (max-width:375px) {
+  .section { padding:36px 22px; }
+  .programRow { grid-template-columns:44px 12px minmax(0,1fr); gap:8px; }
+  .digits { gap:5px; }
+  .digits strong { font-size:26px; }
+  .heroText { padding-top:24%; }
+}
