@@ -13,3 +13,7 @@ separate regular, bold, italic and bold italic files.
 
 The download script is a manual maintenance utility, not a build step. Commit the
 font files along with code changes when updating them.
+
+The files in this folder are converted to `.woff2` (about 70% smaller than the `.ttf` the
+script downloads). After re-running `scripts/fetch-local-fonts.mjs`, convert the new
+`.ttf` files to `.woff2` and update the paths in `app/layout.tsx`.

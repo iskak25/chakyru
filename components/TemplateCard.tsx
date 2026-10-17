@@ -111,9 +111,13 @@ export function TemplateCard({
         />}
         {!collection && !onUse && <LivePreview template={template} locale={locale} />}
         {!collection && <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />}
+        {/* The whole card is one link/button, but as a sibling of the preview: the invitation inside contains its own <a> links. */}
+        {onUse
+          ? <button type="button" aria-label={name} onClick={() => onUse(template.id)} className="absolute inset-0 z-10 cursor-pointer" />
+          : <Link href={`/templates/${template.id}`} aria-label={name} className="absolute inset-0 z-10" />}
         <button
           type="button"
-          className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-ink/70 opacity-100 transition sm:right-4 sm:top-4 sm:h-9 sm:w-9 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute z-20 right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-ink/70 opacity-100 transition sm:right-4 sm:top-4 sm:h-9 sm:w-9 sm:opacity-0 sm:group-hover:opacity-100"
           aria-label={locale === "ru" ? "В избранное" : "Тандалмаларга"}
           onClick={(e) => e.preventDefault()}
         >
@@ -133,17 +137,5 @@ export function TemplateCard({
     </article>
   );
 
-  if (onUse) {
-    return (
-      <button type="button" onClick={() => onUse(template.id)} className="block w-full text-left">
-        {body}
-      </button>
-    );
-  }
-
-  return (
-    <Link href={`/templates/${template.id}`} className="block">
-      {body}
-    </Link>
-  );
+  return <div className="block w-full text-left">{body}</div>;
 }

@@ -8,7 +8,7 @@ const sans = localFont({
   variable: "--font-manrope",
   display: "swap",
   src: [
-    { path: "./fonts/manrope/Manrope-wght.ttf", weight: "200 800", style: "normal" }
+    { path: "./fonts/manrope/Manrope-wght.woff2", weight: "200 800", style: "normal" }
   ],
 });
 
@@ -16,8 +16,8 @@ const display = localFont({
   variable: "--font-cormorant",
   display: "swap",
   src: [
-    { path: "./fonts/cormorantgaramond/CormorantGaramond-wght.ttf", weight: "400 700", style: "normal" },
-    { path: "./fonts/cormorantgaramond/CormorantGaramond-Italic-wght.ttf", weight: "400 700", style: "italic" }
+    { path: "./fonts/cormorantgaramond/CormorantGaramond-wght.woff2", weight: "400 700", style: "normal" },
+    { path: "./fonts/cormorantgaramond/CormorantGaramond-Italic-wght.woff2", weight: "400 700", style: "italic" }
   ],
 });
 
@@ -25,7 +25,7 @@ const vibes = localFont({
   variable: "--font-vibes",
   display: "swap",
   src: [
-    { path: "./fonts/greatvibes/GreatVibes-Regular.ttf", weight: "400", style: "normal" }
+    { path: "./fonts/greatvibes/GreatVibes-Regular.woff2", weight: "400", style: "normal" }
   ],
 });
 
@@ -33,7 +33,7 @@ const ceremonial = localFont({
   variable: "--font-ceremonial",
   display: "swap",
   src: [
-    { path: "./fonts/marckscript/MarckScript-Regular.ttf", weight: "400", style: "normal" }
+    { path: "./fonts/marckscript/MarckScript-Regular.woff2", weight: "400", style: "normal" }
   ],
 });
 
@@ -41,8 +41,8 @@ const playfair = localFont({
   variable: "--font-playfair",
   display: "swap",
   src: [
-    { path: "./fonts/playfairdisplay/PlayfairDisplay-wght.ttf", weight: "400 700", style: "normal" },
-    { path: "./fonts/playfairdisplay/PlayfairDisplay-Italic-wght.ttf", weight: "400 700", style: "italic" }
+    { path: "./fonts/playfairdisplay/PlayfairDisplay-wght.woff2", weight: "400 700", style: "normal" },
+    { path: "./fonts/playfairdisplay/PlayfairDisplay-Italic-wght.woff2", weight: "400 700", style: "italic" }
   ],
 });
 
@@ -50,7 +50,7 @@ const unbounded = localFont({
   variable: "--font-unbounded",
   display: "swap",
   src: [
-    { path: "./fonts/unbounded/Unbounded-wght.ttf", weight: "400 700", style: "normal" }
+    { path: "./fonts/unbounded/Unbounded-wght.woff2", weight: "400 700", style: "normal" }
   ],
 });
 
@@ -58,7 +58,7 @@ const caveat = localFont({
   variable: "--font-caveat",
   display: "swap",
   src: [
-    { path: "./fonts/caveat/Caveat-wght.ttf", weight: "400 700", style: "normal" }
+    { path: "./fonts/caveat/Caveat-wght.woff2", weight: "400 700", style: "normal" }
   ],
 });
 
@@ -66,10 +66,10 @@ const philosopher = localFont({
   variable: "--font-philosopher",
   display: "swap",
   src: [
-    { path: "./fonts/philosopher/Philosopher-Regular.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/philosopher/Philosopher-Italic.ttf", weight: "400", style: "italic" },
-    { path: "./fonts/philosopher/Philosopher-Bold.ttf", weight: "700", style: "normal" },
-    { path: "./fonts/philosopher/Philosopher-BoldItalic.ttf", weight: "700", style: "italic" },
+    { path: "./fonts/philosopher/Philosopher-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/philosopher/Philosopher-Italic.woff2", weight: "400", style: "italic" },
+    { path: "./fonts/philosopher/Philosopher-Bold.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/philosopher/Philosopher-BoldItalic.woff2", weight: "700", style: "italic" },
   ],
 });
 
