@@ -19,10 +19,13 @@ export function inviteCoverSource(inv: Invitation): string {
   return inv.coverImage || inv.gallery?.hero || getTemplatePhotos(inv.templateId).hero || "";
 }
 
+/** Названия торжества, которые задаёт сам шаблон, а не тип события (eventType у них общий с другим торжеством). */
+const TEMPLATE_KIND: Record<string, string> = { "amir-falcon": "Сүнөт той" };
+
 /** Заголовок, описание и картинка для превью ссылки (WhatsApp, Telegram, Facebook). */
 export function inviteShareMeta(inv: Invitation): { title: string; description: string; image: string } {
   const events = getDict("ky").events as Record<string, string>;
-  const kind = events[inv.eventType] || "Той";
+  const kind = TEMPLATE_KIND[inv.templateId] || events[inv.eventType] || "Той";
   const date = shortInviteDate(inv.date);
   const title = date ? `${kind} — ${date}` : kind;
   const venue = inv.venue?.trim() ?? "";
