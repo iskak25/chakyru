@@ -36,6 +36,29 @@ function style(
 
 const seedTemplates: InvitationTemplate[] = [
   {
+    id: "amir-falcon",
+    name: { ky: "Амир — Сүнөт той", ru: "Амир — Сүнөт той" },
+    designer: "Chakyru Studio",
+    format: "site3d",
+    priceSom: 990,
+    eventTypes: ["beshik"],
+    featured: true,
+    envelope: { enabled: true, variant: "midnight" },
+    style: style("#2456a2", "#f5f9ff", "#648dc8", "#173f78", "#647d9e", {
+      overlay: "#2456a2", pageBg: "#f5f9ff", pageLayout: "tushooNavy",
+    }),
+    canvas: {
+      names: "Амир", date: "2026-11-28", time: "15:00", message: "",
+      coverImage: "", musicUrl: "", layout: {}, extras: [], blockColors: {}, copy: {},
+      gallery: {
+        hero: "/images/templates/amir-falcon/hero.webp",
+        landscape: "/images/templates/amir-falcon/landscape.webp",
+        child: "/images/templates/amir-falcon/boy-portrait.webp",
+        child2: "/images/templates/amir-falcon/boy-kalpak.webp",
+      },
+    },
+  },
+  {
     id: "tushoo-ayat",
     name: { ky: "Тушоо той — Аят", ru: "Тушоо той — Аят" },
     designer: "Chakyru Studio",
@@ -264,7 +287,7 @@ export const templates = applyCatalogPrices(seedTemplates.filter(item => !hidden
       names: canvas?.names || example.names,
       date: canvas?.date || "2027-06-12",
       time: canvas?.time || example.time,
-      message: canvas?.message || example.message[0],
+      message: canvas?.message || (item.id === "amir-falcon" ? "" : example.message[0]),
     },
   };
 })).map(withDefaultVenue).map(withEnvelope);

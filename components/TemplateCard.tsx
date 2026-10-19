@@ -88,7 +88,7 @@ export function TemplateCard({
   const crop = pinterest?.photos.hero || reference?.photos.hero;
   const restored = restoredTemplateImage(crop);
   const anniversary = getAnniversaryDesign({ templateId: template.id, copy: template.canvas?.copy });
-  const event = t.events[template.eventTypes[0] ?? "wedding"];
+  const event = template.id === "amir-falcon" ? "Сүнөт той" : t.events[template.eventTypes[0] ?? "wedding"];
   const collection = getCollectionDesign({ templateId: template.id, copy: template.canvas?.copy });
 
   const body = (
@@ -99,7 +99,7 @@ export function TemplateCard({
       style={{ boxShadow: "var(--shadow-soft)", transitionTimingFunction: "var(--ease-premium)" }}
     >
       <div className={`relative overflow-hidden ${collection ? "" : featured ? "h-full min-h-[420px]" : "aspect-[4/5]"}`}>
-        {collection ? <InView><CollectionPreview invitation={inviteFromTemplate(template)} design={collection} locale={locale} /></InView> : template.style.pageLayout === "corporate" ? <CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /> : template.style.pageLayout === "tushooNavy" ? <TushooNavyThumb name={template.canvas?.names || "Аят"} /> : anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
+        {collection ? <InView><CollectionPreview invitation={inviteFromTemplate(template)} design={collection} locale={locale} /></InView> : template.style.pageLayout === "corporate" ? <CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /> : template.style.pageLayout === "tushooNavy" ? <TushooNavyThumb name={template.canvas?.names || "Аят"} falcon={template.id === "amir-falcon"} locale={locale} /> : anniversary ? <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true"><AnniversaryHero invitation={inviteFromTemplate(template)} design={anniversary} locale={locale} preview eager={eager} /></div> : template.id === "minimal-white" || pinterest?.key === "pearl" ? (
           <TemplatePaperPreview template={template} locale={locale} eager={eager} />
         ) : <img
           src={restored?.source || templateImageSource(crop?.source || photo)}

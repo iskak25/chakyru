@@ -24,6 +24,7 @@ import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
 import anniversaryCss from "@/components/AnniversaryInvite.module.css";
 import { GuestResponseLinks } from "@/components/GuestResponseLinks";
 import { CorporateThumb } from "@/components/invite-families/Corporate";
+import { TushooNavyThumb } from "@/components/invite-families/TushooNavy";
 import { getCollectionDesign } from "@/lib/collectionTemplates";
 import { CollectionPreview } from "@/components/CollectionInvite";
 
@@ -188,6 +189,8 @@ export default function TemplatePreviewPage() {
                 <div className="pointer-events-none h-full w-full overflow-hidden"><CollectionPreview invitation={invitation} design={collection} locale={locale} /></div>
               ) : template.style.pageLayout === "corporate" ? (
                 <div className="h-full w-full"><CorporateThumb name={template.canvas?.names || ""} theme={template.canvas?.copy?.["corp.theme"]} /></div>
+              ) : template.style.pageLayout === "tushooNavy" ? (
+                <TushooNavyThumb name={invitation.names} falcon={template.id === "amir-falcon"} locale={locale} />
               ) : anniversary ? (
                 <div className={`${anniversaryCss.root} ${anniversaryCss[anniversary.key]} ${anniversaryCss.preview}`} aria-hidden="true">
                   <AnniversaryHero invitation={invitation} design={anniversary} locale={locale} preview eager />
@@ -212,7 +215,7 @@ export default function TemplatePreviewPage() {
 
         <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-6 sm:p-8">
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--gold)]">
-            {t.events[template.eventTypes[0] ?? "wedding"]}
+            {template.id === "amir-falcon" ? "Сүнөт той" : t.events[template.eventTypes[0] ?? "wedding"]}
           </p>
           <h2 className="font-serif mt-3 text-4xl tracking-[-0.03em]">{template.name[locale]}</h2>
           {canEdit ? <p className="mt-4 text-[15px] leading-7 text-ink-soft">{t.templateView.purchased}</p> : null}

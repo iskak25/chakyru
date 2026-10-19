@@ -1,4 +1,20 @@
 .root { background: #fbf2e2; color: #102e50; overflow: hidden; }
+.falcon { background: #f5f9ff; color: #173f78; }
+.falcon .section { background: radial-gradient(ellipse at 0 50%, #c7ddf533, transparent 70%); }
+.falcon .eyebrow, .falcon .date, .falcon .hosts, .falcon .calendarTime { color: #5479a5; }
+.falcon .rule, .falcon .heart, .falcon .star { color: #779bc9; }
+.falcon .calendar, .falcon .wish, .falcon .venue { background: #fff; border-color: #b4cee9; box-shadow: 0 10px 30px #2456a20a; }
+.falcon .countdown, .falcon .storyDot, .falcon .mapButton { background: #2456a2; color: #fff; }
+.falcon .countdown .eyebrow, .falcon .digits strong { color: #edf5ff; }
+.falcon .digits div, .falcon .programRow { border-color: #9dbde366; }
+.falcon .story::before { border-color: #9dbde3; }
+.falcon .heroText { padding: 32% 17% 0; }
+.falconThumb .thumbText { padding: 34% 17% 0; color: #173f78; }
+.illustration { padding: 24px 20px 0; }
+.landscape { aspect-ratio: 3 / 2; overflow: hidden; border-radius: 100px 100px 12px 12px; }
+.childGallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+.childPortrait { aspect-ratio: 3 / 4; overflow: hidden; border: 3px double #9dbde3; border-radius: 90px 90px 12px 12px; background: #edf5ff; }
+.photoPlaceholder { display: flex; align-items: center; justify-content: center; height: 100%; padding: 12px; color: #5479a5; font-size: 13px; }
 .hero { position: relative; aspect-ratio: 2 / 3; container-type: inline-size; }
 .art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .heroText { position: relative; padding: 26% 15% 0; text-align: center; }
