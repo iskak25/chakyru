@@ -1,17 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import styles from "./landing/Architecture.module.css";
 import { useI18n } from "@/lib/locale";
 import { Logo } from "./Logo";
 import { Container } from "./ui/Container";
 
 export function Footer() {
   const { t } = useI18n();
-  const isHome = usePathname() === "/";
   return (
-    <footer className={`${isHome ? styles.footer : ""} mt-auto bg-page`}>
+    <footer className="mt-auto bg-page">
       <div className="h-px bg-ink/10" />
       <Container className="py-16 sm:py-20 lg:py-24">
         <div className="flex flex-col items-center text-center">

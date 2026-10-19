@@ -11,7 +11,6 @@ import { isAdmin } from "@/lib/auth";
 import type { User } from "@/lib/types";
 import { APP_NAV, navLabel } from "./app/AppShell";
 import { Logo } from "./Logo";
-import styles from "./landing/Architecture.module.css";
 
 const menuRow = "flex items-center gap-3 rounded-[12px] px-3 py-3 text-[14px] transition";
 const menuRowActive = "bg-[rgba(245,245,245,0.12)] text-cream";
@@ -58,7 +57,7 @@ export function Header() {
   return (
     <>
       <header
-        className={`${isHome ? styles.header : ""} z-50 transition-colors duration-500 ${
+        className={`z-50 transition-colors duration-500 ${
           isHome ? "fixed inset-x-0 top-0" : "sticky top-0"
         } ${overHero ? "over-hero bg-transparent text-ink" : "bg-page/95 text-ink"}`}
       >
@@ -68,7 +67,7 @@ export function Header() {
             className="flex min-h-11 min-w-11 items-center justify-start text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50"
             onClick={() => setOpen(true)}
           >
-            Меню
+            Menu
           </button>
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -94,7 +93,7 @@ export function Header() {
               href="/templates"
               className="hidden text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50 md:inline"
             >
-              {t.nav.templates}
+              Book
             </Link>
           </div>
         </div>
