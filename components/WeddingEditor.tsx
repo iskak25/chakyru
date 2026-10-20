@@ -15,6 +15,7 @@ import type { ReferenceCrop } from "@/lib/referenceWeddings";
 import { invitationText } from "@/lib/inviteTranslations";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
+import { useInvitationMotion } from "./InvitationMotion";
 
 type EditorContext = {
   locale: string;
@@ -150,7 +151,8 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const rawValue = weddingValue(invitation, { id, label, kind, fallback, field, slot });
   const restored = restoredTemplateImage(crop);
   const value = kind === "text" ? invitationText(rawValue, locale) : rawValue;
-  const revealSection = !onChange && kind === "block" && id.startsWith("section-");
+  const sharedMotion = useInvitationMotion();
+  const revealSection = !sharedMotion && !onChange && kind === "block" && id.startsWith("section-");
   const sectionSideRef = useRef<0 | 1 | null>(null);
   if (revealSection && sectionSideRef.current === null) sectionSideRef.current = (nextSectionIndex() % 2) as 0 | 1;
   const reveal = useReveal(kind, id, className);

@@ -23,6 +23,7 @@ import { TushooNavyInvite } from "./invite-families/TushooNavy";
 import { CorporateInvite } from "./invite-families/Corporate";
 import { getCollectionDesign } from "@/lib/collectionTemplates";
 import { CollectionInvite } from "./CollectionInvite";
+import { InvitationMotion } from "./InvitationMotion";
 
 export function MediaStage({
   invitation,
@@ -43,7 +44,7 @@ export function MediaStage({
   );
 }
 
-function FormatInviteContent({
+function FormatInviteLayout({
   invitation,
   locale,
   compact,
@@ -112,6 +113,12 @@ function FormatInviteContent({
       />
     </div>
   );
+}
+
+function FormatInviteContent(props: ComponentProps<typeof FormatInviteLayout>) {
+  return <InvitationMotion key={`${props.invitation.id}:${props.invitation.templateId}`} enabled={!props.onChange && (!props.compact || !!props.interactive)}>
+    <FormatInviteLayout {...props} />
+  </InvitationMotion>;
 }
 
 export function FormatInvite(props: ComponentProps<typeof FormatInviteContent> & { envelopeEmbedded?: boolean }) {

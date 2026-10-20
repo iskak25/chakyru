@@ -26,6 +26,7 @@ import ethnoCss from "./EthnoWedding.module.css";
 import { RedEthnoWeddingHero, RedEthnoWeddingPortrait } from "./RedEthnoWedding";
 import redEthnoCss from "./RedEthnoWedding.module.css";
 import { useEthnoMotion } from "@/lib/useEthnoMotion";
+import { useInvitationMotion } from "./InvitationMotion";
 import eventCss from "./EventCollection.module.css";
 
 
@@ -84,7 +85,8 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
   const weddingDir = weddingDirection(d.id);
   const redEthnoWedding = d.id === "collection-wedding-kyzyl-tunduk";
   const motionRoot = useRef<HTMLDivElement>(null);
-  useEthnoMotion(motionRoot, redEthnoWedding && !onChange && !preview);
+  const sharedMotion = useInvitationMotion();
+  useEthnoMotion(motionRoot, !sharedMotion && redEthnoWedding && !onChange && !preview);
   const ethnoWedding = d.id === "collection-wedding-ak-bosogo" || redEthnoWedding;
   const direction = d.event === "kyz" ? kyzDirection(d.id) : weddingDir;
   const tr = (ky: string, russian: string) => ru ? russian : ky;
