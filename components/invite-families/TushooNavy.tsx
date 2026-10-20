@@ -14,6 +14,7 @@ import { addHour, mapsEmbedUrl, monthLabel, pad } from "./shared";
 import { RsvpForm } from "./RsvpForm";
 import { WishesCarousel } from "../WishesCarousel";
 import css from "./TushooNavy.module.css";
+import { FalconMountains } from "./FalconMountains";
 
 const FALCON_ART = "/images/templates/amir-falcon/hero.webp";
 const FALCON_SCENE = "/images/templates/amir-falcon/landscape.webp";
@@ -226,7 +227,7 @@ export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
         <WeddingPart id="footer-heart" label="Сердечко" kind="decoration" className={css.heart}>♥</WeddingPart>
         <WeddingPart id="footer-names" label="Имя в подвале" kind="text" field="names" fallback="Аят" className={`${css.footerName} font-tra-script`} />
         {text("footer-wish", falcon ? tr("Расти счастливым, наш сын", "Бактылуу чоңой, уулубуз") : tr("Пусть каждый шаг будет счастливым", "Ар бир кадамың кут болсун"), css.eyebrow)}
-        <MountainSilhouette className={css.mountains} />
+        {falcon ? <FalconMountains /> : <MountainSilhouette className={css.mountains} />}
       </>)}
     </WeddingEditor>
   </div>;

@@ -1,0 +1,31 @@
+.scene { display: block; width: calc(100% + 48px); max-width: none; margin: 24px -24px 0; height: auto; overflow: hidden; }
+.traveler { animation: stroll 28s linear infinite; }
+.facing { animation: turn 28s linear infinite; }
+.body { animation: breathe 1.2s ease-in-out infinite; }
+.nearLeg, .farLeg { transform-origin: -19px -24px; }
+.nearFrontLeg, .farFrontLeg { transform-origin: 19px -24px; }
+.nearLeg, .farFrontLeg { animation: step 1.2s ease-in-out infinite; }
+.farLeg, .nearFrontLeg { animation: step 1.2s ease-in-out -.6s infinite; }
+.tail { transform-origin: -28px -27px; animation: sway 2.4s ease-in-out infinite; }
+@keyframes stroll {
+  0%, 100% { transform: translate(100px, 233px); }
+  12.5% { transform: translate(200px, 221px); }
+  25% { transform: translate(300px, 229px); }
+  37.5% { transform: translate(400px, 230px); }
+  50% { transform: translate(500px, 231px); }
+  62.5% { transform: translate(400px, 230px); }
+  75% { transform: translate(300px, 229px); }
+  87.5% { transform: translate(200px, 221px); }
+}
+@keyframes turn {
+  0%, 48% { transform: scaleX(1); }
+  50%, 98% { transform: scaleX(-1); }
+  100% { transform: scaleX(1); }
+}
+@keyframes step { 0%, 100% { transform: rotate(-17deg); } 50% { transform: rotate(17deg); } }
+@keyframes breathe { 0%, 50%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-1px); } }
+@keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(7deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .scene * { animation: none; }
+  .traveler { transform: translate(300px, 229px); }
+}
