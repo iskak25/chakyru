@@ -23,6 +23,25 @@ describe("shortInviteDate", () => {
 });
 
 describe("inviteShareMeta", () => {
+  it("uses the invitation celebration name instead of the template default", () => {
+    const meta = inviteShareMeta({
+      ...base,
+      templateId: "amir-falcon",
+      eventType: "beshik",
+      copy: { eventTitle: "  Бешик той  " },
+    });
+    expect(meta.title).toBe("Бешик той — 8-ноябрь");
+  });
+
+  it("falls back to the template name when the saved title is blank", () => {
+    const meta = inviteShareMeta({
+      ...base,
+      templateId: "amir-falcon",
+      copy: { eventTitle: " \n " },
+    });
+    expect(meta.title).toBe("Сүнөт той — 8-ноябрь");
+  });
+
   it("takes the celebration name from the template when it has its own", () => {
     const meta = inviteShareMeta({ ...base, templateId: "amir-falcon", eventType: "beshik" } as Invitation);
     expect(meta.title).toBe("Сүнөт той — 8-ноябрь");

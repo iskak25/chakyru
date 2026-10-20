@@ -25,7 +25,7 @@ const TEMPLATE_KIND: Record<string, string> = { "amir-falcon": "Сүнөт то�
 /** Заголовок, описание и картинка для превью ссылки (WhatsApp, Telegram, Facebook). */
 export function inviteShareMeta(inv: Invitation): { title: string; description: string; image: string } {
   const events = getDict("ky").events as Record<string, string>;
-  const kind = TEMPLATE_KIND[inv.templateId] || events[inv.eventType] || "Той";
+  const kind = inv.copy?.eventTitle?.trim() || TEMPLATE_KIND[inv.templateId] || events[inv.eventType] || "Той";
   const date = shortInviteDate(inv.date);
   const title = date ? `${kind} — ${date}` : kind;
   const venue = inv.venue?.trim() ?? "";
