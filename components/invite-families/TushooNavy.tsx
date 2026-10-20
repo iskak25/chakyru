@@ -132,9 +132,9 @@ export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
           <CalendarGrid
             date={event}
             monthLabel={monthLabel(kit)}
-            cellClassName="text-[#102e50]"
+            cellClassName={falcon ? "text-[#29589e]" : "text-[#102e50]"}
             headClassName="text-[#8b6938]"
-            highlightClassName="bg-[#102e50] text-[#e6c991] ring-2 ring-[#bd9455] ring-offset-2 ring-offset-[#fff9ef]"
+            highlightClassName={`${falcon ? "bg-[#29589e]" : "bg-[#102e50]"} text-[#e6c991] ring-2 ring-[#bd9455] ring-offset-2 ring-offset-[#fff9ef]`}
           />
           <p className={css.calendarTime}>♥ {invitation.time || "15:00"}</p>
         </WeddingPart>

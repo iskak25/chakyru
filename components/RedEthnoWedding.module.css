@@ -21,6 +21,22 @@
 .root [data-kyz-section="calendar"],.root [data-kyz-section="location"],.root [data-kyz-section="countdown"] { color:#faedda; --c-ink:#faedda; --c-accent:#e5c591; --c-paper:#761b21; --c-wash:#8c3539; }
 .root [data-wedding-text$="-title"] { font-family:var(--font-cormorant),Georgia,serif; }
 .root textarea[data-wedding-text] { font-size:inherit; }
+.orbitLeft,.orbitRight,.storyOrbit { position:absolute; pointer-events:none; color:#e4c185; opacity:.18; width:240px; }
+.orbitLeft { left:-145px; top:410px; z-index:-1; }
+.orbitRight { right:-130px; top:215px; z-index:-1; }
+.story { position:relative; isolation:isolate; overflow:hidden; }
+.storyOrbit { right:-140px; top:10px; color:#8b292c; opacity:.12; z-index:-1; }
+.rotatingOrnament { display:block; width:100%; height:auto; }
+.root[data-ethno-motion="on"] .rotatingOrnament { animation:ethnoSpin 30s linear infinite; }
+.root[data-ethno-motion="on"] .orbitRight .rotatingOrnament { animation-direction:reverse; }
+.root[data-ethno-motion="on"] .storyOrbit .rotatingOrnament { animation-duration:24s; }
+.root [data-ethno-reveal="pending"] { opacity:0; translate:-36px 0; }
+.root [data-ethno-reveal="visible"] { animation:ethnoEnter 3s cubic-bezier(.2,.65,.25,1) var(--ethno-delay,0ms) both; }
+@keyframes ethnoSpin { to { transform:rotate(360deg); } }
+@keyframes ethnoEnter { from { opacity:0; translate:-36px 0; } to { opacity:1; translate:0 0; } }
+@media(prefers-reduced-motion:reduce) {
+  .root[data-ethno-motion="on"] .rotatingOrnament,.root [data-ethno-reveal] { animation:none; opacity:1; translate:none; }
+}
 @media(max-width:380px) {
   .hero { padding:245px 34px 0; min-height:820px; }.frame { min-height:325px; padding:40px 20px; }
   .woven { margin-inline:-34px; }.story { padding-inline:28px; }

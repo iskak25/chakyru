@@ -2,7 +2,7 @@
 
 import type { Invitation } from "@/lib/types";
 import { WeddingPart } from "./WeddingEditor";
-import { EthnoYurt } from "./EthnoWeddingHero";
+import { EthnoYurt, Medallion } from "./EthnoWeddingHero";
 import css from "./RedEthnoWedding.module.css";
 
 /** The roof poles converge on the tunduk, like the interior of a boz ui. */
@@ -32,6 +32,8 @@ export function RedEthnoWeddingHero({ invitation, locale }: { invitation: Invita
   const date = /^\d{4}-\d{2}-\d{2}$/.test(invitation.date) ? invitation.date.split("-").reverse().join(" · ") : invitation.date;
   return <section className={css.hero}>
     <YurtCeiling/>
+    <div className={css.orbitLeft}><Medallion className={css.rotatingOrnament}/></div>
+    <div className={css.orbitRight}><Medallion className={css.rotatingOrnament}/></div>
     <WeddingPart id="eventTitle" label="Название праздника" kind="text" fallback={ru ? "Приглашение на свадьбу" : "Үйлөнүү тойго чакыруу"} className={css.kicker}/>
     <div className={css.frame}>
       <span className={css.finial} aria-hidden="true">❦</span>
@@ -48,6 +50,7 @@ export function RedEthnoWeddingHero({ invitation, locale }: { invitation: Invita
 export function RedEthnoWeddingPortrait({ locale }: { locale: string }) {
   const ru = locale === "ru";
   return <section className={css.story}>
+    <div className={css.storyOrbit}><Medallion className={css.rotatingOrnament}/></div>
     <span className={css.flourish} aria-hidden="true">❦</span>
     <WeddingPart id="red-ethno-story-title" label="Заголовок" kind="text" fallback={ru ? "Семья начинается\nс любви и благословения" : "Сүйүү менен башталып,\nак бата менен улансын"} className={css.storyTitle}/>
     <WeddingPart id="photo-couple" label="Фото молодожёнов" kind="image" slot="couple" className={css.portrait}>

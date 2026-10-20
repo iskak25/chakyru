@@ -8,7 +8,7 @@ function Horn() {
   return <path d="M0 19V3C0-14-24-19-24-4c0 11 16 12 16 3M0 3c0-17 24-22 24-7 0 11-16 12-16 3M-9 21 0 12l9 9" />;
 }
 
-function Medallion({ className }: { className: string }) {
+export function Medallion({ className }: { className: string }) {
   return <svg className={className} viewBox="-120 -120 240 240" fill="none" stroke="currentColor" aria-hidden="true">
     <circle r="115" strokeWidth="2"/><circle r="108" strokeWidth="6"/><circle r="88" strokeWidth="2"/><circle r="81"/>
     {Array.from({ length: 20 }, (_, i) => <g key={i} transform={`rotate(${i * 18}) translate(0 -98)`}><path d="m-4 2 4-6 4 6" strokeWidth="2"/></g>)}
