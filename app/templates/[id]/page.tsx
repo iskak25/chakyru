@@ -215,7 +215,7 @@ export default function TemplatePreviewPage() {
 
         <div className="rounded-[var(--radius-xl)] border border-[var(--line)] bg-white p-6 sm:p-8">
           <p className="text-[10px] uppercase tracking-[0.2em] text-[var(--gold)]">
-            {template.id === "amir-falcon" ? "Сүнөт той" : t.events[template.eventTypes[0] ?? "wedding"]}
+            {template.id === "amir-falcon" ? "Сүннөт той" : t.events[template.eventTypes[0] ?? "wedding"]}
           </p>
           <h2 className="font-serif mt-3 text-4xl tracking-[-0.03em]">{template.name[locale]}</h2>
           {canEdit ? <p className="mt-4 text-[15px] leading-7 text-ink-soft">{t.templateView.purchased}</p> : null}

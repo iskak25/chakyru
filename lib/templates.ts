@@ -37,7 +37,7 @@ function style(
 const seedTemplates: InvitationTemplate[] = [
   {
     id: "amir-falcon",
-    name: { ky: "Амир — Сүнөт той", ru: "Амир — Сүнөт той" },
+    name: { ky: "Амир — Сүннөт той", ru: "Амир — Сүннөт той" },
     designer: "Chakyru Studio",
     format: "site3d",
     priceSom: 990,

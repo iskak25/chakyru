@@ -39,12 +39,12 @@ describe("inviteShareMeta", () => {
       templateId: "amir-falcon",
       copy: { eventTitle: " \n " },
     });
-    expect(meta.title).toBe("Сүнөт той — 8-ноябрь");
+    expect(meta.title).toBe("Сүннөт той — 8-ноябрь");
   });
 
   it("takes the celebration name from the template when it has its own", () => {
     const meta = inviteShareMeta({ ...base, templateId: "amir-falcon", eventType: "beshik" } as Invitation);
-    expect(meta.title).toBe("Сүнөт той — 8-ноябрь");
+    expect(meta.title).toBe("Сүннөт той — 8-ноябрь");
   });
 
   it("builds «type — date» title and a venue-based description", () => {

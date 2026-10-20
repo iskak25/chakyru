@@ -67,7 +67,7 @@ export function TushooNavyInvite({ invitation, locale, labels, onChange, onReloa
 export function TushooNavyThumb({ name = "Аят", falcon = false, locale = "ru" }: { name?: string; falcon?: boolean; locale?: string }) {
   return <div className={`${css.thumb} ${falcon ? css.falconThumb : ""}`}>
     <img src={falcon ? FALCON_ART : ART} alt="" className={css.art} />
-    <div className={css.thumbText}><span className="font-tra-script">{name}</span><p>{falcon ? "СҮНӨТ ТОЙ" : "ТУШОО ТОЙ"}</p></div>
+    <div className={css.thumbText}><span className="font-tra-script">{name}</span><p>{falcon ? "СҮННӨТ ТОЙ" : "ТУШОО ТОЙ"}</p></div>
   </div>;
 }
 
@@ -76,7 +76,7 @@ export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
   const ru = kit.locale === "ru";
   const editing = !!onChange;
   const falcon = invitation.templateId === "amir-falcon";
-  const title = falcon ? "Сүнөт той" : invitation.eventType === "birthday" ? (ru ? "День рождения" : "Туулган күн") : "Тушоо той";
+  const title = falcon ? "Сүннөт той" : invitation.eventType === "birthday" ? (ru ? "День рождения" : "Туулган күн") : "Тушоо той";
   const tr = (a: string, b: string) => (ru ? a : b);
   const text = (id: string, fallback: string, className = "", field?: WeddingPartInfo["field"], label?: string) =>
     <WeddingPart id={id} label={label || fallback || id} kind="text" fallback={fallback} className={className} field={field} />;
@@ -92,7 +92,7 @@ export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
   ];
   const story = falcon ? [
     [tr("Ты появился на свет", "Сен жарык дүйнөгө келдиң"), tr("И наполнил наш дом счастьем", "Үйүбүздү бакытка бөлөдүң")],
-    [tr("Наш сын растёт", "Уулубуз чоңоюп жатат"), tr("Сегодня празднуем твой сүнөт той", "Бүгүн сенин сүнөт тоюңду белгилеп жатабыз")],
+    [tr("Наш сын растёт", "Уулубуз чоңоюп жатат"), tr("Сегодня празднуем твой сүннөт той", "Бүгүн сенин сүннөт тоюңду белгилеп жатабыз")],
     [tr("Рядом самые близкие", "Жакындарыбыз жаныбызда"), tr("Разделим эту радость вместе", "Кубанычыбызды чогуу бөлүшөлү")],
   ] : [
     [tr("Первая улыбка", "Биринчи жылмаюу"), tr("Она осветила наш дом", "Үйүбүздү нурга бөгөн")],
@@ -121,7 +121,7 @@ export function TushooNavyFamily({ kit }: { kit: TushooKit }) {
         {text("intro-overline", tr("Приглашение с любовью", "Сүйүү менен чакырабыз"), css.eyebrow)}
         {text("intro-title", labels.dearGuests, css.heading)}
         <KyalRule className={css.rule} />
-        {text("message", falcon ? tr("Приглашаем вас на сүнөт той нашего сына! Разделите с нами радость этого особенного дня и подарите ему ваши добрые пожелания и благословение.", "Уулубуздун сүнөт тоюна чакырабыз! Кубанычыбызды тең бөлүшүп, уулубузга ак батаңызды берип кетиңиздер.") : tr("Приглашаем вас разделить радость первых шагов нашего малыша! Пусть этот день наполнится вашими улыбками, тёплыми словами и добрыми пожеланиями.", "Бөбөгүбүздүн тушоо тоюна келип, кубанычыбызды тең бөлүшүүгө чакырабыз! Ак батаңыздар менен анын алгачкы кадамдарына күбө болуп кетиңиздер."), css.message, "message", "Текст приглашения")}
+        {text("message", falcon ? tr("Приглашаем вас на сүннөт той нашего сына! Разделите с нами радость этого особенного дня и подарите ему ваши добрые пожелания и благословение.", "Уулубуздун сүннөт тоюна чакырабыз! Кубанычыбызды тең бөлүшүп, уулубузга ак батаңызды берип кетиңиздер.") : tr("Приглашаем вас разделить радость первых шагов нашего малыша! Пусть этот день наполнится вашими улыбками, тёплыми словами и добрыми пожеланиями.", "Бөбөгүбүздүн тушоо тоюна келип, кубанычыбызды тең бөлүшүүгө чакырабыз! Ак батаңыздар менен анын алгачкы кадамдарына күбө болуп кетиңиздер."), css.message, "message", "Текст приглашения")}
         {(editing || invitation.hosts) ? text("hosts", invitation.hosts || "С любовью, родители", css.hosts, "hosts", "Хозяева праздника") : null}
       </>)}
 

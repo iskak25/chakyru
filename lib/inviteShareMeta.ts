@@ -20,7 +20,7 @@ export function inviteCoverSource(inv: Invitation): string {
 }
 
 /** Названия торжества, которые задаёт сам шаблон, а не тип события (eventType у них общий с другим торжеством). */
-const TEMPLATE_KIND: Record<string, string> = { "amir-falcon": "Сүнөт той" };
+const TEMPLATE_KIND: Record<string, string> = { "amir-falcon": "Сүннөт той" };
 
 /** Заголовок, описание и картинка для превью ссылки (WhatsApp, Telegram, Facebook). */
 export function inviteShareMeta(inv: Invitation): { title: string; description: string; image: string } {

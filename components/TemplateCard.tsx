@@ -88,7 +88,7 @@ export function TemplateCard({
   const crop = pinterest?.photos.hero || reference?.photos.hero;
   const restored = restoredTemplateImage(crop);
   const anniversary = getAnniversaryDesign({ templateId: template.id, copy: template.canvas?.copy });
-  const event = template.id === "amir-falcon" ? "Сүнөт той" : t.events[template.eventTypes[0] ?? "wedding"];
+  const event = template.id === "amir-falcon" ? "Сүннөт той" : t.events[template.eventTypes[0] ?? "wedding"];
   const collection = getCollectionDesign({ templateId: template.id, copy: template.canvas?.copy });
 
   const body = (
