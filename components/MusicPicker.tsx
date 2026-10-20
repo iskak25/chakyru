@@ -127,7 +127,9 @@ export function MusicPicker({
   locale,
   labels,
   eventType,
+  allowClear = true,
 }: {
+  allowClear?: boolean;
   eventType?: EventType;
   value: string;
   title?: string;
@@ -497,9 +499,9 @@ export function MusicPicker({
       {current ? (
         <div className="flex items-center justify-between gap-2 rounded-lg bg-black/5 px-2 py-1.5 text-[11px]">
           <span className="truncate">{current}</span>
-          <button type="button" aria-label={locale === "ru" ? "Удалить музыку" : "Музыканы өчүрүү"} onClick={() => { preview.current?.pause(); setPreviewing(null); onChange(""); }} className="shrink-0 text-rose">
+          {allowClear && <button type="button" aria-label={locale === "ru" ? "Удалить музыку" : "Музыканы өчүрүү"} onClick={() => { preview.current?.pause(); setPreviewing(null); onChange(""); }} className="shrink-0 text-rose">
             <Trash2 size={12} />
-          </button>
+          </button>}
         </div>
       ) : null}
 

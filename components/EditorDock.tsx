@@ -436,13 +436,9 @@ export function EditorDock({
           <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
           {tab === "envelope" && <EnvelopeEditor invitation={invitation} onChange={onChange} locale={locale} />}
           {tab === "music" && format === "site3d" && <div className="space-y-4">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={invitation.music} onChange={e => onChange({ music: e.target.checked, musicUrl: effectiveMusicUrl(invitation.musicUrl, true, invitation.eventType), musicTitle: undefined, musicStart: undefined, musicEnd: undefined })} />
-              {locale === "ru" ? "Музыка при открытии" : "Ачылганда музыка ойнотуу"}
-            </label>
             <p className="text-xs leading-5 text-ink-soft">{locale === "ru" ? "Выберите композицию, вставьте ссылку на аудио или YouTube, либо загрузите свой файл. Музыка начнёт играть при открытии конверта." : "Музыка тандаңыз, аудио же YouTube шилтемесин коюңуз же өз файлыңызды жүктөңүз. Конверт ачылганда музыка ойнойт."}</p>
             <button type="button" className="text-sm text-forest underline underline-offset-4" onClick={() => onChange({ music: true, musicUrl: defaultMusicForEvent(invitation.eventType), musicTitle: undefined, musicStart: undefined, musicEnd: undefined })}>{locale === "ru" ? "Музыка по теме шаблона" : "Шаблондун темасына ылайык музыка"}</button>
-            <MusicPicker eventType={invitation.eventType} value={effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType)} title={invitation.musicTitle} onChange={(musicUrl, trim, title) => onChange({ musicUrl, music: Boolean(musicUrl), musicTitle: title, musicStart: trim?.start, musicEnd: trim?.end })} locale={locale} labels={{ online: labels.musicOnline, device: labels.musicDevice, link: labels.musicLink, apply: labels.musicApply, clear: labels.music, pickFile: labels.musicPickFile }} />
+            <MusicPicker allowClear={false} eventType={invitation.eventType} value={effectiveMusicUrl(invitation.musicUrl, true, invitation.eventType)} title={invitation.musicTitle} onChange={(musicUrl, trim, title) => onChange({ musicUrl, music: true, musicTitle: title, musicStart: trim?.start, musicEnd: trim?.end })} locale={locale} labels={{ online: labels.musicOnline, device: labels.musicDevice, link: labels.musicLink, apply: labels.musicApply, clear: labels.music, pickFile: labels.musicPickFile }} />
           </div>}
           {tab === "templates" ? (
             templatesPanel ? (

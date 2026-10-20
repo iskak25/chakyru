@@ -22,7 +22,7 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
   const [playing, setPlaying] = useState(false);
   const [scrolling, setScrolling] = useState(false);
   const [audioError, setAudioError] = useState(false);
-  const src = effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType);
+  const src = effectiveMusicUrl(invitation.musicUrl, true, invitation.eventType);
   const yt = youtubeId(src);
   const trimStart = invitation.musicStart || 0;
   const trimEnd = invitation.musicEnd;
@@ -36,9 +36,11 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
     // Called synchronously by the envelope click, while user activation is available.
     const attempt = audio.current?.play();
     void attempt?.catch(error => {
-      desired.current = false;
       setPlaying(false);
-      if (error?.name !== "NotAllowedError" && error?.name !== "AbortError") setAudioError(true);
+      if (error?.name !== "NotAllowedError" && error?.name !== "AbortError") {
+        desired.current = false;
+        setAudioError(true);
+      }
     });
   }, [src, yt]);
   const pause = useCallback(() => {
@@ -51,6 +53,21 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
     setOpened(true);
     setScrolling(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }, []);
+
+  useEffect(() => {
+    // A blocked launch can be retried on the next guest gesture, but never after
+    // they explicitly pause. Keep the retry inside the gesture's call stack.
+    const retry = (event: Event) => {
+      if (event.target instanceof Element && event.target.closest("[data-invitation-controls]")) return;
+      if (desired.current && !playing) play();
+    };
+    document.addEventListener("click", retry, true);
+    document.addEventListener("keydown", retry, true);
+    return () => {
+      document.removeEventListener("click", retry, true);
+      document.removeEventListener("keydown", retry, true);
+    };
+  }, [play, playing]);
 
   useEffect(() => {
     if (intro) return;
@@ -87,7 +104,7 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
             if (trimEnd != null && event.data === 0) { youtubePlayer.current?.seekTo(trimStart, true); youtubePlayer.current?.playVideo(); }
           },
           onError: () => { if (!disposed) { setPlaying(false); setAudioError(true); } },
-          onAutoplayBlocked: () => { if (!disposed) { desired.current = false; setPlaying(false); } },
+          onAutoplayBlocked: () => { if (!disposed) setPlaying(false); },
         },
       });
     }).catch(() => { if (!disposed) setAudioError(true); });
@@ -153,7 +170,7 @@ export function InvitationExperience({ invitation, locale, intro, variant, embed
   }, [opened, scrolling, embedded]);
 
   return <div ref={root} className={`${css.root} ${embedded ? css.embedded : ""}`} data-invitation-experience>
-    {src && !yt && <audio ref={audio} src={src} loop={trimEnd == null} playsInline preload="auto" onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { setPlaying(false); setAudioError(true); }} />}
+    {src && !yt && <audio ref={audio} src={src} loop={trimEnd == null} playsInline preload="auto" onCanPlay={() => { if (desired.current && audio.current?.paused) play(); }} onPlaying={() => setPlaying(true)} onPause={() => setPlaying(false)} onError={() => { desired.current = false; setPlaying(false); setAudioError(true); }} />}
     {yt && <div ref={youtubeHost} className={css.youtube} style={{ visibility: opened ? "visible" : "hidden" }} data-export-hide />}
     {intro ? <EnvelopeIntro variant={variant} design={invitationEnvelopeDesign(invitation.copy)} colors={invitationEnvelopeColors(invitation.copy)} names={invitation.names} date={invitation.date} locale={locale} embedded={embedded} onOpen={play} onOpened={reveal}>{children}</EnvelopeIntro> : children}
     {opened && <div className={css.controls} data-invitation-controls data-export-hide>
