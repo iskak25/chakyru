@@ -1,0 +1,32 @@
+.root { --c-paper:#faf7f0; --c-ink:#4e382c; --c-accent:#a58446; --c-wash:#efe5d1; background:var(--c-paper); }
+.hero { position:relative; isolation:isolate; overflow:hidden; min-height:820px; padding:180px 52px 0; text-align:center; color:#60482e; background:radial-gradient(ellipse at 50% 40%,#fffdf8,transparent 68%),#f6f0e4; }
+.border { position:absolute; inset:26px 24px 35px; border:1px solid #b3955e; outline:1px solid #b3955e66; outline-offset:6px; z-index:-1; }
+.pendants { position:absolute; top:0; left:30px; width:112px; color:#b28b45; }
+.medallion { position:absolute; width:260px; top:-96px; right:-102px; color:#ad8b4c; transform:rotate(15deg); }
+.heroContent { position:relative; z-index:1; }
+.eyebrow { font-size:10px; text-transform:uppercase; letter-spacing:.22em; line-height:1.8; max-width:230px; margin:0 auto; }
+.diamond { display:block; color:#ae8a49; font-size:23px; margin:23px auto; }
+.names { font-family:var(--font-cormorant),Georgia,serif; font-size:clamp(42px,12cqw,70px); line-height:1.08; font-weight:500; color:#783e35; text-wrap:balance; overflow-wrap:anywhere; }
+.blessing { font-size:14px; line-height:1.9; max-width:280px; margin:26px auto; white-space:pre-line; }
+.date { margin:30px auto 0; font-family:Georgia,serif; font-size:19px; letter-spacing:.14em; }
+.date span { display:block; font-family:var(--font-manrope),sans-serif; font-size:11px; margin-top:12px; letter-spacing:.18em; }
+.yurt { position:relative; width:calc(100% + 60px); margin:34px -30px 0; color:#a0804b; }
+.yurt svg { display:block; width:100%; }
+.ribbon { display:flex; justify-content:space-around; gap:10px; color:#d9bd83; background:#743d34; padding:7px 0; margin:0 -52px; font-size:17px; overflow:hidden; border-block:3px double #c4a468; }
+.portraitSection { padding:64px 38px 34px; text-align:center; background:#eee5d5; }
+.portraitTitle { font-family:var(--font-cormorant),Georgia,serif; font-size:32px; line-height:1.15; max-width:270px; margin:0 auto 30px; }
+.portrait { aspect-ratio:3/4; border-radius:160px 160px 4px 4px; overflow:hidden; border:1px solid #b59660; outline:1px solid #b5966066; outline-offset:7px; }
+.portraitPlaceholder { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:30px; color:#9b814e; background:#f9f4e9; font-size:12px; line-height:1.8; }
+.portraitMedallion { width:150px; max-width:85%; }
+.root [data-kyz-section] { border-top:1px solid #b3955e55; padding-block:48px; }
+.root [data-kyz-section] h2,.root [data-kyz-section] [data-wedding-text$="-title"] { font-family:var(--font-cormorant),Georgia,serif; }
+.root [data-kyz-section="countdown"] { background:#743d34; color:#fff4df; margin-inline:-28px; padding-inline:28px; }
+.root [data-kyz-section="countdown"] * { color:inherit; }
+.root textarea[data-wedding-text] { font-size:inherit; }
+@media(max-width:380px) {
+  .hero { padding:165px 38px 0; min-height:760px; }
+  .pendants { width:95px; left:22px; }
+  .medallion { width:220px; right:-90px; }
+  .ribbon { margin-inline:-38px; }
+  .portraitSection { padding-inline:30px; }
+}
