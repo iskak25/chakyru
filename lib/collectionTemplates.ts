@@ -46,6 +46,7 @@ const briefs: Record<CollectionEvent, readonly Brief[]> = {
     ["garden-terrace", "Назик гипсофила", "Нежная гипсофила", "terrace", "gypsophila", "rose"],
     ["lotus-fold", "Ак лотос", "Белый лотос", "fold", "lotus", "lilac"],
     ["ak-bosogo", "Ак босого · Этно той", "Ак босого · Этно-свадьба", "frame", "tunduk", "pearl"],
+    ["kyzyl-tunduk", "Кызыл түндүк · Этно той", "Красный түндүк · Этно-свадьба", "crest", "tunduk", "wine"],
   ],
   kyz: [
     ["tulip-arch", "Жоогазын жол", "Дорога тюльпанов", "arch", "tulip", "rose"],
@@ -284,6 +285,7 @@ const weddingEnvelopeVariants: Record<string, EnvelopeVariant> = {
 };
 const weddingEnvelope = (slug: string) => {
   if (slug === "ak-bosogo") return { design: "classic" as const, variant: "ethnoCream" as const };
+  if (slug === "kyzyl-tunduk") return { design: "classic" as const, variant: "burgundy" as const };
   const i = briefs.wedding.findIndex(([key]) => key === slug);
   return { design: envelopeDesigns[i % envelopeDesigns.length], variant: weddingEnvelopeVariants[slug] ?? "cream" };
 };
