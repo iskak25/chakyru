@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { effectiveMusicUrl } from "@/lib/music";
+import { InviteAudio } from "../InviteAudio";
 import type { Invitation, RsvpStatus } from "@/lib/types";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import type { InvitePatch } from "../CanvasEdit";
@@ -30,6 +33,8 @@ export function TushooNavyInvite({ invitation, locale, labels, onChange, onReloa
   const [rsvp, setRsvp] = useState<RsvpStatus>("yes");
   const [rsvpName, setRsvpName] = useState("");
   const [rsvpDone, setRsvpDone] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const musicSrc = effectiveMusicUrl(invitation.musicUrl, invitation.music, invitation.eventType);
   const target = new Date(`${invitation.date}T${invitation.time || "15:00"}:00`).getTime();
   useEffect(() => {
     const update = () => {
@@ -44,11 +49,19 @@ export function TushooNavyInvite({ invitation, locale, labels, onChange, onReloa
   if (compact && !onChange) return <TushooNavyThumb name={invitation.names} falcon={invitation.templateId === "amir-falcon"} locale={locale} />;
   const mapQuery = [invitation.venue, invitation.address, invitation.city].filter(Boolean).join(", ");
   const mapHref = /^https?:\/\//i.test(invitation.mapUrl || "") ? invitation.mapUrl! : `https://2gis.kg/search/${encodeURIComponent(mapQuery)}`;
+  const musicLabel = locale === "ru" ? (playing ? "Выключить музыку" : "Включить музыку") : (playing ? "Музыканы өчүрүү" : "Музыканы күйгүзүү");
   return <div className="mx-auto w-full max-w-[430px]" data-family="tushooNavy"><TushooNavyFamily kit={{
     invitation, locale, labels, onChange, onReload, event: new Date(target), count, mapQuery, mapHref,
     venuePhoto: invitation.gallery?.venue || "", variant: onChange ? "editor" : "guest",
     rsvp, setRsvp, rsvpName, setRsvpName, rsvpDone, setRsvpDone, selected, onSelect, onPartsChange,
-  }} /></div>;
+  }} />
+    {musicSrc ? <>
+      <InviteAudio src={musicSrc} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
+      <button type="button" data-export-hide onClick={() => setPlaying(p => !p)} aria-label={musicLabel} className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45">
+        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
+      </button>
+    </> : null}
+  </div>;
 }
 
 export function TushooNavyThumb({ name = "Аят", falcon = false, locale = "ru" }: { name?: string; falcon?: boolean; locale?: string }) {
