@@ -397,6 +397,14 @@ export async function deleteInvitation(id: string): Promise<boolean> {
   return true;
 }
 
+export async function setInvitationLinkDisabled(id: string, linkDisabled: boolean): Promise<boolean> {
+  if (!id || id === "demo" || id.startsWith("preview-")) return false;
+  const { setInvitationLinkDisabledRemote } = await import("./accessClient");
+  if (!(await setInvitationLinkDisabledRemote(id, linkDisabled))) return false;
+  writeInvitations(readInvitations().map((inv) => (inv.id === id ? { ...inv, linkDisabled } : inv)));
+  return true;
+}
+
 export async function addRsvp(
   invitationId: string,
   name: string,

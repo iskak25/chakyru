@@ -234,6 +234,8 @@ export type Invitation = {
   ownerId?: string;
   ownerUid?: string;
   status?: InvitationStatus;
+  /** Владелец отключил ссылку: гости получают 404, владелец видит страницу как обычно. Задаёт только сервер. */
+  linkDisabled?: boolean;
   language?: Locale;
 };
 

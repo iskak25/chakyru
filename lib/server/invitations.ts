@@ -90,6 +90,8 @@ export async function saveInvitationDoc(input: {
     ownerUid: existing?.ownerUid || input.ownerUid,
     templateId: existing?.templateId || input.invitation.templateId,
     status: input.invitation.status || existing?.status || "published",
+    // Включение и выключение ссылки идёт отдельным запросом: устаревший редактор не должен его сбросить.
+    linkDisabled: existing?.linkDisabled,
     updatedAt: now,
     createdAt: existing?.createdAt || input.invitation.createdAt || now,
   });
@@ -103,6 +105,23 @@ export async function saveInvitationDoc(input: {
     tx.set(ref, { ...current, ...stored, guests: current?.guests ?? [], wishes: current?.wishes ?? [] });
     return true;
   });
+}
+
+export async function setInvitationLinkDisabled(
+  id: string,
+  owner: { ownerUid: string; ownerId: string; email?: string },
+  isAdmin: boolean,
+  disabled: boolean,
+): Promise<boolean> {
+  const db = getAdminDb();
+  if (!db || !id || id === "demo" || id.startsWith("preview-")) return false;
+  const ref = db.collection("invitations").doc(id);
+  const snap = await ref.get();
+  if (!snap.exists) return false;
+  const existing = asInvitation(id, (snap.data() ?? {}) as Record<string, unknown>);
+  if (!isAdmin && !sameInvitationOwner(existing, owner)) return false;
+  await ref.update({ linkDisabled: disabled });
+  return true;
 }
 
 export async function deleteInvitationDoc(

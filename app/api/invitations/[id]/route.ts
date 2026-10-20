@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sessionFromBearer } from "@/lib/firebaseToken";
-import { deleteInvitationDoc, getInvitationDoc } from "@/lib/server/invitations";
+import { deleteInvitationDoc, getInvitationDoc, setInvitationLinkDisabled } from "@/lib/server/invitations";
 import { invitationViewer } from "@/lib/server/invitationAccess";
 import { isAdminUser, loadUserProfile } from "@/lib/server/users";
 
@@ -38,4 +38,24 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
   const ok = await deleteInvitationDoc(id, owner, admin);
   if (!ok) return NextResponse.json({ success: false, error: "forbidden" }, { status: 403 });
   return NextResponse.json({ success: true }, { headers: { "cache-control": "no-store" } });
+}
+
+export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
+  if (!id) return NextResponse.json({ success: false, error: "invitation" }, { status: 400 });
+  const session = await sessionFromBearer(req.headers.get("authorization"));
+  if (!session) return NextResponse.json({ success: false, error: "auth" }, { status: 401 });
+  const body = (await req.json().catch(() => null)) as { linkDisabled?: unknown } | null;
+  if (typeof body?.linkDisabled !== "boolean") return NextResponse.json({ success: false, error: "body" }, { status: 400 });
+
+  const profile = await loadUserProfile(session.uid);
+  const owner = {
+    ownerUid: session.uid,
+    ownerId: profile?.id || `google:${session.uid}`,
+    email: session.email || profile?.email,
+  };
+  const admin = await isAdminUser(session.uid, session.email);
+  const ok = await setInvitationLinkDisabled(id, owner, admin, body.linkDisabled);
+  if (!ok) return NextResponse.json({ success: false, error: "forbidden" }, { status: 403 });
+  return NextResponse.json({ success: true, linkDisabled: body.linkDisabled }, { headers: { "cache-control": "no-store" } });
 }

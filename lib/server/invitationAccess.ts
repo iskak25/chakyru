@@ -56,5 +56,6 @@ export async function invitationViewer(
     }
   }
   const paid = await isInvitationPaid(inv);
-  return { viewer: paid ? "public" : "none", paid };
+  // Отключённая владельцем ссылка для гостей выглядит как несуществующая страница.
+  return { viewer: paid && !inv.linkDisabled ? "public" : "none", paid };
 }

@@ -93,6 +93,19 @@ export async function deleteInvitationRemote(id: string): Promise<boolean> {
   }
 }
 
+export async function setInvitationLinkDisabledRemote(id: string, linkDisabled: boolean): Promise<boolean> {
+  const headers = await authHeaders();
+  if (!("authorization" in headers)) return false;
+  try {
+    const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { method: "PATCH", headers, body: JSON.stringify({ linkDisabled }) });
+    if (!res.ok) return false;
+    const data = (await res.json().catch(() => null)) as { success?: boolean } | null;
+    return Boolean(data?.success);
+  } catch {
+    return false;
+  }
+}
+
 export type InvitationRemote = {
   invitation: Invitation;
   /** Server verdict: the owner has paid, so the page is public and carries no «ДЕМО» mark. */

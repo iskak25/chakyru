@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Eye, Heart, MessageSquare, Pencil, Play, Trash2 } from "lucide-react";
+import { Eye, Heart, Link2, Link2Off, MessageSquare, Pencil, Play, Trash2 } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
@@ -12,7 +12,7 @@ import { formatPrice } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
 import { canEditTemplate, isAdminUser, ownsInvitation } from "@/lib/auth";
 import { hasActivePro } from "@/lib/proAccess";
-import { deleteInvitation, getInvitations, getUser, openPaidInvitation, previewInvitation, startInvitation } from "@/lib/store";
+import { deleteInvitation, setInvitationLinkDisabled, getInvitations, getUser, openPaidInvitation, previewInvitation, startInvitation } from "@/lib/store";
 import { useCatalog } from "@/lib/useCatalog";
 import { getTemplatePhotos } from "@/lib/templatePhotos";
 import { referenceWedding } from "@/lib/referenceWeddings";
@@ -52,6 +52,7 @@ export default function TemplatePreviewPage() {
   const [mounted, setMounted] = useState(false);
   const [syncTick, setSyncTick] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   // The interactive renderer (Site3D / PinterestInvite / ThemedSiteInvite / etc.) pulls in
   // a lot of code. Show a lightweight static photo first and only mount the real,
   // heavy renderer once the person actually asks to see it.
@@ -132,6 +133,17 @@ export default function TemplatePreviewPage() {
     }
     // Editing is free: open the editor now, pay later to remove the demo mark and share the page.
     router.push(`/create/new?template=${encodeURIComponent(template.id)}`);
+  }
+
+  async function onToggleLink(invitationId: string, disable: boolean) {
+    const msg = locale === "ru"
+      ? "Отключить ссылку? Гости перестанут видеть приглашение, пока вы не включите её снова."
+      : "Шилтемени өчүрөсүзбү? Кайра иштетмейинче конокторго чакыруу көрүнбөйт.";
+    if (disable && !window.confirm(msg)) return;
+    setTogglingId(invitationId);
+    const ok = await setInvitationLinkDisabled(invitationId, disable);
+    setTogglingId(null);
+    if (!ok) window.alert(locale === "ru" ? "Не удалось изменить ссылку" : "Шилтемени өзгөртүү оңунан чыккан жок");
   }
 
   async function onDelete(invitationId: string) {
@@ -285,6 +297,17 @@ export default function TemplatePreviewPage() {
                         >
                           <Pencil size={14} />
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() => void onToggleLink(inv.id, !inv.linkDisabled)}
+                          disabled={togglingId === inv.id}
+                          aria-pressed={Boolean(inv.linkDisabled)}
+                          aria-label={inv.linkDisabled ? (locale === "ru" ? "Включить ссылку" : "Шилтемени иштетүү") : (locale === "ru" ? "Отключить ссылку" : "Шилтемени өчүрүп коюу")}
+                          title={inv.linkDisabled ? (locale === "ru" ? "Ссылка отключена. Включить" : "Шилтеме өчүрүлгөн. Иштетүү") : (locale === "ru" ? "Отключить ссылку" : "Шилтемени өчүрүп коюу")}
+                          className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition disabled:opacity-50 ${inv.linkDisabled ? "border-amber-300 text-amber-600" : "border-[var(--line)] text-ink-soft hover:text-ink"}`}
+                        >
+                          {inv.linkDisabled ? <Link2Off size={14} /> : <Link2 size={14} />}
+                        </button>
                         <button
                           type="button"
                           onClick={() => void onDelete(inv.id)}
