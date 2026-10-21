@@ -67,3 +67,20 @@ describe("inviteShareMeta", () => {
     expect(inviteShareMeta({ ...base, coverImage: "https://images.unsplash.com/a.jpg" }).image).toBe("/api/og/abc");
   });
 });
+
+describe("template cover for the link preview", () => {
+  it("never falls back to another template's photo, and every cover file exists", async () => {
+    const { existsSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const { templates } = await import("@/lib/templates");
+    const { templateCoverSource } = await import("@/lib/inviteShareMeta");
+    for (const t of templates) {
+      const src = templateCoverSource({ templateId: t.id, copy: t.canvas?.copy });
+      if (!src) continue;
+      expect(existsSync(join(process.cwd(), "public", src)), `${t.id}: ${src}`).toBe(true);
+    }
+    // Templates without their own picture use the generic site card, never the Klassika mountains.
+    expect(templateCoverSource({ templateId: "collection-tushoo-first-path" })).toContain("tushoo-01-hero");
+    expect(templateCoverSource({ templateId: "no-such-template" })).toBe("");
+  });
+});

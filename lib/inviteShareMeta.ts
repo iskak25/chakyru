@@ -1,5 +1,11 @@
 import { getDict } from "./i18n";
-import { getTemplatePhotos } from "./templatePhotos";
+import { allTemplatePhotoSets } from "./templatePhotos";
+import { getCollectionDesign } from "./collectionTemplates";
+import { eventArt } from "./eventArt";
+import { getPinterestDesign } from "./pinterestTemplates";
+import { referenceWedding } from "./referenceWeddings";
+import { restoredTemplateImage, templateImageSource } from "./templateImageSources";
+import { templates } from "./templates";
 import type { Invitation } from "./types";
 
 const KY_MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
@@ -14,9 +20,23 @@ export function shortInviteDate(date: string): string {
   return `${day}-${KY_MONTHS[month - 1]}`;
 }
 
-/** Откуда брать обложку: своя обложка → главное фото → фото шаблона. */
+/** Собственная картинка шаблона для превью: обложка коллекции, главное фото шаблона или восстановленный кадр. Пусто, если у шаблона нет своей картинки. */
+export function templateCoverSource(inv: Pick<Invitation, "templateId" | "copy">): string {
+  const collection = getCollectionDesign(inv);
+  const art = collection && eventArt(collection.id).hero;
+  if (art) return art;
+  const own = templates.find((t) => t.id === inv.templateId)?.canvas?.gallery?.hero;
+  if (own) return own;
+  const crop = (getPinterestDesign(inv) ?? referenceWedding(inv))?.photos.hero;
+  const restored = restoredTemplateImage(crop)?.source;
+  if (restored) return restored;
+  const set = allTemplatePhotoSets()[inv.templateId];
+  return set ? templateImageSource(set.hero) : "";
+}
+
+/** Откуда брать обложку: своя обложка → главное фото → картинка самого шаблона. Чужой «шаблон по умолчанию» не подставляем: лучше общая карточка сайта. */
 export function inviteCoverSource(inv: Invitation): string {
-  return inv.coverImage || inv.gallery?.hero || getTemplatePhotos(inv.templateId).hero || "";
+  return inv.coverImage || inv.gallery?.hero || templateCoverSource(inv);
 }
 
 /** Названия торжества, которые задаёт сам шаблон, а не тип события (eventType у них общий с другим торжеством). */
