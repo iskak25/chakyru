@@ -30,6 +30,7 @@ export function templateCoverSource(inv: Pick<Invitation, "templateId" | "copy">
   const crop = (getPinterestDesign(inv) ?? referenceWedding(inv))?.photos.hero;
   const restored = restoredTemplateImage(crop)?.source;
   if (restored) return restored;
+  if (crop?.source.startsWith("/images/")) return crop.source;
   const set = allTemplatePhotoSets()[inv.templateId];
   return set ? templateImageSource(set.hero) : "";
 }
@@ -37,6 +38,12 @@ export function templateCoverSource(inv: Pick<Invitation, "templateId" | "copy">
 /** Откуда брать обложку: своя обложка → главное фото → картинка самого шаблона. Чужой «шаблон по умолчанию» не подставляем: лучше общая карточка сайта. */
 export function inviteCoverSource(inv: Invitation): string {
   return inv.coverImage || inv.gallery?.hero || templateCoverSource(inv);
+}
+
+/** Цвета шаблона для карточки превью, когда у него нет растровой картинки. */
+export function templateCardColors(inv: Pick<Invitation, "templateId" | "copy">): { paper: string; ink: string; accent: string } {
+  const design = getCollectionDesign(inv) ?? getPinterestDesign(inv);
+  return { paper: design?.paper ?? "#f6efe4", ink: design?.ink ?? "#2f3a2f", accent: design?.accent ?? "#a8793a" };
 }
 
 /** Названия торжества, которые задаёт сам шаблон, а не тип события (eventType у них общий с другим торжеством). */
@@ -58,10 +65,5 @@ export function inviteShareMeta(inv: Invitation): { title: string; description: 
   const description = place
     ? `${place}. Чакырууну ачып, баарын көрүңүз 💌`
     : "Чакырууну ачып, баарын көрүңүз 💌";
-  const hasCover = Boolean(inviteCoverSource(inv));
-  return {
-    title,
-    description,
-    image: hasCover ? `/api/og/${encodeURIComponent(inv.id)}` : "/og-image.jpg",
-  };
+  return { title, description, image: `/api/og/${encodeURIComponent(inv.id)}` };
 }

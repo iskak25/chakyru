@@ -82,6 +82,9 @@ function normalize(inv: Invitation): Invitation {
   if (getTemplate(base.templateId).format === "photo") {
     base.music = false;
     base.musicUrl = "";
+  } else {
+    // Музыка в приглашении всегда включена; гость может выключить её только на время визита.
+    base.music = true;
   }
   const blank = !base.names.trim() && !base.venue.trim() && !base.date;
   if (!blank) {
