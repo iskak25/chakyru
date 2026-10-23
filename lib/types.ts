@@ -236,6 +236,8 @@ export type Invitation = {
   status?: InvitationStatus;
   /** Владелец отключил ссылку: гости получают 404, владелец видит страницу как обычно. Задаёт только сервер. */
   linkDisabled?: boolean;
+  /** Секретный токен ссылки на ответы гостей без входа. Задаёт и отдаёт только сервер, только владельцу. */
+  responsesToken?: string;
   language?: Locale;
 };
 

@@ -19,7 +19,9 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
   if (viewer === "none") {
     return NextResponse.json({ error: "not found" }, { status: 404, headers: { "cache-control": "no-store" } });
   }
-  return NextResponse.json({ invitation, paid, viewer }, { headers: { "cache-control": "no-store" } });
+  // Токен открытой ссылки на ответы видит только владелец: гости знают id приглашения, но не токен.
+  const { responsesToken: _token, ...publicInvitation } = invitation;
+  return NextResponse.json({ invitation: viewer === "owner" ? invitation : publicInvitation, paid, viewer }, { headers: { "cache-control": "no-store" } });
 }
 
 export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {

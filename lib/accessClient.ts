@@ -156,3 +156,17 @@ export async function deleteWishRemote(invitationId: string, wishId: string): Pr
   }).catch(() => null);
   return Boolean(res?.ok);
 }
+
+/** Секретный токен открытой ссылки на ответы гостей (создаётся при первом запросе). Только для владельца. */
+export async function shareLinkToken(invitationId: string): Promise<string | null> {
+  const headers = await authHeaders();
+  if (!("authorization" in headers)) return null;
+  try {
+    const res = await fetch(`/api/invitations/${encodeURIComponent(invitationId)}/responses`, { method: "POST", headers });
+    if (!res.ok) return null;
+    const data = (await res.json().catch(() => null)) as { token?: string } | null;
+    return data?.token || null;
+  } catch {
+    return null;
+  }
+}

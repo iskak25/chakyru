@@ -56,3 +56,18 @@ describe("GET /api/invitations/[id]", () => {
     expect(invitationViewer).not.toHaveBeenCalled();
   });
 });
+
+describe("responsesToken", () => {
+  const withToken = { ...inv, responsesToken: "secret-token" };
+  it("is hidden from the public page", async () => {
+    getInvitationDoc.mockResolvedValue(withToken);
+    invitationViewer.mockResolvedValue({ viewer: "public", paid: true });
+    expect(JSON.stringify(await (await get()).json())).not.toContain("secret-token");
+  });
+  it("is kept for the owner", async () => {
+    getInvitationDoc.mockResolvedValue(withToken);
+    sessionFromBearer.mockResolvedValue({ uid: "u1" });
+    invitationViewer.mockResolvedValue({ viewer: "owner", paid: true });
+    expect(JSON.stringify(await (await get("Bearer t")).json())).toContain("secret-token");
+  });
+});

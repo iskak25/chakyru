@@ -1,3 +1,5 @@
+import { randomBytes, timingSafeEqual } from "node:crypto";
+import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "../firebaseAdmin";
 import type { Guest, Invitation, RsvpStatus, Wish } from "../types";
 
@@ -92,6 +94,7 @@ export async function saveInvitationDoc(input: {
     status: input.invitation.status || existing?.status || "published",
     // Включение и выключение ссылки идёт отдельным запросом: устаревший редактор не должен его сбросить.
     linkDisabled: existing?.linkDisabled,
+    responsesToken: existing?.responsesToken,
     updatedAt: now,
     createdAt: existing?.createdAt || input.invitation.createdAt || now,
   });
@@ -122,6 +125,35 @@ export async function setInvitationLinkDisabled(
   if (!isAdmin && !sameInvitationOwner(existing, owner)) return false;
   await ref.update({ linkDisabled: disabled });
   return true;
+}
+
+/** Создаёт (или возвращает) секретный токен открытой ссылки на ответы; с `revoke` — отзывает его. */
+export async function setResponsesToken(
+  id: string,
+  owner: { ownerUid: string; ownerId: string; email?: string },
+  isAdmin: boolean,
+  revoke = false,
+): Promise<string | null | false> {
+  const db = getAdminDb();
+  if (!db || !id || id === "demo" || id.startsWith("preview-")) return false;
+  const ref = db.collection("invitations").doc(id);
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return false;
+    const existing = asInvitation(id, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!existing || (!isAdmin && !sameInvitationOwner(existing, owner))) return false;
+    if (revoke) { tx.update(ref, { responsesToken: FieldValue.delete() }); return null; }
+    if (existing.responsesToken) return existing.responsesToken;
+    const token = randomBytes(24).toString("base64url");
+    tx.update(ref, { responsesToken: token });
+    return token;
+  });
+}
+
+export function responsesTokenMatches(inv: Pick<Invitation, "responsesToken">, token: string): boolean {
+  const a = Buffer.from(inv.responsesToken || "");
+  const b = Buffer.from(token);
+  return a.length > 0 && a.length === b.length && timingSafeEqual(a, b);
 }
 
 export async function deleteInvitationDoc(
