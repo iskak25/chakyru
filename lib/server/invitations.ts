@@ -1,4 +1,4 @@
-import { randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "../firebaseAdmin";
 import type { Guest, Invitation, RsvpStatus, Wish } from "../types";
@@ -95,6 +95,7 @@ export async function saveInvitationDoc(input: {
     status: input.invitation.status || existing?.status || "published",
     // Включение и выключение ссылки идёт отдельным запросом: устаревший редактор не должен его сбросить.
     linkDisabled: existing?.linkDisabled,
+    editLink: existing?.editLink,
     responsesToken: existing?.responsesToken,
     updatedAt: now,
     createdAt: existing?.createdAt || input.invitation.createdAt || now,
@@ -155,6 +156,49 @@ export function responsesTokenMatches(inv: Pick<Invitation, "responsesToken">, t
   const a = Buffer.from(inv.responsesToken || "");
   const b = Buffer.from(token);
   return a.length > 0 && a.length === b.length && timingSafeEqual(a, b);
+}
+
+export const EDIT_LINK_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+const hashEditToken = (token: string) => createHash("sha256").update(token).digest("hex");
+
+/** Ссылка для правки: секрет в базе хранится только хэшем, действует 7 дней. */
+export function editLinkMatches(inv: Pick<Invitation, "editLink"> | null | undefined, token: string, now = Date.now()): boolean {
+  if (!inv?.editLink || !token) return false;
+  if (!(Date.parse(inv.editLink.expiresAt) > now)) return false;
+  const a = Buffer.from(inv.editLink.hash);
+  const b = Buffer.from(hashEditToken(token));
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+/** Выдаёт новую ссылку для правки (прежняя перестаёт работать) или, с revoke, отзывает её. */
+export async function setEditLink(
+  id: string,
+  owner: { ownerUid: string; ownerId: string; email?: string },
+  isAdmin: boolean,
+  revoke = false,
+): Promise<{ token: string; expiresAt: string } | null | false> {
+  const db = getAdminDb();
+  if (!db || !id || id === "demo" || id.startsWith("preview-")) return false;
+  const ref = db.collection("invitations").doc(id);
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(ref);
+    if (!snap.exists) return false;
+    const existing = asInvitation(id, (snap.data() ?? {}) as Record<string, unknown>);
+    if (!existing || (!isAdmin && !sameInvitationOwner(existing, owner))) return false;
+    if (revoke) { tx.update(ref, { editLink: FieldValue.delete() }); return null; }
+    const token = randomBytes(24).toString("base64url");
+    const expiresAt = new Date(Date.now() + EDIT_LINK_TTL_MS).toISOString();
+    tx.update(ref, { editLink: { hash: hashEditToken(token), expiresAt } });
+    return { token, expiresAt };
+  });
+}
+
+/** То, что уходит в ответ API: секреты ссылок не отдаются никому, кроме владельца (и то не хэш правки). */
+export function withoutSecrets(inv: Invitation, viewer: "owner" | "public"): Invitation {
+  const { editLink: _editLink, responsesToken, ...rest } = inv;
+  void _editLink;
+  return (viewer === "owner" && responsesToken ? { ...rest, responsesToken } : rest) as Invitation;
 }
 
 export async function deleteInvitationDoc(

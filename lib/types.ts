@@ -238,6 +238,8 @@ export type Invitation = {
   linkDisabled?: boolean;
   /** Секретный токен ссылки на ответы гостей без входа. Задаёт и отдаёт только сервер, только владельцу. */
   responsesToken?: string;
+  /** Ссылка для правки без входа: хэш секрета и срок (7 дней). Только сервер, наружу не отдаётся. */
+  editLink?: { hash: string; expiresAt: string };
   language?: Locale;
 };
 

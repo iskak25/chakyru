@@ -22,7 +22,7 @@ import { useInviteHistory } from "@/lib/useInviteHistory";
 import { formatOf, getTemplate } from "@/lib/templates";
 import { downloadInvitation } from "@/lib/exportInvite";
 import { canEditInvitation, canEditTemplate, isAdmin, ownsInvitation } from "@/lib/auth";
-import { fetchInvitationRemoteMeta, fetchTemplateAccess } from "@/lib/accessClient";
+import { createEditLinkRemote, editTokenFor, fetchInvitationRemoteMeta, fetchTemplateAccess, rememberEditToken } from "@/lib/accessClient";
 import { confirmLastCheckout, startTemplateCheckout, unlockPaidTemplate } from "@/lib/payAccess";
 import { ensureInvitationSaved, getUser } from "@/lib/store";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
@@ -48,6 +48,15 @@ function EditorPageInner() {
   const [payBusy, setPayBusy] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [showSetup, setShowSetup] = useState(searchParams.get("setup") === "1");
+  const [editLinkNote, setEditLinkNote] = useState("");
+  const [editLinkBusy, setEditLinkBusy] = useState(false);
+  // Адрес вида /create/<id>?edit=<секрет> запоминается и очищается из строки браузера.
+  const editParam = searchParams.get("edit");
+  useEffect(() => {
+    if (!editParam) return;
+    rememberEditToken(params.id, editParam);
+    router.replace(`/create/${params.id}`);
+  }, [editParam, params.id, router]);
 
   const [tourOpen, setTourOpen] = useState(false);
 
@@ -104,12 +113,13 @@ function EditorPageInner() {
         unlockPaidTemplate(inv.templateId, access.accessType === "pro" ? "pro" : "standard");
       }
       const user = getUser();
+      const viaEditLink = Boolean(editTokenFor(inv.id));
       // Trust a successful server check fully (including a denial) — only fall back to the
       // local/offline heuristic when the network call itself failed (access === null).
       const mine = ownsInvitation(user, inv) || isAdmin(user) || canEditInvitation(user, inv);
       setExpired(Boolean(access?.expired));
       // Editing is free; payment only unlocks the public link and removes the demo mark.
-      setAllowed(Boolean(user?.auth === "google" && mine && !access?.expired));
+      setAllowed(viaEditLink || Boolean(user?.auth === "google" && mine && !access?.expired));
       } finally { checking = false; }
     };
     void sync();
@@ -202,6 +212,25 @@ function EditorPageInner() {
     } catch {
       setShareOpen(true);
     }
+  }
+
+  async function copyEditLink() {
+    if (!inv || editLinkBusy) return;
+    setEditLinkBusy(true);
+    setEditLinkNote("");
+    try {
+      if (!await ensureInvitationSaved(inv)) throw new Error("save");
+      const link = await createEditLinkRemote(inv.id);
+      if (!link) throw new Error("link");
+      const url = `${window.location.origin}/create/${inv.id}?edit=${link.token}`;
+      const until = new Date(link.expiresAt).toLocaleDateString(locale === "ru" ? "ru-RU" : "ky-KG");
+      try { await navigator.clipboard.writeText(url); } catch { window.prompt(locale === "ru" ? "Скопируйте ссылку" : "Шилтемени көчүрүп алыңыз", url); }
+      setEditLinkNote(locale === "ru"
+        ? `Ссылка для редактирования скопирована. Действует до ${until}; новая ссылка отключает прежнюю.`
+        : `Оңдоо шилтемеси көчүрүлдү. ${until} чейин иштейт; жаңы шилтеме мурункусун өчүрөт.`);
+    } catch {
+      setEditLinkNote(locale === "ru" ? "Не удалось создать ссылку. Проверьте вход и соединение." : "Шилтеме түзүлгөн жок. Кирүүнү жана интернетти текшериңиз.");
+    } finally { setEditLinkBusy(false); }
   }
 
   async function openPublished(share: boolean) {
@@ -407,12 +436,14 @@ function EditorPageInner() {
                   ) : null}
                   {paid ? <button
                     type="button"
-                    onClick={() => void openPublished(true)}
-                    disabled={publishing}
-                    className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
+                    onClick={() => void copyEditLink()}
+                    disabled={editLinkBusy}
+                    title={locale === "ru" ? "Ссылка, по которой страницу можно править 7 дней" : "Баракты 7 күн ичинде оңдоого болгон шилтеме"}
+                    className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
                   >
                     {t.editor.share}
                   </button> : null}
+                  {editLinkNote ? <p role="status" className="w-full text-xs text-ink-soft">{editLinkNote}</p> : null}
                   {shareOpen && paid && <ShareInvitationDialog invitation={inv} locale={locale} onClose={() => setShareOpen(false)} />}
                   <button
                     type="button"

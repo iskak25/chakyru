@@ -3,7 +3,7 @@ import { sessionFromBearer } from "@/lib/firebaseToken";
 import { canEditBeforePayment, canSaveInvitation } from "@/lib/server/accessLogic";
 import { isInvitationPaid } from "@/lib/server/invitationAccess";
 import { ensurePaidTemplateAccess } from "@/lib/server/access";
-import { getInvitationDoc, listUserInvitations, sameInvitationOwner, saveInvitationDoc } from "@/lib/server/invitations";
+import { editLinkMatches, getInvitationDoc, listUserInvitations, sameInvitationOwner, saveInvitationDoc, withoutSecrets } from "@/lib/server/invitations";
 import { isAdminUser, loadUserProfile } from "@/lib/server/users";
 import type { Invitation } from "@/lib/types";
 
@@ -27,7 +27,8 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const session = await sessionFromBearer(req.headers.get("authorization"));
-  if (!session) return fail(401, "auth");
+  const editToken = req.headers.get("x-edit-token") ?? "";
+  if (!session && !editToken) return fail(401, "auth");
 
   const body = (await req.json().catch(() => null)) as { invitation?: Invitation } | null;
   const invitation = body?.invitation;
@@ -35,13 +36,25 @@ export async function PUT(req: NextRequest) {
     return fail(400, "invitation");
   }
 
+  const existing = await getInvitationDoc(invitation.id);
+  // Ссылка для правки: сохраняет только эту страницу и только пока не истёк срок; владелец не меняется.
+  if (editToken && editLinkMatches(existing, editToken)) {
+    const saved = await saveInvitationDoc({ invitation, ownerUid: existing!.ownerUid ?? "", ownerId: existing!.ownerId ?? "", isAdmin: true });
+    if (!saved) return fail(403, "forbidden", "owner");
+    const next = (await getInvitationDoc(invitation.id)) || invitation;
+    return NextResponse.json(
+      { success: true, ok: true, invitation: withoutSecrets(next, "public"), paid: await isInvitationPaid(next) },
+      { headers: { "cache-control": "no-store" } },
+    );
+  }
+  if (!session) return fail(editToken ? 403 : 401, editToken ? "forbidden" : "auth", editToken ? "expired" : undefined);
+
   const profile = await loadUserProfile(session.uid);
   const owner = {
     ownerUid: session.uid,
     ownerId: profile?.id || `google:${session.uid}`,
     email: session.email || profile?.email,
   };
-  const existing = await getInvitationDoc(invitation.id);
   // Админ правит любую страницу; владелец страницы при этом не меняется.
   const admin = await isAdminUser(session.uid, session.email);
   const owns = admin || sameInvitationOwner(existing, owner);
@@ -79,7 +92,7 @@ export async function PUT(req: NextRequest) {
 
   const next = (await getInvitationDoc(invitation.id)) || invitation;
   return NextResponse.json(
-    { success: true, ok: true, invitation: next, paid: await isInvitationPaid(next) },
+    { success: true, ok: true, invitation: withoutSecrets(next, "owner"), paid: await isInvitationPaid(next) },
     { headers: { "cache-control": "no-store" } },
   );
 }

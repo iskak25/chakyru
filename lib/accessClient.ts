@@ -10,6 +10,34 @@ export async function authHeaders(): Promise<HeadersInit> {
   return token ? { authorization: `Bearer ${token}`, "content-type": "application/json" } : { "content-type": "application/json" };
 }
 
+const editTokenKey = (id: string) => `chakyru-edit-token:${id}`;
+
+/** Токен ссылки для правки, пришедший по адресу `?edit=…`; живёт в браузере, пока сервер его принимает. */
+export function rememberEditToken(id: string, token: string) {
+  try { localStorage.setItem(editTokenKey(id), token); } catch {}
+}
+export function editTokenFor(id: string): string {
+  try { return localStorage.getItem(editTokenKey(id)) || ""; } catch { return ""; }
+}
+function withEditToken(headers: HeadersInit, id: string): HeadersInit {
+  const token = editTokenFor(id);
+  return token ? { ...headers, "x-edit-token": token } : headers;
+}
+
+/** Выпускает ссылку для правки на 7 дней (прежняя перестаёт работать). Только для владельца. */
+export async function createEditLinkRemote(id: string): Promise<{ token: string; expiresAt: string } | null> {
+  const headers = await authHeaders();
+  if (!("authorization" in headers)) return null;
+  try {
+    const res = await fetch(`/api/invitations/${encodeURIComponent(id)}/edit-link`, { method: "POST", headers });
+    if (!res.ok) return null;
+    const data = (await res.json().catch(() => null)) as { token?: string; expiresAt?: string } | null;
+    return data?.token && data.expiresAt ? { token: data.token, expiresAt: data.expiresAt } : null;
+  } catch {
+    return null;
+  }
+}
+
 export type TemplateAccessResponse = {
   allowed: boolean;
   accessType: TemplateAccessType | null;
@@ -46,8 +74,8 @@ export async function fetchTemplateAccess(templateId: string): Promise<TemplateA
 }
 
 export async function pushInvitationRemote(invitation: Invitation): Promise<InvitationSaveResult> {
-  const headers = await authHeaders();
-  if (!("authorization" in headers)) {
+  const headers = withEditToken(await authHeaders(), invitation.id);
+  if (!("authorization" in headers) && !("x-edit-token" in headers)) {
     return { ok: false, error: "auth" };
   }
   try {
@@ -118,7 +146,7 @@ export type InvitationRemote = {
  * owner, so an anonymous request for it gets 404.
  */
 export async function fetchInvitationRemoteMeta(id: string): Promise<InvitationRemote | null> {
-  const headers = await authHeaders();
+  const headers = withEditToken(await authHeaders(), id);
   const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { cache: "no-store", headers }).catch(() => null);
   if (!res?.ok) return null;
   const data = (await res.json().catch(() => null)) as { invitation?: Invitation; paid?: boolean; viewer?: string } | null;

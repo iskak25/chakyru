@@ -7,7 +7,10 @@ const saveInvitationDoc = vi.fn();
 const isAdminUser = vi.fn();
 
 vi.mock("@/lib/firebaseToken", () => ({ sessionFromBearer: (...a: unknown[]) => sessionFromBearer(...a) }));
-vi.mock("@/lib/server/invitations", () => ({
+vi.mock("@/lib/firebaseAdmin", () => ({ getAdminDb: () => null }));
+vi.mock("firebase-admin/firestore", () => ({ FieldValue: { delete: () => null } }));
+vi.mock("@/lib/server/invitations", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/server/invitations")>()),
   getInvitationDoc: (...a: unknown[]) => getInvitationDoc(...a),
   saveInvitationDoc: (...a: unknown[]) => saveInvitationDoc(...a),
   listUserInvitations: vi.fn(),
