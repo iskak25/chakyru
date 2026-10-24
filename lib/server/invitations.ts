@@ -77,13 +77,14 @@ export async function saveInvitationDoc(input: {
   ownerUid: string;
   ownerId: string;
   email?: string;
+  isAdmin?: boolean;
 }) {
   const db = getAdminDb();
   if (!db) return false;
   const id = input.invitation.id;
   if (!id || id === "demo" || id.startsWith("preview-")) return false;
   const existing = await getInvitationDoc(id);
-  if (existing && !sameInvitationOwner(existing, input)) return false;
+  if (existing && !input.isAdmin && !sameInvitationOwner(existing, input)) return false;
   const now = new Date().toISOString();
   const stored = forStore({
     ...input.invitation,
@@ -102,7 +103,7 @@ export async function saveInvitationDoc(input: {
   return db.runTransaction(async tx => {
     const fresh = await tx.get(ref);
     const current = fresh.data();
-    if (current && !sameInvitationOwner(current, input)) return false;
+    if (current && !input.isAdmin && !sameInvitationOwner(current, input)) return false;
     // Guest submissions belong to the server, not a potentially stale editor cache.
     // Replace editor maps as a whole so removed photos/text styles stay removed.
     tx.set(ref, { ...current, ...stored, guests: current?.guests ?? [], wishes: current?.wishes ?? [] });

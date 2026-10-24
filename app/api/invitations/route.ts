@@ -4,7 +4,7 @@ import { canEditBeforePayment, canSaveInvitation } from "@/lib/server/accessLogi
 import { isInvitationPaid } from "@/lib/server/invitationAccess";
 import { ensurePaidTemplateAccess } from "@/lib/server/access";
 import { getInvitationDoc, listUserInvitations, sameInvitationOwner, saveInvitationDoc } from "@/lib/server/invitations";
-import { loadUserProfile } from "@/lib/server/users";
+import { isAdminUser, loadUserProfile } from "@/lib/server/users";
 import type { Invitation } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -42,7 +42,9 @@ export async function PUT(req: NextRequest) {
     email: session.email || profile?.email,
   };
   const existing = await getInvitationDoc(invitation.id);
-  const owns = sameInvitationOwner(existing, owner);
+  // Админ правит любую страницу; владелец страницы при этом не меняется.
+  const admin = await isAdminUser(session.uid, session.email);
+  const owns = admin || sameInvitationOwner(existing, owner);
   const access = await ensurePaidTemplateAccess(session.uid, invitation.templateId, session.email);
   const gate = canSaveInvitation({
     existing: Boolean(existing),
@@ -69,6 +71,7 @@ export async function PUT(req: NextRequest) {
   const saved = await saveInvitationDoc({
     invitation,
     ...owner,
+    isAdmin: admin,
   });
   if (!saved) {
     return fail(403, "forbidden", "owner");
