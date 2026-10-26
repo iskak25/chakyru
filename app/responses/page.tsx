@@ -27,6 +27,7 @@ function Responses() {
   const shareToken = params.get("token");
   const readOnly = Boolean(shareToken && invitationId);
   const [copied, setCopied] = useState(false);
+  const [linkBusy, setLinkBusy] = useState(false);
   const load = useCallback(async () => {
     setLoading(true); setError(""); setLogin(false);
     try {
@@ -64,11 +65,30 @@ function Responses() {
     else setError(ru ? "Не удалось удалить." : "Өчүрүлгөн жок.");
   }
   async function copyOpenLink() {
-    const token = await shareLinkToken(selected);
-    if (!token) { setError(ru ? "Не удалось создать ссылку." : "Шилтеме түзүлгөн жок."); return; }
-    const url = `${window.location.origin}/responses?invitation=${encodeURIComponent(selected)}&token=${encodeURIComponent(token)}`;
-    try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2500); }
-    catch { window.prompt(ru ? "Скопируйте ссылку" : "Шилтемени көчүрүңүз", url); }
+    if (linkBusy) return;
+    setLinkBusy(true); setError("");
+    const id = selected;
+    const urlPromise = shareLinkToken(id).then(token => {
+      if (!token) throw new Error("token");
+      return `${window.location.origin}/responses?invitation=${encodeURIComponent(id)}&token=${encodeURIComponent(token)}`;
+    });
+    try {
+      // Safari и мобильные браузеры разрешают копирование только сразу после нажатия: буфер получает обещание, а не готовый текст.
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
+        await navigator.clipboard.write([new ClipboardItem({ "text/plain": urlPromise.then(url => new Blob([url], { type: "text/plain" })) })]);
+      } else {
+        await navigator.clipboard.writeText(await urlPromise);
+      }
+      setCopied(true);
+    } catch {
+      let url = "";
+      try { url = await urlPromise; } catch { /* ссылку создать не удалось */ }
+      if (!url) setError(ru ? "Не удалось создать ссылку." : "Шилтеме түзүлгөн жок.");
+      else { setCopied(true); window.prompt(ru ? "Скопируйте ссылку" : "Шилтемени көчүрүңүз", url); }
+    } finally {
+      setLinkBusy(false);
+      setTimeout(() => setCopied(false), 2500);
+    }
   }
   const invitation = items.find(inv => inv.id === selected);
   const guests = invitation?.guests || [];
@@ -82,7 +102,7 @@ function Responses() {
     <div className="my-6 flex flex-wrap items-center gap-3">
       {items.length > 1 && <label className="text-sm">{tr("Приглашение", "Чакыруу")} <select className="ml-2 rounded-xl border p-3" value={selected} onChange={e => setSelected(e.target.value)}>{items.map(inv => <option key={inv.id} value={inv.id}>{inv.names || inv.id} · {inv.date}</option>)}</select></label>}
       <button type="button" disabled={loading} onClick={() => void load()} className="rounded-xl border bg-white px-4 py-3 text-sm disabled:opacity-50">{loading ? tr("Загрузка…", "Жүктөлүүдө…") : tr("Обновить", "Жаңыртуу")}</button>
-      {!readOnly && invitation && <button type="button" onClick={() => void copyOpenLink()} className="rounded-xl border bg-white px-4 py-3 text-sm">{copied ? tr("Ссылка скопирована", "Шилтеме көчүрүлдү") : tr("Копировать открытую ссылку", "Ачык шилтемени көчүрүү")}</button>}
+      {!readOnly && invitation && <button type="button" disabled={linkBusy} onClick={() => void copyOpenLink()} className="rounded-xl border bg-white px-4 py-3 text-sm disabled:opacity-50">{linkBusy ? tr("Создаю ссылку…", "Шилтеме түзүлүүдө…") : copied ? tr("Ссылка скопирована", "Шилтеме көчүрүлдү") : tr("Копировать открытую ссылку", "Ачык шилтемени көчүрүү")}</button>}
     </div>
     {loading && !invitation && <ListSkeleton rows={4} label={tr("Загрузка…", "Жүктөлүүдө…")} />}
     {error && <p role="alert" className="mb-5 text-rose">{error}</p>}
