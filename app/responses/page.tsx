@@ -8,6 +8,7 @@ import { ListSkeleton } from "@/components/Skeleton";
 import { firebaseIdToken } from "@/lib/firebase";
 import { deleteWishRemote, setWishHiddenRemote, shareLinkToken } from "@/lib/accessClient";
 import { useI18n } from "@/lib/locale";
+import { getInvitations } from "@/lib/store";
 import type { Invitation } from "@/lib/types";
 
 function Responses() {
@@ -67,7 +68,9 @@ function Responses() {
   async function copyOpenLink() {
     if (linkBusy) return;
     setLinkBusy(true); setError("");
-    const id = selected;
+    // Приглашение, для которого делаем ссылку: открытое, из адреса или своё (локальное) для этого шаблона.
+    const id = selected || invitationId || getInvitations().find(inv => !templateId || inv.templateId === templateId)?.id || "";
+    if (!id) { setError(ru ? "Нет приглашения для ссылки. Сначала создайте приглашение." : "Шилтеме үчүн чакыруу жок. Адегенде чакыруу түзүңүз."); setLinkBusy(false); return; }
     const urlPromise = shareLinkToken(id).then(token => {
       if (!token) throw new Error("token");
       return `${window.location.origin}/responses?invitation=${encodeURIComponent(id)}&token=${encodeURIComponent(token)}`;
@@ -102,7 +105,7 @@ function Responses() {
     <div className="my-6 flex flex-wrap items-center gap-3">
       {items.length > 1 && <label className="text-sm">{tr("Приглашение", "Чакыруу")} <select className="ml-2 rounded-xl border p-3" value={selected} onChange={e => setSelected(e.target.value)}>{items.map(inv => <option key={inv.id} value={inv.id}>{inv.names || inv.id} · {inv.date}</option>)}</select></label>}
       <button type="button" disabled={loading} onClick={() => void load()} className="rounded-xl border bg-white px-4 py-3 text-sm disabled:opacity-50">{loading ? tr("Загрузка…", "Жүктөлүүдө…") : tr("Обновить", "Жаңыртуу")}</button>
-      {!readOnly && invitation && <button type="button" disabled={linkBusy} onClick={() => void copyOpenLink()} className="rounded-xl border bg-white px-4 py-3 text-sm disabled:opacity-50">{linkBusy ? tr("Создаю ссылку…", "Шилтеме түзүлүүдө…") : copied ? tr("Ссылка скопирована", "Шилтеме көчүрүлдү") : tr("Копировать открытую ссылку", "Ачык шилтемени көчүрүү")}</button>}
+      {!readOnly && <button type="button" disabled={linkBusy} onClick={() => void copyOpenLink()} className="rounded-xl border bg-white px-4 py-3 text-sm disabled:opacity-50">{linkBusy ? tr("Создаю ссылку…", "Шилтеме түзүлүүдө…") : copied ? tr("Ссылка скопирована", "Шилтеме көчүрүлдү") : tr("Копировать открытую ссылку", "Ачык шилтемени көчүрүү")}</button>}
     </div>
     {loading && !invitation && <ListSkeleton rows={4} label={tr("Загрузка…", "Жүктөлүүдө…")} />}
     {error && <p role="alert" className="mb-5 text-rose">{error}</p>}
