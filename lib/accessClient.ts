@@ -1,12 +1,11 @@
 "use client";
 
-import { getFirebaseAuth } from "./firebase";
+import { firebaseIdToken, getFirebaseAuth } from "./firebase";
 import type { Invitation, TemplateAccessType } from "./types";
 
 export async function authHeaders(): Promise<HeadersInit> {
-  const auth = getFirebaseAuth();
-  await auth?.authStateReady();
-  const token = await auth?.currentUser?.getIdToken();
+  // Гостю вход не нужен: не ждём Firebase дольше нескольких секунд, иначе приглашение не откроется.
+  const token = await firebaseIdToken();
   return token ? { authorization: `Bearer ${token}`, "content-type": "application/json" } : { "content-type": "application/json" };
 }
 

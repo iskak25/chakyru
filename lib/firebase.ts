@@ -54,13 +54,27 @@ export function getFirebaseAuth(): Auth | null {
   return getAuth(app);
 }
 
+/** Ждёт ответа Firebase не дольше `ms`: в мобильных и встроенных браузерах он может не ответить никогда. */
+export async function withinMs<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([promise, new Promise<T>(resolve => { timer = setTimeout(() => resolve(fallback), ms); })]);
+  } catch {
+    return fallback;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
+const AUTH_WAIT_MS = 3000;
+
 export async function firebaseIdToken(): Promise<string | null> {
   const auth = getFirebaseAuth();
   if (!auth) return null;
-  await auth.authStateReady();
+  await withinMs(auth.authStateReady(), AUTH_WAIT_MS, undefined);
   const user = auth.currentUser;
   if (!user) return null;
-  return user.getIdToken();
+  return withinMs(user.getIdToken(), AUTH_WAIT_MS * 2, null);
 }
 
 export function profileFromFirebase(user: FirebaseUser): GoogleProfile {
