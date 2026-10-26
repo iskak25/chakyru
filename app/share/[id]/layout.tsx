@@ -1,0 +1,6 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+
+export const metadata: Metadata = { title: "Именное приглашение", robots: { index: false, follow: false } };
+
+export default function ShareLayout({ children }: { children: ReactNode }) { return children; }

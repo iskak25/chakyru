@@ -43,7 +43,7 @@ function formatShareDate(date: string, locale: string): string {
 
 type ShareInvitationInfo = Pick<Invitation, "eventType" | "names" | "date" | "time" | "venue" | "city">;
 
-export function buildShareMessage(invitation: ShareInvitationInfo, locale: string, url: string): string {
+export function buildShareMessage(invitation: ShareInvitationInfo, locale: string, url: string, guestName = ""): string {
   const ru = locale === "ru";
   const phrase = (ru ? EVENT_PHRASE_RU : EVENT_PHRASE_KY)[invitation.eventType] ?? (ru ? EVENT_PHRASE_RU.toi : EVENT_PHRASE_KY.toi);
   const venue = [invitation.venue, invitation.city].filter(Boolean).join(", ");
@@ -61,7 +61,7 @@ export function buildShareMessage(invitation: ShareInvitationInfo, locale: strin
   const blocks = ru
     ? [
         "✉️ Приглашение!",
-        "Дорогой гость!",
+        guestName ? `Дорогой(ая) ${guestName}!` : "Дорогой гость!",
         invitation.names || null,
         `Приглашаем Вас на ${phrase} от всего сердца ♡\nБудем рады разделить с Вами радость этого особенного дня и видеть Вас почётным гостем нашего праздника. ✨`,
         info.length ? info.join("\n") : null,
@@ -70,7 +70,7 @@ export function buildShareMessage(invitation: ShareInvitationInfo, locale: strin
       ]
     : [
         "✉️ Сизге чакыруу!",
-        "Урматтуу конок!",
+        guestName ? `Урматтуу ${guestName}!` : "Урматтуу конок!",
         invitation.names || null,
         `Сизди ${phrase} чын жүрөктөн чакырабыз ♡\nБул өзгөчө күндүн кубанычын сиз менен бирге бөлүшүп, майрамыбыздын кадырлуу коногу болушуңузду каалайбыз. ✨`,
         info.length ? info.join("\n") : null,

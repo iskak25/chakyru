@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
+      // Именное приглашение: /i/<имя>/<id> показывает приглашение <id> для гостя <имя>.
+      { source: "/i/:name/:id", destination: "/i/:id/g/:name" },
       {
         source: "/__/auth/:path*",
         destination: `https://${firebaseAuthHost}/__/auth/:path*`,

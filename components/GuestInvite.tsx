@@ -12,7 +12,7 @@ import type { Invitation } from "@/lib/types";
 import { GuestWishForm } from "@/components/GuestWishForm";
 import { InviteSkeleton } from "@/components/Skeleton";
 
-function GuestInviteInner() {
+function GuestInviteInner({ guestName }: { guestName?: string }) {
   const params = useParams<{ id: string }>();
   const { locale: storedLocale } = useI18n();
   // Ссылка вида /i/<id>?lang=ru фиксирует язык приглашения независимо от настроек браузера гостя.
@@ -59,7 +59,7 @@ function GuestInviteInner() {
   const renderer = (
     <TemplateRenderer
       templateId={inv.templateId}
-      data={inv}
+      data={guestName ? { ...inv, guestName } : inv}
       locale={locale}
       interactive
       onReload={() => void reload()}
@@ -85,10 +85,10 @@ function GuestInviteInner() {
   );
 }
 
-export function GuestInvite() {
+export function GuestInvite({ guestName }: { guestName?: string }) {
   return (
     <Suspense fallback={<InviteSkeleton />}>
-      <GuestInviteInner />
+      <GuestInviteInner guestName={guestName} />
     </Suspense>
   );
 }

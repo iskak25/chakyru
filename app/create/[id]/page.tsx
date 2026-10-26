@@ -36,6 +36,7 @@ function EditorPageInner() {
   const { locale, t } = useI18n();
   const { inv, ready, patch, undo, redo, canUndo, canRedo, saveState } = useInviteHistory(params.id);
   const [shareOpen, setShareOpen] = useState(false);
+  const [sharePersonal, setSharePersonal] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [parts, setParts] = useState<WeddingPartInfo[]>([]);
   const [saving, setSaving] = useState(false);
@@ -436,6 +437,13 @@ function EditorPageInner() {
                   ) : null}
                   {paid ? <button
                     type="button"
+                    onClick={() => { setSharePersonal(true); setShareOpen(true); }}
+                    className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
+                  >
+                    {locale === "ru" ? "Именное приглашение" : "Жеке чакыруу"}
+                  </button> : null}
+                  {paid ? <button
+                    type="button"
                     onClick={() => void copyEditLink()}
                     disabled={editLinkBusy}
                     title={locale === "ru" ? "Ссылка, по которой страницу можно править 7 дней" : "Баракты 7 күн ичинде оңдоого болгон шилтеме"}
@@ -444,7 +452,7 @@ function EditorPageInner() {
                     {t.editor.share}
                   </button> : null}
                   {editLinkNote ? <p role="status" className="w-full text-xs text-ink-soft">{editLinkNote}</p> : null}
-                  {shareOpen && paid && <ShareInvitationDialog invitation={inv} locale={locale} onClose={() => setShareOpen(false)} />}
+                  {shareOpen && paid && <ShareInvitationDialog key={String(sharePersonal)} invitation={inv} locale={locale} personal={sharePersonal} onClose={() => { setShareOpen(false); setSharePersonal(false); }} />}
                   <button
                     type="button"
                     onClick={() => void openPublished(false)}
@@ -483,6 +491,9 @@ function EditorPageInner() {
           ) : (
             <div className="mx-auto mb-5 flex max-w-[430px] items-center justify-between gap-3 rounded-[12px] border border-[var(--line)] bg-white p-4 text-sm">
               <span>{locale === "ru" ? "Страница опубликована" : "Барак жарыяланды"}</span>
+              <button type="button" onClick={() => { setSharePersonal(true); setShareOpen(true); }} className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.1em]">
+                {locale === "ru" ? "Именное приглашение" : "Жеке чакыруу"}
+              </button>
               <button type="button" onClick={() => void copyLink()} className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.1em]">
                 {linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү")}
               </button>

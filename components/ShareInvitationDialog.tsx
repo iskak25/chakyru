@@ -3,18 +3,30 @@
 import { useState } from "react";
 import { AppDialog } from "./AppDialog";
 import { buildShareMessage } from "@/lib/shareMessage";
+import { cleanGuestName } from "@/lib/personalInvite";
 import type { Invitation } from "@/lib/types";
 
-export function ShareInvitationDialog({ invitation, locale, onClose }: { invitation: Invitation; locale: string; onClose: () => void }) {
+type ShareProps = { invitation: Invitation; locale: string; onClose: () => void; personal?: boolean };
+
+/** Содержимое окна «Поделиться»: имя гостя, текст, мессенджеры и ссылка. Используется и в окне, и на открытой странице. */
+export function ShareInvitationPanel({ invitation, locale, personal = false }: Omit<ShareProps, "onClose">) {
   const ru = locale === "ru";
   const [linkLang, setLinkLang] = useState<"ru" | "ky">(ru ? "ru" : "ky");
-  const url = `${window.location.origin}/i/${encodeURIComponent(invitation.id)}?lang=${linkLang}`;
+  const [guest, setGuest] = useState("");
+  const guestName = cleanGuestName(guest);
+  // Именная ссылка: /i/<имя>/<id>. Без имени — обычная /i/<id>.
+  const linkFor = (lang: string, name: string) => `${window.location.origin}/i/${name ? `${encodeURIComponent(name)}/` : ""}${encodeURIComponent(invitation.id)}?lang=${lang}`;
+  const url = linkFor(linkLang, guestName);
   const [text, setText] = useState(buildShareMessage(invitation, locale, url));
 
   function pickLang(next: "ru" | "ky") {
     setLinkLang(next);
-    const nextUrl = `${window.location.origin}/i/${encodeURIComponent(invitation.id)}?lang=${next}`;
-    setText(buildShareMessage(invitation, next, nextUrl));
+    setText(buildShareMessage(invitation, next, linkFor(next, guestName), guestName));
+  }
+  function pickGuest(value: string) {
+    setGuest(value);
+    const name = cleanGuestName(value);
+    setText(buildShareMessage(invitation, linkLang, linkFor(linkLang, name), name));
   }
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
@@ -44,7 +56,7 @@ export function ShareInvitationDialog({ invitation, locale, onClose }: { invitat
   }
 
   const linkClass = "flex min-h-12 items-center justify-center rounded-xl border bg-white px-4 py-3 text-sm hover:bg-cream";
-  return <AppDialog title={ru ? "Поделиться приглашением" : "Чакыруу менен бөлүшүү"} onClose={onClose}>
+  return <>
     <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label={ru ? "Язык ссылки" : "Шилтеменин тили"}>
       {(["ru", "ky"] as const).map(l => (
         <button key={l} type="button" aria-pressed={linkLang === l} onClick={() => pickLang(l)}
@@ -53,6 +65,10 @@ export function ShareInvitationDialog({ invitation, locale, onClose }: { invitat
         </button>
       ))}
     </div>
+    <label className="mt-4 block text-sm">{ru ? "Имя гостя (именное приглашение)" : "Коноктун аты (жеке чакыруу)"}
+      <input className="mt-2 w-full rounded-xl border bg-white p-3 text-sm" value={guest} maxLength={60} autoFocus={personal}
+        placeholder={ru ? "Например: Айгерим" : "Мисалы: Айгерим"} onChange={e => pickGuest(e.target.value)} />
+    </label>
     <p className="mt-4 text-sm leading-6">{ru ? "Текст можно отредактировать перед отправкой." : "Жөнөтөр алдында текстти оңдой аласыз."}</p>
     <textarea
       className="mt-3 w-full rounded-xl border bg-white p-3 text-sm leading-6"
@@ -70,5 +86,9 @@ export function ShareInvitationDialog({ invitation, locale, onClose }: { invitat
     <button className="mt-4 w-full rounded-xl bg-[#302a25] p-3 text-sm text-white" type="button" onClick={() => void copyLink()}>{ru ? "Копировать ссылку" : "Шилтемени көчүрүү"}</button>
     {copied && <p role="status" className="mt-3 text-sm">{ru ? "Скопировано — теперь можно вставить в сообщение гостям." : "Көчүрүлдү — эми аны конокторго билдирүүгө кошсоңуз болот."}</p>}
     {error && <p role="alert" className="mt-3 text-sm">{error}</p>}
-  </AppDialog>;
+  </>;
+}
+
+export function ShareInvitationDialog({ onClose, ...props }: ShareProps) {
+  return <AppDialog title={props.locale === "ru" ? "Поделиться приглашением" : "Чакыруу менен бөлүшүү"} onClose={onClose}><ShareInvitationPanel {...props} /></AppDialog>;
 }

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { Eye, Heart, Link2, Link2Off, MessageSquare, Pencil, Play, Trash2 } from "lucide-react";
+import { Check, Eye, Heart, Link2, Link2Off, MessageSquare, Pencil, Play, Share2, Trash2 } from "lucide-react";
 import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { fetchTemplateAccess, type TemplateAccessResponse } from "@/lib/accessClient";
@@ -53,6 +53,15 @@ export default function TemplatePreviewPage() {
   const [syncTick, setSyncTick] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [copiedShareId, setCopiedShareId] = useState<string | null>(null);
+  // Ссылка на открытую страницу, где любой вводит имя гостя и получает именную ссылку.
+  async function copyShareLink(id: string) {
+    const url = `${window.location.origin}/share/${encodeURIComponent(id)}?lang=${locale}`;
+    try { await navigator.clipboard.writeText(url); }
+    catch { window.prompt(locale === "ru" ? "Скопируйте ссылку" : "Шилтемени көчүрүңүз", url); }
+    setCopiedShareId(id);
+    window.setTimeout(() => setCopiedShareId(current => current === id ? null : current), 2500);
+  }
   // The interactive renderer (Site3D / PinterestInvite / ThemedSiteInvite / etc.) pulls in
   // a lot of code. Show a lightweight static photo first and only mount the real,
   // heavy renderer once the person actually asks to see it.
@@ -297,6 +306,16 @@ export default function TemplatePreviewPage() {
                         >
                           <Pencil size={14} />
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() => void copyShareLink(inv.id)}
+                          disabled={Boolean(inv.linkDisabled)}
+                          aria-label={locale === "ru" ? "Копировать ссылку на страницу именных приглашений" : "Жеке чакыруулар барагынын шилтемесин көчүрүү"}
+                          title={inv.linkDisabled ? (locale === "ru" ? "Сначала включите ссылку" : "Адегенде шилтемени иштетиңиз") : (copiedShareId === inv.id ? (locale === "ru" ? "Ссылка скопирована" : "Шилтеме көчүрүлдү") : (locale === "ru" ? "Скопировать ссылку на страницу именных приглашений" : "Жеке чакыруулар барагынын шилтемесин көчүрүү"))}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--line)] text-ink-soft transition hover:text-ink disabled:opacity-50"
+                        >
+                          {copiedShareId === inv.id ? <Check size={14} /> : <Share2 size={14} />}
+                        </button>
                         <button
                           type="button"
                           onClick={() => void onToggleLink(inv.id, !inv.linkDisabled)}

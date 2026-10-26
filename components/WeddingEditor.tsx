@@ -16,6 +16,7 @@ import { invitationText } from "@/lib/inviteTranslations";
 import { useIsMobile } from "@/lib/useIsMobile";
 import { restoredTemplateImage, templateImageSource } from "@/lib/templateImageSources";
 import { useInvitationMotion } from "./InvitationMotion";
+import { personalizeText } from "@/lib/personalInvite";
 
 type EditorContext = {
   locale: string;
@@ -150,7 +151,8 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   };
   const rawValue = weddingValue(invitation, { id, label, kind, fallback, field, slot });
   const restored = restoredTemplateImage(crop);
-  const value = kind === "text" ? invitationText(rawValue, locale) : rawValue;
+  const translated = kind === "text" ? invitationText(rawValue, locale) : rawValue;
+  const value = kind === "text" && !onChange && invitation.guestName ? personalizeText(id, translated, invitation.guestName, locale) : translated;
   const sharedMotion = useInvitationMotion();
   const revealSection = !sharedMotion && !onChange && kind === "block" && id.startsWith("section-");
   const sectionSideRef = useRef<0 | 1 | null>(null);
