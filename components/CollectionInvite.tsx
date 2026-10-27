@@ -152,14 +152,14 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
         {order}
         {direction ? <section data-kyz-section="details">
           {text("details-title", tr("Кеченин маанайы", "Настроение вечера"), undefined, css.heading)}
-          <div className="kyz-swatches" aria-hidden="true"><i/><i/><i/><i/></div>
+          <WeddingPart id="details-swatches" label="Палитра" kind="block" className="kyz-swatches"><i/><i/><i/><i/></WeddingPart>
           {text("details-note", tr("Жылуу маанай жана ак тилек менен келиңиздер. Сиздердин катышууңуздар — биз үчүн эң баалуу белек.", "Приходите с добрыми пожеланиями и хорошим настроением. Ваше присутствие — самый дорогой подарок."))}
           {theme ? <WeddingPart id="photo-memory" label="Вторая фотография" kind="image" slot="memory" fallback={eventMediaSource(undefined, theme.hero)} className={eventCss.memory}><EventArtwork theme={theme}/></WeddingPart> : <WeddingPart id="photo-memory" label="Вторая фотография" kind="image" slot="memory" fallback={direction.photo ? kyzAsset(direction.photo) : eventArt(d.id).hero ?? d.photo} className="kyz-memory-photo" />}
         </section> : null}
         {d.event === "tushoo" ? <section data-kyz-section="dress" key="dress">
           {text("dress-title", tr("Кийим-кече", "Дресс-код"), undefined, css.heading)}
           {text("dress-note", tr("Майрамдын түстөрүн колдоп, жумшак пастель түстөгү кийимдерди тандаңыз.", "Будем рады, если вы поддержите палитру праздника нежными пастельными оттенками."))}
-          <div className="kyz-swatches" aria-hidden="true"><i/><i/><i/><i/></div>
+          <WeddingPart id="dress-swatches" label="Палитра" kind="block" className="kyz-swatches"><i/><i/><i/><i/></WeddingPart>
         </section> : null}
         <section className={css.countdown} data-kyz-section="countdown">
           {text("countdown-title", tr("Жолугушууга чейин", "До нашей встречи"), undefined, css.heading)}
@@ -168,6 +168,7 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
         <section className={css.rsvp} data-kyz-section="rsvp">
           {text("rsvp-title", tr("Келериңизди билдирип коюңуз", "Подтвердите участие"), undefined, css.heading)}
           {text("rsvp-note", tr("Сизге орун даярдоо үчүн жообуңузду күтөбүз.", "Ждём вашего ответа, чтобы подготовить для вас место."))}
+          <WeddingPart id="rsvp-form" label="Форма ответа" kind="widget">
           {!preview ? <form className={css.form} onSubmit={async e => {
             e.preventDefault();
             if(preview) return;
@@ -201,10 +202,11 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
             <label>{tr("Каалоо же комментарий", "Пожелания или комментарий")}<textarea disabled rows={3} /></label>
             <button className={css.button} type="button" disabled>{tr("Жоопту жөнөтүү", "Отправить ответ")}</button>
           </div>}
+          </WeddingPart>
         </section>
         {(onChange || inv.wishes?.some(w => !w.hidden)) ? <section className={css.wishes}><WishesCarousel invitation={inv} ru={ru} editable={!!onChange} onChange={onChange} /></section> : null}
       </div>
-      <footer className={css.footer}><CollectionArt motif={d.motif} />{text("footer-note", tr("Келгениңиз — биз үчүн чоң кубаныч!", "Ваше присутствие — наша радость!"), undefined, css.signature)}</footer>
+      <footer className={css.footer}><WeddingPart id="footer-art" label="Украшение" kind="block"><CollectionArt motif={d.motif} /></WeddingPart>{text("footer-note", tr("Келгениңиз — биз үчүн чоң кубаныч!", "Ваше присутствие — наша радость!"), undefined, css.signature)}</footer>
     </WeddingEditor>
   </div>;
 }

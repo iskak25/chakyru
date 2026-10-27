@@ -13,8 +13,13 @@ export function KyzCollectionHero({id, invitation, locale}: {id:string; invitati
   const photo = <WeddingPart id="photo-hero" label="Фотография девушки" kind="image" slot="hero" fallback={kyzAsset(d.photo)} className="kyz-photo" />;
   const date = <WeddingPart id="event-date" label="Дата и время" kind="date" className="kyz-date">{invitation.date.split('-').reverse().join(' · ')}<small>{invitation.time}</small></WeddingPart>;
   const venue = text('hero-venue', invitation.venue, 'venue', 'venue');
-  const flourish = <div className="kyz-flourish" aria-hidden="true"><CollectionArt motif={['torn','heritage','threshold'].includes(d.theme)?'ornament':'olive'} /></div>;
-  const ornament = <div className="kyz-flowers" aria-hidden="true" style={{backgroundImage:`url(${kyzAsset(d.decor)})`}} />;
+  // Украшения тоже отдельные блоки редактора (можно выбрать и удалить). Там, где CSS темы позиционирует их
+  // абсолютно, обёртка сломала бы раскладку, поэтому они остаются как есть.
+  const placed = ['garden','floral','seal','azure'].includes(d.theme);
+  const deco = (partId:string, label:string, node:React.ReactNode) => placed ? node : <WeddingPart id={partId} label={label} kind="block">{node}</WeddingPart>;
+  const flourish = deco('hero-flourish', 'Орнамент', <div className="kyz-flourish" aria-hidden="true"><CollectionArt motif={['torn','heritage','threshold'].includes(d.theme)?'ornament':'olive'} /></div>);
+  const ornament = deco('hero-flowers', 'Цветы', <div className="kyz-flowers" aria-hidden="true" style={{backgroundImage:`url(${kyzAsset(d.decor)})`}} />);
+  const satin = deco('hero-satin', 'Шёлк', <div className="kyz-satin"/>);
   const greeting = text('hero-greeting', ru ? 'Дорогие родные\nи близкие!' : 'Урматтуу туугандар,\nкадырлуу коноктор!', 'greeting');
   const monogram = <div className="kyz-monogram" aria-hidden="true">{(invitation.names || 'А').slice(0,1)}</div>;
   let content;
@@ -29,18 +34,18 @@ export function KyzCollectionHero({id, invitation, locale}: {id:string; invitati
     case 'threshold': content=<>{photo}<div className="kyz-paper">{title}{name}{flourish}{note}{date}</div></>;break;
     case 'azure': content=<><div className="kyz-blue">{title}{name}{photo}{monogram}</div>{date}{note}{flourish}</>;break;
     case 'cameo': content=<>{title}{name}{date}<div className="kyz-mirror">{photo}</div>{ornament}{note}</>;break;
-    case 'sapphire': content=<>{photo}<div className="kyz-satin"/>{greeting}{name}{title}{ornament}{date}</>;break;
+    case 'sapphire': content=<>{photo}{satin}{greeting}{name}{title}{ornament}{date}</>;break;
     case 'moon': content=<>{title}<div className="kyz-orbit">{photo}<span aria-hidden="true">✦</span></div>{name}{note}{date}{flourish}</>;break;
     case 'album': content=<>{title}{name}<div className="kyz-camera">{photo}<span aria-hidden="true">◉</span></div><div className="kyz-disco" aria-hidden="true"/>{note}{date}</>;break;
     case 'ice': content=<>{ornament}{title}<div className="kyz-arch">{photo}</div>{name}{note}{date}</>;break;
     case 'landscape': content=<>{title}{name}<div className="kyz-landscape">{photo}{ornament}</div>{note}{date}{venue}</>;break;
     case 'editorial': content=<>{title}<div className="kyz-editorial-name">{name}</div><div className="kyz-spread">{photo}<div>{date}{note}{flourish}</div></div>{venue}</>;break;
     case 'postcard': content=<><div className="kyz-stamp">{photo}</div>{title}{greeting}{name}{note}<div className="kyz-rule"/>{date}{ornament}</>;break;
-    case 'olive': content=<>{title}{name}{photo}<div className="kyz-satin"/>{ornament}{note}{date}</>;break;
+    case 'olive': content=<>{title}{name}{photo}{satin}{ornament}{note}{date}</>;break;
     case 'heritage': content=<><div className="kyz-heritage-border">{title}{photo}{name}{date}</div>{flourish}{note}</>;break;
     case 'heart': content=<>{title}{name}<div className="kyz-heart">{photo}</div>{ornament}{note}{date}</>;break;
     case 'ticket': content=<><div className="kyz-ticket-top">{title}{photo}{name}{note}</div><div className="kyz-ticket-bottom">{date}{venue}{ornament}</div></>;break;
-    case 'ribbon': content=<>{photo}<div className="kyz-paper">{title}{name}{note}{date}</div><div className="kyz-satin"/>{ornament}</>;break;
+    case 'ribbon': content=<>{photo}<div className="kyz-paper">{title}{name}{note}{date}</div>{satin}{ornament}</>;break;
     case 'petal': content=<>{title}{name}{date}<div className="kyz-wave">{photo}</div>{ornament}{note}</>;break;
     case 'sun': content=<><div className="kyz-sun" aria-hidden="true"/>{title}{name}{note}<div className="kyz-steps">{photo}</div>{date}{ornament}</>;break;
   }

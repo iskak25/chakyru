@@ -235,3 +235,6 @@
   .root :global(.kyz-location-photo) { height:220px; }.root :global(.kyz-memory-photo) { width:90%; height:300px; }
 }
 @media (prefers-reduced-motion:reduce) { .root * { scroll-behavior:auto; } }
+
+/* Отметка выбранной даты берёт цвет текста секции: на золотом фоне акцент темы сливается с ним. */
+.root :global([data-kyz-section="calendar"]) { --pin-accent:currentColor; }
