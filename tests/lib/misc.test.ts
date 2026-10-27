@@ -95,6 +95,12 @@ describe("buildShareMessage", () => {
     expect(text).toContain("Место: Зал, Бишкек");
     expect(text).toContain(url);
   });
+  it("takes the event from the title the owner wrote, not from the template", () => {
+    const kyzTemplate = makeInvitation({ eventType: "kyz", copy: { eventTitle: "Үйлөнүү той" } });
+    expect(buildShareMessage(kyzTemplate, "ru", url)).toContain("нашу свадьбу");
+    expect(buildShareMessage(kyzTemplate, "ky", url)).toContain("үйлөнүү тоюбузга");
+    expect(buildShareMessage(makeInvitation({ eventType: "kyz" }), "ru", url)).toContain("Кыз узатуу");
+  });
   it("builds a Kyrgyz message", () => {
     const text = buildShareMessage(inv, "ky", url);
     expect(text).toContain("үйлөнүү тоюбузга");

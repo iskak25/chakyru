@@ -1,4 +1,5 @@
 import type { EventType, Invitation } from "./types";
+import { eventExamples } from "./collectionTemplates";
 
 const EVENT_PHRASE_KY: Record<EventType, string> = {
   toi: "тоюбузга",
@@ -41,11 +42,19 @@ function formatShareDate(date: string, locale: string): string {
   return locale === "ru" ? `${day} ${name}` : `${day}-${name}`;
 }
 
-type ShareInvitationInfo = Pick<Invitation, "eventType" | "names" | "date" | "time" | "venue" | "city">;
+type ShareInvitationInfo = Pick<Invitation, "eventType" | "names" | "date" | "time" | "venue" | "city"> & { copy?: Invitation["copy"] };
+
+/** Название торжества, которое владелец вписал в приглашение («Үйлөнүү той»), важнее типа шаблона: шаблон кыз узатуу может быть выбран под свадьбу. */
+function eventTypeOf(invitation: ShareInvitationInfo): EventType {
+  const title = invitation.copy?.eventTitle?.trim().toLowerCase();
+  if (!title) return invitation.eventType;
+  const match = Object.entries(eventExamples).find(([, example]) => example.title.some(name => name.toLowerCase() === title));
+  return (match?.[0] as EventType | undefined) ?? invitation.eventType;
+}
 
 export function buildShareMessage(invitation: ShareInvitationInfo, locale: string, url: string, guestName = ""): string {
   const ru = locale === "ru";
-  const phrase = (ru ? EVENT_PHRASE_RU : EVENT_PHRASE_KY)[invitation.eventType] ?? (ru ? EVENT_PHRASE_RU.toi : EVENT_PHRASE_KY.toi);
+  const phrase = (ru ? EVENT_PHRASE_RU : EVENT_PHRASE_KY)[eventTypeOf(invitation)] ?? (ru ? EVENT_PHRASE_RU.toi : EVENT_PHRASE_KY.toi);
   const venue = [invitation.venue, invitation.city].filter(Boolean).join(", ");
   const dateLine = formatShareDate(invitation.date, locale);
 
