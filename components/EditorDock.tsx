@@ -25,7 +25,7 @@ import { useCatalog } from "@/lib/useCatalog";
 import type { InvitePatch } from "./CanvasEdit";
 import { CLOSE_EDIT_EVENT, EDIT_EVENT } from "./MoveCanvas";
 import { useIsMobile } from "@/lib/useIsMobile";
-import { MobileSheet } from "./MobileSheet";
+import { MobileSheet, SHEET_LOW, SHEET_WORK } from "./MobileSheet";
 import { ElementInspector } from "./ElementInspector";
 import { EnvelopeEditor } from "./EnvelopeEditor";
 import { MusicPicker } from "./MusicPicker";
@@ -398,7 +398,7 @@ export function EditorDock({
 
       {((panelNode) =>
         mobile ? (
-          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle}>
+          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle} initialSnap={tab === "element" ? SHEET_LOW : SHEET_WORK}>
             {panelNode}
           </MobileSheet>
         ) : (

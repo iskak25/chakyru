@@ -3,8 +3,10 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Drawer } from "vaul";
 
-/** Положения листа: половина экрана и почти весь экран. «Свернут» — закрыт, виден только тулбар. */
-export const SHEET_SNAPS = [0.45, 0.9];
+/** Положения листа: низкое (холст виден), рабочее для форм и сеток, почти весь экран. «Свернут» — закрыт, виден только тулбар. */
+export const SHEET_SNAPS = [0.45, 0.75, 0.9];
+export const SHEET_LOW = SHEET_SNAPS[0];
+export const SHEET_WORK = SHEET_SNAPS[1];
 
 /**
  * Нижний лист телефона (vaul, 3 положения: свернут / половина / почти весь экран).
@@ -15,17 +17,20 @@ export function MobileSheet({
   open,
   onClose,
   title,
+  initialSnap = SHEET_LOW,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** Высота при открытии и при смене содержимого: низкая, если нужен виден холст, рабочая для форм. */
+  initialSnap?: number;
   children: ReactNode;
 }) {
-  const [snap, setSnap] = useState<number | string | null>(SHEET_SNAPS[0]);
+  const [snap, setSnap] = useState<number | string | null>(initialSnap);
   useEffect(() => {
-    if (open) setSnap(SHEET_SNAPS[0]);
-  }, [open]);
+    if (open) setSnap(initialSnap);
+  }, [open, initialSnap]);
 
   return (
     <Drawer.Root
