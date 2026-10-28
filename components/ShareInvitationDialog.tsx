@@ -55,6 +55,41 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
     }
   }
 
+  // Именное приглашение: без текста и мессенджеров — одно нажатие отправляет только ссылку.
+  async function sendLink() {
+    if (!guestName) return;
+    if (typeof navigator.share === "function") {
+      try { await navigator.share({ url }); setError(""); return; }
+      catch (err) { if (err instanceof Error && err.name === "AbortError") return; }
+    }
+    await copyLink();
+  }
+
+  if (personal) return <>
+    <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label={ru ? "Язык ссылки" : "Шилтеменин тили"}>
+      {(["ru", "ky"] as const).map(l => (
+        <button key={l} type="button" aria-pressed={linkLang === l} onClick={() => setLinkLang(l)}
+          className={`min-h-11 rounded-xl border px-3 text-sm ${linkLang === l ? "bg-[#302a25] text-white" : "bg-white hover:bg-cream"}`}>
+          {l === "ru" ? "Русский" : "Кыргызча"}
+        </button>
+      ))}
+    </div>
+    <label className="mt-4 block text-sm">{ru ? "Имя гостя" : "Коноктун аты"}
+      <input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" value={guest} maxLength={60} autoFocus
+        placeholder={ru ? "Например: Айгерим" : "Мисалы: Айгерим"} onChange={e => { setGuest(e.target.value); setCopied(false); }} />
+    </label>
+    <button className="mt-4 min-h-12 w-full rounded-xl bg-[#302a25] p-3 text-sm text-white disabled:opacity-40" type="button" disabled={!guestName} onClick={() => void sendLink()}>
+      {ru ? "Отправить ссылку" : "Шилтемени жөнөтүү"}
+    </button>
+    {!guestName && <p className="mt-2 text-xs text-ink-soft">{ru ? "Введите имя гостя, чтобы получить его личную ссылку." : "Коноктун жеке шилтемесин алуу үчүн атын жазыңыз."}</p>}
+    {guestName && <>
+      <label className="mt-4 block text-sm">{ru ? "Ссылка для гостя" : "Коноктун шилтемеси"}<input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" readOnly value={url} onFocus={e => e.currentTarget.select()} /></label>
+      <button className="mt-3 min-h-11 w-full rounded-xl border bg-white p-3 text-sm hover:bg-cream" type="button" onClick={() => void copyLink()}>{ru ? "Копировать ссылку" : "Шилтемени көчүрүү"}</button>
+    </>}
+    {copied && <p role="status" className="mt-3 text-sm">{ru ? "Ссылка скопирована — вставьте её в сообщение гостю." : "Шилтеме көчүрүлдү — аны конокко билдирүүгө чаптаңыз."}</p>}
+    {error && <p role="alert" className="mt-3 text-sm">{error}</p>}
+  </>;
+
   const linkClass = "flex min-h-12 items-center justify-center rounded-xl border bg-white px-4 py-3 text-sm hover:bg-cream";
   return <>
     <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label={ru ? "Язык ссылки" : "Шилтеменин тили"}>
