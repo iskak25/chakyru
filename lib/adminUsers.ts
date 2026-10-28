@@ -93,17 +93,21 @@ export async function listAdminUsers(): Promise<AdminUserRow[]> {
   // local dev, which doesn't bundle the same way, masking the bug there).
   // Reading Firestore directly sidesteps the broken dependency entirely.
   const snap = await db.collection("users").get();
-  const rows: AdminUserRow[] = [];
-  for (const doc of snap.docs) {
-    const row = await db.runTransaction(async tx => {
+  const rows = await Promise.all(snap.docs.map(async doc => {
+    const data = doc.data();
+    const account = canonicalAccount(data);
+    const stale = Object.entries(account).some(([key, value]) => data[key] !== value);
+    // Один запрос на всех; транзакция (перечитать и записать) — только для записей, которые надо обновить,
+    // например у которых истёк срок Pro. Раньше транзакция шла по очереди на каждого пользователя.
+    if (!stale) return rowFromFirestore(doc.id, { ...data, ...account });
+    return db.runTransaction(async tx => {
       const fresh = await tx.get(doc.ref);
       if (!fresh.exists) return null;
-      const data = fresh.data() ?? {};
-      const account = canonicalAccount(data);
-      if (Object.entries(account).some(([key, value]) => data[key] !== value)) tx.set(doc.ref, account, { merge: true });
-      return rowFromFirestore(doc.id, { ...data, ...account });
+      const current = fresh.data() ?? {};
+      const next = canonicalAccount(current);
+      if (Object.entries(next).some(([key, value]) => current[key] !== value)) tx.set(doc.ref, next, { merge: true });
+      return rowFromFirestore(doc.id, { ...current, ...next });
     });
-    if (row) rows.push(row);
-  }
-  return rows.sort((a, b) => a.email.localeCompare(b.email));
+  }));
+  return rows.filter((row): row is AdminUserRow => row !== null).sort((a, b) => a.email.localeCompare(b.email));
 }
