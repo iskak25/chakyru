@@ -6,8 +6,10 @@ import { firebaseIdToken } from "@/lib/firebase";
 import { useI18n } from "@/lib/locale";
 import { effectiveAccount } from "@/lib/proAccess";
 import { adminUserErrorMessage } from "@/lib/adminUserErrors";
+import { paginate } from "@/lib/pagination";
 
 type Role = "guest" | "pro" | "admin";
+const PAGE_SIZE = 20;
 export function AdminUsers() {
   const { t, locale } = useI18n();
   const ru = locale === "ru";
@@ -18,6 +20,8 @@ export function AdminUsers() {
   const [busy, setBusy] = useState<string | null>(null);
   const [drafts, setDrafts] = useState<Record<string, { role: Role; months: number }>>({});
   const [now, setNow] = useState(Date.now());
+  const [page, setPage] = useState(1);
+  const view = paginate(users, page, PAGE_SIZE);
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -64,11 +68,15 @@ export function AdminUsers() {
     </div>
     {error && <p role="alert" className="mb-4 text-sm text-rose">{error}</p>}
     {ready && !users.length && !error && <p className="text-sm text-ink-soft">{t.admin.emptyUsers}</p>}
+    {!!users.length && <p className="mb-3 text-sm" aria-live="polite">
+      <strong className="font-medium">{ru ? "Всего пользователей" : "Бардык колдонуучулар"}: {view.total}</strong>
+      <span className="ml-3 text-ink-soft">{view.from}–{view.to}</span>
+    </p>}
     {!!users.length && <div className="overflow-x-auto bg-cream-deep"><table className="w-full min-w-[850px] text-left text-sm">
       <thead className="border-b border-ink/10 text-xs text-ink-soft"><tr>
         {[t.admin.name, t.admin.email, t.admin.role, ru ? "Pro действует до" : "Pro мөөнөтү", ru ? "Изменить роль" : "Ролду өзгөртүү"].map(title => <th key={title} className="px-4 py-3 font-medium">{title}</th>)}
       </tr></thead>
-      <tbody>{users.map(user => {
+      <tbody>{view.items.map(user => {
         const currentRole = effectiveAccount(user, now).accountRole as Role;
         const draft = drafts[user.firebaseUid] || { role: currentRole, months: 1 };
         const disabled = busy !== null || loading || user.protectedAdmin;
@@ -87,5 +95,10 @@ export function AdminUsers() {
         </tr>;
       })}</tbody>
     </table></div>}
+    {view.pages > 1 && <nav aria-label={ru ? "Страницы" : "Баракчалар"} className="mt-4 flex items-center justify-center gap-3 text-sm">
+      <button type="button" disabled={view.page <= 1} onClick={() => setPage(view.page - 1)} aria-label={ru ? "Предыдущая страница" : "Мурунку барак"} className="h-11 min-w-11 border border-ink/20 px-3 disabled:opacity-40">‹</button>
+      <span className="tabular-nums">{view.page} / {view.pages}</span>
+      <button type="button" disabled={view.page >= view.pages} onClick={() => setPage(view.page + 1)} aria-label={ru ? "Следующая страница" : "Кийинки барак"} className="h-11 min-w-11 border border-ink/20 px-3 disabled:opacity-40">›</button>
+    </nav>}
   </div>;
 }
