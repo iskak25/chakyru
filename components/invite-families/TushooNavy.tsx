@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { FloatingMusicButton } from "../FloatingMusicButton";
 import { effectiveMusicUrl } from "@/lib/music";
 import { InviteAudio } from "../InviteAudio";
 import type { Invitation, RsvpStatus } from "@/lib/types";
@@ -58,9 +58,7 @@ export function TushooNavyInvite({ invitation, locale, labels, onChange, onReloa
   }} />
     {musicSrc ? <>
       <InviteAudio src={musicSrc} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
-      <button type="button" data-export-hide onClick={() => setPlaying(p => !p)} aria-label={musicLabel} className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45">
-        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
-      </button>
+      <FloatingMusicButton playing={playing} onToggle={() => setPlaying(p => !p)} label={musicLabel} />
     </> : null}
   </div>;
 }

@@ -5,7 +5,8 @@ import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useId, useState, type CSSProperties, type ReactNode } from "react";
-import { ArrowDown, Baby, Camera, Footprints, Heart, MapPin, Sparkles, Utensils, Volume2, VolumeX } from "lucide-react";
+import { ArrowDown, Baby, Camera, Footprints, Heart, MapPin, Sparkles, Utensils } from "lucide-react";
+import { FloatingMusicButton } from "./FloatingMusicButton";
 import type { Invitation } from "@/lib/types";
 import type { PinterestDesign } from "@/lib/pinterestTemplates";
 import { effectiveMusicUrl } from "@/lib/music";
@@ -108,15 +109,11 @@ export function FamilySiteInvite({invitation:inv,design,locale,onChange,selected
     </WeddingEditor>
     {musicSrc ? <>
       <InviteAudio src={musicSrc} playing={playing} start={inv.musicStart} end={inv.musicEnd} />
-      <button
-        type="button"
-        data-export-hide
-        onClick={() => setPlaying(p => !p)}
-        aria-label={tr(playing ? "Выключить музыку" : "Включить музыку", playing ? "Музыканы өчүрүү" : "Музыканы күйгүзүү")}
-        className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
-      >
-        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
-      </button>
+      <FloatingMusicButton
+        playing={playing}
+        onToggle={() => setPlaying(p => !p)}
+        label={tr(playing ? "Выключить музыку" : "Включить музыку", playing ? "Музыканы өчүрүү" : "Музыканы күйгүзүү")}
+      />
     </> : null}
   </div>;
 }

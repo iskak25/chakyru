@@ -2,7 +2,7 @@
 
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { FloatingMusicButton } from "./FloatingMusicButton";
 import type { Invitation } from "@/lib/types";
 import type { InvitePatch } from "./CanvasEdit";
 import { effectiveMusicUrl, youtubeId } from "@/lib/music";
@@ -464,14 +464,11 @@ export function Site3D({
         <>
           <InviteAudio src={musicSrc} audioRef={audioRef} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
           {open && !opening ? (
-            <button
-              type="button"
-              onClick={() => setPlaying((p) => !p)}
-              aria-label={playing ? (locale === "ru" ? "Выключить музыку" : "Музыканы өчүрүү") : (locale === "ru" ? "Включить музыку" : "Музыканы күйгүзүү")}
-              className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
-            >
-              {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            </button>
+            <FloatingMusicButton
+              playing={playing}
+              onToggle={() => setPlaying((p) => !p)}
+              label={playing ? (locale === "ru" ? "Выключить музыку" : "Музыканы өчүрүү") : (locale === "ru" ? "Включить музыку" : "Музыканы күйгүзүү")}
+            />
           ) : null}
         </>
       ) : null}

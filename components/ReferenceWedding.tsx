@@ -5,7 +5,8 @@ import { guestFetch, guestFeedback } from "@/lib/guestSubmission";
 import { invitationMapUrl } from "@/lib/defaultVenue";
 
 import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
-import { Camera, Gem, Heart, Music2, Sparkles, Utensils, Volume2, VolumeX, Wine } from "lucide-react";
+import { Camera, Gem, Heart, Music2, Sparkles, Utensils, Wine } from "lucide-react";
+import { FloatingMusicButton } from "./FloatingMusicButton";
 import type { Invitation, RsvpStatus } from "@/lib/types";
 import type { ReferenceWedding as Design } from "@/lib/referenceWeddings";
 import { effectiveMusicUrl } from "@/lib/music";
@@ -142,14 +143,11 @@ export function ReferenceWedding({ invitation, design, locale, onChange, selecte
     <WeddingEditor invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale}>{content}</WeddingEditor>
     {musicSrc ? <>
       <InviteAudio src={musicSrc} playing={playing} start={invitation.musicStart} end={invitation.musicEnd} />
-      <button
-        type="button"
-        onClick={() => setPlaying(p => !p)}
-        aria-label={tr(playing ? (english ? "Mute music" : "Выключить музыку") : (english ? "Play music" : "Включить музыку"))}
-        className="fixed bottom-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur transition hover:bg-black/45"
-      >
-        {playing ? <Volume2 size={16} /> : <VolumeX size={16} />}
-      </button>
+      <FloatingMusicButton
+        playing={playing}
+        onToggle={() => setPlaying(p => !p)}
+        label={tr(playing ? (english ? "Mute music" : "Выключить музыку") : (english ? "Play music" : "Включить музыку"))}
+      />
     </> : null}
   </div>;
 }
