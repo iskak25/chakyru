@@ -29,6 +29,8 @@ export function StockPhotos({
   const [items, setItems] = useState<StockPhoto[]>([]);
   const [source, setSource] = useState<StockPage["source"]>("openverse");
   const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -44,24 +46,38 @@ export function StockPhotos({
   useEffect(() => {
     let live = true;
     setBusy(true);
+    setFailed(false);
     const url = `/api/stock?q=${encodeURIComponent(q)}&page=${page}`;
-    fetch(url)
-      .then((res) => res.json() as Promise<StockPage>)
+    // Сервер ждёт провайдеров до ~6 с каждого; клиент не ждёт дольше 15 с и отменяет запрос при смене поиска.
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 15000);
+    fetch(url, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        return res.json() as Promise<StockPage>;
+      })
       .then((data) => {
         if (!live) return;
         setSource(data.source);
         setItems((was) => (page === 1 ? data.items : [...was, ...data.items]));
       })
       .catch(() => {
-        if (page === 1 && live) setItems([]);
+        if (!live) return;
+        if (page === 1) setItems([]);
+        setFailed(true);
       })
       .finally(() => {
+        window.clearTimeout(timer);
         if (live) setBusy(false);
       });
     return () => {
       live = false;
+      window.clearTimeout(timer);
+      controller.abort();
     };
-  }, [q, page]);
+  }, [q, page, attempt]);
+
+  const ru = locale === "ru";
 
   return (
     <div className="space-y-2">
@@ -116,8 +132,16 @@ export function StockPhotos({
           ))}
         </div>
       ) : (
-        <p className="py-4 text-center text-xs text-ink-soft">{busy ? "…" : labels.empty}</p>
+        <p className="py-4 text-center text-xs text-ink-soft">{busy ? "…" : failed ? null : labels.empty}</p>
       )}
+      {failed ? (
+        <div role="alert" className="flex items-center justify-between gap-2 rounded-xl bg-red-50 px-3 py-2 text-xs text-red-700">
+          <span>{ru ? "Не удалось загрузить фото. Проверьте интернет." : "Сүрөттөр жүктөлгөн жок. Интернетти текшериңиз."}</span>
+          <button type="button" onClick={() => setAttempt((n) => n + 1)} className="min-h-11 shrink-0 rounded-lg border border-red-200 px-3 uppercase tracking-[0.1em]">
+            {ru ? "Повторить" : "Кайра"}
+          </button>
+        </div>
+      ) : null}
       {items.length ? (
         <button
           type="button"

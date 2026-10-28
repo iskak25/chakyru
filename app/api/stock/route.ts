@@ -5,6 +5,9 @@ export const dynamic = "force-dynamic";
 
 const UA = "Toichakyru/1.0 (wedding invitations; localhost)";
 
+// Один зависший провайдер не должен держать запрос: через это время переходим к следующему.
+const PROVIDER_TIMEOUT_MS = 6000;
+
 function num(value: string | null, fallback: number) {
   const n = Number(value);
   return Number.isFinite(n) && n > 0 ? n : fallback;
@@ -21,7 +24,7 @@ async function fromPexels(q: string, page: number): Promise<StockPage | null> {
   url.searchParams.set("query", q);
   url.searchParams.set("per_page", "24");
   url.searchParams.set("page", String(page));
-  const res = await fetch(url, { headers: { Authorization: key, "User-Agent": UA } });
+  const res = await fetch(url, { headers: { Authorization: key, "User-Agent": UA }, signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS) });
   if (!res.ok) return null;
   const data = (await res.json()) as {
     photos?: { id: number; alt?: string; photographer?: string; src?: { medium?: string; large?: string } }[];
@@ -46,7 +49,7 @@ async function fromUnsplash(q: string, page: number): Promise<StockPage | null> 
   url.searchParams.set("per_page", "24");
   url.searchParams.set("page", String(page));
   url.searchParams.set("orientation", "portrait");
-  const res = await fetch(url, { headers: { Authorization: `Client-ID ${key}`, "User-Agent": UA } });
+  const res = await fetch(url, { headers: { Authorization: `Client-ID ${key}`, "User-Agent": UA }, signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS) });
   if (!res.ok) return null;
   const data = (await res.json()) as {
     results?: {
@@ -78,6 +81,7 @@ async function fromOpenverse(q: string, page: number): Promise<StockPage> {
   const res = await fetch(url, {
     headers: { "User-Agent": UA, Accept: "application/json" },
     cache: "no-store",
+    signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
   });
   if (!res.ok) return { items: [], page, source: "openverse" };
   const data = (await res.json()) as {
@@ -99,11 +103,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = clip(searchParams.get("q") || "elegant wedding");
   const page = num(searchParams.get("page"), 1);
-  try {
-    const pageData =
-      (await fromPexels(q, page)) || (await fromUnsplash(q, page)) || (await fromOpenverse(q, page));
-    return NextResponse.json(pageData);
-  } catch {
-    return NextResponse.json({ items: [], page, source: "openverse" } satisfies StockPage, { status: 200 });
+  for (const provider of [fromPexels, fromUnsplash, fromOpenverse]) {
+    try {
+      const pageData = await provider(q, page);
+      if (pageData) return NextResponse.json(pageData);
+    } catch {
+      // Таймаут или сбой сети у этого провайдера — пробуем следующего.
+    }
   }
+  return NextResponse.json({ error: "stock_unavailable" }, { status: 502 });
 }

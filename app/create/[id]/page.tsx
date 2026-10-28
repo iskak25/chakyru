@@ -452,7 +452,6 @@ function EditorPageInner() {
                     {t.editor.share}
                   </button> : null}
                   {editLinkNote ? <p role="status" className="w-full text-xs text-ink-soft">{editLinkNote}</p> : null}
-                  {shareOpen && paid && <ShareInvitationDialog key={String(sharePersonal)} invitation={inv} locale={locale} personal={sharePersonal} onClose={() => { setShareOpen(false); setSharePersonal(false); }} />}
                   <button
                     type="button"
                     onClick={() => void openPublished(false)}
@@ -499,6 +498,9 @@ function EditorPageInner() {
               </button>
             </div>
           )}
+
+          {/* Вне блока max-sm:hidden: иначе на телефоне окно открывается внутри скрытого предка и его не видно. */}
+          {shareOpen && paid && <ShareInvitationDialog key={String(sharePersonal)} invitation={inv} locale={locale} personal={sharePersonal} onClose={() => { setShareOpen(false); setSharePersonal(false); }} />}
 
           {publishError && <p role="alert" className="mb-4 text-sm text-red-700">{publishError}</p>}
           <p className="mb-6 text-center text-sm text-ink-soft max-sm:hidden">{t.editor.tapHint}</p>

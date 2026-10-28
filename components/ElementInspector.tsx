@@ -12,6 +12,46 @@ import { restoreWeddingPart, weddingStyle, weddingStylePatch, weddingTextPatch, 
 import { uploadInvitationImage } from "@/lib/uploadImage";
 import type { InvitePatch } from "./CanvasEdit";
 
+const FONT_MIN = 8;
+const FONT_MAX = 100;
+const clampFont = (n: number) => Math.min(FONT_MAX, Math.max(FONT_MIN, Math.round(n)));
+
+/** Размер текста: черновик хранится строкой, чтобы «24» не превращалось в «84»; границы применяются при Enter/уходе из поля. */
+function FontSizeField({ value, onCommit, label, css }: { value: string; onCommit: (value: string) => void; label: string; css: string }) {
+  const [draft, setDraft] = useState(value);
+  // Внешнее значение изменилось (другой элемент, отмена действия) — черновик берёт его; набор «24» его не трогает, пока не зафиксирован.
+  const [seen, setSeen] = useState(value);
+  if (seen !== value) { setSeen(value); setDraft(value); }
+  function change(text: string) {
+    const digits = text.replace(/\D/g, "").slice(0, 3);
+    setDraft(digits);
+    const n = Number(digits);
+    // В холст уходят только значения в допустимых границах; промежуточные («2» при вводе «24») ждут завершения.
+    if (digits && n >= FONT_MIN && n <= FONT_MAX) onCommit(String(n));
+  }
+  function finish() {
+    if (!draft) { onCommit(""); return; }
+    const next = String(clampFont(Number(draft)));
+    setDraft(next);
+    onCommit(next);
+  }
+  function step(delta: number) {
+    const base = Number(draft) || 22;
+    const next = String(clampFont(base + delta));
+    setDraft(next);
+    onCommit(next);
+  }
+  const btn = "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-black/15 bg-white text-lg";
+  return <div className="text-xs">{label}
+    <div className="mt-1 flex items-center gap-1">
+      <button type="button" aria-label={`${label} −`} className={btn} onClick={() => step(-2)}>−</button>
+      <input aria-label={label} inputMode="numeric" className={`${css} h-11 text-center text-base`} value={draft} placeholder="Авто"
+        onChange={e => change(e.target.value)} onBlur={finish} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); finish(); } }} />
+      <button type="button" aria-label={`${label} +`} className={btn} onClick={() => step(2)}>+</button>
+    </div>
+  </div>;
+}
+
 export function ElementInspector({ invitation, onChange, selected, select, parts, locale }: {
   invitation: Invitation; onChange: InvitePatch; selected: string | null; select: (id: string | null) => void; parts: WeddingPartInfo[]; locale: string;
 }) {
@@ -32,7 +72,7 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
   function style(property: string, value: string) {
     if (!selected) return;
     if (extra && property === "fontSize") {
-      onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, fontSize: Number(value) } : item) });
+      onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, fontSize: value ? Number(value) : undefined } : item) });
     } else onChange(weddingStylePatch(invitation, selected, property, value));
   }
   function image(src: string, target = selected, imagePart = part) {
@@ -91,7 +131,7 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
       {selected === "map-button" || selected === "map-label" || extra?.kind === "button" ? <label className="block text-xs">Ссылка<input aria-label="Ссылка кнопки" className={css} value={extra ? extra.url || "" : invitation.mapUrl} onChange={e => extra ? onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, url: e.target.value } : item) }) : onChange({ mapUrl: e.target.value })} /></label> : null}
       {selected ? <div className="grid grid-cols-2 gap-2">
         <label className="text-xs">{part?.kind === "block" ? "Фон блока" : "Цвет"}<input aria-label="Цвет элемента" type="color" className="block h-8 w-full" value={extra?.color || invitation.blockColors?.[selected] || "#443a31"} onChange={e => extra ? onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, color: e.target.value } : item) }) : onChange({ blockColors: { ...invitation.blockColors, [selected]: e.target.value } })} /></label>
-        {isText ? <label className="text-xs">Размер текста<input aria-label="Размер текста" type="number" min="8" max="100" className={css} value={extra?.fontSize ?? weddingStyle(invitation, selected, "fontSize") ?? ""} placeholder="Авто" onChange={e => style("fontSize", e.target.value ? String(Math.min(100, Math.max(8, Number(e.target.value)))) : "")} /></label> : null}
+        {isText ? <FontSizeField key={selected} label="Размер текста" css={css} value={String(extra?.fontSize ?? weddingStyle(invitation, selected, "fontSize") ?? "")} onCommit={value => style("fontSize", value)} /> : null}
         {isText && !extra ? <><label className="text-xs">Шрифт<select aria-label="Шрифт" className={css} value={weddingStyle(invitation, selected, "fontFamily") || ""} onChange={e => style("fontFamily", e.target.value)}><option value="">По макету</option><option value="var(--font-cormorant), serif">Классический</option><option value="var(--font-manrope), sans-serif">Современный</option><option value="var(--font-ceremonial), cursive">Рукописный</option></select></label><label className="text-xs">Выравнивание<select aria-label="Выравнивание" className={css} value={weddingStyle(invitation, selected, "align") || ""} onChange={e => style("align", e.target.value)}><option value="">По макету</option><option value="left">Слева</option><option value="center">По центру</option><option value="right">Справа</option></select></label></> : null}
       </div> : null}
       {selected && !extra ? <details><summary className="cursor-pointer text-xs">Положение и оформление</summary><div className="mt-2 grid grid-cols-3 gap-2">
