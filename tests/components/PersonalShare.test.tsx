@@ -6,34 +6,44 @@ import { makeInvitation } from "../fixtures";
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
-describe("именное приглашение: отправляется только ссылка", () => {
-  it("нет текста и кнопок мессенджеров; без имени отправка закрыта", () => {
-    render(<ShareInvitationPanel invitation={makeInvitation({ id: "abc" })} locale="ru" personal />);
+const renderPanel = (locale = "ru") => render(<ShareInvitationPanel invitation={makeInvitation({ id: "abc" })} locale={locale} personal />);
+const typeName = (placeholder: string, value: string) => fireEvent.change(screen.getByPlaceholderText(placeholder), { target: { value } });
+
+describe("именное приглашение: 4 кнопки, отправляется только ссылка", () => {
+  it("текста нет; без имени все четыре кнопки закрыты", () => {
+    renderPanel();
     expect(document.querySelector("textarea")).toBeNull();
-    for (const name of ["WhatsApp", "Telegram", "Instagram"]) expect(screen.queryByText(name)).toBeNull();
-    expect((screen.getByText("Отправить ссылку") as HTMLButtonElement).disabled).toBe(true);
+    for (const name of ["WhatsApp", "Telegram", "Instagram", "Скопировать"]) {
+      expect((screen.getByText(name) as HTMLButtonElement).disabled).toBe(true);
+    }
   });
 
-  it("по нажатию уходит одна именная ссылка без текста", async () => {
-    const share = vi.fn().mockResolvedValue(undefined);
-    vi.stubGlobal("navigator", { ...navigator, share });
-    render(<ShareInvitationPanel invitation={makeInvitation({ id: "abc" })} locale="ru" personal />);
-    fireEvent.change(screen.getByPlaceholderText("Например: Айгерим"), { target: { value: "Айгерим" } });
-    fireEvent.click(screen.getByText("Отправить ссылку"));
-    await waitFor(() => expect(share).toHaveBeenCalledTimes(1));
-    const arg = share.mock.calls[0][0];
-    expect(Object.keys(arg)).toEqual(["url"]);
-    expect(arg.url).toContain(`/i/${encodeURIComponent("Айгерим")}/abc?lang=ru`);
+  it("WhatsApp и Telegram получают одну именную ссылку без текста", () => {
+    renderPanel();
+    typeName("Например: Айгерим", "Айгерим");
+    const link = `${window.location.origin}/i/${encodeURIComponent("Айгерим")}/abc?lang=ru`;
+    expect(screen.getByText("WhatsApp").getAttribute("href")).toBe(`https://wa.me/?text=${encodeURIComponent(link)}`);
+    expect(screen.getByText("Telegram").getAttribute("href")).toBe(`https://t.me/share/url?url=${encodeURIComponent(link)}`);
   });
 
-  it("без Web Share ссылка копируется", async () => {
+  it("«Скопировать» копирует ссылку, а не текст", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal("navigator", { clipboard: { writeText } });
-    render(<ShareInvitationPanel invitation={makeInvitation({ id: "abc" })} locale="ky" personal />);
-    fireEvent.change(screen.getByPlaceholderText("Мисалы: Айгерим"), { target: { value: "Нурлан" } });
-    fireEvent.click(screen.getByText("Шилтемени жөнөтүү"));
+    renderPanel("ky");
+    typeName("Мисалы: Айгерим", "Нурлан");
+    fireEvent.click(screen.getByText("Көчүрүү"));
     await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
-    expect(writeText.mock.calls[0][0]).toContain("/i/");
+    expect(writeText.mock.calls[0][0]).toMatch(/\/i\/.+\/abc\?lang=ky$/);
     expect(await screen.findByRole("status")).toBeTruthy();
+  });
+
+  it("Instagram отправляет через системное меню только url", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal("navigator", { share });
+    renderPanel();
+    typeName("Например: Айгерим", "Айгерим");
+    fireEvent.click(screen.getByText("Instagram"));
+    await waitFor(() => expect(share).toHaveBeenCalledTimes(1));
+    expect(Object.keys(share.mock.calls[0][0])).toEqual(["url"]);
   });
 });

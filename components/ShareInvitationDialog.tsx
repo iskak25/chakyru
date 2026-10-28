@@ -55,14 +55,19 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
     }
   }
 
-  // Именное приглашение: без текста и мессенджеров — одно нажатие отправляет только ссылку.
-  async function sendLink() {
-    if (!guestName) return;
+  // Именное приглашение: без текста — каждая кнопка отправляет только ссылку.
+  async function linkToInstagram() {
     if (typeof navigator.share === "function") {
       try { await navigator.share({ url }); setError(""); return; }
       catch (err) { if (err instanceof Error && err.name === "AbortError") return; }
     }
-    await copyLink();
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+    } catch {
+      setError(ru ? "Скопируйте ссылку ниже и вставьте её в Instagram." : "Төмөндөгү шилтемени көчүрүп, Instagram'га чаптаңыз.");
+    }
   }
 
   if (personal) return <>
@@ -78,14 +83,21 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
       <input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" value={guest} maxLength={60} autoFocus
         placeholder={ru ? "Например: Айгерим" : "Мисалы: Айгерим"} onChange={e => { setGuest(e.target.value); setCopied(false); }} />
     </label>
-    <button className="mt-4 min-h-12 w-full rounded-xl bg-[#302a25] p-3 text-sm text-white disabled:opacity-40" type="button" disabled={!guestName} onClick={() => void sendLink()}>
-      {ru ? "Отправить ссылку" : "Шилтемени жөнөтүү"}
-    </button>
-    {!guestName && <p className="mt-2 text-xs text-ink-soft">{ru ? "Введите имя гостя, чтобы получить его личную ссылку." : "Коноктун жеке шилтемесин алуу үчүн атын жазыңыз."}</p>}
-    {guestName && <>
-      <label className="mt-4 block text-sm">{ru ? "Ссылка для гостя" : "Коноктун шилтемеси"}<input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" readOnly value={url} onFocus={e => e.currentTarget.select()} /></label>
-      <button className="mt-3 min-h-11 w-full rounded-xl border bg-white p-3 text-sm hover:bg-cream" type="button" onClick={() => void copyLink()}>{ru ? "Копировать ссылку" : "Шилтемени көчүрүү"}</button>
-    </>}
+    {(() => {
+      const cls = "flex min-h-12 items-center justify-center rounded-xl border bg-white px-4 py-3 text-sm hover:bg-cream disabled:opacity-40 disabled:hover:bg-white";
+      return <div className="my-4 grid grid-cols-2 gap-3">
+        {guestName
+          ? <a className={cls} target="_blank" rel="noopener noreferrer" href={`https://wa.me/?text=${encodeURIComponent(url)}`}>WhatsApp</a>
+          : <button className={cls} type="button" disabled>WhatsApp</button>}
+        {guestName
+          ? <a className={cls} target="_blank" rel="noopener noreferrer" href={`https://t.me/share/url?url=${encodeURIComponent(url)}`}>Telegram</a>
+          : <button className={cls} type="button" disabled>Telegram</button>}
+        <button className={cls} type="button" disabled={!guestName} onClick={() => void linkToInstagram()}>Instagram</button>
+        <button className={cls} type="button" disabled={!guestName} onClick={() => void copyLink()}>{ru ? "Скопировать" : "Көчүрүү"}</button>
+      </div>;
+    })()}
+    {!guestName && <p className="text-xs text-ink-soft">{ru ? "Введите имя гостя, чтобы получить его личную ссылку." : "Коноктун жеке шилтемесин алуу үчүн атын жазыңыз."}</p>}
+    {guestName && <label className="block text-sm">{ru ? "Ссылка для гостя" : "Коноктун шилтемеси"}<input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" readOnly value={url} onFocus={e => e.currentTarget.select()} /></label>}
     {copied && <p role="status" className="mt-3 text-sm">{ru ? "Ссылка скопирована — вставьте её в сообщение гостю." : "Шилтеме көчүрүлдү — аны конокко билдирүүгө чаптаңыз."}</p>}
     {error && <p role="alert" className="mt-3 text-sm">{error}</p>}
   </>;
