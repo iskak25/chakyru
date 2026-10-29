@@ -62,16 +62,16 @@ export function Header() {
           isHome ? "fixed inset-x-0 top-0" : "sticky top-0"
         } ${overHero ? "over-hero bg-transparent text-ink" : "bg-page/95 text-ink"}`}
       >
-        <div className="relative mx-auto flex h-[76px] max-w-[1320px] items-center justify-between px-5 sm:h-[88px] sm:px-8 lg:px-12 xl:px-16">
+        <div className="relative mx-auto flex h-14 max-w-[1320px] items-center justify-between px-4 sm:px-8 lg:h-[88px] lg:px-12 xl:px-16">
           <button
             type="button"
-            className="flex min-h-11 min-w-11 items-center justify-start text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50"
+            className="flex min-h-11 min-w-11 items-center justify-start max-lg:hidden text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50"
             onClick={() => setOpen(true)}
           >
             Menu
           </button>
 
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-lg:static max-lg:translate-x-0 max-lg:translate-y-0">
             <Logo tone={tone} />
           </div>
 
