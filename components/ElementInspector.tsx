@@ -154,6 +154,12 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
       {selected ? <div className="grid grid-cols-2 gap-2">
         <label className="text-xs">{part?.kind === "block" ? "Фон блока" : "Цвет"}<input aria-label="Цвет элемента" type="color" className="block h-8 w-full" value={extra?.color || invitation.blockColors?.[selected] || "#443a31"} onChange={e => extra ? onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, color: e.target.value } : item) }) : onChange({ blockColors: { ...invitation.blockColors, [selected]: e.target.value } })} /></label>
         {isText ? <FontSizeField key={selected} label="Размер текста" css={css} value={String(extra?.fontSize ?? weddingStyle(invitation, selected, "fontSize") ?? "")} onCommit={value => style("fontSize", value)} /> : null}
+        {part?.kind === "text" ? (() => {
+          // Ширина блока — то же поле layout[id].w, что меняют маркеры на холсте. Блок сужается вокруг своего центра.
+          const box = invitation.layout?.[part.id] ?? { x: 0, y: 0, w: 100, h: 0, z: 8 };
+          const setWidth = (w: number) => onChange({ layout: { ...invitation.layout, [part.id]: { ...box, w, x: box.x + (box.w - w) / 2 } } });
+          return <label className="block text-xs">{ru ? "Ширина текста" : "Тексттин туурасы"}: {Math.round(box.w)}%<input aria-label={ru ? "Ширина текста" : "Тексттин туурасы"} type="range" min={20} max={100} step={1} className="block h-11 w-full" value={Math.min(100, Math.round(box.w))} onChange={e => setWidth(Number(e.target.value))} /></label>;
+        })() : null}
         {isText && !extra ? <><label className="text-xs">Выравнивание<select aria-label="Выравнивание" className={css} value={weddingStyle(invitation, selected, "align") || ""} onChange={e => style("align", e.target.value)}><option value="">По макету</option><option value="left">Слева</option><option value="center">По центру</option><option value="right">Справа</option></select></label></> : null}
       </div> : null}
       {selected && isText && !extra ? <div className="grid grid-cols-2 gap-2">
