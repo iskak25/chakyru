@@ -470,6 +470,7 @@ function EditorPageInner() {
             </div>
           </div>
 
+          {/* Для оплаченной страницы «Жеке чакыруу» и «Шилтемени көчүрүү» уже есть в шапке: карточка с дублями убрана. */}
           {!paid ? (
             <div className="mx-auto mb-5 flex max-w-[430px] flex-col gap-3 rounded-[12px] border border-[var(--line)] bg-white p-4 text-sm leading-6">
               <p>{demoNote(locale)}</p>
@@ -482,17 +483,7 @@ function EditorPageInner() {
                 {payBusy ? t.pay.processing : (locale === "ru" ? "Оплатить и открыть публичный доступ" : "Төлөп, ачык жеткиликтүүлүктү ачуу")}
               </button>
             </div>
-          ) : (
-            <div className="mx-auto mb-5 flex max-w-[430px] items-center justify-between gap-3 rounded-[12px] border border-[var(--line)] bg-white p-4 text-sm">
-              <span>{locale === "ru" ? "Страница опубликована" : "Барак жарыяланды"}</span>
-              <button type="button" onClick={() => { setSharePersonal(true); setShareOpen(true); }} className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.1em]">
-                {locale === "ru" ? "Именное приглашение" : "Жеке чакыруу"}
-              </button>
-              <button type="button" onClick={() => void copyLink()} className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.1em]">
-                {linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү")}
-              </button>
-            </div>
-          )}
+          ) : null}
 
           {/* Вне блока max-sm:hidden: иначе на телефоне окно открывается внутри скрытого предка и его не видно. */}
           {shareOpen && paid && <ShareInvitationDialog key={String(sharePersonal)} invitation={inv} locale={locale} personal={sharePersonal} onClose={() => { setShareOpen(false); setSharePersonal(false); }} />}
