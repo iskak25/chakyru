@@ -35,9 +35,9 @@ export function MobileSheet({
   children: ReactNode;
 }) {
   const [snap, setSnap] = useState<number | string | null>(initialSnap);
-  const [hintOpen, setHintOpen] = useState(false);
-  useEffect(() => { if (open && hint) setHintOpen(!hintSeen()); }, [open, Boolean(hint)]); // eslint-disable-line react-hooks/exhaustive-deps
-  function dismissHint() { setHintOpen(false); markHintSeen(); }
+  const [hintDone, setHintDone] = useState(hintSeen);
+  const hintOpen = Boolean(hint) && !hintDone;
+  function dismissHint() { setHintDone(true); markHintSeen(); }
   useEffect(() => {
     if (open) setSnap(initialSnap);
   }, [open, initialSnap]);
