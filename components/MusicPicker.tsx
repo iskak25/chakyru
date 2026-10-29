@@ -155,6 +155,8 @@ export function MusicPicker({
   const [error, setError] = useState("");
 
   const [staged, setStaged] = useState<Staged | null>(null);
+  // Название только что добавленной музыки: плашка «Музыка добавлена», чтобы было видно, что выбор сохранён.
+  const [added, setAdded] = useState("");
   const [trimDuration, setTrimDuration] = useState<number | null>(null);
   const [trimLoading, setTrimLoading] = useState(false);
   const [trimError, setTrimError] = useState("");
@@ -200,14 +202,14 @@ export function MusicPicker({
     if (youtubeId(track.url)) return; // duration/loading is handled by the YouTube mount effect below
     if (track.knownDuration && track.knownDuration > 0) {
       setTrimDuration(track.knownDuration);
-      setTrimRange([0, Math.min(track.knownDuration, 60)]);
+      setTrimRange([0, track.knownDuration]);
       return;
     }
     setTrimLoading(true);
     void loadAudioDuration(track.url)
       .then((d) => {
         setTrimDuration(d);
-        setTrimRange([0, Math.min(d, 60)]);
+        setTrimRange([0, d]);
       })
       .catch(() => {
         setTrimError(locale === "ru" ? "Не удалось определить длительность. Будет использован трек целиком." : "Узундугун аныктоо мүмкүн болбоду. Ыр толугу менен колдонулат.");
@@ -242,7 +244,7 @@ export function MusicPicker({
               const d = event.target.getDuration();
               if (d > 0) {
                 setTrimDuration(d);
-                setTrimRange([0, Math.min(d, 60)]);
+                setTrimRange([0, d]);
               } else {
                 setTrimError(locale === "ru" ? "Не удалось определить длительность. Будет использован ролик целиком." : "Узундугун аныктоо мүмкүн болбоду. Видео толугу менен колдонулат.");
               }
@@ -283,8 +285,12 @@ export function MusicPicker({
   function confirmTrim() {
     if (!staged) return;
     stopTrimPlayback();
-    const trim = trimDuration ? { start: trimRange[0], end: trimRange[1] } : undefined;
+    // Трек целиком (границы не двигали) хранится без обрезки.
+    const whole = !trimDuration || (trimRange[0] < 0.5 && trimRange[1] >= trimDuration - 0.5);
+    const trim = trimDuration && !whole ? { start: trimRange[0], end: trimRange[1] } : undefined;
     onChange(staged.url, trim, staged.persistLabel ? staged.label : undefined);
+    setAdded(staged.label);
+    window.setTimeout(() => setAdded(""), 6000);
     setStaged(null);
     setTrimDuration(null);
   }
@@ -429,32 +435,30 @@ export function MusicPicker({
           <p className="text-[11px] text-ink-soft">{trimError}</p>
         )}
 
-        <div className="flex items-center justify-between gap-2 pt-1">
-          <button
-            type="button"
-            onClick={cancelTrim}
-            aria-label={locale === "ru" ? "Отмена" : "Жокко чыгаруу"}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5 text-ink-soft"
-          >
-            <X size={16} />
-          </button>
+        <div className="flex items-center gap-2 pt-1">
           {trimDuration ? (
             <button
               type="button"
               onClick={toggleTrimPlay}
               aria-label={trimPlaying ? (locale === "ru" ? "Пауза" : "Тыныгуу") : (locale === "ru" ? "Слушать" : "Угуу")}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-black/5"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/5"
             >
               {trimPlaying ? <Pause size={16} /> : <Play size={16} />}
             </button>
           ) : null}
           <button
             type="button"
-            onClick={confirmTrim}
-            aria-label={locale === "ru" ? "Сохранить" : "Сактоо"}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-forest text-cream"
+            onClick={cancelTrim}
+            className="flex h-11 flex-1 items-center justify-center gap-1 rounded-xl bg-black/5 px-3 text-sm text-ink-soft"
           >
-            <Check size={16} />
+            <X size={15} /> {locale === "ru" ? "Отмена" : "Жокко чыгаруу"}
+          </button>
+          <button
+            type="button"
+            onClick={confirmTrim}
+            className="flex h-11 flex-[1.4] items-center justify-center gap-1 rounded-xl bg-forest px-3 text-sm font-medium text-cream"
+          >
+            <Check size={16} /> {locale === "ru" ? "Добавить музыку" : "Музыканы кошуу"}
           </button>
         </div>
       </div>
@@ -496,11 +500,19 @@ export function MusicPicker({
         </button>
       </div>
 
+      {added ? (
+        <p role="status" className="flex items-center gap-2 rounded-xl bg-forest px-3 py-2.5 text-sm font-medium text-cream">
+          <Check size={16} className="shrink-0" /> {locale === "ru" ? "Музыка добавлена" : "Музыка кошулду"}
+        </p>
+      ) : null}
       {current ? (
-        <div className="flex items-center justify-between gap-2 rounded-lg bg-black/5 px-2 py-1.5 text-[11px]">
-          <span className="truncate">{current}</span>
-          {allowClear && <button type="button" aria-label={locale === "ru" ? "Удалить музыку" : "Музыканы өчүрүү"} onClick={() => { preview.current?.pause(); setPreviewing(null); onChange(""); }} className="shrink-0 text-rose">
-            <Trash2 size={12} />
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-forest/10 px-3 py-2 text-xs">
+          <span className="min-w-0">
+            <span className="block text-[10px] uppercase tracking-wide text-ink-soft">{locale === "ru" ? "Сейчас в приглашении" : "Азыр чакыруууда"}</span>
+            <span className="block truncate text-sm font-medium">♪ {current}</span>
+          </span>
+          {allowClear && <button type="button" aria-label={locale === "ru" ? "Удалить музыку" : "Музыканы өчүрүү"} onClick={() => { preview.current?.pause(); setPreviewing(null); onChange(""); }} className="flex h-9 w-9 shrink-0 items-center justify-center text-rose">
+            <Trash2 size={15} />
           </button>}
         </div>
       ) : null}
