@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { RotateCcw } from "lucide-react";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
+
+export type NavigatorHistory = { canUndo: boolean; canRedo: boolean; onUndo: () => void; onRedo: () => void };
 
 const TOP_OFFSET = 64; // верхняя панель 56px + отступ
 
@@ -15,7 +18,8 @@ function sectionEl(id: string) {
  * Навигатор секций шаблона: точки + «2 / 8», тап по счётчику открывает список секций.
  * Секции берутся из частей шаблона `section-*`; у шаблонов без секций ничего не рисуется.
  */
-export function SectionNavigator({ parts, locale }: { parts: WeddingPartInfo[]; locale: string }) {
+export function SectionNavigator({ parts, locale, history }: { parts: WeddingPartInfo[]; locale: string; /** Шаг назад/вперёд по краям полосы: всегда под рукой. */ history?: NavigatorHistory }) {
+  const ru = locale === "ru";
   const [sections, setSections] = useState<Section[]>([]);
   const [current, setCurrent] = useState(0);
   const [listOpen, setListOpen] = useState(false);
@@ -62,11 +66,19 @@ export function SectionNavigator({ parts, locale }: { parts: WeddingPartInfo[]; 
     [sections],
   );
 
-  if (sections.length < 2) return null;
+  if (sections.length < 2 && !history) return null;
+  const hasNav = sections.length >= 2;
+  const historyBtn = "flex h-10 w-10 shrink-0 items-center justify-center disabled:opacity-25";
 
   return (
     <>
-      <div className="editor-section-nav order-1 flex h-10 w-full items-center justify-center gap-3 border-t border-[var(--line)] bg-page px-3">
+      <div className={`editor-section-nav order-1 flex h-10 w-full items-center gap-3 ${hasNav ? "" : "justify-between"} border-t border-[var(--line)] bg-page px-3`}>
+        {history ? (
+          <button type="button" aria-label={ru ? "Шаг назад" : "Артка"} disabled={!history.canUndo} onClick={history.onUndo} className={historyBtn}>
+            <RotateCcw size={18} />
+          </button>
+        ) : null}
+        <div className={hasNav ? "flex min-w-0 flex-1 items-center justify-center gap-3" : "hidden"}>
         <button
           type="button"
           aria-label={locale === "ru" ? "Предыдущая секция" : "Мурунку бөлүм"}
@@ -99,6 +111,12 @@ export function SectionNavigator({ parts, locale }: { parts: WeddingPartInfo[]; 
         >
           ›
         </button>
+        </div>
+        {history ? (
+          <button type="button" aria-label={ru ? "Шаг вперёд" : "Алдыга"} disabled={!history.canRedo} onClick={history.onRedo} className={historyBtn}>
+            <RotateCcw size={18} className="-scale-x-100" />
+          </button>
+        ) : null}
       </div>
 
       {listOpen ? (

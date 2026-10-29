@@ -350,7 +350,7 @@ function EditorPageInner() {
           hideTemplates
           onReset={resetTemplate}
           onUndo={undo}
-          mobileNavigator={<SectionNavigator parts={parts} locale={locale} />}
+          mobileNavigator={<SectionNavigator parts={parts} locale={locale} history={{ canUndo, canRedo, onUndo: undo, onRedo: redo }} />}
           labels={{
             templates: t.editor.dockTemplates,
             media: t.editor.dockMedia,
