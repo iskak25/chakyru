@@ -96,7 +96,7 @@ function GrowTextarea({
       readOnly={mobile}
       tabIndex={mobile ? -1 : undefined}
       inputMode={mobile ? "none" : undefined}
-      className={`${className} resize-none overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
+      className={`${className} resize-none overflow-hidden whitespace-pre-line break-words [scrollbar-width:none] [&::-webkit-scrollbar]:hidden`}
       style={style}
     />
   );

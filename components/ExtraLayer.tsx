@@ -300,7 +300,7 @@ function ExtraBody({
     <div className="flex h-full items-center justify-center px-1">
       {item.kind === "guestName" || !onChange ? (
         <p
-          className="w-full text-center"
+          className="w-full whitespace-pre-line break-words text-center"
           style={{ color: item.color, fontSize: item.fontSize ?? 22 }}
         >
           {value}
@@ -310,6 +310,7 @@ function ExtraBody({
           value={item.text || ""}
           placeholder={placeholder}
           onChange={(v) => patchItem({ text: v })}
+          multiline
           className="text-center"
           style={{ color: item.color, fontSize: item.fontSize ?? 22 }}
         />
