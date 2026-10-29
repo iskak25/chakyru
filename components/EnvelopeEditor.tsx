@@ -17,6 +17,8 @@ function shade(hex: string, target: number, amount: number) {
 export function EnvelopeEditor({ invitation, onChange, locale }: { invitation: Invitation; onChange: InvitePatch; locale: string }) {
   const ru = locale === "ru";
   const [preview, setPreview] = useState(0);
+  // Две части вместо одного длинного списка: какой конверт и как он выглядит.
+  const [section, setSection] = useState<"choose" | "style">("choose");
   const config = envelopeForTemplate(getTemplate(invitation.templateId));
   const colors = invitationEnvelopeColors(invitation.copy);
   const design = invitationEnvelopeDesign(invitation.copy);
@@ -32,8 +34,17 @@ export function EnvelopeEditor({ invitation, onChange, locale }: { invitation: I
     ["foil", ru ? "Орнамент" : "Оймо-чийме"],
     ["lining", design === "floral" ? (ru ? "Цветы и лента" : "Гүлдөр жана тасма") : (ru ? "Внутренняя сторона" : "Ички бети")],
   ] as const;
+  const sections = [
+    ["choose", ru ? "Выбор конверта" : "Конверт тандоо"],
+    ["style", ru ? "Стиль конверта" : "Конверттин стили"],
+  ] as const;
   return <div className="space-y-4">
-    <fieldset className="space-y-2">
+    <div role="tablist" aria-label={ru ? "Конверт" : "Конверт"} className="grid grid-cols-2 gap-1 rounded-xl bg-black/[0.06] p-1">
+      {sections.map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={section === id}
+        className={`min-h-11 rounded-lg px-2 text-sm transition-colors ${section === id ? "bg-white font-medium shadow-sm" : "text-ink-soft"}`}
+        onClick={() => setSection(id)}>{label}</button>)}
+    </div>
+    {section === "choose" ? <fieldset className="space-y-2">
       <legend className="mb-2 text-sm font-medium">{ru ? "Дизайн конверта" : "Конверттин дизайны"}</legend>
       <div className="grid grid-cols-3 gap-2">
         {envelopeDesigns.map((value, index) => <button key={value} type="button" aria-pressed={design === value}
@@ -45,7 +56,7 @@ export function EnvelopeEditor({ invitation, onChange, locale }: { invitation: I
           {(ru ? ["Классический", "Цветы и бант", "Волна"] : ["Классикалык", "Гүлдөр жана бант", "Толкун"])[index]}
         </button>)}
       </div>
-    </fieldset>
+    </fieldset> : <>
     <p className="text-xs text-ink-soft">{ru ? "Выберите палитру или задайте свои цвета." : "Палитраны тандаңыз же өз түстөрүңүздү коюңуз."}</p>
     <div className="flex flex-wrap gap-2">
       {Object.entries(envelopeVariants).map(([key, palette], index) => <button
@@ -69,6 +80,7 @@ export function EnvelopeEditor({ invitation, onChange, locale }: { invitation: I
       envelopeColorKeys.forEach(key => { delete copy[`envelope.color.${key}`]; });
       onChange({ copy });
     }}>{ru ? "Вернуть цвета дизайна" : "Дизайндын түстөрүн кайтаруу"}</button>
+    </>}
     {!config.enabled && <p className="text-xs text-ink-soft">{ru ? "В этом шаблоне показ конверта отключён." : "Бул шаблондо конвертти көрсөтүү өчүрүлгөн."}</p>}
     <div className="overflow-hidden rounded-xl border border-ink/10">
       <EnvelopeIntro key={`${design}:${preview}:${JSON.stringify(colors)}`} variant={config.variant} design={design} colors={colors} names={invitation.names} date={invitation.date} locale={locale} embedded>
