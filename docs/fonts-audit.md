@@ -11,12 +11,12 @@ https://github.com/google/fonts/tree/main/ofl/<семейство>.
 | Playfair Display (+Italic) | `--font-playfair` | да | да | да | да | да |
 | Philosopher (4 начертания) | `--font-philosopher` | да | да | да | да | да |
 | Caveat | `--font-caveat` | да | да | да | да | да |
-| Great Vibes | `--font-vibes` | нет | нет | нет | нет | нет: только латиница, остальное из KyFallback/cursive |
+| Great Vibes | `--font-vibes` | нет | нет | нет | да | частично: ң/ө/ү из KyFallback |
 | Marck Script | `--font-ceremonial` | нет | нет | нет | да | частично: ң/ө/ү берутся из следующего в цепочке (Cormorant) |
 | Unbounded | `--font-unbounded` | нет | нет | нет | да | частично: ң/ө/ү из KyFallback |
 | PT Sans, подмножество 6 глифов (Regular, Bold) | `KyFallback` | да | да | да | — | резерв, ~3 КБ, грузится по `unicode-range` |
 
-Great Vibes: проверка показала, что кириллицы в нём нет вовсе (не только ң/ө/ү); использовать для кыргызского и русского текста нельзя.
+Great Vibes, Marck Script, Unbounded: русская кириллица есть, но ң/ө/ү нет; для них подставляется резерв.
 
 ## Ещё не сделано из §7.1
 UI выбора шрифта (категории, карточки с превью, поиск, недавние), новые гарнитуры (Montserrat, Noto Serif, Noto Sans),
