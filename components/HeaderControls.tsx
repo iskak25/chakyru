@@ -13,6 +13,7 @@ export function HeaderControls({ className = "" }: { className?: string }) {
   const { locale, t, setLocale } = useI18n();
   const [user, setUser] = useState<User | null>(null);
   const [menu, setMenu] = useState(false);
+  const [brokenPhoto, setBrokenPhoto] = useState("");
 
   useEffect(() => {
     const sync = () => setUser(getUser());
@@ -66,9 +67,13 @@ export function HeaderControls({ className = "" }: { className?: string }) {
       <Link
         href={user ? "/dashboard" : "/login?google=1"}
         aria-label={user ? t.nav.mine : t.nav.login}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink/[0.07] text-[13px] font-medium uppercase text-ink transition active:bg-ink/15"
+        className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-ink/[0.07] text-[14px] font-medium uppercase text-ink transition active:bg-ink/15"
       >
-        {user ? user.name.slice(0, 1) : <UserRound size={18} strokeWidth={1.7} />}
+        {user?.picture && brokenPhoto !== user.picture ? (
+          // Фото аккаунта Google: обычный <img>, чтобы не настраивать внешние домены в next/image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={user.picture} alt="" referrerPolicy="no-referrer" onError={() => setBrokenPhoto(user.picture ?? "")} className="h-full w-full object-cover" />
+        ) : user ? user.name.slice(0, 1) : <UserRound size={19} strokeWidth={1.7} />}
       </Link>
     </div>
   );
