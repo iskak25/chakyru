@@ -55,3 +55,11 @@ describe("менеджер блоков", () => {
     expect(onChange.mock.calls[1][0].layout["section-program"].hidden).toBe(false);
   });
 });
+
+describe("жирность текста", () => {
+  it("пишется в copy[$fontWeight:id]", () => {
+    const { onChange } = setup("names");
+    fireEvent.change(screen.getByLabelText("Жирность текста"), { target: { value: "700" } });
+    expect(onChange.mock.calls[0][0].copy["$fontWeight:names"]).toBe("700");
+  });
+});

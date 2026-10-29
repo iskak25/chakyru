@@ -154,6 +154,15 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
       {selected ? <div className="grid grid-cols-2 gap-2">
         <label className="text-xs">{part?.kind === "block" ? "Фон блока" : "Цвет"}<input aria-label="Цвет элемента" type="color" className="block h-8 w-full" value={extra?.color || invitation.blockColors?.[selected] || "#443a31"} onChange={e => extra ? onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, color: e.target.value } : item) }) : onChange({ blockColors: { ...invitation.blockColors, [selected]: e.target.value } })} /></label>
         {isText ? <FontSizeField key={selected} label="Размер текста" css={css} value={String(extra?.fontSize ?? weddingStyle(invitation, selected, "fontSize") ?? "")} onCommit={value => style("fontSize", value)} /> : null}
+        {isText && !extra ? <label className="block text-xs">{ru ? "Жирность текста" : "Тексттин калыңдыгы"}<select aria-label={ru ? "Жирность текста" : "Тексттин калыңдыгы"} className={css} value={weddingStyle(invitation, selected, "fontWeight") || ""} onChange={e => style("fontWeight", e.target.value)}>
+          <option value="">{ru ? "По макету" : "Макет боюнча"}</option>
+          <option value="300">{ru ? "Тонкий" : "Ичке"}</option>
+          <option value="400">{ru ? "Обычный" : "Кадимки"}</option>
+          <option value="500">{ru ? "Средний" : "Орто"}</option>
+          <option value="600">{ru ? "Полужирный" : "Жарым калың"}</option>
+          <option value="700">{ru ? "Жирный" : "Калың"}</option>
+          <option value="800">{ru ? "Очень жирный" : "Өтө калың"}</option>
+        </select></label> : null}
         {isText && !extra ? <><label className="text-xs">Выравнивание<select aria-label="Выравнивание" className={css} value={weddingStyle(invitation, selected, "align") || ""} onChange={e => style("align", e.target.value)}><option value="">По макету</option><option value="left">Слева</option><option value="center">По центру</option><option value="right">Справа</option></select></label></> : null}
       </div> : null}
       {selected && isText && !extra ? <div className="grid grid-cols-2 gap-2">

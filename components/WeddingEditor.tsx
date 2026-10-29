@@ -140,6 +140,7 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const color = invitation.blockColors?.[id];
   const fontSize = weddingStyle(invitation, id, "fontSize");
   const alignment = weddingStyle(invitation, id, "align");
+  const fontWeight = weddingStyle(invitation, id, "fontWeight");
   const opacity = weddingStyle(invitation, id, "opacity");
   const radius = weddingStyle(invitation, id, "radius");
   const lineHeight = safeLineHeight(weddingStyle(invitation, id, "lineHeight"));
@@ -149,6 +150,7 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
     ...(kind === "block" ? { backgroundColor: color ?? style?.backgroundColor } : { color: color ?? style?.color }),
     ...(fontSize ? { fontSize: `${Number(fontSize)}px` } : {}),
     ...(alignment && ["left", "center", "right"].includes(alignment) ? { textAlign: alignment as CSSProperties["textAlign"] } : {}),
+    ...(["300", "400", "500", "600", "700", "800"].includes(fontWeight ?? "") ? { fontWeight: Number(fontWeight) } : {}),
     ...(lineHeight !== null ? { lineHeight } : {}),
     ...(letterSpacing !== null ? { letterSpacing: `${letterSpacing}px` } : {}),
     ...(opacity ? { opacity: Number(opacity) / 100 } : {}),
