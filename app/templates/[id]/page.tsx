@@ -276,13 +276,13 @@ export default function TemplatePreviewPage() {
                   {myTemplateInvitations.map((inv) => (
                     <li
                       key={inv.id}
-                      className="flex items-center justify-between rounded-[12px] border border-[var(--line)] px-4 py-3"
+                      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-3 rounded-[12px] border border-[var(--line)] px-4 py-3"
                     >
-                      <div className="min-w-0">
+                      <div className="min-w-0 max-sm:w-full">
                         <p className="truncate text-sm text-ink">{inv.names || template.name[locale]}</p>
                         <p className="text-[12px] text-ink-soft">{inv.date || "—"}</p>
                       </div>
-                      <div className="flex shrink-0 items-center gap-2">
+                      <div className="flex shrink-0 items-center gap-2 max-sm:w-full max-sm:justify-between">
                         <Link
                           href={`/i/${inv.id}`}
                           target="_blank"
