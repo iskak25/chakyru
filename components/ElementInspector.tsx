@@ -52,6 +52,16 @@ function FontSizeField({ value, onCommit, label, css }: { value: string; onCommi
   </div>;
 }
 
+/** Элементы в порядке регистрации: блок `section-*` открывает группу, остальные идут в неё. */
+function groupBySection(parts: WeddingPartInfo[], ru: boolean) {
+  const groups: { id: string; label: string; items: WeddingPartInfo[] }[] = [];
+  for (const item of parts) {
+    if (item.id.startsWith("section-") || !groups.length) groups.push({ id: item.id, label: item.id.startsWith("section-") ? item.label : (ru ? "Общее" : "Жалпы"), items: [] });
+    groups[groups.length - 1].items.push(item);
+  }
+  return groups;
+}
+
 export function ElementInspector({ invitation, onChange, selected, select, parts, locale }: {
   invitation: Invitation; onChange: InvitePatch; selected: string | null; select: (id: string | null) => void; parts: WeddingPartInfo[]; locale: string;
 }) {
@@ -68,6 +78,8 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
   const isText = part?.kind === "text" || extra?.kind === "text" || extra?.kind === "button" || extra?.kind === "guestName";
   const isImage = part?.kind === "image" || extra?.kind === "image";
   const hidden = parts.filter(item => invitation.layout?.[item.id]?.hidden);
+  const groups = groupBySection(parts, ru);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const css = "w-full rounded-lg border border-black/15 bg-white px-2 py-1.5 text-sm text-[#29251f]";
   function style(property: string, value: string) {
     if (!selected) return;
@@ -86,7 +98,7 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
       <label className="block text-xs">{ru ? "Выбранный элемент" : "Тандалган элемент"}
         <select aria-label={ru ? "Выбранный элемент" : "Тандалган элемент"} className={css} value={selected || ""} onChange={e => select(e.target.value || null)}>
           <option value="">{ru ? "Нажмите элемент в приглашении" : "Чакыруудагы элементти басыңыз"}</option>
-          {parts.map(item => <option key={item.id} value={item.id}>{item.label}{invitation.layout?.[item.id]?.hidden ? " (скрыт)" : ""}</option>)}
+          {groups.map(group => <optgroup key={group.id} label={group.label}>{group.items.map(item => <option key={item.id} value={item.id}>{item.label}{invitation.layout?.[item.id]?.hidden ? (ru ? " (скрыт)" : " (катылган)") : ""}</option>)}</optgroup>)}
           {invitation.extras.map((item, index) => <option key={item.id} value={item.id}>{ru ? "Добавленный элемент" : "Кошулган элемент"} {index + 1}: {item.text || item.kind}</option>)}
         </select>
       </label>
@@ -139,7 +151,14 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
         <label className="text-xs">Непрозрачность<input aria-label="Непрозрачность" type="number" min="0" max="100" className={css} value={weddingStyle(invitation, selected, "opacity") || "100"} onChange={e => style("opacity", String(Math.max(0, Math.min(100, Number(e.target.value)))))} /></label>
         <label className="text-xs">Скругление<input aria-label="Скругление" type="number" min="0" max="200" className={css} value={weddingStyle(invitation, selected, "radius") || "0"} onChange={e => style("radius", String(Math.max(0, Math.min(200, Number(e.target.value)))))} /></label>
       </div></details> : null}
-      {selected ? <div className="flex flex-wrap gap-2"><button type="button" className="rounded-lg border px-3 py-1.5 text-xs" onClick={() => onChange(restoreWeddingPart(invitation, selected))}>Показать</button><button type="button" className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-700" onClick={() => { onChange(deleteCanvasId(invitation, selected, { x: 0, y: 0, w: 100, h: 0 })); select(null); }}>Удалить элемент</button></div> : null}
+      {selected ? <div className="flex flex-wrap items-center gap-2">
+        <button type="button" className="min-h-11 rounded-lg border px-3 text-xs" onClick={() => onChange(restoreWeddingPart(invitation, selected))}>{ru ? "Показать" : "Көрсөтүү"}</button>
+        {confirmDelete === selected ? <>
+          <span className="text-xs">{ru ? "Удалить элемент?" : "Элемент өчүрүлсүнбү?"}</span>
+          <button type="button" className="min-h-11 rounded-lg border border-red-300 bg-red-50 px-3 text-xs text-red-700" onClick={() => { onChange(deleteCanvasId(invitation, selected, { x: 0, y: 0, w: 100, h: 0 })); setConfirmDelete(null); select(null); }}>{ru ? "Да, удалить" : "Ооба, өчүр"}</button>
+          <button type="button" className="min-h-11 rounded-lg border px-3 text-xs" onClick={() => setConfirmDelete(null)}>{ru ? "Отмена" : "Жокко чыгаруу"}</button>
+        </> : <button type="button" className="min-h-11 rounded-lg border border-red-200 px-3 text-xs text-red-700" onClick={() => setConfirmDelete(selected)}>{ru ? "Удалить элемент" : "Элементти өчүрүү"}</button>}
+      </div> : null}
       {!selected ? <label className="block text-xs">Фон приглашения<input aria-label="Фон приглашения" type="color" value={invitation.blockColors?.page || "#f4ecdf"} onChange={e => onChange({ blockColors: { ...invitation.blockColors, page: e.target.value } })} /></label> : null}
       {hidden.length ? <p className="text-xs">Скрытых элементов: {hidden.length}. Выберите элемент в списке и нажмите «Показать».</p> : null}
       <p className="text-[11px] text-black/55">Выберите элемент. Перетаскивайте за его фон или рамку; угловые маркеры меняют размер.</p>
