@@ -330,6 +330,12 @@ function EditorPageInner() {
         onReset={resetTemplate}
         onHelp={() => setTourOpen(true)}
         onPay={paid ? undefined : () => void payNow()}
+        actions={isSite && paid ? [
+          { key: "copy", label: linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү"), onClick: () => void copyLink() },
+          { key: "personal", label: locale === "ru" ? "Именное приглашение" : "Жеке чакыруу", onClick: () => { setSharePersonal(true); setShareOpen(true); } },
+          { key: "edit", label: t.editor.share, onClick: () => void copyEditLink(), disabled: editLinkBusy },
+          { key: "guest", label: t.editor.openGuest, onClick: () => void openPublished(false), disabled: publishing },
+        ] : undefined}
         busy={publishing || saving}
       />
       <div className="editor-page flex min-h-[calc(100vh-4rem)] pb-20 lg:pb-0">
@@ -470,28 +476,8 @@ function EditorPageInner() {
             </div>
           </div>
 
-          {/* На телефоне шапка скрыта, поэтому те же 4 кнопки показываем сеткой 2×2; на широком экране они в шапке. */}
-          {paid && isSite ? (
-            <div className="mx-auto mb-4 grid w-full max-w-[430px] grid-cols-2 gap-2 sm:hidden">
-              {[
-                { key: "copy", label: linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү"), onClick: () => void copyLink(), disabled: false },
-                { key: "personal", label: locale === "ru" ? "Именное приглашение" : "Жеке чакыруу", onClick: () => { setSharePersonal(true); setShareOpen(true); }, disabled: false },
-                { key: "edit", label: t.editor.share, onClick: () => void copyEditLink(), disabled: editLinkBusy },
-                { key: "guest", label: t.editor.openGuest, onClick: () => void openPublished(false), disabled: publishing },
-              ].map(item => (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={item.onClick}
-                  disabled={item.disabled}
-                  className={`min-h-11 min-w-0 rounded-[12px] px-2 py-2 text-center text-[11px] uppercase leading-tight tracking-[0.08em] disabled:opacity-50 ${item.key === "guest" ? "bg-espresso text-cream" : "border border-[var(--line)] bg-white"}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              {editLinkNote ? <p role="status" className="col-span-2 text-xs text-ink-soft">{editLinkNote}</p> : null}
-            </div>
-          ) : null}
+          {/* На телефоне 4 действия лежат в меню «⋯» верхней панели, на широком экране — в шапке. */}
+          {editLinkNote ? <p role="status" className="mb-3 text-center text-xs text-ink-soft sm:hidden">{editLinkNote}</p> : null}
           {!paid ? (
             <div className="mx-auto mb-5 flex max-w-[430px] flex-col gap-3 rounded-[12px] border border-[var(--line)] bg-white p-4 text-sm leading-6">
               <p>{demoNote(locale)}</p>

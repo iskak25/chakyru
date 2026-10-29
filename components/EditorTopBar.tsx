@@ -22,8 +22,11 @@ export function EditorTopBar({
   onReset,
   onHelp,
   onPay,
+  actions,
   busy,
 }: {
+  /** Действия оплаченной страницы (ссылка, именное приглашение и т.д.): пункты меню «⋯». */
+  actions?: { key: string; label: string; onClick: () => void; disabled?: boolean }[];
   /** Нет оплаты: пункт меню «Оплатить и открыть публичный доступ». */
   onPay?: () => void;
   locale: string;
@@ -135,6 +138,21 @@ export function EditorTopBar({
                   </button>
                 </li>
               ) : null}
+              {actions?.map(action => (
+                <li key={action.key}>
+                  <button
+                    type="button"
+                    disabled={action.disabled}
+                    className="flex min-h-12 w-full items-center gap-3 px-4 py-2 text-left text-sm disabled:opacity-50"
+                    onClick={() => {
+                      setMenu(false);
+                      action.onClick();
+                    }}
+                  >
+                    {action.label}
+                  </button>
+                </li>
+              ))}
               <li>
                 <button
                   type="button"
