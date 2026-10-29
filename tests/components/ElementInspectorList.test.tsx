@@ -59,7 +59,7 @@ describe("менеджер блоков", () => {
 describe("жирность текста", () => {
   it("пишется в copy[$fontWeight:id]", () => {
     const { onChange } = setup("names");
-    fireEvent.change(screen.getByLabelText("Жирность текста"), { target: { value: "700" } });
-    expect(onChange.mock.calls[0][0].copy["$fontWeight:names"]).toBe("700");
+    fireEvent.click(screen.getByLabelText("Жирность текста +"));
+    expect(onChange.mock.calls[0][0].copy["$fontWeight:names"]).toBe("500");
   });
 });

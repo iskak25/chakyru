@@ -56,6 +56,28 @@ function FontSizeField({ value, onCommit, label, css }: { value: string; onCommi
   </div>;
 }
 
+const WEIGHTS = [300, 400, 500, 600, 700, 800];
+
+/** Жирность шагами «− 400 +», как размер текста; пусто = «Авто» (по макету). */
+function WeightField({ label, value, onCommit, ru }: { label: string; value: string; onCommit: (value: string) => void; ru: boolean }) {
+  const index = WEIGHTS.indexOf(Number(value));
+  function step(delta: number) {
+    // С «Авто» первый шаг идёт от обычной жирности (400).
+    const from = index === -1 ? WEIGHTS.indexOf(400) : index;
+    onCommit(String(WEIGHTS[Math.max(0, Math.min(WEIGHTS.length - 1, from + delta))]));
+  }
+  const btn = "flex h-full w-12 shrink-0 items-center justify-center !rounded-none !border-0 !bg-transparent text-xl text-[#29251f] active:!bg-black/5 disabled:opacity-30";
+  return <div className="text-xs">{label}
+    <div className="mt-1 flex h-11 items-stretch divide-x divide-black/10 overflow-hidden rounded-xl border border-black/15 bg-white">
+      <button type="button" aria-label={`${label} −`} className={btn} disabled={index === 0} onClick={() => step(-1)}>−</button>
+      <button type="button" aria-label={ru ? "Жирность: по макету" : "Калыңдык: макет боюнча"} title={ru ? "Сбросить на «Авто»" : "Авто кылуу"} className="h-full min-w-0 flex-1 !rounded-none !border-0 !bg-transparent px-2 text-center text-base text-[#29251f]" onClick={() => onCommit("")}>
+        {index === -1 ? <span className="text-[#29251f]/40">Авто</span> : value}
+      </button>
+      <button type="button" aria-label={`${label} +`} className={btn} disabled={index === WEIGHTS.length - 1} onClick={() => step(1)}>+</button>
+    </div>
+  </div>;
+}
+
 /** Элементы в порядке регистрации: блок `section-*` открывает группу, остальные идут в неё. */
 function groupBySection(parts: WeddingPartInfo[], ru: boolean) {
   const groups: { id: string; label: string; items: WeddingPartInfo[] }[] = [];
@@ -154,15 +176,7 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
       {selected ? <div className="grid grid-cols-2 gap-2">
         <label className="text-xs">{part?.kind === "block" ? "Фон блока" : "Цвет"}<input aria-label="Цвет элемента" type="color" className="block h-8 w-full" value={extra?.color || invitation.blockColors?.[selected] || "#443a31"} onChange={e => extra ? onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, color: e.target.value } : item) }) : onChange({ blockColors: { ...invitation.blockColors, [selected]: e.target.value } })} /></label>
         {isText ? <FontSizeField key={selected} label="Размер текста" css={css} value={String(extra?.fontSize ?? weddingStyle(invitation, selected, "fontSize") ?? "")} onCommit={value => style("fontSize", value)} /> : null}
-        {isText && !extra ? <label className="block text-xs">{ru ? "Жирность текста" : "Тексттин калыңдыгы"}<select aria-label={ru ? "Жирность текста" : "Тексттин калыңдыгы"} className={css} value={weddingStyle(invitation, selected, "fontWeight") || ""} onChange={e => style("fontWeight", e.target.value)}>
-          <option value="">{ru ? "По макету" : "Макет боюнча"}</option>
-          <option value="300">{ru ? "Тонкий" : "Ичке"}</option>
-          <option value="400">{ru ? "Обычный" : "Кадимки"}</option>
-          <option value="500">{ru ? "Средний" : "Орто"}</option>
-          <option value="600">{ru ? "Полужирный" : "Жарым калың"}</option>
-          <option value="700">{ru ? "Жирный" : "Калың"}</option>
-          <option value="800">{ru ? "Очень жирный" : "Өтө калың"}</option>
-        </select></label> : null}
+        {isText && !extra ? <WeightField key={selected} ru={ru} label={ru ? "Жирность текста" : "Тексттин калыңдыгы"} value={weddingStyle(invitation, selected, "fontWeight") || ""} onCommit={value => style("fontWeight", value)} /> : null}
         {isText && !extra ? <><label className="text-xs">Выравнивание<select aria-label="Выравнивание" className={css} value={weddingStyle(invitation, selected, "align") || ""} onChange={e => style("align", e.target.value)}><option value="">По макету</option><option value="left">Слева</option><option value="center">По центру</option><option value="right">Справа</option></select></label></> : null}
       </div> : null}
       {selected && isText && !extra ? <div className="grid grid-cols-2 gap-2">
