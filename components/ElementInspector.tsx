@@ -45,11 +45,11 @@ function FontSizeField({ value, onCommit, label, css }: { value: string; onCommi
     setDraft(next);
     onCommit(next);
   }
-  const btn = "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-black/15 bg-white text-lg";
+  const btn = "flex h-full w-12 shrink-0 items-center justify-center !rounded-none !border-0 !bg-transparent text-xl text-[#29251f] active:!bg-black/5";
   return <div className="text-xs">{label}
-    <div className="mt-1 flex items-center gap-1">
+    <div className="mt-1 flex h-11 items-stretch divide-x divide-black/10 overflow-hidden rounded-xl border border-black/15 bg-white">
       <button type="button" aria-label={`${label} −`} className={btn} onClick={() => step(-2)}>−</button>
-      <input aria-label={label} inputMode="numeric" className={`${css} h-11 text-center text-base`} value={draft} placeholder="Авто"
+      <input aria-label={label} inputMode="numeric" className="h-full min-w-0 flex-1 !rounded-none !border-0 bg-transparent px-2 text-center text-base text-[#29251f] outline-none placeholder:text-[#29251f]/40 focus:bg-black/[0.03]" value={draft} placeholder="Авто"
         onChange={e => change(e.target.value)} onBlur={finish} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); finish(); } }} />
       <button type="button" aria-label={`${label} +`} className={btn} onClick={() => step(2)}>+</button>
     </div>
