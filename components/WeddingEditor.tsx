@@ -8,6 +8,7 @@ import { createContext, useCallback, useContext, useEffect, useLayoutEffect, use
 import { ImagePlus } from "lucide-react";
 import type { Invitation } from "@/lib/types";
 import { weddingStyle, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
+import { safeLetterSpacing, safeLineHeight } from "@/lib/typography";
 import { MoveCanvas, Selectable } from "./MoveCanvas";
 import { ExtraLayer } from "./ExtraLayer";
 import type { InvitePatch } from "./CanvasEdit";
@@ -140,11 +141,15 @@ export function WeddingPart({ id, label, kind = "block", fallback, field, slot, 
   const alignment = weddingStyle(invitation, id, "align");
   const opacity = weddingStyle(invitation, id, "opacity");
   const radius = weddingStyle(invitation, id, "radius");
+  const lineHeight = safeLineHeight(weddingStyle(invitation, id, "lineHeight"));
+  const letterSpacing = safeLetterSpacing(weddingStyle(invitation, id, "letterSpacing"));
   const partStyle: CSSProperties = {
     ...style,
     ...(kind === "block" ? { backgroundColor: color ?? style?.backgroundColor } : { color: color ?? style?.color }),
     ...(fontSize ? { fontSize: `${Number(fontSize)}px` } : {}),
     ...(alignment && ["left", "center", "right"].includes(alignment) ? { textAlign: alignment as CSSProperties["textAlign"] } : {}),
+    ...(lineHeight !== null ? { lineHeight } : {}),
+    ...(letterSpacing !== null ? { letterSpacing: `${letterSpacing}px` } : {}),
     ...(opacity ? { opacity: Number(opacity) / 100 } : {}),
     ...(radius ? { borderRadius: `${Number(radius)}px` } : {}),
     fontFamily: weddingStyle(invitation, id, "fontFamily") || style?.fontFamily,

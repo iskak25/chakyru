@@ -8,6 +8,7 @@ import { StockPhotos } from "./StockPhotos";
 import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
 import { deleteCanvasId } from "@/lib/canvasOps";
+import { LETTER_SPACING_MAX, LETTER_SPACING_MIN, LINE_HEIGHT_MAX, LINE_HEIGHT_MIN } from "@/lib/typography";
 import { FontPicker } from "@/components/FontPicker";
 import { restoreWeddingPart, weddingStyle, weddingStylePatch, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
 import { uploadInvitationImage } from "@/lib/uploadImage";
@@ -146,6 +147,10 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
         <label className="text-xs">{part?.kind === "block" ? "Фон блока" : "Цвет"}<input aria-label="Цвет элемента" type="color" className="block h-8 w-full" value={extra?.color || invitation.blockColors?.[selected] || "#443a31"} onChange={e => extra ? onChange({ extras: invitation.extras.map(item => item.id === selected ? { ...item, color: e.target.value } : item) }) : onChange({ blockColors: { ...invitation.blockColors, [selected]: e.target.value } })} /></label>
         {isText ? <FontSizeField key={selected} label="Размер текста" css={css} value={String(extra?.fontSize ?? weddingStyle(invitation, selected, "fontSize") ?? "")} onCommit={value => style("fontSize", value)} /> : null}
         {isText && !extra ? <><label className="text-xs">Выравнивание<select aria-label="Выравнивание" className={css} value={weddingStyle(invitation, selected, "align") || ""} onChange={e => style("align", e.target.value)}><option value="">По макету</option><option value="left">Слева</option><option value="center">По центру</option><option value="right">Справа</option></select></label></> : null}
+      </div> : null}
+      {selected && isText && !extra ? <div className="grid grid-cols-2 gap-2">
+        <label className="text-xs">{ru ? "Межстрочный" : "Саптар аралыгы"}<input aria-label={ru ? "Межстрочный интервал" : "Саптар аралыгы"} type="number" inputMode="decimal" min={LINE_HEIGHT_MIN} max={LINE_HEIGHT_MAX} step="0.1" placeholder={ru ? "по шаблону" : "шаблон боюнча"} className={css} value={weddingStyle(invitation, selected, "lineHeight") ?? ""} onChange={e => style("lineHeight", e.target.value)} /></label>
+        <label className="text-xs">{ru ? "Межбуквенный, px" : "Тамга аралыгы, px"}<input aria-label={ru ? "Межбуквенный интервал" : "Тамга аралыгы"} type="number" inputMode="decimal" min={LETTER_SPACING_MIN} max={LETTER_SPACING_MAX} step="0.5" placeholder={ru ? "по шаблону" : "шаблон боюнча"} className={css} value={weddingStyle(invitation, selected, "letterSpacing") ?? ""} onChange={e => style("letterSpacing", e.target.value)} /></label>
       </div> : null}
       {selected && isText && !extra ? <FontPicker value={weddingStyle(invitation, selected, "fontFamily") || ""} sample={textValue} ru={ru} onChange={value => style("fontFamily", value)} /> : null}
       {selected && !extra ? <details><summary className="cursor-pointer text-xs">Положение и оформление</summary><div className="mt-2 grid grid-cols-3 gap-2">
