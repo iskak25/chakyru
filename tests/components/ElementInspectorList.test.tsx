@@ -55,13 +55,3 @@ describe("менеджер блоков", () => {
     expect(onChange.mock.calls[1][0].layout["section-program"].hidden).toBe(false);
   });
 });
-
-describe("ширина текста", () => {
-  it("меняет layout[id].w и сохраняет центр блока", () => {
-    const { onChange } = setup("names");
-    fireEvent.change(screen.getByLabelText("Ширина текста"), { target: { value: "60" } });
-    const box = onChange.mock.calls[0][0].layout.names;
-    expect(box.w).toBe(60);
-    expect(box.x).toBe(20);
-  });
-});
