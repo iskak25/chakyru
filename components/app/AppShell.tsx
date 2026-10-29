@@ -37,6 +37,34 @@ export function navLabel(t: ReturnType<typeof useI18n>["t"], key: (typeof APP_NA
   return t.nav.learn;
 }
 
+/** Нижнее меню телефона: те же пункты, что в боковом меню широкого экрана. */
+export function MobileNav() {
+  const { t } = useI18n();
+  const pathname = usePathname();
+  return (
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-page/95 px-2 pt-2 backdrop-blur lg:hidden" style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}>
+          <div className="mx-auto flex min-h-11 max-w-lg items-center justify-between">
+            {APP_NAV.map((item) => {
+              const Icon = item.icon;
+              const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex min-h-11 min-w-[56px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-[10px] tracking-wide ${
+                    active ? "text-ink" : "text-meta"
+                  }`}
+                >
+                  <Icon size={18} strokeWidth={active ? 1.8 : 1.5} />
+                  <span className="truncate">{navLabel(t, item.key)}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { locale, t, setLocale } = useI18n();
   const pathname = usePathname();
@@ -151,26 +179,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-page/95 px-2 pt-2 backdrop-blur lg:hidden" style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}>
-        <div className="mx-auto flex min-h-11 max-w-lg items-center justify-between">
-          {APP_NAV.map((item) => {
-            const Icon = item.icon;
-            const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex min-h-11 min-w-[56px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-[10px] tracking-wide ${
-                  active ? "text-ink" : "text-meta"
-                }`}
-              >
-                <Icon size={18} strokeWidth={active ? 1.8 : 1.5} />
-                <span className="truncate">{navLabel(t, item.key)}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      <MobileNav />
     </div>
   );
 }

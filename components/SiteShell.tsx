@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { AppShell } from "./app/AppShell";
+import { AppShell, MobileNav } from "./app/AppShell";
 import { WhatsAppButton } from "./WhatsAppButton";
 
 const MARKETING = new Set(["/", "/terms"]);
@@ -37,12 +37,18 @@ export function SiteShell({
     return <AppShell>{children}<WhatsAppButton aboveNavigation /></AppShell>;
   }
 
+  // Главная: на телефоне то же нижнее меню, что и на остальных страницах.
+  const homeNav = pathname === "/" && !mobileFullscreen;
+
   return (
     <>
       <div className={mobileFullscreen ? "max-sm:hidden sm:contents" : "contents"}><Header /></div>
       <main className="flex-1">{children}</main>
       {footer ? <div className={mobileFullscreen ? "max-sm:hidden sm:contents" : "contents"}><Footer /></div> : null}
-      {!mobileFullscreen && !/^\/(i|create|admin|pay)(\/|$)/.test(pathname) ? <WhatsAppButton /> : null}
+      {homeNav ? <div className="h-20 lg:hidden" aria-hidden /> : null}
+      {homeNav ? <MobileNav /> : null}
+      {homeNav ? <WhatsAppButton aboveNavigation /> : null}
+      {!mobileFullscreen && !homeNav && !/^\/(i|create|admin|pay)(\/|$)/.test(pathname) ? <WhatsAppButton /> : null}
     </>
   );
 }
