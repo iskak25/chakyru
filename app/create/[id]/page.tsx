@@ -47,7 +47,6 @@ function EditorPageInner() {
   // Server verdict. Anything but a confirmed `true` keeps the «ДЕМО» mark and the private mode.
   const [paid, setPaid] = useState(false);
   const [payBusy, setPayBusy] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
   const [showSetup, setShowSetup] = useState(searchParams.get("setup") === "1");
   const [editLinkNote, setEditLinkNote] = useState("");
   const [editLinkBusy, setEditLinkBusy] = useState(false);
@@ -204,17 +203,6 @@ function EditorPageInner() {
     } finally { setPayBusy(false); }
   }
 
-  async function copyLink() {
-    if (!inv) return;
-    try {
-      await navigator.clipboard.writeText(`${window.location.origin}/i/${inv.id}?lang=${locale}`);
-      setLinkCopied(true);
-      window.setTimeout(() => setLinkCopied(false), 2000);
-    } catch {
-      setShareOpen(true);
-    }
-  }
-
   async function copyEditLink() {
     if (!inv || editLinkBusy) return;
     setEditLinkBusy(true);
@@ -331,7 +319,7 @@ function EditorPageInner() {
         onHelp={() => setTourOpen(true)}
         onPay={paid ? undefined : () => void payNow()}
         actions={isSite && paid ? [
-          { key: "copy", label: linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү"), onClick: () => void copyLink() },
+          { key: "copy", label: locale === "ru" ? "Поделиться ссылкой" : "Шилтемени бөлүшүү", onClick: () => { setSharePersonal(false); void openPublished(true); }, disabled: publishing },
           { key: "personal", label: locale === "ru" ? "Именное приглашение" : "Жеке чакыруу", onClick: () => { setSharePersonal(true); setShareOpen(true); } },
           { key: "edit", label: t.editor.share, onClick: () => void copyEditLink(), disabled: editLinkBusy },
           { key: "guest", label: t.editor.openGuest, onClick: () => void openPublished(false), disabled: publishing },
@@ -431,10 +419,11 @@ function EditorPageInner() {
                   {paid ? (
                     <button
                       type="button"
-                      onClick={() => void copyLink()}
-                      className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em]"
+                      onClick={() => { setSharePersonal(false); void openPublished(true); }}
+                      disabled={publishing}
+                      className="h-10 rounded-[12px] border border-[var(--line)] px-4 text-[11px] uppercase tracking-[0.12em] disabled:opacity-50"
                     >
-                      {linkCopied ? (locale === "ru" ? "Скопировано ✓" : "Көчүрүлдү ✓") : (locale === "ru" ? "Скопировать ссылку" : "Шилтемени көчүрүү")}
+                      {locale === "ru" ? "Поделиться ссылкой" : "Шилтемени бөлүшүү"}
                     </button>
                   ) : null}
                   {paid ? <button
