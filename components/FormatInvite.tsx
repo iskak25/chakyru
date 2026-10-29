@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
 import { InvitationLanguageProvider } from "./InvitationLanguage";
 
@@ -10,20 +11,22 @@ import { useCatalog } from "@/lib/useCatalog";
 import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
 import { type InvitePatch } from "./CanvasEdit";
-import { PhotoInvite } from "./PhotoInvite";
-import { Site3D } from "./Site3D";
 import type { WeddingPartInfo } from "@/lib/weddingEditor";
 import { getPinterestDesign } from "@/lib/pinterestTemplates";
-import { PinterestInvite } from "./PinterestInvite";
-import { ThemedSiteInvite } from "./ThemedSiteInvite";
-import { FamilySiteInvite } from "./FamilySiteInvite";
 import { getAnniversaryDesign } from "@/lib/anniversaryTemplates";
-import { AnniversaryInvite } from "./AnniversaryInvite";
-import { TushooNavyInvite } from "./invite-families/TushooNavy";
-import { CorporateInvite } from "./invite-families/Corporate";
 import { getCollectionDesign } from "@/lib/collectionTemplates";
-import { CollectionInvite } from "./CollectionInvite";
 import { InvitationMotion } from "./InvitationMotion";
+
+// Гостю нужен один макет из девяти: каждый семейство грузится отдельным чанком (с серверным рендером), а не все сразу.
+const PhotoInvite = dynamic(() => import("./PhotoInvite").then((m) => m.PhotoInvite));
+const Site3D = dynamic(() => import("./Site3D").then((m) => m.Site3D));
+const PinterestInvite = dynamic(() => import("./PinterestInvite").then((m) => m.PinterestInvite));
+const ThemedSiteInvite = dynamic(() => import("./ThemedSiteInvite").then((m) => m.ThemedSiteInvite));
+const FamilySiteInvite = dynamic(() => import("./FamilySiteInvite").then((m) => m.FamilySiteInvite));
+const AnniversaryInvite = dynamic(() => import("./AnniversaryInvite").then((m) => m.AnniversaryInvite));
+const TushooNavyInvite = dynamic(() => import("./invite-families/TushooNavy").then((m) => m.TushooNavyInvite));
+const CorporateInvite = dynamic(() => import("./invite-families/Corporate").then((m) => m.CorporateInvite));
+const CollectionInvite = dynamic(() => import("./CollectionInvite").then((m) => m.CollectionInvite));
 
 export function MediaStage({
   invitation,

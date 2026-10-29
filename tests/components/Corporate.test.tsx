@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { LocaleProvider } from "@/lib/locale";
 import { FormatInvite } from "@/components/FormatInvite";
@@ -17,15 +17,16 @@ class FakeObserver { observe() {} unobserve() {} disconnect() {} }
 
 describe.each(["corp-velvet", "corp-emerald", "corp-winter", "corp-noir"])("%s", (id) => {
   for (const editing of [false, true]) {
-    it(`renders all sections (${editing ? "editor" : "guest"}) without looping`, () => {
+    it(`renders all sections (${editing ? "editor" : "guest"}) without looping`, async () => {
       const inv = { ...inviteFromTemplate(getTemplate(id)), id: "t1" };
       const { container } = render(
         <LocaleProvider>
           <FormatInvite invitation={inv} locale="ky" interactive={!editing} startOpen onChange={editing ? () => {} : undefined} />
         </LocaleProvider>,
       );
+      // Макет семейства подгружается отдельным чанком (next/dynamic), поэтому ждём его появления.
+      await waitFor(() => expect(container.querySelector('[data-family="corporate"]')).not.toBeNull());
       const root = container.querySelector('[data-family="corporate"]');
-      expect(root).not.toBeNull();
       expect(root!.querySelectorAll('[data-box^="section-"]').length).toBeGreaterThanOrEqual(8);
       expect(inv.hosts).toBe("");
       expect(root!.querySelector('[data-box="photo-hero"] img')?.getAttribute("src")).toBe(`/images/corporate/${id.replace("corp-", "")}.webp`);
