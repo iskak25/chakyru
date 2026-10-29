@@ -21,18 +21,17 @@ export function HeaderControls({ className = "" }: { className?: string }) {
   }, []);
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
-      {locales.map((item) => (
-        <button
-          key={item.code}
-          type="button"
-          onClick={() => setLocale(item.code)}
-          aria-pressed={locale === item.code}
-          className={`flex h-11 min-w-9 items-center justify-center px-1 text-[11px] uppercase tracking-[0.16em] transition-opacity ${locale === item.code ? "opacity-100" : "opacity-45"}`}
-        >
-          {item.code}
-        </button>
-      ))}
+    <div className={`flex items-center gap-2 ${className}`}>
+      <select
+        aria-label={locale === "ru" ? "Язык" : "Тил"}
+        value={locale}
+        onChange={(e) => setLocale(e.target.value as typeof locale)}
+        className="h-9 cursor-pointer appearance-none rounded-full border border-ink/20 bg-transparent px-3 text-center text-[11px] uppercase tracking-[0.12em] text-ink outline-none"
+      >
+        {locales.map((item) => (
+          <option key={item.code} value={item.code}>{item.code}</option>
+        ))}
+      </select>
       <Link
         href={user ? "/dashboard" : "/login?google=1"}
         aria-label={user ? t.nav.mine : t.nav.login}
