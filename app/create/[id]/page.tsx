@@ -312,14 +312,7 @@ function EditorPageInner() {
   return (
     <SiteShell mobileFullscreen>
       {showSetup ? (
-        <InvitationSetupWizard
-          invitation={inv}
-          onComplete={(overrides) => {
-            patch(overrides);
-            closeSetup();
-          }}
-          onSkip={closeSetup}
-        />
+        <InvitationSetupWizard invitation={inv} parts={parts} onChange={patch} onFinish={closeSetup} />
       ) : null}
       {!paid ? <DemoWatermark editor /> : null}
       {tourOpen && !showSetup ? <EditorTour locale={locale} onClose={closeTour} /> : null}
