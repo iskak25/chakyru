@@ -7,6 +7,7 @@ import "./globals.css";
 const sans = localFont({
   variable: "--font-manrope",
   display: "swap",
+  fallback: ["KyFallback"],
   src: [
     { path: "./fonts/manrope/Manrope-wght.woff2", weight: "200 800", style: "normal" }
   ],
@@ -24,6 +25,7 @@ const display = localFont({
 const vibes = localFont({
   variable: "--font-vibes",
   display: "swap",
+  fallback: ["KyFallback"],
   src: [
     { path: "./fonts/greatvibes/GreatVibes-Regular.woff2", weight: "400", style: "normal" }
   ],
@@ -49,6 +51,7 @@ const playfair = localFont({
 const unbounded = localFont({
   variable: "--font-unbounded",
   display: "swap",
+  fallback: ["KyFallback"],
   src: [
     { path: "./fonts/unbounded/Unbounded-wght.woff2", weight: "400 700", style: "normal" }
   ],

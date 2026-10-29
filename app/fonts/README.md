@@ -17,3 +17,11 @@ font files along with code changes when updating them.
 The files in this folder are converted to `.woff2` (about 70% smaller than the `.ttf` the
 script downloads). After re-running `scripts/fetch-local-fonts.mjs`, convert the new
 `.ttf` files to `.woff2` and update the paths in `app/layout.tsx`.
+
+## ptsans-ky (резерв для кыргызских букв)
+
+Подмножество PT Sans (Regular, Bold) из 6 глифов: ң Ң ө Ө ү Ү, ~3 КБ каждое. Нужно, потому что
+в Manrope нет «ң/Ң», а в Great Vibes и Unbounded нет ни «ң», ни «ө», ни «ү» (проверено fontkit,
+см. docs/fonts-audit.md). Подключено в `app/globals.css` как `KyFallback` с `unicode-range`
+и добавлено в `fallback` этих шрифтов в `app/layout.tsx`. Лицензия: SIL OFL 1.1 (ParaType), см. `OFL.txt`.
+Источник: https://github.com/google/fonts/tree/main/ofl/ptsans

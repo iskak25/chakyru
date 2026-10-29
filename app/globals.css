@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+/* Резерв для ң/ө/ү там, где их нет в основном шрифте; грузится только когда такая буква встретилась. */
+@font-face {
+  font-family: KyFallback;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/ptsans-ky/PTSansKy-Regular.woff2") format("woff2");
+  unicode-range: U+04A2-04A3, U+04E8-04E9, U+04AE-04AF;
+}
+@font-face {
+  font-family: KyFallback;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fonts/ptsans-ky/PTSansKy-Bold.woff2") format("woff2");
+  unicode-range: U+04A2-04A3, U+04E8-04E9, U+04AE-04AF;
+}
+
 :root {
   /* Toichakyru Premium Editorial */
   --espresso: #0f0c0a;
