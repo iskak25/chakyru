@@ -25,6 +25,7 @@ const display = localFont({
 const vibes = localFont({
   variable: "--font-vibes",
   display: "swap",
+  preload: false,
   fallback: ["KyFallback"],
   src: [
     { path: "./fonts/greatvibes/GreatVibes-Regular.woff2", weight: "400", style: "normal" }
@@ -34,6 +35,7 @@ const vibes = localFont({
 const ceremonial = localFont({
   variable: "--font-ceremonial",
   display: "swap",
+  preload: false,
   src: [
     { path: "./fonts/marckscript/MarckScript-Regular.woff2", weight: "400", style: "normal" }
   ],
@@ -42,6 +44,7 @@ const ceremonial = localFont({
 const playfair = localFont({
   variable: "--font-playfair",
   display: "swap",
+  preload: false,
   src: [
     { path: "./fonts/playfairdisplay/PlayfairDisplay-wght.woff2", weight: "400 700", style: "normal" },
     { path: "./fonts/playfairdisplay/PlayfairDisplay-Italic-wght.woff2", weight: "400 700", style: "italic" }
@@ -51,6 +54,7 @@ const playfair = localFont({
 const unbounded = localFont({
   variable: "--font-unbounded",
   display: "swap",
+  preload: false,
   fallback: ["KyFallback"],
   src: [
     { path: "./fonts/unbounded/Unbounded-wght.woff2", weight: "400 700", style: "normal" }
@@ -60,6 +64,7 @@ const unbounded = localFont({
 const caveat = localFont({
   variable: "--font-caveat",
   display: "swap",
+  preload: false,
   src: [
     { path: "./fonts/caveat/Caveat-wght.woff2", weight: "400 700", style: "normal" }
   ],
@@ -68,6 +73,7 @@ const caveat = localFont({
 const philosopher = localFont({
   variable: "--font-philosopher",
   display: "swap",
+  preload: false,
   src: [
     { path: "./fonts/philosopher/Philosopher-Regular.woff2", weight: "400", style: "normal" },
     { path: "./fonts/philosopher/Philosopher-Italic.woff2", weight: "400", style: "italic" },
