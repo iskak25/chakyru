@@ -268,6 +268,9 @@ function WeddingInlineText({ dataId, value, placeholder, onChange }: {
       readOnly={mobile}
       tabIndex={mobile ? -1 : undefined}
       inputMode={mobile ? "none" : undefined}
+      // Браузер сбрасывает эти свойства у textarea, а на публичной странице текст лежит в <p> и наследует их от блока:
+      // без явного inherit выравнивание, регистр и тень в редакторе отличались бы от ссылки.
+      style={{ textAlign: "inherit", textTransform: "inherit", textIndent: "inherit", textShadow: "inherit", wordSpacing: "inherit", letterSpacing: "inherit" }}
       className="w-full resize-none overflow-hidden whitespace-pre-line rounded-sm border-none bg-transparent p-0 font-[inherit] leading-[inherit] outline-none ring-1 ring-transparent scrollbar-none hover:ring-gold/60 focus:ring-gold"
     />
   );
