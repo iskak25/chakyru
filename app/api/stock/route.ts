@@ -106,7 +106,8 @@ export async function GET(request: Request) {
   for (const provider of [fromPexels, fromUnsplash, fromOpenverse]) {
     try {
       const pageData = await provider(q, page);
-      if (pageData) return NextResponse.json(pageData);
+      // Публичный поиск стоковых фото без персональных данных: повторные запросы берём из кеша CDN.
+      if (pageData) return NextResponse.json(pageData, { headers: { "Cache-Control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400" } });
     } catch {
       // Таймаут или сбой сети у этого провайдера — пробуем следующего.
     }

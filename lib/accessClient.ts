@@ -1,10 +1,12 @@
 "use client";
 
-import { firebaseIdToken, getFirebaseAuth } from "./firebase";
+// Firebase подгружается при первом обращении к токену: статический импорт клал его в первый бандл гостевой страницы приглашения.
+const firebase = () => import("./firebase");
 import type { Invitation, TemplateAccessType } from "./types";
 
 export async function authHeaders(): Promise<HeadersInit> {
   // Гостю вход не нужен: не ждём Firebase дольше нескольких секунд, иначе приглашение не откроется.
+  const { firebaseIdToken } = await firebase();
   const token = await firebaseIdToken();
   return token ? { authorization: `Bearer ${token}`, "content-type": "application/json" } : { "content-type": "application/json" };
 }
@@ -52,6 +54,7 @@ export type InvitationSaveResult =
   | { ok: false; error: string; reason?: string; pending?: boolean };
 
 export async function fetchTemplateAccess(templateId: string): Promise<TemplateAccessResponse | null> {
+  const { getFirebaseAuth } = await firebase();
   const auth = getFirebaseAuth();
   await auth?.authStateReady();
   let token = await auth?.currentUser?.getIdToken();

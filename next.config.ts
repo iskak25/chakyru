@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
+  // Файлы из public/ без версии в имени: Next по умолчанию отдаёт их с max-age=0 и браузер перепроверяет каждый.
+  // Неделя в браузере плюс фоновое обновление до месяца; заменённая картинка с тем же именем появится не позже чем через неделю.
+  async headers() {
+    const cache = [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" }];
+    return [
+      { source: "/images/:path*", headers: cache },
+      { source: "/stickers/:path*", headers: cache },
+      { source: "/brand/:path*", headers: cache },
+    ];
+  },
   async redirects() {
     return [
       { source: "/designers", destination: "/", permanent: false },

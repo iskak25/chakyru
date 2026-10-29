@@ -1,6 +1,5 @@
 "use client";
 
-import { getFirebaseAuth } from "./firebase";
 import type { Invitation } from "./types";
 
 // Recover photos from drafts made by older editors that stored data URLs.
@@ -28,6 +27,8 @@ export async function uploadInvitationImage(file: File): Promise<string> {
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
     throw new Error("Выберите JPG, PNG или WebP размером до 8 МБ.");
   }
+  // Firebase нужен только при загрузке: статический импорт тянул его в бандл гостевой страницы приглашения.
+  const { getFirebaseAuth } = await import("./firebase");
   const auth = getFirebaseAuth();
   await auth?.authStateReady();
   const token = await auth?.currentUser?.getIdToken();

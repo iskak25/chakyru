@@ -1,11 +1,12 @@
 "use client";
-import { firebaseIdToken } from "./firebase";
 
 export async function uploadInvitationAudio(file: File, locale: string): Promise<string> {
   const ru = locale === "ru";
   if (!file.size || file.size > 10 * 1024 * 1024 || !/\.(mp3|m4a|ogg|wav)$/i.test(file.name)) {
     throw new Error(ru ? "Выберите MP3, M4A, OGG или WAV размером до 10 МБ." : "10 МБ чейин MP3, M4A, OGG же WAV файлын тандаңыз.");
   }
+  // Firebase нужен только при загрузке: статический импорт тянул его в бандл гостевой страницы приглашения.
+  const { firebaseIdToken } = await import("./firebase");
   const token = await firebaseIdToken();
   if (!token) throw new Error(ru ? "Войдите в аккаунт, чтобы загрузить музыку." : "Музыка жүктөө үчүн аккаунтка кириңиз.");
   const body = new FormData();
