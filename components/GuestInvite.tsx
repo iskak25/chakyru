@@ -10,13 +10,17 @@ import { getInvitation, rememberRemoteInvitation } from "@/lib/store";
 import { formatOf } from "@/lib/templates";
 import type { Invitation } from "@/lib/types";
 import { GuestWishForm } from "@/components/GuestWishForm";
+import { PreviewBackBar } from "@/components/PreviewBackBar";
 import { InviteSkeleton } from "@/components/Skeleton";
 
 function GuestInviteInner({ guestName }: { guestName?: string }) {
   const params = useParams<{ id: string }>();
   const { locale: storedLocale } = useI18n();
   // Ссылка вида /i/<id>?lang=ru фиксирует язык приглашения независимо от настроек браузера гостя.
-  const forced = useSearchParams().get("lang");
+  const search = useSearchParams();
+  const forced = search.get("lang");
+  // ?preview=1 ставит редактор при предпросмотре; плашка «Назад» только там, где есть локальная копия владельца.
+  const preview = search.get("preview") === "1";
   const locale = forced === "ru" || forced === "ky" ? forced : storedLocale;
   const [inv, setInv] = useState<Invitation | null | undefined>(undefined);
   // Anything but a server-confirmed payment is shown as a demo (also when we only have the local copy).
@@ -66,9 +70,12 @@ function GuestInviteInner({ guestName }: { guestName?: string }) {
     />
   );
 
+  const backBar = preview && getInvitation(inv.id) ? <PreviewBackBar id={inv.id} locale={locale} belowBand={demo} /> : null;
+
   if (formatOf(inv.templateId) === "site3d") {
     return (
       <div className="bg-page">
+        {backBar}
         {demo ? <DemoWatermark /> : null}
         {demo ? <p className="mx-auto max-w-[430px] px-4 py-3 text-center text-xs text-ink-soft">{demoNote(locale)}</p> : null}
         <div className="mx-auto h-auto w-full max-w-[430px]">{renderer}<GuestWishForm key={inv.id} invitationId={inv.id} locale={locale} /></div>
@@ -78,6 +85,7 @@ function GuestInviteInner({ guestName }: { guestName?: string }) {
 
   return (
     <div className="min-h-screen bg-page">
+      {backBar}
       {demo ? <DemoWatermark /> : null}
       {demo ? <p className="mx-auto max-w-md px-4 py-3 text-center text-xs text-ink-soft">{demoNote(locale)}</p> : null}
       <div className="mx-auto max-w-md overflow-hidden">{renderer}<GuestWishForm key={inv.id} invitationId={inv.id} locale={locale} /></div>

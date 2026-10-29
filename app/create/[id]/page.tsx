@@ -239,9 +239,11 @@ function EditorPageInner() {
     setPublishing(true);
     setPublishError("");
     try {
-      if (!await ensureInvitationSaved(inv)) throw new Error("save");
+      // Не ждём сохранение дольше 8 секунд: иначе кнопка «Предпросмотр» выглядит зависшей.
+      const saved = await Promise.race([ensureInvitationSaved(inv), new Promise<boolean>(resolve => window.setTimeout(() => resolve(false), 8000))]);
+      if (!saved) throw new Error("save");
       if (share && paid) setShareOpen(true);
-      else router.push(`/i/${inv.id}`);
+      else router.push(`/i/${inv.id}?preview=1`);
     } catch {
       setPublishError(locale === "ru"
         ? "Изменения не сохранены на сервере. Проверьте подключение и попробуйте ещё раз."

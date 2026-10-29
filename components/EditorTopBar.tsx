@@ -56,6 +56,19 @@ export function EditorTopBar({
     };
   }, []);
 
+  // Меню закрывается по Escape и при прокрутке страницы — не только по тапу на подложку.
+  useEffect(() => {
+    if (!menu) return;
+    const close = () => setMenu(false);
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", close);
+    };
+  }, [menu]);
+
   const status: ReactNode = !online
     ? ru ? "☁ Офлайн" : "☁ Офлайн"
     : saveState === "saving"
@@ -101,7 +114,7 @@ export function EditorTopBar({
         </button>
       ) : null}
       <div className="relative">
-        <button type="button" aria-label={ru ? "Ещё" : "Дагы"} onClick={() => setMenu((v) => !v)} className={btn}>
+        <button type="button" aria-label={ru ? "Ещё" : "Дагы"} aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu((v) => !v)} className={btn}>
           <MoreHorizontal size={22} />
         </button>
         {menu ? (

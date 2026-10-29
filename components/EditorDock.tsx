@@ -342,7 +342,7 @@ export function EditorDock({
   }, [mobileEditing]);
   useEffect(() => {
     if (!toast) return;
-    const timer = window.setTimeout(() => setToast(false), 5000);
+    const timer = window.setTimeout(() => setToast(false), 3000);
     return () => window.clearTimeout(timer);
   }, [toast]);
 
