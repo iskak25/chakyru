@@ -76,6 +76,33 @@ const philosopher = localFont({
   ],
 });
 
+const montserrat = localFont({
+  variable: "--font-montserrat",
+  display: "swap",
+  preload: false,
+  src: [
+    { path: "./fonts/montserrat/Montserrat-wght.woff2", weight: "100 900", style: "normal" }
+  ],
+});
+
+const notoSerif = localFont({
+  variable: "--font-noto-serif",
+  display: "swap",
+  preload: false,
+  src: [
+    { path: "./fonts/notoserif/NotoSerif-wght.woff2", weight: "100 900", style: "normal" }
+  ],
+});
+
+const notoSans = localFont({
+  variable: "--font-noto-sans",
+  display: "swap",
+  preload: false,
+  src: [
+    { path: "./fonts/notosans/NotoSans-wght.woff2", weight: "100 900", style: "normal" }
+  ],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.toichakyru.com"),
   title: "Toichakyru — Тойго чакыруу",
@@ -124,7 +151,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="ky"
-      className={`${sans.variable} ${display.variable} ${vibes.variable} ${ceremonial.variable} ${playfair.variable} ${unbounded.variable} ${caveat.variable} ${philosopher.variable} h-full antialiased`}
+      className={`${sans.variable} ${display.variable} ${vibes.variable} ${ceremonial.variable} ${playfair.variable} ${unbounded.variable} ${caveat.variable} ${philosopher.variable} ${montserrat.variable} ${notoSerif.variable} ${notoSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-page text-ink">
         <script

@@ -14,10 +14,13 @@ export type FontEntry = {
 };
 
 export const FONT_LIBRARY: FontEntry[] = [
+  { id: "noto-serif", label: "Noto Serif", category: "elegant", css: "var(--font-noto-serif), serif", ky: "full" },
   { id: "cormorant", label: "Cormorant Garamond", category: "elegant", css: "var(--font-cormorant), serif", ky: "full" },
   { id: "playfair", label: "Playfair Display", category: "elegant", css: "var(--font-playfair), serif", ky: "full" },
   { id: "philosopher", label: "Philosopher", category: "classic", css: "var(--font-philosopher), serif", ky: "full" },
   { id: "manrope", label: "Manrope", category: "modern", css: "var(--font-manrope), sans-serif", ky: "full" },
+  { id: "montserrat", label: "Montserrat", category: "modern", css: "var(--font-montserrat), sans-serif", ky: "full" },
+  { id: "noto-sans", label: "Noto Sans", category: "modern", css: "var(--font-noto-sans), sans-serif", ky: "full" },
   { id: "unbounded", label: "Unbounded", category: "modern", css: "var(--font-unbounded), sans-serif", ky: "partial" },
   { id: "ceremonial", label: "Marck Script", category: "accent", css: "var(--font-ceremonial), cursive", ky: "partial" },
   { id: "caveat", label: "Caveat", category: "accent", css: "var(--font-caveat), cursive", ky: "full" },

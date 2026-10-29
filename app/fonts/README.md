@@ -25,3 +25,9 @@ script downloads). After re-running `scripts/fetch-local-fonts.mjs`, convert the
 см. docs/fonts-audit.md). Подключено в `app/globals.css` как `KyFallback` с `unicode-range`
 и добавлено в `fallback` этих шрифтов в `app/layout.tsx`. Лицензия: SIL OFL 1.1 (ParaType), см. `OFL.txt`.
 Источник: https://github.com/google/fonts/tree/main/ofl/ptsans
+
+## montserrat, notoserif, notosans
+
+Вариативные шрифты (ось веса), обрезаны через harfbuzz (`subset-font`) до латиницы, кириллицы (U+0400–04FF),
+пунктуации и символов №€₸₽←→♡★☆•, формат woff2. Подключены в `app/layout.tsx` с `preload: false`:
+браузер загружает файл только если шрифт используется на странице. Глифы ң/ө/ү проверены, см. `docs/fonts-audit.md`.
