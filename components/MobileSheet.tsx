@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { Drawer } from "vaul";
+import { RotateCcw } from "lucide-react";
 
 const HINT_KEY = "chakyru-sheet-hint-seen";
 const hintSeen = () => { try { return localStorage.getItem(HINT_KEY) === "1"; } catch { return false; } };
@@ -23,8 +24,11 @@ export function MobileSheet({
   title,
   initialSnap = SHEET_LOW,
   hint,
+  history,
   children,
 }: {
+  /** Шаг назад/вперёд по краям от ручки: остаются под рукой, пока лист открыт. */
+  history?: { canUndo: boolean; canRedo: boolean; onUndo: () => void; onRedo: () => void; undoLabel: string; redoLabel: string };
   /** Одноразовая подсказка про высоту панели (заголовок и текст); без неё не показывается. */
   hint?: { title: string; text: string; close: string };
   open: boolean;
@@ -66,7 +70,17 @@ export function MobileSheet({
           className="fixed inset-x-0 bottom-0 z-[55] flex h-full max-h-[97%] flex-col rounded-t-2xl border-t border-ink/10 bg-page shadow-[0_-12px_28px_rgba(15,12,10,0.12)] outline-none"
         >
           <Drawer.Title className="sr-only">{title}</Drawer.Title>
-          <Drawer.Handle className="my-2 shrink-0" />
+          {history ? (
+            <div className="flex shrink-0 items-center justify-between px-2">
+              <button type="button" aria-label={history.undoLabel} disabled={!history.canUndo} onClick={history.onUndo} className="flex h-11 w-11 items-center justify-center disabled:opacity-25">
+                <RotateCcw size={19} />
+              </button>
+              <Drawer.Handle className="my-2 shrink-0" />
+              <button type="button" aria-label={history.redoLabel} disabled={!history.canRedo} onClick={history.onRedo} className="flex h-11 w-11 items-center justify-center disabled:opacity-25">
+                <RotateCcw size={19} className="-scale-x-100" />
+              </button>
+            </div>
+          ) : <Drawer.Handle className="my-2 shrink-0" />}
           {hint && hintOpen ? (
             <div role="note" className="mx-3 mb-2 flex shrink-0 items-start gap-2 rounded-xl bg-black/[0.05] px-3 py-2 text-xs leading-5 text-ink">
               <span aria-hidden>💡</span>

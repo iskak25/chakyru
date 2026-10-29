@@ -81,8 +81,11 @@ export function EditorDock({
   templatesDetailTitle,
   onCloseTemplatesDetail,
   onUndo,
+  history,
   mobileNavigator,
 }: {
+  /** Телефон: шаг назад/вперёд в шапке нижнего листа. */
+  history?: { canUndo: boolean; canRedo: boolean; onUndo: () => void; onRedo: () => void };
   onUndo?: () => void;
   /** Телефон: навигатор секций над вкладками (когда лист закрыт). */
   mobileNavigator?: ReactNode;
@@ -398,7 +401,7 @@ export function EditorDock({
 
       {((panelNode) =>
         mobile ? (
-          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle} initialSnap={tab === "element" ? SHEET_LOW : SHEET_WORK} hint={{
+          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle} initialSnap={tab === "element" ? SHEET_LOW : SHEET_WORK} history={history ? { ...history, undoLabel: locale === "ru" ? "Шаг назад" : "Артка", redoLabel: locale === "ru" ? "Шаг вперёд" : "Алдыга" } : undefined} hint={{
             title: locale === "ru" ? "Настройте удобную высоту панели" : "Панелдин бийиктигин ыңгайлаштырыңыз",
             text: locale === "ru" ? "Потяните за верхнюю полоску вверх, чтобы увеличить панель, или вниз, чтобы уменьшить её." : "Панелди чоңойтуу үчүн жогорку сызыкчаны өйдө, кичирейтүү үчүн ылдый тартыңыз.",
             close: locale === "ru" ? "Закрыть подсказку" : "Жабуу",
