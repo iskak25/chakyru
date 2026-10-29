@@ -1597,3 +1597,12 @@ textarea {
     perspective: none;
   }
 }
+
+/* iOS Safari зумит страницу при фокусе на поле с шрифтом меньше 16px (BUG-08).
+   Остальные поля холста на телефоне readOnly и зум не вызывают; дата и время редактируются прямо на холсте. */
+@media (pointer: coarse) {
+  article input[type="date"],
+  article input[type="time"] {
+    font-size: 16px;
+  }
+}
