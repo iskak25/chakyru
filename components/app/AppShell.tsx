@@ -19,6 +19,7 @@ import { getUser, logout } from "@/lib/store";
 import { isAdmin } from "@/lib/auth";
 import type { User } from "@/lib/types";
 import { Logo } from "@/components/Logo";
+import { HeaderControls } from "@/components/HeaderControls";
 
 export const APP_NAV = [
   { href: "/", key: "home", icon: Home },
@@ -140,6 +141,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <div className="min-w-0 flex-1 lg:pl-[248px]">
+          <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-[var(--line)] bg-page/95 px-4 backdrop-blur lg:hidden">
+            <Logo tone="ink" />
+            <HeaderControls />
+          </header>
           <main className="mx-auto w-full max-w-[1520px] px-4 pb-24 pt-6 sm:px-8 sm:pt-8 lg:px-10 lg:pb-12 lg:pt-10">
             {children}
           </main>

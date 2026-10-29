@@ -11,6 +11,7 @@ import { isAdmin } from "@/lib/auth";
 import type { User } from "@/lib/types";
 import { APP_NAV, navLabel } from "./app/AppShell";
 import { Logo } from "./Logo";
+import { HeaderControls } from "./HeaderControls";
 
 const menuRow = "flex items-center gap-3 rounded-[12px] px-3 py-3 text-[14px] transition";
 const menuRowActive = "bg-[rgba(245,245,245,0.12)] text-cream";
@@ -74,21 +75,8 @@ export function Header() {
             <Logo tone={tone} />
           </div>
 
-          <div className="flex items-center gap-5 sm:gap-7">
-            <div className="hidden gap-3 sm:flex">
-              {locales.map((item) => (
-                <button
-                  key={item.code}
-                  type="button"
-                  onClick={() => setLocale(item.code)}
-                  className={`label transition-opacity duration-200 hover:opacity-55 ${
-                    locale === item.code ? "opacity-100" : "opacity-50"
-                  }`}
-                >
-                  {item.code}
-                </button>
-              ))}
-            </div>
+          <div className="flex items-center gap-3 sm:gap-7">
+            <HeaderControls />
             <Link
               href="/templates"
               className="hidden text-[10px] uppercase tracking-[0.32em] transition-opacity duration-200 hover:opacity-50 md:inline"
