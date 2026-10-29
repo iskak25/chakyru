@@ -146,6 +146,11 @@ html {
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  /* Открыта клавиатура: вкладки не нужны, лист занимает освободившееся место. */
+  html[data-kbd] .editor-dock-tabs {
+    display: none;
+  }
+
   .editor-dock-tabs > button {
     min-height: 56px;
     min-width: 0;

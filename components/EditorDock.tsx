@@ -234,6 +234,29 @@ export function EditorDock({
 
   const mobile = useIsMobile();
   const mobileEditing = mobile && tab === "element";
+  // iOS: пока открыта клавиатура, нижнее меню вкладок плавает над ней и съедает место, а поле уезжает из виду.
+  // html[data-kbd] прячет вкладки (см. globals.css, MobileSheet), поле при фокусе прокручивается в центр.
+  useEffect(() => {
+    if (!mobile) return;
+    const textField = "input:not([type=range]):not([type=color]):not([type=checkbox]):not([type=radio]):not([type=file]):not([type=button]), textarea";
+    const root = document.documentElement;
+    const onIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.matches?.(textField) || !target.closest(".editor-dock-panel")) return;
+      root.dataset.kbd = "1";
+      window.setTimeout(() => target.scrollIntoView({ block: "center", behavior: "smooth" }), 320);
+    };
+    const onOut = () => window.setTimeout(() => {
+      if (!(document.activeElement as HTMLElement | null)?.matches?.(textField)) delete root.dataset.kbd;
+    }, 120);
+    document.addEventListener("focusin", onIn);
+    document.addEventListener("focusout", onOut);
+    return () => {
+      document.removeEventListener("focusin", onIn);
+      document.removeEventListener("focusout", onOut);
+      delete root.dataset.kbd;
+    };
+  }, [mobile]);
   const sheetOpen = mobile && tab !== null;
   const invRef = useRef(invitation);
   invRef.current = invitation;

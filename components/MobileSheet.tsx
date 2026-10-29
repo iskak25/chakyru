@@ -53,6 +53,7 @@ export function MobileSheet({
         if (!next) onClose();
       }}
       modal={false}
+      repositionInputs={false}
       dismissible
       snapPoints={SHEET_SNAPS}
       activeSnapPoint={snap}
@@ -89,7 +90,7 @@ export function MobileSheet({
             </div>
           ) : null}
           {/* нижние 64px закрывает панель вкладок (EditorDock) */}
-          <div className="min-h-0 flex-1 pb-[calc(64px+env(safe-area-inset-bottom))]">{children}</div>
+          <div className="min-h-0 flex-1 pb-[calc(64px+env(safe-area-inset-bottom))] [html[data-kbd]_&]:pb-2">{children}</div>
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
