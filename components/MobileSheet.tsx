@@ -3,6 +3,10 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Drawer } from "vaul";
 
+const HINT_KEY = "chakyru-sheet-hint-seen";
+const hintSeen = () => { try { return localStorage.getItem(HINT_KEY) === "1"; } catch { return false; } };
+const markHintSeen = () => { try { localStorage.setItem(HINT_KEY, "1"); } catch { /* без хранилища подсказка просто покажется снова */ } };
+
 /** Положения листа: низкое (холст виден), рабочее для форм и сеток, почти весь экран. «Свернут» — закрыт, виден только тулбар. */
 export const SHEET_SNAPS = [0.45, 0.75, 0.9];
 export const SHEET_LOW = SHEET_SNAPS[0];
@@ -18,8 +22,11 @@ export function MobileSheet({
   onClose,
   title,
   initialSnap = SHEET_LOW,
+  hint,
   children,
 }: {
+  /** Одноразовая подсказка про высоту панели (заголовок и текст); без неё не показывается. */
+  hint?: { title: string; text: string; close: string };
   open: boolean;
   onClose: () => void;
   title: string;
@@ -28,6 +35,9 @@ export function MobileSheet({
   children: ReactNode;
 }) {
   const [snap, setSnap] = useState<number | string | null>(initialSnap);
+  const [hintOpen, setHintOpen] = useState(false);
+  useEffect(() => { if (open && hint) setHintOpen(!hintSeen()); }, [open, Boolean(hint)]); // eslint-disable-line react-hooks/exhaustive-deps
+  function dismissHint() { setHintOpen(false); markHintSeen(); }
   useEffect(() => {
     if (open) setSnap(initialSnap);
   }, [open, initialSnap]);
@@ -42,7 +52,11 @@ export function MobileSheet({
       dismissible
       snapPoints={SHEET_SNAPS}
       activeSnapPoint={snap}
-      setActiveSnapPoint={setSnap}
+      setActiveSnapPoint={(next) => {
+        // Пользователь сам сдвинул панель: подсказка выполнила задачу.
+        if (hintOpen && next !== snap) dismissHint();
+        setSnap(next);
+      }}
     >
       <Drawer.Portal>
         <Drawer.Content
@@ -53,6 +67,13 @@ export function MobileSheet({
         >
           <Drawer.Title className="sr-only">{title}</Drawer.Title>
           <Drawer.Handle className="my-2 shrink-0" />
+          {hint && hintOpen ? (
+            <div role="note" className="mx-3 mb-2 flex shrink-0 items-start gap-2 rounded-xl bg-black/[0.05] px-3 py-2 text-xs leading-5 text-ink">
+              <span aria-hidden>💡</span>
+              <p className="min-w-0 flex-1"><b className="block text-[13px]">{hint.title}</b>{hint.text}</p>
+              <button type="button" aria-label={hint.close} onClick={dismissHint} className="flex h-8 w-8 shrink-0 items-center justify-center text-base text-ink-soft">✕</button>
+            </div>
+          ) : null}
           {/* нижние 64px закрывает панель вкладок (EditorDock) */}
           <div className="min-h-0 flex-1 pb-[calc(64px+env(safe-area-inset-bottom))]">{children}</div>
         </Drawer.Content>

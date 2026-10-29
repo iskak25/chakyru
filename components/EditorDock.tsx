@@ -398,7 +398,11 @@ export function EditorDock({
 
       {((panelNode) =>
         mobile ? (
-          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle} initialSnap={tab === "element" ? SHEET_LOW : SHEET_WORK}>
+          <MobileSheet open={tab !== null} onClose={() => setTab(null)} title={elementTitle} initialSnap={tab === "element" ? SHEET_LOW : SHEET_WORK} hint={{
+            title: locale === "ru" ? "Настройте удобную высоту панели" : "Панелдин бийиктигин ыңгайлаштырыңыз",
+            text: locale === "ru" ? "Потяните за верхнюю полоску вверх, чтобы увеличить панель, или вниз, чтобы уменьшить её." : "Панелди чоңойтуу үчүн жогорку сызыкчаны өйдө, кичирейтүү үчүн ылдый тартыңыз.",
+            close: locale === "ru" ? "Закрыть подсказку" : "Жабуу",
+          }}>
             {panelNode}
           </MobileSheet>
         ) : (
