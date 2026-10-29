@@ -51,7 +51,7 @@
 .heroFrame { position: relative; z-index: 1; text-align: center; padding: 14% 0 0; }
 .mask { display: block; width: 62%; margin: 0 auto 10px; color: var(--gold); }
 .eyebrow { font-size: clamp(11px, 3.4cqw, 15px); letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
-.title { margin: 22px 0 14px; font-size: clamp(34px, 16cqw, 70px); line-height: 1.02; overflow-wrap: anywhere; text-wrap: balance; }
+.title { margin: 22px 0 14px; font-size: clamp(34px, 16cqw, 70px); line-height: 1.02; overflow-wrap: break-word; text-wrap: balance; }
 .root[data-theme="velvet"] .title, .root[data-theme="emerald"] .title { text-shadow: 0 2px 18px rgba(0, 0, 0, .35); }
 .tagline { font-family: var(--font-manrope), sans-serif; font-size: clamp(10px, 2.6cqw, 12px); letter-spacing: .18em; text-transform: uppercase; line-height: 1.8; }
 .date { margin-top: 18px; font-size: clamp(18px, 6cqw, 30px); letter-spacing: .12em; }
@@ -105,7 +105,7 @@
 /* Миниатюра для карточек каталога */
 .thumb { height: 100%; display: flex; flex-direction: column; container-type: inline-size; }
 .thumbHero { position: relative; flex: 1 1 62%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 8%; color: var(--hero-ink); }
-.thumbHero span { position: relative; font-size: 16cqw; line-height: 1.08; overflow-wrap: anywhere; text-wrap: balance; }
+.thumbHero span { position: relative; font-size: 16cqw; line-height: 1.08; overflow-wrap: break-word; text-wrap: balance; }
 .thumbHero i { margin-top: 8px; font-style: normal; color: var(--gold); font-size: 8cqw; }
 .thumb[data-theme="velvet"] { --paper: #fbf7f2; --gold: #e8c98a; --hero-ink: #f6e7d0; --ink: #a3122b; }
 .thumb[data-theme="emerald"] { --paper: #f1ecd8; --gold: #c9a45c; --hero-ink: #f6f1e0; --ink: #1d4a38; }

@@ -6,7 +6,7 @@
 .heroContent { position:relative; z-index:1; }
 .eyebrow { font-size:10px; text-transform:uppercase; letter-spacing:.22em; line-height:1.8; max-width:230px; margin:0 auto; }
 .diamond { display:block; color:#ae8a49; font-size:23px; margin:23px auto; }
-.names { font-family:var(--font-cormorant),Georgia,serif; font-size:clamp(42px,12cqw,70px); line-height:1.08; font-weight:500; color:#783e35; text-wrap:balance; overflow-wrap:anywhere; }
+.names { font-family:var(--font-cormorant),Georgia,serif; font-size:clamp(42px,12cqw,70px); line-height:1.08; font-weight:500; color:#783e35; text-wrap:balance; overflow-wrap:break-word; }
 .blessing { font-size:14px; line-height:1.9; max-width:280px; margin:26px auto; white-space:pre-line; }
 .date { margin:30px auto 0; font-family:Georgia,serif; font-size:19px; letter-spacing:.14em; }
 .date span { display:block; font-family:var(--font-manrope),sans-serif; font-size:11px; margin-top:12px; letter-spacing:.18em; }

@@ -21,7 +21,7 @@
 .cardBorder { position:absolute; inset:6%; border:1px solid #b39b6955; }
 .cardOrnament { width:23%; height:20%; color:var(--env-seal); }
 .cardTitle { font-size:clamp(8px,2vw,11px); text-transform:uppercase; letter-spacing:.18em; }
-.cardNames { max-width:80%; font:400 clamp(19px,4.5vw,35px)/1.08 var(--font-cormorant),Georgia,serif; overflow-wrap:anywhere; text-wrap:balance; }
+.cardNames { max-width:80%; font:400 clamp(19px,4.5vw,35px)/1.08 var(--font-cormorant),Georgia,serif; overflow-wrap:break-word; text-wrap:balance; }
 .cardDate { font-size:clamp(9px,2vw,12px); letter-spacing:.2em; }
 .front { z-index:4; background:var(--env-paper); }
 .left { clip-path:polygon(0 0,57% 54%,0 100%); background:linear-gradient(115deg,var(--env-light),var(--env-paper) 70%); }

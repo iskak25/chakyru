@@ -6,7 +6,7 @@
 .frame { position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:355px; padding:48px 24px; border:7px double #c9a56c; border-radius:50% / 42%; color:#6b2524; background:radial-gradient(ellipse,#fffaf0,#e9dcc3); outline:1px solid #d4b781; outline-offset:5px; box-shadow:0 0 0 11px #462019,0 0 0 13px #ac874e,0 20px 40px #24080b99,inset 0 0 18px #b2956255; }
 .finial,.bottomFinial { position:absolute; left:50%; transform:translateX(-50%); color:#d9b87c; text-shadow:0 2px 2px #39110a; font-family:Georgia,serif; font-size:51px; line-height:1; }
 .finial { top:-39px; }.bottomFinial { bottom:-39px; transform:translateX(-50%) rotate(180deg); }
-.names { font-family:var(--font-cormorant),Georgia,serif; font-size:clamp(35px,10cqw,56px); font-weight:500; line-height:1.15; text-wrap:balance; overflow-wrap:anywhere; width:100%; }
+.names { font-family:var(--font-cormorant),Georgia,serif; font-size:clamp(35px,10cqw,56px); font-weight:500; line-height:1.15; text-wrap:balance; overflow-wrap:break-word; width:100%; }
 .flourish { display:block; font-size:19px; color:#a67b46; margin:18px 0; }
 .date { font-family:Georgia,serif; font-size:16px; letter-spacing:.07em; }.date span { display:block; font-size:12px; margin-top:12px; }
 .motto { margin:40px auto 32px; max-width:270px; font-size:13px; line-height:1.9; white-space:pre-line; }

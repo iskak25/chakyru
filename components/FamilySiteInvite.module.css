@@ -1,4 +1,4 @@
-.root { --pin-accent:var(--family-accent); width:100%; max-width:480px; margin:auto; container-type:inline-size; background:var(--family-paper); color:var(--family-ink); font:14px/1.7 var(--font-manrope),sans-serif; text-align:center; overflow-wrap:anywhere; }
+.root { --pin-accent:var(--family-accent); width:100%; max-width:480px; margin:auto; container-type:inline-size; background:var(--family-paper); color:var(--family-ink); font:14px/1.7 var(--font-manrope),sans-serif; text-align:center; overflow-wrap:break-word; }
 .root p { margin:0; }
 .root :global([data-box]) { min-width:0; }
 .section { padding:48px 30px; position:relative; }

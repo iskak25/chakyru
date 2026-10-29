@@ -13,7 +13,7 @@
 .crest span { height:1px; flex:1; background:var(--accent); opacity:.5; }
 .kicker { font-size:11px; letter-spacing:.25em; text-transform:uppercase; font-weight:600; max-width:90%; }
 .copy { width:100%; position:relative; z-index:2; }
-.name { font:500 clamp(36px,10cqw,76px)/1.03 var(--serif); overflow-wrap:anywhere; text-wrap:balance; letter-spacing:-.035em; }
+.name { font:500 clamp(36px,10cqw,76px)/1.03 var(--serif); overflow-wrap:break-word; text-wrap:balance; letter-spacing:-.035em; }
 .note { font:italic clamp(17px,4.8cqw,25px)/1.4 var(--serif); max-width:300px; margin:14px auto 0; text-wrap:balance; }
 .age { font:400 clamp(80px,27cqw,160px)/.9 var(--serif); color:var(--accent); letter-spacing:-.065em; margin:8px auto 20px; }
 .visual { position:relative; width:100%; max-width:420px; isolation:isolate; margin:10px 0 4px; }
@@ -32,7 +32,7 @@
 .date > span:last-child { font-size:22px; }
 .date small { display:block; font:10px/1.5 var(--font-manrope),sans-serif; margin-top:5px; letter-spacing:.18em; }
 .greeting { font:italic 21px/1.4 var(--serif); max-width:290px; }
-.heroVenue { font-size:10px; letter-spacing:.15em; text-transform:uppercase; max-width:90%; overflow-wrap:anywhere; }
+.heroVenue { font-size:10px; letter-spacing:.15em; text-transform:uppercase; max-width:90%; overflow-wrap:break-word; }
 .decor { width:85%; max-width:330px; height:95px; margin:0 auto; pointer-events:none; }
 .decor img,.decor svg { width:100%; height:100%; object-fit:contain; }
 .decor svg { max-width:100px; margin:auto; opacity:.65; }

@@ -222,7 +222,7 @@
 /* Mobile keeps real text in flow. Long editable names wrap instead of cropping. */
 @container (max-width:400px) {
   .root :global([data-kyz-hero]) { min-height:720px; }
-  .root :global(.kyz-name) { font-size:58px; overflow-wrap:anywhere; }
+  .root :global(.kyz-name) { font-size:58px; overflow-wrap:break-word; }
   .root :global(.kyz-title) { font-size:13px; letter-spacing:.12em; }
   .root :global(.kyz-note) { font-size:20px; }.root :global(.kyz-date) { font-size:22px; }
   .root :global([data-kyz-sections] > section) { padding-left:8%; padding-right:8%; }

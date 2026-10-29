@@ -176,7 +176,7 @@
 .root[data-event="wedding"][data-kyz-theme="w-curtain"] :global([data-kyz-hero]) { background:var(--c-ink); }
 .root[data-event="wedding"][data-kyz-theme="w-curtain"] :global(.wd-drape) { opacity:.18; }
 .root[data-event="wedding"][data-kyz-theme="w-leaf"] :global(.wd-monogram) { font-size:clamp(60px,16cqw,100px); }
-.root[data-event="wedding"] :global(.kyz-name p) { overflow-wrap:anywhere; }
+.root[data-event="wedding"] :global(.kyz-name p) { overflow-wrap:break-word; }
 @container (max-width:420px) {
   .root[data-event="wedding"] :global([data-kyz-hero]) { min-height:680px; padding-inline:7%; }
   .root[data-event="wedding"] :global([data-kyz-sections] > section) { padding-inline:8%; }

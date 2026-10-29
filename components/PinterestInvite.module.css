@@ -5,7 +5,7 @@
 .title { font-size:30px; font-weight:400; line-height:1.2; margin:0 auto 24px; }
 .body { font-size:17px; line-height:1.55; margin:24px auto; }
 .script { font-family:var(--font-vibes),var(--font-ceremonial),cursive; font-weight:400; font-size:45px; text-transform:none; }
-.names { font-family:var(--font-vibes),var(--font-ceremonial),cursive; font-size:57px; line-height:1.2; overflow-wrap:anywhere; }
+.names { font-family:var(--font-vibes),var(--font-ceremonial),cursive; font-size:57px; line-height:1.2; overflow-wrap:break-word; }
 .names i { font-family:var(--font-vibes),cursive; font-weight:400; }
 .photo { position:relative; display:block; width:100%; overflow:hidden; }
 .photo img { user-select:none; }
@@ -112,7 +112,7 @@
 .blue .form { font-size:13px; }
 .card { position:relative; width:100%; overflow:visible; font-family:var(--font-cormorant),Georgia,serif; }
 .cardBackground { position:absolute; inset:0; width:100%; height:100%; }
-.card :global([data-wedding-text]) { overflow-wrap:anywhere; }
+.card :global([data-wedding-text]) { overflow-wrap:break-word; }
 .card .names { position:absolute; z-index:1; left:5%; right:5%; font-family:var(--font-cormorant),serif; }
 .card .names i { margin:0 .25em; }
 .cardOverline,.cardMarrying,.cardMessage,.cardDate,.cardClosing,.cardHeading,.cardTime,.cardAddress,.cardVenue { position:absolute; z-index:1; left:8%; right:8%; }
@@ -195,7 +195,7 @@
 .wishHead button { border:0; background:none; font-size:22px; line-height:1; cursor:pointer; color:inherit; }
 .wishList { overflow-y:auto; padding:8px 20px 20px; }
 .wishRow { padding:14px 0; border-bottom:1px solid #0001; font:14px/1.5 sans-serif; text-align:left; }
-.wishRow p { margin:6px 0 0; white-space:pre-line; overflow-wrap:anywhere; }
+.wishRow p { margin:6px 0 0; white-space:pre-line; overflow-wrap:break-word; }
 .wishRow strong { font-size:13px; }
 .wishRow small { display:block; opacity:.55; margin-top:2px; }
 .wishRow.wishHidden { opacity:.5; }
