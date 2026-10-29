@@ -8,11 +8,10 @@ import {
   Home,
   LayoutTemplate,
   LogOut,
-  MapPin,
-  Music2,
+  GraduationCap,
+  Tag,
   UserRound,
   Images,
-  Users,
 } from "lucide-react";
 import { locales } from "@/lib/i18n";
 import { useI18n } from "@/lib/locale";
@@ -25,8 +24,8 @@ export const APP_NAV = [
   { href: "/", key: "home", icon: Home },
   { href: "/templates", key: "templates", icon: LayoutTemplate },
   { href: "/dashboard", key: "mine", icon: Heart },
-  { href: "/pricing", key: "pricing", icon: MapPin },
-  { href: "/learn", key: "learn", icon: Music2 },
+  { href: "/pricing", key: "pricing", icon: Tag },
+  { href: "/learn", key: "learn", icon: GraduationCap },
 ] as const;
 
 export function navLabel(t: ReturnType<typeof useI18n>["t"], key: (typeof APP_NAV)[number]["key"]) {
@@ -149,25 +148,19 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--line)] bg-page/95 px-2 pt-2 backdrop-blur lg:hidden" style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}>
         <div className="mx-auto flex min-h-11 max-w-lg items-center justify-between">
-          {[
-            { href: "/", icon: Home, label: t.nav.studio },
-            { href: "/templates", icon: LayoutTemplate, label: t.nav.templates },
-            { href: "/dashboard", icon: Heart, label: t.nav.mine },
-            { href: user ? "/dashboard" : "/login?google=1", icon: Users, label: t.nav.login },
-            { href: "/pricing", icon: UserRound, label: t.nav.pricing },
-          ].map((item) => {
+          {APP_NAV.map((item) => {
             const Icon = item.icon;
-            const active = item.href !== "/login?google=1" && (pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href)));
+            const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
               <Link
-                key={item.href + item.label}
+                key={item.href}
                 href={item.href}
                 className={`flex min-h-11 min-w-[56px] flex-col items-center justify-center gap-1 rounded-xl px-2 py-1.5 text-[10px] tracking-wide ${
                   active ? "text-ink" : "text-meta"
                 }`}
               >
                 <Icon size={18} strokeWidth={active ? 1.8 : 1.5} />
-                <span className="truncate">{item.label}</span>
+                <span className="truncate">{navLabel(t, item.key)}</span>
               </Link>
             );
           })}
