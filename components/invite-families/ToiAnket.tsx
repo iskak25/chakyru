@@ -114,15 +114,15 @@ function RSVPSection({ kit }: { kit: LayoutKit }) {
   const [guestCount, setGuestCount] = useState("1");
   const ru = kit.locale === "ru";
   const options: [RsvpStatus, string][] = [
-    ["yes", ru ? "Ооба, келем" : "Ооба, келем"],
-    ["no", ru ? "Жок, келе албаймын" : "Жок, келе албаймын"],
-    ["maybe", ru ? "Жубум менен келемин" : "Жубум менен келемин"],
+    ["yes", labels.rsvpYes],
+    ["no", labels.rsvpNo],
+    ["maybe", labels.rsvpPlus],
   ];
 
   return (
     <section className="px-8 py-8">
       <p className="font-tra-title text-center text-[18px] uppercase tracking-[0.14em] text-[#4a6a4e]">
-        {ru ? "Катышуу" : "Катышуу"}
+        {ru ? "Участие" : "Катышуу"}
       </p>
       {variant !== "guest" ? (
         <p className="mt-4 text-center text-sm text-[#7a8a72]">{labels.rsvpHint}</p>
@@ -169,7 +169,7 @@ function RSVPSection({ kit }: { kit: LayoutKit }) {
           />
 
           <button type="submit" className="mt-2 flex h-12 w-full items-center justify-center rounded-[4px] bg-[#2f4a3a] text-[11px] uppercase tracking-[0.18em] text-[#fdf8ee]">
-            {ru ? "Жөнөтүү" : "Жөнөтүү"}
+            {ru ? "Отправить" : "Жөнөтүү"}
           </button>
           {rsvpDone ? <p className="pt-2 text-center text-sm text-[#7a8a72]">{labels.rsvpThanks}</p> : null}
         </form>
