@@ -9,6 +9,7 @@ import { useI18n } from "@/lib/locale";
 import type { Invitation } from "@/lib/types";
 import { deleteCanvasId } from "@/lib/canvasOps";
 import { LETTER_SPACING_MAX, LETTER_SPACING_MIN, LINE_HEIGHT_MAX, LINE_HEIGHT_MIN } from "@/lib/typography";
+import { TYPE_PAIRS, pairCss, typePairPatch } from "@/lib/typePairs";
 import { FontPicker } from "@/components/FontPicker";
 import { restoreWeddingPart, weddingStyle, weddingStylePatch, weddingTextPatch, weddingValue, type WeddingPartInfo } from "@/lib/weddingEditor";
 import { uploadInvitationImage } from "@/lib/uploadImage";
@@ -165,6 +166,16 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
           <button type="button" className="min-h-11 rounded-lg border border-red-300 bg-red-50 px-3 text-xs text-red-700" onClick={() => { onChange(deleteCanvasId(invitation, selected, { x: 0, y: 0, w: 100, h: 0 })); setConfirmDelete(null); select(null); }}>{ru ? "Да, удалить" : "Ооба, өчүр"}</button>
           <button type="button" className="min-h-11 rounded-lg border px-3 text-xs" onClick={() => setConfirmDelete(null)}>{ru ? "Отмена" : "Жокко чыгаруу"}</button>
         </> : <button type="button" className="min-h-11 rounded-lg border border-red-200 px-3 text-xs text-red-700" onClick={() => setConfirmDelete(selected)}>{ru ? "Удалить элемент" : "Элементти өчүрүү"}</button>}
+      </div> : null}
+      {!selected && parts.some(p => p.kind === "text") ? <div className="space-y-2 text-xs">
+        <p>{ru ? "Сочетания шрифтов" : "Арип айкалыштары"}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {TYPE_PAIRS.map(pair => { const css = pairCss(pair); return <button key={pair.id} type="button" aria-label={(ru ? "Сочетание: " : "Айкалыш: ") + (ru ? pair.ru : pair.ky)} onClick={() => onChange(typePairPatch(invitation, parts, pair))} className="min-h-14 rounded-lg border border-black/10 bg-white px-2 py-1 text-left text-[#29251f]">
+            <span className="block truncate text-base leading-tight" style={{ fontFamily: css.heading }}>{ru ? pair.ru : pair.ky}</span>
+            <span className="block truncate text-[11px]" style={{ fontFamily: css.body }}>{ru ? "Приглашаем вас на праздник" : "Сизди тойго чакырабыз"}</span>
+          </button>; })}
+        </div>
+        <button type="button" className="min-h-11 rounded-lg border px-3" onClick={() => onChange(typePairPatch(invitation, parts, null))}>{ru ? "Сбросить шрифты по шаблону" : "Арипти шаблон боюнча калыбына келтирүү"}</button>
       </div> : null}
       {!selected ? <label className="block text-xs">Фон приглашения<input aria-label="Фон приглашения" type="color" value={invitation.blockColors?.page || "#f4ecdf"} onChange={e => onChange({ blockColors: { ...invitation.blockColors, page: e.target.value } })} /></label> : null}
       {hidden.length ? <p className="text-xs">Скрытых элементов: {hidden.length}. Выберите элемент в списке и нажмите «Показать».</p> : null}
