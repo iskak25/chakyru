@@ -42,3 +42,16 @@ describe("список элементов инспектора (BUG-09)", () => 
     expect(select).toHaveBeenCalledWith(null);
   });
 });
+
+describe("менеджер блоков", () => {
+  it("скрывает и показывает секцию через layout.hidden, без новых полей", () => {
+    const onChange = vi.fn();
+    const hiddenLayout = { "section-program": { x: 0, y: 0, w: 100, h: 0, hidden: true } };
+    const { rerender } = render(<LocaleProvider><ElementInspector invitation={makeInvitation()} onChange={onChange} selected={null} select={() => {}} parts={parts} locale="ru" /></LocaleProvider>);
+    fireEvent.click(screen.getByRole("switch", { name: "Программа: скрыть" }));
+    expect(onChange.mock.calls[0][0].layout["section-program"].hidden).toBe(true);
+    rerender(<LocaleProvider><ElementInspector invitation={makeInvitation({ layout: hiddenLayout })} onChange={onChange} selected={null} select={() => {}} parts={parts} locale="ru" /></LocaleProvider>);
+    fireEvent.click(screen.getByRole("switch", { name: "Программа: показать" }));
+    expect(onChange.mock.calls[1][0].layout["section-program"].hidden).toBe(false);
+  });
+});

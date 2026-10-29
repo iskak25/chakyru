@@ -80,6 +80,7 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
   const textValue = part ? weddingValue(invitation, part) : extra?.text || "";
   const isText = part?.kind === "text" || extra?.kind === "text" || extra?.kind === "button" || extra?.kind === "guestName";
   const isImage = part?.kind === "image" || extra?.kind === "image";
+  const sections = parts.filter(item => item.id.startsWith("section-"));
   const hidden = parts.filter(item => invitation.layout?.[item.id]?.hidden);
   const groups = groupBySection(parts, ru);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -166,6 +167,15 @@ export function ElementInspector({ invitation, onChange, selected, select, parts
           <button type="button" className="min-h-11 rounded-lg border border-red-300 bg-red-50 px-3 text-xs text-red-700" onClick={() => { onChange(deleteCanvasId(invitation, selected, { x: 0, y: 0, w: 100, h: 0 })); setConfirmDelete(null); select(null); }}>{ru ? "Да, удалить" : "Ооба, өчүр"}</button>
           <button type="button" className="min-h-11 rounded-lg border px-3 text-xs" onClick={() => setConfirmDelete(null)}>{ru ? "Отмена" : "Жокко чыгаруу"}</button>
         </> : <button type="button" className="min-h-11 rounded-lg border border-red-200 px-3 text-xs text-red-700" onClick={() => setConfirmDelete(selected)}>{ru ? "Удалить элемент" : "Элементти өчүрүү"}</button>}
+      </div> : null}
+      {!selected && sections.length ? <div className="space-y-1 text-xs">
+        <p>{ru ? "Блоки приглашения" : "Чакыруунун блокторлору"}</p>
+        <ul className="max-h-48 space-y-1 overflow-y-auto">
+          {sections.map(section => { const off = !!invitation.layout?.[section.id]?.hidden; return <li key={section.id} className="flex items-center justify-between gap-2 rounded-lg border border-black/10 bg-white px-3">
+            <span className={`min-w-0 truncate ${off ? "text-black/40 line-through" : ""}`}>{section.label}</span>
+            <button type="button" role="switch" aria-checked={!off} aria-label={`${section.label}: ${off ? (ru ? "показать" : "көрсөтүү") : (ru ? "скрыть" : "жашыруу")}`} onClick={() => onChange(off ? restoreWeddingPart(invitation, section.id) : deleteCanvasId(invitation, section.id, { x: 0, y: 0, w: 100, h: 0 }))} className="min-h-11 shrink-0 px-2 underline">{off ? (ru ? "Показать" : "Көрсөтүү") : (ru ? "Скрыть" : "Жашыруу")}</button>
+          </li>; })}
+        </ul>
       </div> : null}
       {!selected && parts.some(p => p.kind === "text") ? <div className="space-y-2 text-xs">
         <p>{ru ? "Сочетания шрифтов" : "Арип айкалыштары"}</p>
