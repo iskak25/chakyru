@@ -79,11 +79,11 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
     const input = "mt-2 w-full rounded-xl border bg-white p-3 text-base";
     return <>
       <label className="mt-4 block text-sm">{ru ? "Должность сотрудника" : "Кызматкердин чини"}
-        <input className={input} value={person.role} maxLength={27} autoFocus={autoFocus}
+        <input className={input} value={person.role} autoFocus={autoFocus}
           placeholder={ru ? "Например: Главный инженер" : "Мисалы: Башкы инженер"} onChange={e => set({ role: e.target.value })} />
       </label>
       <label className="mt-3 block text-sm">{ru ? "Имя сотрудника" : "Кызматкердин аты"}
-        <input className={input} value={person.name} maxLength={30}
+        <input className={input} value={person.name}
           placeholder={ru ? "Например: Бакыт Сатыбалдиев" : "Мисалы: Бакыт Сатыбалдиев"} onChange={e => set({ name: e.target.value })} />
       </label>
     </>;

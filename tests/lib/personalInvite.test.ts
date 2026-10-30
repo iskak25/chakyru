@@ -5,7 +5,7 @@ describe("cleanGuestName", () => {
   it("decodes, trims and limits the name", () => {
     expect(cleanGuestName("%D0%90%D0%B9%D0%B3%D0%B5%D1%80%D0%B8%D0%BC%20%20%D0%90.")).toBe("Айгерим А.");
     expect(cleanGuestName("  x\u0000y\n z ")).toBe("xy z");
-    expect(cleanGuestName("а".repeat(100))).toHaveLength(60);
+    expect(cleanGuestName("а".repeat(300))).toHaveLength(200);
     expect(cleanGuestName("100%")).toBe("100%");
     expect(cleanGuestName(undefined)).toBe("");
   });

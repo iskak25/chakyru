@@ -1,9 +1,9 @@
-/** Имя гостя из ссылки вида /i/<имя>/<id>: без управляющих символов и лишних пробелов, не длиннее 60 знаков. */
+/** Имя гостя из ссылки вида /i/<имя>/<id>: без управляющих символов и лишних пробелов, не длиннее 200 знаков (имя и должность сотрудника идут одной строкой). */
 export function cleanGuestName(raw: string | undefined | null): string {
   if (!raw) return "";
   let value = raw;
   try { value = decodeURIComponent(raw); } catch { /* уже декодировано */ }
-  return value.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
+  return value.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").replace(/\s+/g, " ").trim().slice(0, 200);
 }
 
 // Обращение «вы» → «ты» в тексте приглашения. Слова заменяются целиком; регистр первой буквы сохраняется.
