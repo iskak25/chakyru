@@ -22,6 +22,18 @@
   --gold: #d9b877; --gold-ink: #0a0a0a; --hero-ink: #f1e6cf;
 }
 
+.root[data-theme="energy"] {
+  --paper: #0e2347; --paper-ink: #eaf1fb; --paper-head: #f5c542;
+  --panel: #091a35; --panel-ink: #eaf1fb; --panel-head: #f5c542;
+  --gold: #f5c542; --gold-ink: #091a35; --hero-ink: #fff6d8;
+}
+
+.root[data-theme="police"] {
+  --paper: #f4f0e7; --paper-ink: #24344a; --paper-head: #142b42;
+  --panel: #102638; --panel-ink: #e8e9e5; --panel-head: #dfc48f;
+  --gold: #dfc48f; --gold-ink: #102638; --hero-ink: #fffaf0;
+}
+
 /* Обложка */
 .hero { position: relative; aspect-ratio: 9 / 16; container-type: inline-size; color: var(--hero-ink); display: flex; flex-direction: column; justify-content: center; padding: 12% 9%; overflow: hidden; }
 .root[data-theme="velvet"] .hero {
@@ -47,6 +59,8 @@
     radial-gradient(circle at 66% 8%, #d9b87766 0, transparent 5%), radial-gradient(circle at 30% 82%, #d9b87733 0, transparent 8%),
     radial-gradient(circle at 88% 74%, #d9b87755 0, transparent 6%), #0a0a0a;
 }
+.root[data-theme="energy"] .hero { background: linear-gradient(180deg, #050f26, #0b2349 55%, #1a4b8c); }
+.root[data-theme="police"] .hero { background: linear-gradient(180deg, #040b1c, #0a1d44 55%, #16408a); }
 .heroPhoto { position: absolute; inset: 0; }
 .heroFrame { position: relative; z-index: 1; text-align: center; padding: 14% 0 0; }
 .mask { display: block; width: 62%; margin: 0 auto 10px; color: var(--gold); }
@@ -110,6 +124,8 @@
 .thumb[data-theme="velvet"] { --paper: #fbf7f2; --gold: #e8c98a; --hero-ink: #f6e7d0; --ink: #a3122b; }
 .thumb[data-theme="emerald"] { --paper: #f1ecd8; --gold: #c9a45c; --hero-ink: #f6f1e0; --ink: #1d4a38; }
 .thumb[data-theme="winter"] { --paper: #14306b; --gold: #e3c48a; --hero-ink: #f3e9d2; --ink: #e3c48a; }
+.thumb[data-theme="energy"] { --paper: #0e2347; --gold: #f5c542; --hero-ink: #fff6d8; --ink: #f5c542; }
+.thumb[data-theme="police"] { --paper: #0a1d44; --gold: #c9d4e4; --hero-ink: #ffffff; --ink: #c9d4e4; }
 .thumb[data-theme="noir"] { --paper: #121110; --gold: #d9b877; --hero-ink: #f1e6cf; --ink: #d9b877; }
 .thumb[data-theme="velvet"] .thumbHero { background: repeating-linear-gradient(90deg, #4a0813 0, #8e1226 7%, #c01a35 12%, #8e1226 18%, #4a0813 25%); }
 .thumb[data-theme="emerald"] .thumbHero { background: repeating-linear-gradient(90deg, #07190f 0, #14503a 8%, #1f7556 13%, #14503a 19%, #07190f 26%); }
@@ -163,6 +179,46 @@
 .root[data-theme="winter"] .section::before { content: '❄'; position: absolute; right: 18px; top: 18px; color: #dfc28b44; font-size: 32px; }
 .root[data-theme="winter"] .panelSection { background: linear-gradient(135deg, #204e75, #102e50); }
 .root[data-theme="winter"] .footer { min-height: 440px; justify-content: flex-start; background: linear-gradient(#102e50, #102e5044 60%), url('/images/corporate/winter.webp') center bottom / cover; }
+.root[data-theme="energy"] .title { font-size: 13cqw; text-shadow: 0 2px 22px rgba(5, 15, 38, .7); }
+.root[data-theme="energy"] .tagline { max-width: 20em; margin-inline: auto; }
+.root[data-theme="energy"] .hero .date { font-size: 24px; margin-top: 18px; }
+.root[data-theme="energy"] .section { background: radial-gradient(circle at 100% 0, #f5c54220, transparent 55%), #0e2347; }
+.root[data-theme="energy"] .panelSection { background: linear-gradient(135deg, #12356a, #091a35); }
+.root[data-theme="energy"] .countdown { background: radial-gradient(ellipse at 50% 100%, #f5c54230, transparent 70%), #091a35; }
+.root[data-theme="energy"] .footer { background: linear-gradient(#0e2347, #0e234466 55%, #0e234400), url('/images/corporate/energy.svg') center bottom / cover; }
+.root[data-theme="police"] .hero { aspect-ratio: auto; min-height: 740px; min-height: 172cqw; padding-inline: 8%; }
+.root[data-theme="police"] .heroPhoto img { object-position: 42% center; }
+.root[data-theme="police"] .heroShade { background: linear-gradient(180deg, #071a29c9, #071a2940 28%, #071a2940 42%, #071a29ee 69%, #071a29 100%); }
+.root[data-theme="police"] .heroTop { border-color: #dfc48f66; color: #f5dfb4; padding-block: 24px 18px; }
+.root[data-theme="police"] .heroFrame { margin-top: auto; padding-top: 65%; text-align: left; }
+.root[data-theme="police"] .title { font-family: var(--font-cormorant), Georgia, serif; font-size: 12.5cqw; line-height: .98; font-weight: 500; letter-spacing: -.035em; text-shadow: 0 2px 22px #071a2960; text-wrap: balance; }
+.root[data-theme="police"] .hero .eyebrow { color: #dfc48f; font-size: 9px; line-height: 1.8; letter-spacing: .13em; margin-bottom: 18px; }
+.root[data-theme="police"] .tagline { max-width: 27em; margin: 18px 0 0; font-family: var(--font-manrope), sans-serif; font-size: 11px; line-height: 1.8; color: #d4dce2; }
+.root[data-theme="police"] .hero .date { display: inline-block; border-top: 1px solid #dfc48f66; padding-top: 16px; font-size: 20px; letter-spacing: .12em; margin-top: 24px; color: #dfc48f; }
+.root[data-theme="police"] .hero .ornament { display: none; }
+.root[data-theme="police"] .heroBottom { margin-top: 20px; color: #dfc48f; }
+.root[data-theme="police"] .section { background: radial-gradient(ellipse at top left, #fffdf8, transparent 70%), #f4f0e7; padding-block: 60px; }
+.root[data-theme="police"] .script { font-family: var(--font-cormorant), Georgia, serif; font-size: 10cqw; font-weight: 500; letter-spacing: -.025em; }
+.root[data-theme="police"] .message { font-size: 13px; line-height: 1.95; }
+.root[data-theme="police"] .flourish { color: #a18148; font-size: 22px; }
+.root[data-theme="police"] .panelSection { background: radial-gradient(ellipse at top right, #26465a, transparent 75%), #102638; border-block: 1px solid #dfc48f50; }
+.root[data-theme="police"] .countdown { background: radial-gradient(ellipse at 50% 100%, #4aa3ff30, transparent 70%), #071636; }
+.root[data-theme="police"] .footer { min-height: 380px; background: linear-gradient(#102638ed, #102638c9), url('/images/corporate/police-hero-v2.webp') center / cover; }
+.root[data-theme="police"] .footer .script { color: #f5dfb4; font-size: 12cqw; }
+.root[data-theme="police"] .wishList { gap: 0; margin-top: 28px; counter-reset: wishes; }
+.root[data-theme="police"] .wish { grid-template-columns: 32px 1fr; border: 0; border-bottom: 1px solid #b6a48166; border-radius: 0; padding: 22px 0; background: transparent; gap: 18px; }
+.root[data-theme="police"] .wishMark { background: transparent; color: #92733d; width: 32px; height: auto; font-size: 0; }
+.root[data-theme="police"] .wishMark::before { counter-increment: wishes; content: '0' counter(wishes); font-size: 19px; }
+.root[data-theme="police"] .wishText { font-size: 22px; line-height: 1.25; }
+.serviceSection { background: #102638; color: #f5dfb4; padding: 34px 22px 0; }
+.serviceHeading { padding: 0 10px 25px; }
+.serviceHeading .micro { font-size: 8px; letter-spacing: .17em; }
+.serviceTitle { margin-top: 13px; font-size: 36px; line-height: 1.1; }
+.servicePhoto { height: 68cqw; overflow: hidden; }
+.serviceCaption { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 0 28px; }
+.serviceCaption .micro { font-size: 8px; line-height: 1.9; letter-spacing: .1em; }
+.photoCredit { align-self: center; font-family: var(--font-manrope), sans-serif; font-size: 9px; color: #d7dfe5; text-underline-offset: 4px; text-decoration: underline; }
+.photoCredit:focus-visible { outline: 2px solid #dfc48f; outline-offset: 5px; }
 .root[data-theme="noir"] .section { background: #090909; }
 .root[data-theme="noir"] .panelSection { margin: 24px 22px; padding: 44px 22px; border: 1px solid #b9945060; outline: 1px solid #b9945026; outline-offset: -7px; }
 .root[data-theme="noir"] .countdown { background: radial-gradient(ellipse at 50% 100%, #9d773125, transparent 75%), #090909; }
@@ -172,6 +228,11 @@
 .thumb[data-theme="emerald"] .thumbHero { background-image: linear-gradient(#0002, transparent), url('/images/corporate/emerald.webp'); }
 .thumb[data-theme="winter"] .thumbHero { background-image: url('/images/corporate/winter.webp'); }
 .thumb[data-theme="noir"] .thumbHero { background-image: url('/images/corporate/noir.webp'); }
+.thumb[data-theme="police"] { --paper: #f4f0e7; --ink: #142b42; --gold: #dfc48f; }
+.thumb[data-theme="police"] .thumbHero { justify-content: flex-start; background-image: linear-gradient(180deg, #071a2933, #071a29e6), url('/images/corporate/police-hero-v2.webp'); }
+.thumb[data-theme="police"] .thumbHero span { font-family: var(--font-cormorant), Georgia, serif; font-size: 9.5cqw; line-height: 1.05; }
+.thumb[data-theme="police"] .thumbCard span { font-family: var(--font-cormorant), Georgia, serif; }
+.thumb[data-theme="energy"] .thumbHero { background-image: url('/images/corporate/energy.svg'); }
 .thumbHero small { font-family: var(--font-manrope), sans-serif; font-size: 3cqw; letter-spacing: .2em; margin-bottom: 9%; }
 .thumbHero i { font-size: 5cqw; }
 .thumbCard span { font-size: 10cqw; line-height: 1.1; }
@@ -181,3 +242,18 @@
   .section, .panelSection, .countdown, .footer { padding-left: 22px; padding-right: 22px; }
   .timingItem { grid-template-columns: 57px 1fr; column-gap: 10px; }
 }
+
+/* Поздравительные темы: список пожеланий */
+.wishList { display: grid; gap: 14px; margin-top: 30px; text-align: left; }
+.wish { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid color-mix(in srgb, var(--paper-head) 35%, transparent); border-radius: 4px; background: color-mix(in srgb, var(--paper-head) 7%, transparent); }
+.wishMark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: var(--paper-head); color: var(--paper); font-size: 16px; }
+.wishText { font-size: 18px; line-height: 1.3; }
+/* Подвал поздравительных тем: надпись сверху, иллюстрация внизу без наложения */
+.root[data-theme="energy"] .footer { min-height: 560px; justify-content: flex-start; padding-top: 64px; background-position: center bottom; }
+
+/* Поздравительные темы: кого и от чьего имени поздравляют */
+.person { display: grid; gap: 12px; justify-items: center; text-align: center; }
+.person + .message { margin-top: 28px; }
+.personLabel { font-family: var(--font-manrope), sans-serif; font-size: 10px; letter-spacing: .22em; text-transform: uppercase; opacity: .7; }
+.personName { color: var(--c-head); font-size: clamp(30px, 9cqw, 40px); line-height: 1.15; text-wrap: balance; }
+.personRole { max-width: 290px; font-family: var(--font-manrope), sans-serif; font-size: 11px; line-height: 1.8; opacity: .85; text-wrap: balance; }

@@ -11,6 +11,9 @@ export const envelopeVariants = {
   blush: { paper: "#d9b3b1", light: "#edccca", shade: "#bc9293", background: "#f0e3dd", ink: "#71444a", foil: "#986c4d", lining: "#b7a399", seal: "#b78970", motif: "botanical" },
   ice: { paper: "#aebfce", light: "#cedde7", shade: "#8b9fb2", background: "#e2e9ef", ink: "#344d63", foil: "#6d8498", lining: "#dce2df", seal: "#a5b4bf", motif: "stars" },
   ethno: { paper: "#722e33", light: "#93474a", shade: "#501d27", background: "#302022", ink: "#f4e5c7", foil: "#dec18c", lining: "#c3aa82", seal: "#c3a063", motif: "ethno" },
+  // Энергетика: глубокая синь с электрическим золотом.
+  patrol: { paper: "#10264f", light: "#1b3d7a", shade: "#08173a", background: "#070f24", ink: "#eef3fa", foil: "#c9d4e4", lining: "#8fa6c8", seal: "#c8202f", motif: "stars" },
+  voltage: { paper: "#12305a", light: "#1f4a85", shade: "#0b2142", background: "#0a1730", ink: "#ffeeb4", foil: "#f5c542", lining: "#9fc3ee", seal: "#f0b429", motif: "stars" },
   ethnoCream: { paper: "#eadfc9", light: "#fbf0dc", shade: "#c9b797", background: "#e3d8c4", ink: "#725531", foil: "#ad8748", lining: "#977c57", seal: "#af884b", motif: "ethno" },
 } as const;
 
@@ -52,7 +55,7 @@ const pinterestVariants: Record<string, EnvelopeVariant> = {
 };
 const builtInVariants: Record<string, EnvelopeVariant> = {
   "tushoo-ayat": "midnight", "corp-velvet": "burgundy", "corp-emerald": "forest",
-  "corp-winter": "midnight", "corp-noir": "blackGold", "beshik-nur": "sage",
+  "corp-winter": "midnight", "corp-noir": "blackGold", "corp-energy": "voltage", "corp-police": "patrol", "beshik-nur": "sage",
   "baxmal": "burgundy",
 };
 const anniversaryVariants: Record<string, EnvelopeVariant> = { monochrome: "blackGold", evening: "midnight" };
@@ -64,7 +67,7 @@ export function envelopeForTemplate(template: InvitationTemplate): EnvelopeConfi
   const theme = copy?.["corp.theme"];
   const variant = builtInVariants[template.id] || referenceVariants[copy?.["reference.design"] || ""] || pinterestVariants[copy?.["pinterest.design"] || ""]
     || (template.style.pageLayout === "tushooNavy" ? "midnight" : undefined)
-    || (theme ? ({ velvet: "burgundy", emerald: "forest", winter: "midnight", noir: "blackGold" } as Record<string, EnvelopeVariant>)[theme] : undefined)
+    || (theme ? ({ velvet: "burgundy", emerald: "forest", winter: "midnight", noir: "blackGold", energy: "voltage", police: "patrol" } as Record<string, EnvelopeVariant>)[theme] : undefined)
     || anniversaryVariants[copy?.["anniversary.design"] || ""]
     || (template.style.pageLayout === "velvet" ? "burgundy" : template.eventTypes.includes("kyz") ? "ethnoCream" : "cream");
   return { enabled: true, variant };
@@ -76,6 +79,19 @@ export function withEnvelope(template: InvitationTemplate): InvitationTemplate {
 
 export function shouldShowEnvelope(template: InvitationTemplate, options: { interactive?: boolean; startOpen?: boolean; editing?: boolean }) {
   return template.format === "site3d" && envelopeForTemplate(template).enabled && !!options.interactive && !options.startOpen && !options.editing;
+}
+
+/** Тексты конверта, которые шаблон может заменить (например, поздравление вместо приглашения). */
+export const envelopeTextKeys = ["eyebrow", "title", "subtitle", "cardTitle", "address", "hint", "hintOpening", "openLabel"] as const;
+export type EnvelopeTexts = Partial<Record<(typeof envelopeTextKeys)[number], string>>;
+
+/** Хранятся в уже существующем поле copy: `envelope.text.<поле>.<ru|ky>`; пусто = тексты по умолчанию («Вам приглашение»). */
+export function invitationEnvelopeTexts(copy: Record<string, string> | undefined, locale: string): EnvelopeTexts {
+  const lang = locale === "ru" ? "ru" : "ky";
+  return Object.fromEntries(envelopeTextKeys.flatMap(key => {
+    const value = copy?.[`envelope.text.${key}.${lang}`]?.trim();
+    return value ? [[key, value.slice(0, 120)]] : [];
+  }));
 }
 
 export const ENVELOPE_TIMING = { reveal: 1650, complete: 2400, reducedReveal: 40, reducedComplete: 180 } as const;

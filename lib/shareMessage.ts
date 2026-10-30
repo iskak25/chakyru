@@ -52,7 +52,8 @@ function eventTypeOf(invitation: ShareInvitationInfo): EventType {
   return (match?.[0] as EventType | undefined) ?? invitation.eventType;
 }
 
-export function buildShareMessage(invitation: ShareInvitationInfo, locale: string, url: string, guestName = ""): string {
+export function buildShareMessage(invitation: ShareInvitationInfo, locale: string, url: string, guestFull = ""): string {
+  const guestName = guestFull.split("|")[0].trim();
   const ru = locale === "ru";
   const phrase = (ru ? EVENT_PHRASE_RU : EVENT_PHRASE_KY)[eventTypeOf(invitation)] ?? (ru ? EVENT_PHRASE_RU.toi : EVENT_PHRASE_KY.toi);
   const venue = [invitation.venue, invitation.city].filter(Boolean).join(", ");

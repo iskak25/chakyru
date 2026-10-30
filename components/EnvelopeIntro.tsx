@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { ENVELOPE_TIMING, envelopeDesignPalette, type EnvelopeDesign, type EnvelopeVariant, type EnvelopeColors } from "@/lib/envelopes";
+import { ENVELOPE_TIMING, envelopeDesignPalette, type EnvelopeDesign, type EnvelopeVariant, type EnvelopeColors, type EnvelopeTexts } from "@/lib/envelopes";
 import css from "./EnvelopeIntro.module.css";
 
 function Ornament({ motif, className = "" }: { motif: string; className?: string }) {
@@ -37,9 +37,9 @@ function PortraitDoors({ floral }: { floral: boolean }) {
   </>;
 }
 
-type Props = { variant: EnvelopeVariant; design?: EnvelopeDesign; colors?: EnvelopeColors; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
+type Props = { variant: EnvelopeVariant; design?: EnvelopeDesign; colors?: EnvelopeColors; texts?: EnvelopeTexts; names: string; date: string; locale: string; children: ReactNode; embedded?: boolean; onOpen?: () => void; onOpened?: () => void };
 
-export function EnvelopeIntro({ variant, design = "classic", colors, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
+export function EnvelopeIntro({ variant, design = "classic", colors, texts = {}, names, date, locale, children, embedded = false, onOpen, onOpened }: Props) {
   const [stage, setStage] = useState<"closed" | "opening" | "revealing" | "open">("closed");
   const [reduced, setReduced] = useState(false);
   const started = useRef(false);
@@ -49,8 +49,8 @@ export function EnvelopeIntro({ variant, design = "classic", colors, names, date
   const active = stage !== "open";
   const theme = { ...envelopeDesignPalette(design, variant), ...colors };
   const ru = locale === "ru";
-  const title = ru ? "Вам приглашение" : "Сизге чакыруу";
-  const openLabel = ru ? "Открыть приглашение" : "Чакырууну ачуу";
+  const title = texts.title ?? (ru ? "Вам приглашение" : "Сизге чакыруу");
+  const openLabel = texts.openLabel ?? (ru ? "Открыть приглашение" : "Чакырууну ачуу");
   const initials = names.split(/\s*[&+/]\s*| менен | жана | и /i).filter(Boolean).slice(0, 2).map(s => Array.from(s.trim())[0]).join(" · ");
   const displayDate = date.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$3.$2.$1");
   const variables = Object.fromEntries(Object.entries(theme).filter(([key]) => key !== "motif").map(([key, value]) => [`--env-${key}`, value])) as CSSProperties;
@@ -101,7 +101,7 @@ export function EnvelopeIntro({ variant, design = "classic", colors, names, date
     {(stage === "revealing" || stage === "open") && <div ref={content} tabIndex={-1} aria-label={title} inert={active} className={`${css.content} ${stage === "revealing" ? css.contentEntering : ""}`}>{children}</div>}
     {active && <section className={css.scene} data-envelope-intro={variant} data-envelope-design={design} data-stage={stage} data-reduced={reduced || undefined} role={embedded ? undefined : "dialog"} aria-modal={embedded ? undefined : true} aria-label={title}>
       <div className={css.light} aria-hidden="true"/>
-      <header className={css.heading}><span className={css.eyebrow}>{ru ? "Особенный день · особенные люди" : "Өзгөчө күн · өзгөчө адамдар"}</span><h1>{title}</h1><p>{ru ? "Для вас. С теплом и любовью." : "Сиз үчүн. Жылуулук жана сүйүү менен."}</p></header>
+      <header className={css.heading}><span className={css.eyebrow}>{texts.eyebrow ?? (ru ? "Особенный день · особенные люди" : "Өзгөчө күн · өзгөчө адамдар")}</span><h1>{title}</h1><p>{texts.subtitle ?? (ru ? "Для вас. С теплом и любовью." : "Сиз үчүн. Жылуулук жана сүйүү менен.")}</p></header>
       <div className={css.center}>
         <button ref={button} type="button" onClick={open} className={css.trigger} aria-label={openLabel} aria-disabled={started.current}>
           <span className={css.envelope} aria-hidden="true">
@@ -109,18 +109,18 @@ export function EnvelopeIntro({ variant, design = "classic", colors, names, date
             <span className={css.lining}><Ornament motif={theme.motif}/></span>
             <span className={css.card}>
               <span className={css.cardBorder}/><Ornament motif={theme.motif} className={css.cardOrnament}/>
-              <span className={css.cardTitle}>{ru ? "Приглашение" : "Чакыруу"}</span>
+              <span className={css.cardTitle}>{texts.cardTitle ?? (ru ? "Приглашение" : "Чакыруу")}</span>
               <span className={css.cardNames}>{names}</span><span className={css.cardDate}>{displayDate}</span>
             </span>
             {design !== "classic" && <PortraitDoors floral={design === "floral"}/>}
             <span className={`${css.front} ${css.left}`}/><span className={`${css.front} ${css.right}`}/>
-            <span className={`${css.front} ${css.bottom}`}><span className={css.address}>{ru ? "Лично для вас" : "Сиз үчүн"}</span><Ornament motif={theme.motif} className={css.frontOrnament}/></span>
+            <span className={`${css.front} ${css.bottom}`}><span className={css.address}>{texts.address ?? (ru ? "Лично для вас" : "Сиз үчүн")}</span><Ornament motif={theme.motif} className={css.frontOrnament}/></span>
             <span className={css.flap}><span className={css.flapOutside}><Ornament motif={theme.motif} className={css.flapOrnament}/></span><span className={css.flapInside}/></span>
             <span className={css.seal}><span className={css.sealRim}/><span className={css.monogram}>{initials || "♡"}</span></span>
           </span>
         </button>
       </div>
-      <footer className={css.footer}><span className={css.hint}>{stage === "closed" ? (ru ? "Коснитесь печати, чтобы открыть" : "Ачуу үчүн мөөрдү басыңыз") : (ru ? "Открываем ваше приглашение…" : "Чакырууңуз ачылууда…")}</span><span className={css.footerDate}>{displayDate}</span></footer>
+      <footer className={css.footer}><span className={css.hint}>{stage === "closed" ? (texts.hint ?? (ru ? "Коснитесь печати, чтобы открыть" : "Ачуу үчүн мөөрдү басыңыз")) : (texts.hintOpening ?? (ru ? "Открываем ваше приглашение…" : "Чакырууңуз ачылууда…"))}</span><span className={css.footerDate}>{displayDate}</span></footer>
     </section>}
   </div>;
 }

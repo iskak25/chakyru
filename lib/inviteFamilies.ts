@@ -8,6 +8,8 @@ const FAMILY_BY_TEMPLATE: Record<string, InviteFamily> = {
   "corp-emerald": "corporate",
   "corp-winter": "corporate",
   "corp-noir": "corporate",
+  "corp-energy": "corporate",
+  "corp-police": "corporate",
   "ak-shumkar": "luxury",
   elegant: "luxury",
   "tun-almaz": "luxury",

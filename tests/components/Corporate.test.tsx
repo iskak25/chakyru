@@ -15,7 +15,7 @@ Object.defineProperty(window, "matchMedia", {
 class FakeObserver { observe() {} unobserve() {} disconnect() {} }
 (globalThis as unknown as { IntersectionObserver: unknown }).IntersectionObserver = FakeObserver;
 
-describe.each(["corp-velvet", "corp-emerald", "corp-winter", "corp-noir"])("%s", (id) => {
+describe.each(["corp-velvet", "corp-emerald", "corp-winter", "corp-noir", "corp-energy", "corp-police"])("%s", (id) => {
   for (const editing of [false, true]) {
     it(`renders all sections (${editing ? "editor" : "guest"}) without looping`, async () => {
       const inv = { ...inviteFromTemplate(getTemplate(id)), id: "t1" };
@@ -27,9 +27,9 @@ describe.each(["corp-velvet", "corp-emerald", "corp-winter", "corp-noir"])("%s",
       // Макет семейства подгружается отдельным чанком (next/dynamic), поэтому ждём его появления.
       await waitFor(() => expect(container.querySelector('[data-family="corporate"]')).not.toBeNull());
       const root = container.querySelector('[data-family="corporate"]');
-      expect(root!.querySelectorAll('[data-box^="section-"]').length).toBeGreaterThanOrEqual(8);
+      expect(root!.querySelectorAll('[data-box^="section-"]').length).toBeGreaterThanOrEqual(5);
       expect(inv.hosts).toBe("");
-      expect(root!.querySelector('[data-box="photo-hero"] img')?.getAttribute("src")).toBe(`/images/corporate/${id.replace("corp-", "")}.webp`);
+      expect(root!.querySelector('[data-box="photo-hero"] img')?.getAttribute("src")).toBe(id === "corp-police" ? "/images/corporate/police-hero-v2.webp" : `/images/corporate/${id.replace("corp-", "")}.${id === "corp-energy" ? "svg" : "webp"}`);
     });
   }
 });

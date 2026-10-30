@@ -14,6 +14,10 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
   const [linkLang, setLinkLang] = useState<"ru" | "ky">(ru ? "ru" : "ky");
   const [guest, setGuest] = useState("");
   const guestName = cleanGuestName(guest);
+  // Именное поздравление: вместо одного поля — должность и имя сотрудника, в ссылке они идут как «Имя | должность».
+  const congrats = /^corp-(energy|police)$/.test(invitation.templateId);
+  const [person, setPerson] = useState({ name: "", role: "" });
+  const compose = (p: { name: string; role: string }) => p.name.trim() ? (p.role.trim() ? `${p.name.trim()} | ${p.role.trim()}` : p.name.trim()) : "";
   // Именная ссылка: /i/<имя>/<id>. Без имени — обычная /i/<id>.
   const linkFor = (lang: string, name: string) => `${window.location.origin}/i/${name ? `${encodeURIComponent(name)}/` : ""}${encodeURIComponent(invitation.id)}?lang=${lang}`;
   const url = linkFor(linkLang, guestName);
@@ -70,6 +74,21 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
     }
   }
 
+  const personFields = (onValue: (value: string) => void, autoFocus: boolean) => {
+    const set = (patch: Partial<typeof person>) => { const next = { ...person, ...patch }; setPerson(next); onValue(compose(next)); };
+    const input = "mt-2 w-full rounded-xl border bg-white p-3 text-base";
+    return <>
+      <label className="mt-4 block text-sm">{ru ? "Должность сотрудника" : "Кызматкердин чини"}
+        <input className={input} value={person.role} maxLength={27} autoFocus={autoFocus}
+          placeholder={ru ? "Например: Главный инженер" : "Мисалы: Башкы инженер"} onChange={e => set({ role: e.target.value })} />
+      </label>
+      <label className="mt-3 block text-sm">{ru ? "Имя сотрудника" : "Кызматкердин аты"}
+        <input className={input} value={person.name} maxLength={30}
+          placeholder={ru ? "Например: Бакыт Сатыбалдиев" : "Мисалы: Бакыт Сатыбалдиев"} onChange={e => set({ name: e.target.value })} />
+      </label>
+    </>;
+  };
+
   if (personal) return <>
     <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label={ru ? "Язык ссылки" : "Шилтеменин тили"}>
       {(["ru", "ky"] as const).map(l => (
@@ -79,10 +98,10 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
         </button>
       ))}
     </div>
-    <label className="mt-4 block text-sm">{ru ? "Имя гостя" : "Коноктун аты"}
+    {congrats ? personFields(value => { setGuest(value); setCopied(false); }, true) : <label className="mt-4 block text-sm">{ru ? "Имя гостя" : "Коноктун аты"}
       <input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" value={guest} maxLength={60} autoFocus
         placeholder={ru ? "Например: Айгерим" : "Мисалы: Айгерим"} onChange={e => { setGuest(e.target.value); setCopied(false); }} />
-    </label>
+    </label>}
     {(() => {
       const cls = "flex min-h-12 items-center justify-center rounded-xl border bg-white px-4 py-3 text-sm hover:bg-cream disabled:opacity-40 disabled:hover:bg-white";
       return <div className="my-4 grid grid-cols-2 gap-3">
@@ -96,7 +115,7 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
         <button className={cls} type="button" disabled={!guestName} onClick={() => void copyLink()}>{ru ? "Скопировать" : "Көчүрүү"}</button>
       </div>;
     })()}
-    {!guestName && <p className="text-xs text-ink-soft">{ru ? "Введите имя гостя, чтобы получить его личную ссылку." : "Коноктун жеке шилтемесин алуу үчүн атын жазыңыз."}</p>}
+    {!guestName && <p className="text-xs text-ink-soft">{congrats ? (ru ? "Введите имя сотрудника, чтобы получить его личную ссылку." : "Кызматкердин жеке шилтемесин алуу үчүн атын жазыңыз.") : (ru ? "Введите имя гостя, чтобы получить его личную ссылку." : "Коноктун жеке шилтемесин алуу үчүн атын жазыңыз.")}</p>}
     {guestName && <label className="block text-sm">{ru ? "Ссылка для гостя" : "Коноктун шилтемеси"}<input className="mt-2 w-full rounded-xl border bg-white p-3 text-base" readOnly value={url} onFocus={e => e.currentTarget.select()} /></label>}
     {copied && <p role="status" className="mt-3 text-sm">{ru ? "Ссылка скопирована — вставьте её в сообщение гостю." : "Шилтеме көчүрүлдү — аны конокко билдирүүгө чаптаңыз."}</p>}
     {error && <p role="alert" className="mt-3 text-sm">{error}</p>}
@@ -112,10 +131,10 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
         </button>
       ))}
     </div>
-    <label className="mt-4 block text-sm">{ru ? "Имя гостя (именное приглашение)" : "Коноктун аты (жеке чакыруу)"}
+    {congrats ? personFields(pickGuest, false) : <label className="mt-4 block text-sm">{ru ? "Имя гостя (именное приглашение)" : "Коноктун аты (жеке чакыруу)"}
       <input className="mt-2 w-full rounded-xl border bg-white p-3 text-sm" value={guest} maxLength={60} autoFocus={personal}
         placeholder={ru ? "Например: Айгерим" : "Мисалы: Айгерим"} onChange={e => pickGuest(e.target.value)} />
-    </label>
+    </label>}
     <p className="mt-4 text-sm leading-6">{ru ? "Текст можно отредактировать перед отправкой." : "Жөнөтөр алдында текстти оңдой аласыз."}</p>
     <textarea
       className="mt-3 w-full rounded-xl border bg-white p-3 text-sm leading-6"

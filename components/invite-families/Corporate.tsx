@@ -11,13 +11,15 @@ import { RsvpForm } from "./RsvpForm";
 import css from "./Corporate.module.css";
 
 /** Четыре оформления корпоративного приглашения: общая структура, разные палитры и декор. */
-export type CorporateTheme = "velvet" | "emerald" | "winter" | "noir";
+export type CorporateTheme = "velvet" | "emerald" | "winter" | "noir" | "energy" | "police";
 
 const THEME_BY_TEMPLATE: Record<string, CorporateTheme> = {
   "corp-velvet": "velvet",
   "corp-emerald": "emerald",
   "corp-winter": "winter",
   "corp-noir": "noir",
+  "corp-energy": "energy",
+  "corp-police": "police",
 };
 
 function themeOf(invitation: Pick<Invitation, "templateId" | "copy">): CorporateTheme {
@@ -30,6 +32,11 @@ function themeOf(invitation: Pick<Invitation, "templateId" | "copy">): Corporate
 const THEME_COPY: Record<CorporateTheme, {
   overline: [string, string]; tagline: [string, string]; intro: [string, string]; dress: [string, string];
   swatches: string[]; ornament: string;
+  // Поздравительные темы переопределяют новогодние тексты; без этих полей берутся прежние.
+  edition?: [string, string]; introTitle?: [string, string];
+  footerNote?: [string, string]; footerTitle?: [string, string];
+  // Поздравительные темы: вместо даты, программы, дресс-кода, отсчёта, места и анкеты — история праздника и пожелания.
+  art?: string; historyTitle?: [string, string]; history?: [string, string]; wishesTitle?: [string, string]; wishes?: [string, string][];
 }> = {
   velvet: {
     overline: ["Вечер, который мы запомним", "Эсте каларлык кече"],
@@ -58,6 +65,38 @@ const THEME_COPY: Record<CorporateTheme, {
     intro: ["Приглашаем вас окунуться в магию предстоящих праздников. Атмосфера, где каждая деталь, мелодия и встреча превращаются в акт искусства!", "Алдыдагы майрамдардын сыйкырына сүңгүүгө чакырабыз. Ар бир деталь, обон жана жолугушуу искусствого айланган атмосфера!"],
     dress: ["Black Tie с ноткой загадочности. Добавьте немного таинственности с помощью масок и мехов", "Black Tie жана табышмактуулук. Маска жана жүн менен сырдуулук кошуңуз"],
     swatches: ["#0b0b0b", "#d9b877", "#7a1020"], ornament: "✦",
+  },
+  energy: {
+    overline: ["Поздравляем вас с праздником!", "Майрам менен куттуктайбыз!"],
+    tagline: ["профессиональный праздник работников энергетической отрасли", "энергетика тармагынын кесипкөйлөрүнүн майрамы"],
+    intro: ["Каждый день вы дарите людям свет и тепло, а значит — уверенность в завтрашнем дне. Спасибо за ваш труд, ответственность и преданность делу! Пусть в вашей жизни всегда хватает энергии для новых побед, а дома — тепла и света.", "Күн сайын сиз адамдарга жарык жана жылуулук тартуулайсыз, демек — эртеңки күнгө ишенимди. Эмгегиңиз, жоопкерчилигиңиз жана ишке берилгендигиңиз үчүн рахмат! Жаңы жеңиштерге энергия ар дайым жетсин, үйүңүздө жарык жана жылуулук болсун."],
+    dress: ["Парадный или деловой стиль. Будем рады корпоративным цветам", "Салтанаттуу же иш стили. Корпоративдик түстөр кубаныч тартуулайт"],
+    swatches: ["#0f2a52", "#f5c542", "#e8eef7"], ornament: "⚡",
+    edition: ["ДЕНЬ ЭНЕРГЕТИКА · 22 ДЕКАБРЯ", "ЭНЕРГЕТИКТЕР КҮНҮ · 22-ДЕКАБРЬ"],
+    introTitle: ["Дорогие коллеги!", "Кымбаттуу кесиптештер!"],
+    footerNote: ["Спасибо за свет и тепло, которые вы дарите людям", "Элге жарык жана жылуулук тартуулаганыңыз үчүн рахмат"],
+    footerTitle: ["С праздником!", "Майрам менен!"],
+    art: "/images/corporate/energy.svg",
+    historyTitle: ["О празднике","Майрам тууралуу"],
+    history: ["День энергетика отмечается в Кыргызстане ежегодно 22 декабря. Это профессиональный праздник работников электрической и энергетической отрасли — тех, кто круглые сутки обеспечивает страну светом и теплом.","Энергетиктер күнү Кыргызстанда жыл сайын 22-декабрда белгиленет. Бул — өлкөнү күнү-түнү жарык жана жылуулук менен камсыз кылган электр жана энергетика тармагынын кызматкерлеринин кесиптик майрамы."],
+    wishesTitle: ["Наши пожелания","Биздин тилектер"],
+    wishes: [["Крепкого здоровья и бодрости","Бекем ден соолук жана күч-кубат"],["Мира и тепла в каждом доме","Ар бир үйгө тынчтык жана жылуулук"],["Новых побед и профессиональных успехов","Жаңы жеңиштер жана кесиптик ийгиликтер"],["Света в жизни и счастья вашим семьям","Турмушуңузга жарык, үй-бүлөңүзгө бакыт"]],
+  },
+  police: {
+    overline: ["Поздравляем вас с праздником!","Майрам менен куттуктайбыз!"],
+    tagline: ["профессиональный праздник сотрудников органов внутренних дел","ички иштер органдарынын кызматкерлеринин кесиптик майрамы"],
+    intro: ["Ваша служба — это спокойствие наших улиц, безопасность семей и уверенность людей в завтрашнем дне. Спасибо за мужество, честность и верность долгу! Здоровья вам и вашим близким, мирной службы и благодарности тех, кого вы оберегаете.","Сиздин кызматыңыз — көчөлөрүбүздүн тынчтыгы, үй-бүлөлөрдүн коопсуздугу жана эл үчүн эртеңки күнгө ишеним. Эрдигиңиз, адилдигиңиз жана милдетке берилгендигиңиз үчүн рахмат! Өзүңүзгө жана жакындарыңызга ден соолук, тынч кызмат жана сиз коргогондордун ыраазычылыгын каалайбыз."],
+    dress: ["Парадная форма или деловой стиль","Парад формасы же иш стили"],
+    swatches: ["#10264f", "#c9d4e4", "#c8202f"], ornament: "★",
+    edition: ["ДЕНЬ РАБОТНИКА МИЛИЦИИ · 1 НОЯБРЯ","МИЛИЦИЯ КЫЗМАТКЕРЛЕРИНИН КҮНҮ · 1-НОЯБРЬ"],
+    introTitle: ["Дорогие коллеги!","Кымбаттуу кесиптештер!"],
+    footerNote: ["Спасибо за службу, мужество и верность долгу","Кызматыңыз, эрдигиңиз жана милдетке берилгендигиңиз үчүн рахмат"],
+    footerTitle: ["С праздником!","Майрам менен!"],
+    art: "/images/corporate/police-hero-v2.webp",
+    historyTitle: ["О празднике","Майрам тууралуу"],
+    history: ["День работника милиции Кыргызской Республики отмечается ежегодно 1 ноября. Праздник установлен постановлением Правительства № 429 от 17 сентября 1993 года, а дата приурочена к образованию милиции в Кара-Киргизской автономной области 1 ноября 1924 года.","Кыргыз Республикасынын милиция кызматкерлеринин күнү жыл сайын 1-ноябрда белгиленет. Майрам Өкмөттүн 1993-жылдын 17-сентябрындагы № 429 токтому менен белгиленген, ал эми дата 1924-жылдын 1-ноябрында Кара-Кыргыз автономиялуу облусунда милиция түзүлгөнгө байланыштуу тандалган."],
+    wishesTitle: ["Наши пожелания","Биздин тилектер"],
+    wishes: [["Крепкого здоровья и бодрости","Бекем ден соолук жана күч-кубат"],["Мирной и спокойной службы","Кызматыңыз тынч жана коопсуз болсун"],["Профессиональных успехов и побед","Кесиптик ийгиликтер жана жеңиштер"],["Благодарности и уважения людей","Элдин ыраазычылыгы жана урматы"]],
   },
 };
 
@@ -99,8 +138,8 @@ export function CorporateInvite({ invitation, locale, labels, onChange, onReload
 export function CorporateThumb({ name = "", theme }: { name?: string; theme?: string }) {
   const key = (theme && theme in THEME_COPY ? theme : "velvet") as CorporateTheme;
   return <div className={css.thumb} data-theme={key}>
-    <div className={css.thumbHero}><small>NEW YEAR CELEBRATION</small><span className="font-tra-script">{name || "Новый год"}</span><i>{THEME_COPY[key].ornament}</i></div>
-    <div className={css.thumbCard}><span className="font-tra-script">Дорогие коллеги!</span><p>Время чудес и тёплых встреч</p><b /></div>
+    <div className={css.thumbHero}><small>{key === "energy" ? "22 ДЕКАБРЯ" : key === "police" ? "1-НОЯБРЬ" : "NEW YEAR CELEBRATION"}</small><span className="font-tra-script">{name || (key === "energy" ? "День энергетика" : key === "police" ? "Милиция кызматкерлеринин күнү" : "Новый год")}</span><i>{THEME_COPY[key].ornament}</i></div>
+    <div className={css.thumbCard}><span className="font-tra-script">{key === "police" ? "Куттуктайбыз!" : key === "energy" ? "Поздравляем!" : "Дорогие коллеги!"}</span><p>{key === "police" ? "Кесиптик майрамыңыз менен!" : key === "energy" ? "С профессиональным праздником" : "Время чудес и тёплых встреч"}</p><b /></div>
   </div>;
 }
 
@@ -114,7 +153,7 @@ function Mask({ className }: { className?: string }) {
 
 export function CorporateFamily({ kit }: { kit: CorporateKit }) {
   const { invitation, onChange, labels, event, count, mapHref, mapQuery, selected, onSelect, onPartsChange } = kit;
-  const ru = kit.locale === "ru";
+  const ru = themeOf(invitation) !== "police" && kit.locale === "ru";
   const editing = !!onChange;
   const theme = themeOf(invitation);
   const copy = THEME_COPY[theme];
@@ -137,11 +176,11 @@ export function CorporateFamily({ kit }: { kit: CorporateKit }) {
   const dateShort = Number.isFinite(event.getTime()) ? `${pad(event.getDate())}.${pad(event.getMonth() + 1)}.${event.getFullYear()}` : invitation.date;
 
   return <div className={css.root} data-theme={theme}>
-    <WeddingEditor invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={kit.locale}>
+    <WeddingEditor invitation={invitation} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={theme === "police" ? "ky" : kit.locale}>
       {block("hero", "Обложка", css.hero, <>
-        <WeddingPart id="photo-hero" label="Фото обложки" kind="image" slot="hero" fallback={`/images/corporate/${theme}.webp`} className={css.heroPhoto} />
+        <WeddingPart id="photo-hero" label="Фото обложки" kind="image" slot="hero" fallback={copy.art ?? `/images/corporate/${theme}.webp`} className={css.heroPhoto} />
         <div className={css.heroShade} aria-hidden="true" />
-        <div className={css.heroTop}>{text("hero-edition", "NEW YEAR CELEBRATION", css.micro)}<span aria-hidden="true">✧</span></div>
+        <div className={css.heroTop}>{text("hero-edition", copy.edition ? pick(copy.edition) : "NEW YEAR CELEBRATION", css.micro)}<span aria-hidden="true">✧</span></div>
         <div className={css.heroFrame}>
           {text("hero-overline", pick(copy.overline), css.eyebrow)}
           <WeddingPart id="names" label="Название мероприятия" kind="text" field="names" fallback={pick(copy.tagline)} className={`${css.title} font-tra-script`} />
@@ -149,16 +188,50 @@ export function CorporateFamily({ kit }: { kit: CorporateKit }) {
           <WeddingPart id="event-date" label="Дата" kind="date" className={css.date}>{dateShort}</WeddingPart>
           <WeddingPart id="hero-ornament" label="Украшение" kind="decoration" className={css.ornament}>{copy.ornament}</WeddingPart>
         </div>
-        <div className={css.heroBottom}>{text("hero-note", tr("Время быть вместе", "Бирге болчу убакыт"), css.micro)}<span aria-hidden="true">↓</span></div>
+        <div className={css.heroBottom}>{text("hero-note", copy.wishes && copy.footerTitle ? pick(copy.footerTitle) : tr("Время быть вместе", "Бирге болчу убакыт"), css.micro)}<span aria-hidden="true">↓</span></div>
       </>)}
 
       {block("intro", "Приглашение", css.section, <>
         <div className={css.flourish} aria-hidden="true">✧</div>
-        {text("intro-title", tr("Дорогие коллеги!", "Урматтуу кесиптештер!"), `${css.script} font-tra-script`)}
+        {copy.wishes ? <div className={css.person}>
+          {text("to-role", tr("Должность сотрудника", "Кызматкердин чини"), css.personRole, undefined, "Кого поздравляем: должность")}
+          {text("to-name", tr("Имя сотрудника", "Кызматкердин аты"), `${css.personName} font-tra-script`, undefined, "Кого поздравляем: имя")}
+        </div> : text("intro-title", copy.introTitle ? pick(copy.introTitle) : tr("Дорогие коллеги!", "Урматтуу кесиптештер!"), `${css.script} font-tra-script`)}
         {text("message", pick(copy.intro), css.message, "message", "Текст приглашения")}
         {(editing || invitation.hosts) ? text("hosts", invitation.hosts || tr("Организаторы мероприятия", "Иш-чара уюштуруучулары"), css.hosts, "hosts", "Организаторы") : null}
       </>)}
 
+      {copy.wishes ? <>
+        {theme === "police" && block("service", "На службе народу", css.serviceSection, <>
+          <div className={css.serviceHeading}>
+            {text("service-label", tr("Честь · Мужество · Долг", "Ар-намыс · Эрдик · Милдет"), css.micro)}
+            {text("service-title", tr("На службе народу", "Эл кызматында"), css.serviceTitle)}
+          </div>
+          <WeddingPart id="photo-service" label={tr("Торжественный парад милиции", "Милициянын салтанаттуу парады")} kind="image" slot="police-service" fallback="/images/corporate/police-parade-v2.webp" className={css.servicePhoto} />
+          <div className={css.serviceCaption}>
+            {text("service-caption", tr("Верность призванию. Уважение поколений.", "Кесипке берилгендик. Муундардын урматы."), css.micro)}
+            <span aria-hidden="true">✦</span>
+          </div>
+        </>)}
+        {block("history", "О празднике", css.panelSection, <>
+          <div className={css.flourish} aria-hidden="true">{copy.ornament}</div>
+          {text("history-title", pick(copy.historyTitle!), `${css.script} font-tra-script`)}
+          {text("history-text", pick(copy.history!), css.message, undefined, "Текст о празднике")}
+        </>)}
+        {block("wishes", "Пожелания", css.section, <>
+          {text("wishes-title", pick(copy.wishesTitle!), `${css.script} font-tra-script`)}
+          <div className={css.wishList}>{copy.wishes.map((pair, i) => <div key={i} className={css.wish}>
+            <span className={css.wishMark} aria-hidden="true">✦</span>
+            {text(`wish${i + 1}`, pick(pair as [string, string]), css.wishText, undefined, `Пожелание ${i + 1}`)}
+          </div>)}</div>
+        </>)}
+        {block("from", "От имени", css.panelSection, <>
+          <div className={css.person}>
+            {text("from-role", tr("Генеральный директор предприятия «Береке Курулуш», руководитель по стратегическому развитию", "«Береке Курулуш» ишканасынын башкы директору, стратегиялык өнүктүрүү боюнча жетекчи"), css.personRole, undefined, "От имени: должность")}
+            {text("from-name", "Руслан Талантович Жумакадыров", `${css.personName} font-tra-script`, undefined, "От имени: имя")}
+          </div>
+        </>)}
+      </> : <>
       {block("when", "Дата и время", css.panelSection, <>
         {text("when-title", tr("Дата и время", "Күнү жана убактысы"), `${css.script} font-tra-script`)}
         <WeddingPart id="when-date" label="Дата проведения" kind="date" className={css.bigDate}>{dateLong}</WeddingPart>
@@ -210,10 +283,13 @@ export function CorporateFamily({ kit }: { kit: CorporateKit }) {
         <WeddingPart id="rsvp-form" label="Форма ответа" kind="widget" className={css.rsvp}><RsvpForm kit={kit} tone="corporate" /></WeddingPart>
       </>)}
 
+      </>}
+
       {block("footer", "Подвал", css.footer, <>
-        {text("footer-note", tr("Самое ценное — наши люди", "Эң баалуусу — биздин адамдар"), css.eyebrow)}
-        {text("footer-title", tr("До встречи!", "Жолугушканга чейин!"), `${css.script} font-tra-script`)}
+        {text("footer-note", copy.footerNote ? pick(copy.footerNote) : tr("Самое ценное — наши люди", "Эң баалуусу — биздин адамдар"), css.eyebrow)}
+        {text("footer-title", copy.footerTitle ? pick(copy.footerTitle) : tr("До встречи!", "Жолугушканга чейин!"), `${css.script} font-tra-script`)}
         <WeddingPart id="footer-ornament" label="Украшение" kind="decoration" className={css.ornament}>{copy.ornament}</WeddingPart>
+        {theme === "police" && <a className={css.photoCredit} href="https://en.kabar.kg/news/kyrgyz-internal-affairs-ministry-celebrates-101st-anniversary/" target="_blank" rel="noopener noreferrer">{tr("Фото: агентство «Кабар»", "Сүрөттөр: «Кабар» агенттиги")} ↗</a>}
       </>)}
     </WeddingEditor>
   </div>;

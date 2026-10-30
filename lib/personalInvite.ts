@@ -28,6 +28,9 @@ function swapWords(text: string, forms: Record<string, string>): string {
 export function personalizeText(partId: string, value: string, guestName: string, locale: string): string {
   if (!guestName) return value;
   const ru = locale === "ru";
+  // Именное поздравление: в ссылке «Имя | должность» — имя и должность сотрудника.
+  if (partId === "to-name") return guestName.split("|")[0].trim() || value;
+  if (partId === "to-role") return guestName.split("|")[1]?.trim() || value;
   if (partId === "intro-title") return ru ? `Дорогой(ая) ${guestName}!` : `Урматтуу ${guestName}!`;
   if (partId === "message") return swapWords(value, ru ? RU_FORMS : KY_FORMS);
   return value;

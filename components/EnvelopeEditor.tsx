@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Invitation } from "@/lib/types";
 import { getTemplate } from "@/lib/templates";
-import { envelopeColorKeys, envelopeForTemplate, envelopeVariants, envelopeDesigns, envelopeDesignPalette, invitationEnvelopeDesign, invitationEnvelopeColors, type EnvelopeColors } from "@/lib/envelopes";
+import { envelopeColorKeys, envelopeForTemplate, envelopeVariants, envelopeDesigns, envelopeDesignPalette, invitationEnvelopeDesign, invitationEnvelopeColors, invitationEnvelopeTexts, type EnvelopeColors } from "@/lib/envelopes";
 import { EnvelopeIntro } from "./EnvelopeIntro";
 import type { InvitePatch } from "./CanvasEdit";
 
@@ -83,7 +83,7 @@ export function EnvelopeEditor({ invitation, onChange, locale }: { invitation: I
     </>}
     {!config.enabled && <p className="text-xs text-ink-soft">{ru ? "В этом шаблоне показ конверта отключён." : "Бул шаблондо конвертти көрсөтүү өчүрүлгөн."}</p>}
     <div className="overflow-hidden rounded-xl border border-ink/10">
-      <EnvelopeIntro key={`${design}:${preview}:${JSON.stringify(colors)}`} variant={config.variant} design={design} colors={colors} names={invitation.names} date={invitation.date} locale={locale} embedded>
+      <EnvelopeIntro key={`${design}:${preview}:${JSON.stringify(colors)}`} variant={config.variant} design={design} colors={colors} texts={invitationEnvelopeTexts(invitation.copy, locale)} names={invitation.names} date={invitation.date} locale={locale} embedded>
         <button type="button" className="w-full p-6 text-sm" onClick={() => setPreview(value => value + 1)}>{ru ? "Показать конверт снова" : "Конвертти кайра көрсөтүү"}</button>
       </EnvelopeIntro>
     </div>

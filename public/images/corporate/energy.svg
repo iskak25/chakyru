@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 1290" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050f26"/>
+      <stop offset=".45" stop-color="#0b2349"/>
+      <stop offset=".78" stop-color="#1a4b8c"/>
+      <stop offset="1" stop-color="#2a6cb8"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ffe08a" stop-opacity=".95"/>
+      <stop offset=".35" stop-color="#f5c542" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#f5c542" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff6c9"/>
+      <stop offset=".5" stop-color="#ffd54a"/>
+      <stop offset="1" stop-color="#f09a1a"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a1c3a"/>
+      <stop offset="1" stop-color="#040b1a"/>
+    </linearGradient>
+    <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <rect width="860" height="1290" fill="url(#sky)"/>
+
+  <!-- звёзды -->
+  <g fill="#fff" opacity=".9">
+    <circle cx="70" cy="90" r="1.6"/><circle cx="190" cy="150" r="1.2"/><circle cx="310" cy="70" r="1.8"/>
+    <circle cx="430" cy="130" r="1.3"/><circle cx="560" cy="60" r="1.6"/><circle cx="690" cy="140" r="1.2"/>
+    <circle cx="790" cy="80" r="1.8"/><circle cx="120" cy="260" r="1.3"/><circle cx="250" cy="330" r="1.1"/>
+    <circle cx="380" cy="260" r="1.5"/><circle cx="520" cy="320" r="1.2"/><circle cx="640" cy="250" r="1.6"/>
+    <circle cx="760" cy="340" r="1.2"/><circle cx="40" cy="400" r="1.4"/><circle cx="820" cy="450" r="1.3"/>
+    <circle cx="470" cy="420" r="1"/><circle cx="170" cy="470" r="1.1"/><circle cx="700" cy="520" r="1.2"/>
+  </g>
+
+  <!-- свечение за молнией -->
+  <ellipse cx="430" cy="860" rx="320" ry="300" fill="url(#glow)" filter="url(#blur)"/>
+
+  <!-- дальние холмы и огни города -->
+  <path d="M0 1010 C120 960 220 985 330 960 S560 945 680 975 S800 960 860 985 V1290 H0Z" fill="#0d2447"/>
+  <g fill="#ffd54a" opacity=".85">
+    <circle cx="60" cy="1030" r="2.2"/><circle cx="104" cy="1022" r="1.8"/><circle cx="150" cy="1034" r="2.2"/>
+    <circle cx="214" cy="1020" r="1.8"/><circle cx="268" cy="1030" r="2.4"/><circle cx="322" cy="1016" r="1.8"/>
+    <circle cx="546" cy="1018" r="2"/><circle cx="598" cy="1028" r="2.4"/><circle cx="650" cy="1018" r="1.8"/>
+    <circle cx="706" cy="1030" r="2.2"/><circle cx="760" cy="1020" r="1.8"/><circle cx="812" cy="1032" r="2.2"/>
+  </g>
+
+  <!-- провода между опорами -->
+  <g fill="none" stroke="#9fc3ee" stroke-width="2" opacity=".75">
+    <path d="M170 760 C300 850 560 850 690 760"/>
+    <path d="M178 800 C305 892 555 892 682 800"/>
+    <path d="M186 840 C310 930 550 930 674 840"/>
+  </g>
+  <g fill="none" stroke="#ffd54a" stroke-width="2.2" opacity=".9" filter="url(#soft)">
+    <path d="M170 760 C300 850 560 850 690 760"/>
+  </g>
+
+  <!-- опоры ЛЭП -->
+  <g fill="none" stroke="#050d1f" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
+    <g>
+      <path d="M126 1180 L170 760 L214 1180"/>
+      <path d="M142 1040 L198 1040 M150 960 L190 960 M158 880 L182 880"/>
+      <path d="M142 1040 L198 960 M198 1040 L142 960 M150 960 L190 880 M190 960 L150 880"/>
+      <path d="M120 760 H220 M135 800 H205"/>
+    </g>
+    <g>
+      <path d="M646 1180 L690 760 L734 1180"/>
+      <path d="M662 1040 L718 1040 M670 960 L710 960 M678 880 L702 880"/>
+      <path d="M662 1040 L718 960 M718 1040 L662 960 M670 960 L710 880 M710 960 L670 880"/>
+      <path d="M640 760 H740 M655 800 H725"/>
+    </g>
+  </g>
+
+  <!-- молния -->
+  <g filter="url(#blur)" opacity=".8"><path d="M470 640 L352 880 H430 L392 1090 L520 820 H440Z" fill="#ffd54a"/></g>
+  <path d="M470 640 L352 880 H430 L392 1090 L520 820 H440Z" fill="url(#bolt)" stroke="#fff6c9" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- искры -->
+  <g fill="#fff6c9">
+    <circle cx="310" cy="770" r="3"/><circle cx="560" cy="740" r="2.4"/><circle cx="590" cy="900" r="3"/>
+    <circle cx="260" cy="940" r="2.2"/><circle cx="500" cy="1000" r="2.6"/><circle cx="340" cy="690" r="2"/>
+  </g>
+
+  <!-- передний холм -->
+  <path d="M0 1130 C150 1090 300 1120 430 1100 S700 1085 860 1125 V1290 H0Z" fill="url(#hill)"/>
+</svg>

@@ -25,3 +25,14 @@ describe("personalizeText", () => {
     expect(personalizeText("message", "вас", "", "ru")).toBe("вас");
   });
 });
+
+describe("personalizeText: именное поздравление", () => {
+  it("берёт имя и должность из «Имя | должность»", () => {
+    expect(personalizeText("to-name", "Имя сотрудника", "Бакыт Сатыбалдиев | Главный инженер", "ru")).toBe("Бакыт Сатыбалдиев");
+    expect(personalizeText("to-role", "Должность сотрудника", "Бакыт Сатыбалдиев | Главный инженер", "ru")).toBe("Главный инженер");
+  });
+  it("без должности оставляет текст шаблона", () => {
+    expect(personalizeText("to-role", "Должность сотрудника", "Бакыт", "ru")).toBe("Должность сотрудника");
+    expect(personalizeText("to-name", "Имя сотрудника", "", "ru")).toBe("Имя сотрудника");
+  });
+});
