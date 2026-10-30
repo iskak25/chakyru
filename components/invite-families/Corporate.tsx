@@ -289,7 +289,6 @@ export function CorporateFamily({ kit }: { kit: CorporateKit }) {
         {text("footer-note", copy.footerNote ? pick(copy.footerNote) : tr("Самое ценное — наши люди", "Эң баалуусу — биздин адамдар"), css.eyebrow)}
         {text("footer-title", copy.footerTitle ? pick(copy.footerTitle) : tr("До встречи!", "Жолугушканга чейин!"), `${css.script} font-tra-script`)}
         <WeddingPart id="footer-ornament" label="Украшение" kind="decoration" className={css.ornament}>{copy.ornament}</WeddingPart>
-        {theme === "police" && <a className={css.photoCredit} href="https://en.kabar.kg/news/kyrgyz-internal-affairs-ministry-celebrates-101st-anniversary/" target="_blank" rel="noopener noreferrer">{tr("Фото: агентство «Кабар»", "Сүрөттөр: «Кабар» агенттиги")} ↗</a>}
       </>)}
     </WeddingEditor>
   </div>;

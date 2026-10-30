@@ -217,8 +217,6 @@
 .servicePhoto { height: 68cqw; overflow: hidden; }
 .serviceCaption { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 0 28px; }
 .serviceCaption .micro { font-size: 8px; line-height: 1.9; letter-spacing: .1em; }
-.photoCredit { align-self: center; font-family: var(--font-manrope), sans-serif; font-size: 9px; color: #d7dfe5; text-underline-offset: 4px; text-decoration: underline; }
-.photoCredit:focus-visible { outline: 2px solid #dfc48f; outline-offset: 5px; }
 .root[data-theme="noir"] .section { background: #090909; }
 .root[data-theme="noir"] .panelSection { margin: 24px 22px; padding: 44px 22px; border: 1px solid #b9945060; outline: 1px solid #b9945026; outline-offset: -7px; }
 .root[data-theme="noir"] .countdown { background: radial-gradient(ellipse at 50% 100%, #9d773125, transparent 75%), #090909; }
