@@ -47,7 +47,14 @@ export function templateCardColors(inv: Pick<Invitation, "templateId" | "copy">)
 }
 
 /** Названия торжества, которые задаёт сам шаблон, а не тип события (eventType у них общий с другим торжеством). */
-const TEMPLATE_KIND: Record<string, string> = { "amir-falcon": "Сүннөт той" };
+const TEMPLATE_KIND: Record<string, string> = {
+  "amir-falcon": "Сүннөт той",
+  "corp-energy": "Энергетиктер күнү",
+  "corp-police": "Милиция кызматкерлеринин күнү",
+};
+
+/** Поздравительные шаблоны: ресторана и программы нет, в превью — только праздник и дата. */
+const CONGRATS = new Set(["corp-energy", "corp-police"]);
 
 /** Заголовок, описание и картинка для превью ссылки (WhatsApp, Telegram, Facebook). */
 export function inviteShareMeta(inv: Invitation): { title: string; description: string; image: string } {
@@ -62,8 +69,10 @@ export function inviteShareMeta(inv: Invitation): { title: string; description: 
   // значение по умолчанию, поэтому город берём только когда адреса нет.
   const where = address || city;
   const place = [venue, where && !venue.toLowerCase().includes(where.toLowerCase()) ? where : ""].filter(Boolean).join(", ");
-  const description = place
-    ? `${place}. Чакырууну ачып, баарын көрүңүз 💌`
+  const description = CONGRATS.has(inv.templateId)
+    ? "Куттуктоону ачып, окуңуз 💌"
+    : place
+    ?`${place}. Чакырууну ачып, баарын көрүңүз 💌`
     : "Чакырууну ачып, баарын көрүңүз 💌";
   return { title, description, image: `/api/og/${encodeURIComponent(inv.id)}` };
 }

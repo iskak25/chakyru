@@ -53,6 +53,11 @@ describe("inviteShareMeta", () => {
     expect(meta.description).toContain("Ала-Тоо, Бишкек");
     expect(meta.description).toContain("ачып");
   });
+  it("congratulation templates show the holiday and no restaurant", () => {
+    const meta = inviteShareMeta({ ...base, templateId: "corp-police", eventType: "corporate", date: "2026-11-01", venue: "President city hall" });
+    expect(meta.title).toBe("Милиция кызматкерлеринин күнү — 1-ноябрь");
+    expect(meta.description).toBe("Куттуктоону ачып, окуңуз 💌");
+  });
   it("prefers the address over the stored city", () => {
     const meta = inviteShareMeta({ ...base, address: "ул. Фрунзе 87, с. Беловодское" });
     expect(meta.description).toContain("Ала-Тоо, ул. Фрунзе 87, с. Беловодское");
