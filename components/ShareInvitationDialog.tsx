@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AppDialog } from "./AppDialog";
 import { buildShareMessage } from "@/lib/shareMessage";
-import { cleanGuestName } from "@/lib/personalInvite";
+import { cleanGuestName, guestPathSegment } from "@/lib/personalInvite";
 import type { Invitation } from "@/lib/types";
 
 type ShareProps = { invitation: Invitation; locale: string; onClose: () => void; personal?: boolean };
@@ -19,7 +19,7 @@ export function ShareInvitationPanel({ invitation, locale, personal = false }: O
   const [person, setPerson] = useState({ name: "", role: "" });
   const compose = (p: { name: string; role: string }) => p.name.trim() ? (p.role.trim() ? `${p.name.trim()} | ${p.role.trim()}` : p.name.trim()) : "";
   // Именная ссылка: /i/<имя>/<id>. Без имени — обычная /i/<id>.
-  const linkFor = (lang: string, name: string) => `${window.location.origin}/i/${name ? `${encodeURIComponent(name)}/` : ""}${encodeURIComponent(invitation.id)}?lang=${lang}`;
+  const linkFor = (lang: string, name: string) => `${window.location.origin}/i/${name ? `${guestPathSegment(name)}/` : ""}${encodeURIComponent(invitation.id)}?lang=${lang}`;
   const url = linkFor(linkLang, guestName);
   const [text, setText] = useState(buildShareMessage(invitation, locale, url));
 

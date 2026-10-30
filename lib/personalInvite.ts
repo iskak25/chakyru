@@ -3,7 +3,13 @@ export function cleanGuestName(raw: string | undefined | null): string {
   if (!raw) return "";
   let value = raw;
   try { value = decodeURIComponent(raw); } catch { /* уже декодировано */ }
-  return value.replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").replace(/\s+/g, " ").trim().slice(0, 200);
+  // В читаемой ссылке пробел — «_», а разделитель имени и должности — «~» (см. guestPathSegment).
+  return value.replace(/_/g, " ").replace(/\s*~\s*/g, " | ").replace(/[\u0000-\u001f\u007f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, "").replace(/\s+/g, " ").trim().slice(0, 200);
+}
+
+/** Имя для адреса ссылки без %-кодов: кириллица как есть, пробел — «_», «имя | должность» — «имя~должность». */
+export function guestPathSegment(name: string): string {
+  return name.replace(/\s*\|\s*/g, "~").replace(/\s+/g, "_").replace(/[%/?#\\]/g, c => encodeURIComponent(c));
 }
 
 // Обращение «вы» → «ты» в тексте приглашения. Слова заменяются целиком; регистр первой буквы сохраняется.

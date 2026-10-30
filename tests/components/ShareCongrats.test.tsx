@@ -22,7 +22,7 @@ describe("именное поздравление: окно «Жеке чакы�
     fireEvent.change(screen.getByLabelText("Кызматкердин чини"), { target: { value: "Башкы инженер" } });
     fireEvent.change(screen.getByLabelText("Кызматкердин аты"), { target: { value: "Бакыт" } });
     const link = (screen.getByDisplayValue(/\/i\//) as HTMLInputElement).value;
-    expect(decodeURIComponent(link)).toContain("/i/Бакыт | Башкы инженер/t1");
+    expect(link).toContain("/i/Бакыт~Башкы_инженер/t1");
   });
 
   it("у обычного шаблона остаётся одно поле", () => {

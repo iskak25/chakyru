@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanGuestName, personalizeText } from "@/lib/personalInvite";
+import { cleanGuestName, guestPathSegment, personalizeText } from "@/lib/personalInvite";
 
 describe("cleanGuestName", () => {
   it("decodes, trims and limits the name", () => {
@@ -8,6 +8,8 @@ describe("cleanGuestName", () => {
     expect(cleanGuestName("а".repeat(300))).toHaveLength(200);
     expect(cleanGuestName("100%")).toBe("100%");
     expect(cleanGuestName(undefined)).toBe("");
+    expect(cleanGuestName("Бакыт_Сатыбалдиев~Башкы_инженер")).toBe("Бакыт Сатыбалдиев | Башкы инженер");
+    expect(cleanGuestName(guestPathSegment("Бакыт Сатыбалдиев | Башкы инженер"))).toBe("Бакыт Сатыбалдиев | Башкы инженер");
   });
 });
 
