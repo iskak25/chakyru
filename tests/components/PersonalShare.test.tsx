@@ -21,7 +21,7 @@ describe("именное приглашение: 4 кнопки, отправл�
   it("WhatsApp и Telegram получают одну именную ссылку без текста", () => {
     renderPanel();
     typeName("Например: Айгерим", "Айгерим");
-    const link = `${window.location.origin}/i/${encodeURIComponent("Айгерим")}/abc?lang=ru`;
+    const link = `${window.location.origin}/i/Айгерим/abc?lang=ru`;
     expect(screen.getByText("WhatsApp").getAttribute("href")).toBe(`https://wa.me/?text=${encodeURIComponent(link)}`);
     expect(screen.getByText("Telegram").getAttribute("href")).toBe(`https://t.me/share/url?url=${encodeURIComponent(link)}`);
   });
