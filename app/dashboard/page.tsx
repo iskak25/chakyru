@@ -7,9 +7,9 @@ import { SiteShell } from "@/components/SiteShell";
 import { PageHeader } from "@/components/app/AppShell";
 import { canCreateInvitation, myInvitations } from "@/lib/auth";
 import { useI18n } from "@/lib/locale";
-import { Trash2 } from "lucide-react";
+import { LogOut, Trash2 } from "lucide-react";
 import { InvitePreviewThumb } from "@/components/InvitePreviewThumb";
-import { deleteInvitation, getInvitations, getUser, rememberRemoteInvitation } from "@/lib/store";
+import { deleteInvitation, getInvitations, getUser, logout, rememberRemoteInvitation } from "@/lib/store";
 import { fetchMyInvitationsRemote, pushInvitationRemote } from "@/lib/accessClient";
 import { formatOf, getTemplate } from "@/lib/templates";
 import type { Invitation, User } from "@/lib/types";
@@ -79,12 +79,22 @@ export default function DashboardPage() {
           {locale === "ru" ? `Добро пожаловать, ${user.name}` : `Кош келиңиз, ${user.name}`}
         </h1>
         <p className="mt-4 max-w-[40ch] text-[15px] leading-7 text-cream/70">{t.templatesSub}</p>
-        <Link
-          href={createHref}
-          className="mt-8 inline-flex h-11 items-center rounded-[12px] bg-cream px-5 text-[11px] uppercase tracking-[0.14em] text-espresso transition hover:bg-white"
-        >
-          {canMake ? t.dash.create : t.dash.upgrade}
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <Link
+            href={createHref}
+            className="inline-flex h-11 items-center rounded-[12px] bg-cream px-5 text-[11px] uppercase tracking-[0.14em] text-espresso transition hover:bg-white"
+          >
+            {canMake ? t.dash.create : t.dash.upgrade}
+          </Link>
+          <button
+            type="button"
+            onClick={() => void logout()}
+            className="inline-flex h-11 items-center gap-2 rounded-[12px] border border-white/20 px-5 text-[11px] uppercase tracking-[0.14em] text-cream/80 transition hover:border-white/40 hover:text-cream"
+          >
+            <LogOut size={14} />
+            {t.nav.logout}
+          </button>
+        </div>
       </section>
 
       <div className="mt-12">
