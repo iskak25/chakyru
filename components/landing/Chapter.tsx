@@ -13,6 +13,8 @@ export function Chapter() {
       <img
         src={media.chapter}
         alt=""
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover object-[58%_38%] sm:object-center"
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(20,16,12,0.58)_0%,rgba(20,16,12,0.72)_100%)]" />

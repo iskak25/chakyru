@@ -27,6 +27,9 @@ export function EventCollectionHero({ invitation, theme, locale }: { invitation:
   const ru = locale === 'ru';
   const example = eventExamples[theme.event];
   const [year, month, day] = invitation.date.split('-');
+  const months = ru
+    ? ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+    : ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
   return <header className={css.hero} data-event-hero={theme.layout}>
     <div className={css.frame} aria-hidden="true"/>
     <div className={css.sparkles} aria-hidden="true">{Array.from({length: 9}, (_, i) => <i key={i} style={{'--i': i, left: `${8 + (i * 37 % 85)}%`, top: `${7 + (i * 19 % 80)}%`} as CSSProperties}/>)}</div>
@@ -44,7 +47,7 @@ export function EventCollectionHero({ invitation, theme, locale }: { invitation:
       </WeddingPart>
     </div>
     <WeddingPart id="event-date" kind="date" label="Дата и время" className={css.date}>
-      <span>{day || '—'}</span><span>{month || '—'}<small>{year}</small></span><span>{invitation.time}</span>
+      <span>{day || '—'}</span><span>{months[Number(month) - 1] || '—'}<small>{year}</small></span><span>{invitation.time}</span>
     </WeddingPart>
     <WeddingPart id="hero-greeting" kind="text" label="Приветствие" fallback={ru ? 'С радостью ждём вас' : 'Кубанычыбызды бирге бөлүшөлү'} className={css.greeting}/>
     <WeddingPart id="hero-venue" kind="text" field="venue" label="Место проведения" fallback={invitation.venue} className={css.heroVenue}/>

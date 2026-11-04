@@ -45,6 +45,8 @@ export function Intro() {
                   <img
                     src={FEATURE_IMAGES[i]}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="aspect-[3/4] w-full object-cover transition duration-700 hover:scale-[1.03]"
                     style={{ transitionTimingFunction: "var(--ease-premium)" }}
                   />

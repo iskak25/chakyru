@@ -4,7 +4,7 @@ import { eventRedesign } from './eventRedesign';
 
 export type EventPresentation = {
   family: 'soft' | 'editorial' | 'botanical' | 'heritage' | 'gala' | 'nocturne' | 'ribbon';
-  layout: 'poster' | 'arch' | 'ticket' | 'medallion' | 'album' | 'letter' | 'canopy' | 'stage';
+  layout: 'poster' | 'arch' | 'ticket' | 'medallion' | 'album' | 'letter' | 'canopy' | 'stage' | 'storybook' | 'editorial' | 'panorama' | 'portal';
   event: CollectionEvent;
   motif: Motif;
   paper: string;
@@ -20,11 +20,11 @@ const families: Partial<Record<CollectionEvent, EventPresentation['family']>> = 
   jentek: 'botanical', bachelorette: 'ribbon', corporate: 'gala', iftar: 'nocturne',
 };
 const layouts: Record<string, EventPresentation['layout']> = {
-  arch: 'arch', gate: 'canopy', window: 'arch', orbit: 'medallion', medallion: 'medallion',
-  ticket: 'ticket', letter: 'letter', postcard: 'letter', collage: 'album', duet: 'album',
+  arch: 'arch', gate: 'portal', window: 'arch', orbit: 'medallion', medallion: 'medallion',
+  ticket: 'ticket', letter: 'letter', postcard: 'letter', collage: 'album', duet: 'editorial',
   type: 'poster', banner: 'stage', crest: 'stage', ribbon: 'canopy', quilt: 'canopy',
-  botanical: 'arch', frame: 'album', columns: 'poster', fold: 'letter', terrace: 'stage',
-  landscape: 'stage', stairs: 'poster',
+  botanical: 'arch', frame: 'album', columns: 'editorial', fold: 'letter', terrace: 'panorama',
+  landscape: 'panorama', stairs: 'storybook',
 };
 
 /** Event-only direction; weddings and kyz keep their dedicated renderer. */
@@ -33,7 +33,11 @@ export const eventPresentations: Record<string, EventPresentation> = Object.from
     const art = eventArt(d.id);
     return [d.id, {
       event: d.event, family: families[d.event] ?? 'soft', layout: layouts[d.composition] ?? 'arch',
-      motif: d.motif, paper: d.paper, ink: d.ink, accent: d.accent, wash: d.wash,
+      motif: d.motif,
+      paper: '#fffaf4',
+      ink: '#5c5149',
+      accent: ['#481d2c', '#1d2532', '#202021'].includes(d.paper) ? '#886747' : d.accent,
+      wash: ['#481d2c', '#1d2532', '#202021'].includes(d.paper) ? '#eadfce' : d.wash,
       hero: art.hero ?? d.photo, decor: art.decor,
     } satisfies EventPresentation];
   }),

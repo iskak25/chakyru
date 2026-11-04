@@ -20,7 +20,7 @@ import weddingCss from "./WeddingCollection.module.css";
 import { WeddingCollectionHero } from "./WeddingCollectionHero";
 import { eventPresentation, eventMediaSource } from "@/lib/eventPresentation";
 import { eventArt } from "@/lib/eventArt";
-import { EventCollectionHero, EventArtwork } from "./EventCollectionHero";
+import { EventArtwork } from "./EventCollectionHero";
 import { EthnoWeddingHero, EthnoWeddingPortrait } from "./EthnoWeddingHero";
 import ethnoCss from "./EthnoWedding.module.css";
 import { RedEthnoWeddingHero, RedEthnoWeddingPortrait } from "./RedEthnoWedding";
@@ -28,6 +28,8 @@ import redEthnoCss from "./RedEthnoWedding.module.css";
 import { useEthnoMotion } from "@/lib/useEthnoMotion";
 import { useInvitationMotion } from "./InvitationMotion";
 import eventCss from "./EventCollection.module.css";
+import { StationeryHero, stationeryMood } from "./StationeryHero";
+import stationeryCss from "./StationeryCollection.module.css";
 
 
 type Props = { invitation: Invitation; design: CollectionDesign; locale: string; onChange?: InvitePatch; selected?: string | null; onSelect?: (id: string | null) => void; onPartsChange?: (parts: WeddingPartInfo[]) => void; preview?: boolean };
@@ -52,7 +54,7 @@ function CollectionHero({ invitation: inv, design: d, locale }: Props) {
   if (d.id === "collection-wedding-kyzyl-tunduk") return <RedEthnoWeddingHero invitation={inv} locale={locale}/>;
   if (d.id === "collection-wedding-ak-bosogo") return <EthnoWeddingHero invitation={inv} locale={locale}/>;
   const theme = eventPresentation(d.id);
-  if (theme) return <EventCollectionHero invitation={inv} theme={theme} locale={locale} />;
+  if (theme) return <StationeryHero invitation={inv} theme={theme} locale={locale} />;
   if (d.event === "kyz") return <KyzCollectionHero id={d.id} invitation={inv} locale={locale} />;
   if (weddingDirection(d.id)) return <WeddingCollectionHero id={d.id} invitation={inv} locale={locale} />;
   const example = eventExamples[d.event];
@@ -94,7 +96,7 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
   const displayInv = ru && inv.message === example.message[0] ? { ...inv, message: example.message[1] } : inv;
   const text = (id: string, fallback: string, field?: WeddingPartInfo["field"], className = css.body) => <WeddingPart id={id} label={fallback || id} kind="text" fallback={fallback} field={field} className={className} />;
   const location = <section className={css.location} key="location" data-kyz-section="location">
-    {theme ? <WeddingPart id="photo-venue" label="Фото места проведения" kind="image" slot="venue" className={`event-media ${eventCss.venueMedia}`}><div className={eventCss.venuePlaceholder} aria-hidden="true"><CollectionArt motif="house" /></div></WeddingPart> : direction ? <WeddingPart id="photo-venue" label="Фото места проведения" kind="image" slot="venue" fallback={d.event === "wedding" ? "/images/wedding-venue-placeholder.svg" : kyzAsset(weddingDir ? weddingDir.venue : direction.theme === "sapphire" || direction.theme === "heritage" ? "burgundy-venue" : "mountains-venue")} className="kyz-location-photo" /> : null}
+    {theme ? (onChange || inv.gallery?.venue ? <WeddingPart id="photo-venue" label="Фото места проведения" kind="image" slot="venue" className={`event-media ${eventCss.venueMedia}`}><div className={eventCss.venuePlaceholder} aria-hidden="true"><CollectionArt motif="house" /></div></WeddingPart> : null) : direction ? <WeddingPart id="photo-venue" label="Фото места проведения" kind="image" slot="venue" fallback={d.event === "wedding" ? "/images/wedding-venue-placeholder.svg" : kyzAsset(weddingDir ? weddingDir.venue : direction.theme === "sapphire" || direction.theme === "heritage" ? "burgundy-venue" : "mountains-venue")} className="kyz-location-photo" /> : null}
     {text("location-title", tr("Жолугушуучу жай", "Место встречи"), undefined, css.heading)}
     {text("venue", inv.venue, "venue", css.venue)}
     {text("city", inv.city, "city")}{text("address", inv.address, "address")}
@@ -121,10 +123,10 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
     corporate: [["17:00", tr("Конокторду тосуп алуу", "Welcome-кофе")], ["18:00", tr("Салтанаттуу бөлүк", "Торжественная часть")], ["19:00", tr("Банкет", "Банкет")], ["21:00", tr("Музыка жана бий", "Шоу-программа")]],
     iftar: [["17:30", tr("Конокторду тосуп алуу", "Встреча гостей")], ["18:30", tr("Оозачар убактысы", "Время ифтара")], ["19:00", tr("Намаз", "Вечерний намаз")], ["19:30", tr("Дасторкон", "Общая трапеза")]],
   };
-  const programme = d.event === "kyz" || weddingDir || ethnoWedding ? <section className={css.programme} key="programme" data-kyz-section="programme">
+  const programme = d.event === "kyz" || weddingDir || ethnoWedding || theme ? <section className={css.programme} key="programme" data-kyz-section="programme">
     {text("programme-title", d.event === "kyz" ? tr("Кыз узатуу күнүнүн программасы", "Программа кыз узатуу") : tr("Той программасы", "Программа дня"), undefined, css.heading)}
     <div className={css.programmeRows}>
-      {(weddingDir || ethnoWedding ? (eventProgramme[d.event] ?? [
+      {(weddingDir || ethnoWedding || theme ? (eventProgramme[d.event] ?? [
         ["15:30", tr("Конокторду тосуп алуу, фуршет", "Сбор гостей, фуршет")],
         ["16:00", tr("Нике жана салтанат", "Церемония бракосочетания")],
         ["17:00", tr("Банкет", "Банкет")],
@@ -141,14 +143,14 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
     </div>
   </section> : null;
   const blocks: Record<string, React.ReactNode> = {intro,programme,location,calendar};
-  const order = ethnoWedding ? [intro, calendar, programme, location] : direction ? direction.order.split(',').map(key => blocks[key]) : ["letter", "postcard", "fold", "columns"].includes(d.composition) ? [intro, location, calendar] : ["ticket", "stairs", "type"].includes(d.composition) ? [calendar, intro, location] : [intro, calendar, location];
+  const order = ethnoWedding ? [intro, calendar, programme, location] : theme ? [intro, calendar, programme, location] : direction ? direction.order.split(',').map(key => blocks[key]) : ["letter", "postcard", "fold", "columns"].includes(d.composition) ? [intro, location, calendar] : ["ticket", "stairs", "type"].includes(d.composition) ? [calendar, intro, location] : [intro, calendar, location];
 
-  return <div ref={motionRoot} data-ethno-motion={redEthnoWedding && !onChange && !preview ? "on" : undefined} className={`${css.root} ${redEthnoWedding ? redEthnoCss.root : d.id === "collection-wedding-ak-bosogo" ? ethnoCss.root : ""} ${theme ? eventCss.root : direction ? kyzCss.root : ""} ${!theme && weddingDir ? weddingCss.root : ""} ${preview ? css.previewFullPage : ""}`} data-collection-design={d.id} data-event={d.event} data-event-family={theme?.family} data-kyz-theme={theme ? undefined : direction?.theme} data-skin={direction ? undefined : d.skin} style={collectionStyle(d, inv)}>
+  return <div ref={motionRoot} data-stationery={theme ? stationeryMood(theme) : undefined} data-ethno-motion={redEthnoWedding && !onChange && !preview ? "on" : undefined} className={`${css.root} ${redEthnoWedding ? redEthnoCss.root : d.id === "collection-wedding-ak-bosogo" ? ethnoCss.root : ""} ${theme ? `${eventCss.root} ${stationeryCss.root}` : direction ? kyzCss.root : ""} ${!theme && weddingDir ? weddingCss.root : ""} ${preview ? css.previewFullPage : ""}`} data-collection-design={d.id} data-event={d.event} data-event-family={theme?.family} data-kyz-theme={theme ? undefined : direction?.theme} data-skin={direction ? undefined : d.skin} style={collectionStyle(d, inv)}>
     <WeddingEditor invitation={displayInv} onChange={onChange} selected={selected} onSelect={onSelect} onPartsChange={onPartsChange} locale={locale}>
       <CollectionHero invitation={inv} design={d} locale={locale} />
       {d.id === "collection-wedding-ak-bosogo" && <EthnoWeddingPortrait locale={locale}/>}
       {redEthnoWedding && <RedEthnoWeddingPortrait locale={locale}/>}
-      <div className={`${css.sections} ${!direction && ["duet", "columns", "collage"].includes(d.composition) ? css.splitSections : ""}`} data-kyz-sections={direction ? "true" : undefined}>
+      <div className={`${css.sections} ${!direction && !theme && ["duet", "columns", "collage"].includes(d.composition) ? css.splitSections : ""}`} data-kyz-sections={direction || theme ? "true" : undefined}>
         {order}
         {direction ? <section data-kyz-section="details">
           {text("details-title", tr("Кеченин маанайы", "Настроение вечера"), undefined, css.heading)}
@@ -206,7 +208,7 @@ export function CollectionInvite({ invitation: inv, design: d, locale, onChange,
         </section>
         {(onChange || inv.wishes?.some(w => !w.hidden)) ? <section className={css.wishes}><WishesCarousel invitation={inv} ru={ru} editable={!!onChange} onChange={onChange} /></section> : null}
       </div>
-      <footer className={css.footer}><WeddingPart id="footer-art" label="Украшение" kind="block"><CollectionArt motif={d.motif} /></WeddingPart>{text("footer-note", tr("Келгениңиз — биз үчүн чоң кубаныч!", "Ваше присутствие — наша радость!"), undefined, css.signature)}</footer>
+      <footer className={`${css.footer} ${theme ? eventCss.footer : ""}`}><WeddingPart id="footer-art" label="Украшение" kind="block"><CollectionArt motif={theme ? stationeryMood(theme) === 'heritage' ? 'ornament' : 'olive' : d.motif} /></WeddingPart>{text("footer-note", tr("Келгениңиз — биз үчүн чоң кубаныч!", "Ваше присутствие — наша радость!"), undefined, css.signature)}</footer>
     </WeddingEditor>
   </div>;
 }

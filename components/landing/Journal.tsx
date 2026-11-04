@@ -21,7 +21,7 @@ export function Journal() {
             <Reveal key={shot.src} delay={i * 80} className={shot.offset}>
               <figure>
                 <div className="img-crop aspect-[3/4]">
-                  <img src={shot.src} alt="" />
+                  <img src={shot.src} alt="" loading="lazy" decoding="async" />
                 </div>
                 <figcaption className="mt-3 text-[10px] uppercase tracking-[0.22em] text-meta">
                   {shot.label}
