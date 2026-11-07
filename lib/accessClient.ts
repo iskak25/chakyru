@@ -147,13 +147,28 @@ export type InvitationRemote = {
  * Sends the session token when there is one: before payment the server shows a page only to its
  * owner, so an anonymous request for it gets 404.
  */
-export async function fetchInvitationRemoteMeta(id: string): Promise<InvitationRemote | null> {
+async function requestInvitation(id: string, guest: boolean): Promise<{ remote: InvitationRemote | null; disabled: boolean }> {
   const headers = withEditToken(await authHeaders(), id);
-  const res = await fetch(`/api/invitations/${encodeURIComponent(id)}`, { cache: "no-store", headers }).catch(() => null);
-  if (!res?.ok) return null;
+  const res = await fetch(`/api/invitations/${encodeURIComponent(id)}${guest ? "?as=guest" : ""}`, { cache: "no-store", headers }).catch(() => null);
+  if (!res?.ok) {
+    const body = res?.status === 404 ? ((await res.json().catch(() => null)) as { disabled?: boolean } | null) : null;
+    return { remote: null, disabled: body?.disabled === true };
+  }
   const data = (await res.json().catch(() => null)) as { invitation?: Invitation; paid?: boolean; viewer?: string } | null;
-  if (!data?.invitation) return null;
-  return { invitation: data.invitation, paid: data.paid === true, viewer: data.viewer === "owner" ? "owner" : "public" };
+  if (!data?.invitation) return { remote: null, disabled: false };
+  return { remote: { invitation: data.invitation, paid: data.paid === true, viewer: data.viewer === "owner" ? "owner" : "public" }, disabled: false };
+}
+
+export async function fetchInvitationRemoteMeta(id: string): Promise<InvitationRemote | null> {
+  return (await requestInvitation(id, false)).remote;
+}
+
+/**
+ * Guest page: the link disabled by its owner answers 404 even to the owner, and `disabled`
+ * tells the caller not to fall back to a stale local copy.
+ */
+export async function fetchGuestInvitation(id: string): Promise<{ remote: InvitationRemote | null; disabled: boolean }> {
+  return requestInvitation(id, true);
 }
 
 export async function fetchInvitationRemote(id: string): Promise<Invitation | null> {

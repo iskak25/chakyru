@@ -20,8 +20,11 @@ export async function GET(req: NextRequest, context: { params: Promise<{ id: str
   // Ссылка для правки открывает страницу целиком, даже неоплаченную или отключённую.
   const viaEditLink = editLinkMatches(invitation, req.headers.get("x-edit-token") ?? "");
   const viewer = viaEditLink ? "owner" : resolved.viewer;
-  if (viewer === "none") {
-    return NextResponse.json({ error: "not found" }, { status: 404, headers: { "cache-control": "no-store" } });
+  // Страница гостя (/i/<id>) просит ?as=guest: отключённая ссылка не открывается даже владельцу,
+  // иначе он не может проверить, что отключение сработало. Редактор и предпросмотр параметр не шлют.
+  const asGuest = req.nextUrl.searchParams.get("as") === "guest" && !viaEditLink && Boolean(invitation.linkDisabled);
+  if (viewer === "none" || asGuest) {
+    return NextResponse.json({ error: "not found", ...(asGuest ? { disabled: true } : {}) }, { status: 404, headers: { "cache-control": "no-store" } });
   }
   // Токен ссылки на ответы видит только владелец; хэш ссылки для правки не видит никто.
   return NextResponse.json({ invitation: withoutSecrets(invitation, viaEditLink ? "public" : viewer), paid, viewer }, { headers: { "cache-control": "no-store" } });

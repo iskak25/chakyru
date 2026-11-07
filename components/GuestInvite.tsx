@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { TemplateRenderer } from "@/components/TemplateRenderer";
 import { useI18n } from "@/lib/locale";
-import { fetchInvitationRemoteMeta } from "@/lib/accessClient";
+import { fetchGuestInvitation, fetchInvitationRemoteMeta } from "@/lib/accessClient";
 import { DemoWatermark, demoNote } from "@/components/DemoMark";
 import { getInvitation, rememberRemoteInvitation } from "@/lib/store";
 import { formatOf } from "@/lib/templates";
@@ -27,7 +27,8 @@ function GuestInviteInner({ guestName }: { guestName?: string }) {
   const [demo, setDemo] = useState(true);
 
   async function reload() {
-    const remote = await fetchInvitationRemoteMeta(params.id);
+    // Отключённая ссылка закрыта и для владельца: локальная копия её не открывает (кроме ?preview=1 из редактора).
+    const { remote, disabled: off } = preview ? { remote: await fetchInvitationRemoteMeta(params.id), disabled: false } : await fetchGuestInvitation(params.id);
     if (remote) {
       rememberRemoteInvitation(remote.invitation);
       setInv(remote.invitation);
@@ -35,14 +36,14 @@ function GuestInviteInner({ guestName }: { guestName?: string }) {
       return;
     }
     setDemo(true);
-    setInv(getInvitation(params.id) ?? null);
+    setInv(off ? null : getInvitation(params.id) ?? null);
   }
 
   useEffect(() => {
     void reload();
     const sync = () => {
       const local = getInvitation(params.id);
-      if (local) setInv(local);
+      if (local && (preview || !local.linkDisabled)) setInv(local);
     };
     window.addEventListener("chakyru-sync", sync);
     return () => window.removeEventListener("chakyru-sync", sync);
